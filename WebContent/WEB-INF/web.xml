@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>restapi</display-name>
+  <servlet>
+    <servlet-name>jersy</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>com.imaginea.scrumr</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+    <servlet-name>login</servlet-name>
+    <servlet-class>com.imaginea.scrumr.containers.LoginValidation</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>login</servlet-name>
+    <url-pattern>/projects/*</url-pattern>
+  </servlet-mapping>
+    <servlet>
+    <servlet-name>stories</servlet-name>
+    <servlet-class>com.imaginea.scrumr.containers.ProjectContainer</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>stories</servlet-name>
+    <url-pattern>/stories/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>jersy</servlet-name>
+    <url-pattern>/restapi/*</url-pattern>
+  </servlet-mapping>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <listener>
+    <listener-class>com.imaginea.scrumr.utilities.SprintManager</listener-class>
+  </listener>
+</web-app>
