@@ -1,4 +1,4 @@
-create table projects(
+create table PROJECTS(
 pid int NOT NULL auto_increment PRIMARY KEY,
 ptitle varchar(500) not null,
 pdescription varchar(600) not null,
@@ -14,7 +14,7 @@ pstatus varchar(100) not null,
 pupdatedby varchar(100) NOT NULL REFERENCES users(uid)
 )ENGINE=InnoDB;
 
-create table users (
+create table USERS(
 uid varchar(100) NOT NULL PRIMARY KEY,
 upassword varchar(100) NOT NULL,
 uname varchar(100) NOT NULL,
@@ -25,16 +25,8 @@ uemail varchar(100) NOT NULL,
 uphone varchar(100) NOT NULL,
 uprofilepic varchar(100) )ENGINE=InnoDB;
 
-create table project_users (
-pPId int NOT NULL REFERENCES projects(pID),
-pUserid varchar(100) NOT NULL REFERENCES users(uID),
-pAssigned INT,
-pCompleted INT,
-pViewcount INT,
-PRIMARY KEY(pPId,pUserid)
-)ENGINE=InnoDB;
 
-create table sprints(
+create table SPRINTS(
 sID varchar(100) NOT NULL PRIMARY KEY,
 sPID varchar(100) NOT NULL REFERENCES projects(pid),
 sStartdate Date NOT NULL,
@@ -42,7 +34,7 @@ sEnddate Date NOT NULL,
 sStatus varchar(100) NOT NULL
 )ENGINE=InnoDB;
 
-create table userstories(
+create table USERSTORIES(
 stid int NOT NULL auto_increment PRIMARY KEY,
 stpid int NOT NULL REFERENCES projects(pid),
 sttitle varchar(100) not null,
@@ -57,89 +49,20 @@ ststatus varchar(100) NOT NULL,
 stviewcount int not null
 )ENGINE=InnoDB;
 
-create table story_users(
-suSId varchar(100) NOT NULL REFERENCES userstories(stId),
-suUid varchar(100) NOT NULL REFERENCES users(uID),
-suAssigned INT,
-suCompleted INT,
-PRIMARY KEY(suSId,suUid) 
-)ENGINE=InnoDB;
-
-create table project_comments(
-pcId varchar(100) NOT NULL PRIMARY KEY,
-pcPid varchar(100) NOT NULL REFERENCES projects(pID),
-pcContent varchar(600) NOT NULL,
-pcLogdate DateTime not null,
-pcUserId varchar(100) NOT NULL REFERENCES users(uID)
-)ENGINE=InnoDB;
-
-create table story_comments(
-scId varchar(100) NOT NULL PRIMARY KEY,
-scSid varchar(100) NOT NULL REFERENCES userstories(stId),
-scContent varchar(600) NOT NULL,
-scLogdate DateTime not null,
-scUserId varchar(100) NOT NULL REFERENCES users(uID)
-)ENGINE=InnoDB;
 
 INSERT INTO PROJECTS VALUES (1,"Network International","Project is about auctions of heavy equipment in network international",null,null,5,2,"1","aomkaram",NOW(),NOW(),"","");
 INSERT INTO PROJECTS VALUES ("LPID","Liquidation","Project is about auctions of heavy equipment in network international",null,null,5,"SP-NI-01","1","maheshs",NOW(),NOW(),"","");
 INSERT INTO PROJECTS VALUES ("Scrummr","Scrum tool","Project is about auctions of heavy equipment in network international",null,null,5,"SP-NI-01","1","chandru",NOW(),NOW(),"","");
 INSERT INTO PROJECTS VALUES ("AN-Crowdfail","Crowd Fail for android","Project is about auctions of heavy equipment in network international",null,null,5,"SP-NI-01","1","parthipan",NOW(),NOW(),"","");
 
-INSERT into users values("aomkaram","pramati123","Arun Krishna Omkaram","Development Engineer","Imaginea","Chennai","arun.o@imaginea.com","9989553484","themes/3.jpg");
-INSERT into users values("manip","pramati123","Manigandhan","Development Engineer","Imaginea","Chennai","mani.p@imaginea.com","9989553484","themes/4.jpg");
-INSERT into users values("Muneer","pramati123","Jagadeeswaran","Development Engineer","Imaginea","Chennai","jagadeesh@imaginea.com","9989553484","themes/1.jpg");
-INSERT into users values("gshankar","pramati123","Gowri Shankar","Development Engineer","Imaginea","Hyderabad","gshankar@imaginea.com","9989553484","themes/6.jpg");
-INSERT into users values("akumar","pramati123","Aatish Kumar","Development Engineer","Imaginea","Chennai","akumar.k@imaginea.com","9989553484","themes/2.jpg");
-INSERT into users values("rkiran","pramati123","Ravikiran","Development Engineer","Imaginea","Bangalore","kiran.r@imaginea.com","9989553484","themes/7.jpg");
-INSERT into users values("bjayaraman","pramati123","Balaji Jayaraman","Development Engineer","Imaginea","Chennai","balaji.j@imaginea.com","9989553484","themes/5.jpg");
-INSERT into users values("skanth","pramati123","Srikanth","Development Engineer","Imaginea","Chennai","skanth@imaginea.com","9989553484","themes/1.jpg");
-INSERT into users values("Pradeep","pramati123","Pradeep Shekhar","Senior Development Engineer","Imaginea","Hyderabad","pradeep@imaginea.com","9989553484","themes/9.jpg");
-INSERT into users values("Ramya","pramati123","Ramya Addanki","Senior Development Engineer","Imaginea","Chennai","ramya@imaginea.com","9989553484","themes/8.jpg");
+INSERT into USERS values("aomkaram","pramati123","Arun Krishna Omkaram","Development Engineer","Imaginea","Chennai","arun.o@imaginea.com","9989553484","themes/3.jpg");
+INSERT into USERS values("manip","pramati123","Manigandhan","Development Engineer","Imaginea","Chennai","mani.p@imaginea.com","9989553484","themes/4.jpg");
+INSERT into USERS values("Muneer","pramati123","Jagadeeswaran","Development Engineer","Imaginea","Chennai","jagadeesh@imaginea.com","9989553484","themes/1.jpg");
+INSERT into USERS values("gshankar","pramati123","Gowri Shankar","Development Engineer","Imaginea","Hyderabad","gshankar@imaginea.com","9989553484","themes/6.jpg");
+INSERT into USERS values("akumar","pramati123","Aatish Kumar","Development Engineer","Imaginea","Chennai","akumar.k@imaginea.com","9989553484","themes/2.jpg");
+INSERT into USERS values("rkiran","pramati123","Ravikiran","Development Engineer","Imaginea","Bangalore","kiran.r@imaginea.com","9989553484","themes/7.jpg");
+INSERT into USERS values("bjayaraman","pramati123","Balaji Jayaraman","Development Engineer","Imaginea","Chennai","balaji.j@imaginea.com","9989553484","themes/5.jpg");
+INSERT into USERS values("skanth","pramati123","Srikanth","Development Engineer","Imaginea","Chennai","skanth@imaginea.com","9989553484","themes/1.jpg");
+INSERT into USERS values("Pradeep","pramati123","Pradeep Shekhar","Senior Development Engineer","Imaginea","Hyderabad","pradeep@imaginea.com","9989553484","themes/9.jpg");
+INSERT into USERS values("Ramya","pramati123","Ramya Addanki","Senior Development Engineer","Imaginea","Chennai","ramya@imaginea.com","9989553484","themes/8.jpg");
 
-INSERT into project_users values("NI-PROJ","aomkaram1",0,0); 
-INSERT into project_users values("NI-PROJ","aomkaram2",0,0); 
-INSERT into project_users values("LPID","aomkaram1",0,0); 
-INSERT into project_users values("LPID","aomkaram2",0,0); 
-INSERT into project_users values("LPID","aomkaram3",0,0); 
-INSERT into project_users values("Scrummr","aomkaram5",0,0);
-INSERT into project_users values("Scrummr","aomkaram4",0,0); 
-INSERT into project_users values("AN-Crowdfail","aomkaram1",0,0);
-
-INSERT INTO SPRINTS VALUES("NI-SP1","NI-PROJ",NOW(),NOW(),"Done");
-INSERT INTO SPRINTS VALUES("NI-SP2","NI-PROJ",NOW(),NOW(),"In Progress");
-INSERT INTO SPRINTS VALUES("NI-SP3","NI-PROJ",NOW(),NOW(),"Not Started");
-INSERT INTO SPRINTS VALUES("LPID-SP1","LPID",NOW(),NOW(),"Not Started");
-INSERT INTO SPRINTS VALUES("LPID-SP2","LPID",NOW(),NOW(),"Not Started");
-
-INSERT INTO USERSTORIES VALUES(1,35,"title1","As a user i want to see login screen which allow me to log in", "1","NI-SP1",null,NOW(),"aomkaram",NOW(),"aomkaram","Not Started",0);
-INSERT INTO USERSTORIES VALUES(2,35,"title1","As a user i want to see login screen which allow me to log in", "1","NI-SP1",null,NOW(),"aomkaram",NOW(),"aomkaram","Finished",0);
-INSERT INTO USERSTORIES VALUES(3,35,"title1","As a user i want to see login screen which allow me to log in", "1","NI-SP1",null,NOW(),"aomkaram",NOW(),"aomkaram","Not Started",0);
-INSERT INTO USERSTORIES VALUES(4,35,"title1","As a user i want to see login screen which allow me to log in", "1","NI-SP1",null,NOW(),"aomkaram",NOW(),"aomkaram","QA",0);
-
-
-INSERT INTO USERSTORIES VALUES(5,"NI-PROJ","As a user i want to see login screen which allow me to log in", "p1","NI-SP1",null,NOW(),"aomkaram",NOW(),"aomkaram","Not Started");
-INSERT INTO USERSTORIES VALUES("st006","Scrummr","As a user i want to see login screen which allow me to log in", "p1","NI-SP1",null,NOW(),"aomkaram",NOW(),"aomkaram","Not Started");
-INSERT INTO USERSTORIES VALUES("st007","Scrummr","As a user i want to see login screen which allow me to log in", "p1","NI-SP1",null,NOW(),"aomkaram",NOW(),"aomkaram","QA");
-INSERT INTO USERSTORIES VALUES("st008","Scrummr","As a user i want to see login screen which allow me to log in", "p1","NI-SP1",null,NOW(),"aomkaram",NOW(),"aomkaram","Development");
-
-INSERT INTO STORY_USERS VALUES("st001","aomkaram1",0,0);
-INSERT INTO STORY_USERS VALUES("st002","aomkaram2",0,0);
-INSERT INTO STORY_USERS VALUES("st003","aomkaram1",0,0);
-INSERT INTO STORY_USERS VALUES("st004","aomkaram2",0,0);
-INSERT INTO STORY_USERS VALUES("st005","aomkaram1",0,0);
-INSERT INTO STORY_USERS VALUES("st006","aomkaram3",0,0);
-INSERT INTO STORY_USERS VALUES("st007","aomkaram1",0,0);
-INSERT INTO STORY_USERS VALUES("st008","aomkaram",0,0);
-
-INSERT INTO PROJECT_COMMENTS VALUES("1","NI-PROJ","Nice project we have to finish it earlier",NOW(),"aomkaram");
-INSERT INTO PROJECT_COMMENTS VALUES("2","LPID","Nice project we have to finish it earlier",NOW(),"aomkaram");
-INSERT INTO PROJECT_COMMENTS VALUES("3","NI-PROJ","Nice project we have to finish it earlier",NOW(),"aomkaram");
-INSERT INTO PROJECT_COMMENTS VALUES("4","NI-PROJ","Nice project we have to finish it earlier",NOW(),"aomkaram");
-INSERT INTO PROJECT_COMMENTS VALUES("5","Scrummr","Nice project we have to finish it earlier",NOW(),"aomkaram");
-INSERT INTO PROJECT_COMMENTS VALUES("6","NI-PROJ","Nice project we have to finish it earlier",NOW(),"aomkaram");
-INSERT INTO STORY_COMMENTS VALUES("1","st001","Nice project we have to finish it earlier",NOW(),"aomkaram");
-INSERT INTO STORY_COMMENTS VALUES("2","st001","Nice project we have to finish it earlier",NOW(),"aomkaram");
-INSERT INTO STORY_COMMENTS VALUES("3","st002","Nice project we have to finish it earlier",NOW(),"aomkaram");
-INSERT INTO STORY_COMMENTS VALUES("4","st003","Nice project we have to finish it earlier",NOW(),"aomkaram");
-INSERT INTO STORY_COMMENTS VALUES("5","st005","Nice project we have to finish it earlier",NOW(),"aomkaram");
