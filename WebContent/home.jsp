@@ -251,25 +251,6 @@ $(document).ready(function(){
 	   	 
 	   </div>	
    </div>
-   <div class="right-cont">
-   		<div class="prof-cont">
-   			<div class="image-cont">
-   				<img class="image-cont"  src="themes/1.jpg"/>
-             	 	<div class="title-cont">
-	              	 	<span class="name">Arun Krishna Omkaram</span>
-	              	 	<div class="prof">View profile</div>
-             	 	</div>
-   			</div>
-   			<div class="proj-cont">
-           	 	<div class="proj"><label class="count">20</label><label class="label">Projects</label></div>
-           	 	<div class="task"><label class="count">120</label><label class="label">Tasks</label></div>
-   			</div>
-   			<div class="status-cont">
-   				<textarea class="share-text" placeholder="Share your thoughts..." name="status"></textarea>
-   				<input type="submit" class="status submit" value="Share"/>
-   			</div>
-   		</div>
-   </div>
-   </section>
+      </section>
 </body>
 </html>

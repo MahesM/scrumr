@@ -190,11 +190,13 @@ import com.sun.jersey.api.json.JSONConfiguration;
         @Produces(MediaType.APPLICATION_JSON)
         @Path("/updatestatus")
         public String updateStatus(MultivaluedMap<String, String> params) {
-        	System.out.println("IN Status update");
-        	DatabaseHandler data = new DatabaseHandler();
+			DatabaseHandler data = new DatabaseHandler();
+        	int currentSprint = Integer.parseInt(params.getFirst("sprint"));
+        	String storyId = params.getFirst("stories");
+        	String status = params.getFirst("status");
         	try {
 				ObjectMapper mapper = new ObjectMapper();
-					   return mapper.writeValueAsString("{\"result\":"+data.updateStatus(Long.parseLong(params.getFirst("storyid")),params.getFirst("status"))+"}");
+					   return mapper.writeValueAsString("{\"result\":"+data.updateCurrentSprint(storyId,status,currentSprint)+"}");
 			} catch (JsonGenerationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

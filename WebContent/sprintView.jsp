@@ -149,15 +149,13 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 	        				story_unassigned += '<b>No pending stories for the project</b>';
 	        			}
         				$("#storyList ul").html(story_unassigned);
-        				/* $( "#storyList ul" ).sortable({
+        				$( "#storyList ul" ).sortable({
         	        		connectWith: ".story",
         	        		appendTo: 'body',
         	        		forcePlaceholderSize: true,
         	        		placeholder: 'ui-state-highlight',
         	    		}).disableSelection();
         				
-        				$("#storyList").jScrollPane({
-        				}); */
 	        		},
 	        		error: function(data) { },
 	        		complete: function(data) { }
@@ -226,6 +224,7 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 						        		complete: function(data) { }
 						        	});
 			        				sprint_html += '</ul></td>';
+			        				
 			        			}
 	
 			        			$("#project-view tbody").html(sprint_html);
@@ -399,9 +398,9 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 														}
 														imageHTML+="<img height='26' width='26' class='' src='"+story.assignees[j].profile_picture+"' title='"+story.assignees[j].name+"'>";
 													}
-						        					str +=  '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'<a class="viewStory" href="#story-cont" src="images/view.png" width="26" height="26" class=""></a></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+						        					str =  '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'<a class="viewStory" href="#story-cont" src="images/view.png" width="26" height="26" class=""></a></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
 					        					}else{
-				        							str += '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><a class="viewStory" href="#story-cont" src="images/view.png" width="26" height="26" class=""></a></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+				        							str = '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><a class="viewStory" href="#story-cont" src="images/view.png" width="26" height="26" class=""></a></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
 					        					}
 				        					if(story.status == "Not Started"){
 				        						story_unassigned += str;
@@ -442,7 +441,7 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 				        		       			}else if(stat == "finished"){
 				        		       				status = "Finished";
 				        		       			}
-				        		   				var success = updateStoryStatus(id.split("st")[1],status);
+				        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint);
 				        		   				var elOffset = $(ui.item[0]).offset();
 				        		   				showAddUserPopup(elOffset);
 				        		   				refreshStoryPortlet(id.split("st")[1]);
@@ -558,9 +557,9 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 	        		complete: function(data) { }
 	        	});
 			}
-			function updateStoryStatus(id,status){
+			function updateStoryStatus(id,status,sprint){
 				var stat = false;
-				var post_data = 'storyid=' + id + '&status='+status;
+				var post_data = 'stories=' + id + '&status='+status+ '&sprint='+sprint;
 					$.ajax({
 						url: '/scrumr/restapi/stories/updatestatus',
 						type: 'POST',
@@ -802,7 +801,7 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 				$("#project-view").hide();
 			}
         	$(".currentSprint").live('click', function(){
-        		var storyList = $(this).parent().parent().parent().attr("id").split("st")[1];			
+        		var storyList = $(this).parent().parent().parent().attr("id").split("st")[1];
        			addtoCurrentSprint(storyList,current_sprint);
        			populateUnassignedStories('');
        			if(project_view ==1){
