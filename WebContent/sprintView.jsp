@@ -149,7 +149,7 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 	        				story_unassigned += '<b>No pending stories for the project</b>';
 	        			}
         				$("#storyList ul").html(story_unassigned);
-        				$( "#storyList ul" ).sortable({
+        				/* $( "#storyList ul" ).sortable({
         	        		connectWith: ".story",
         	        		appendTo: 'body',
         	        		forcePlaceholderSize: true,
@@ -157,7 +157,7 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
         	    		}).disableSelection();
         				
         				$("#storyList").jScrollPane({
-        				});
+        				}); */
 	        		},
 	        		error: function(data) { },
 	        		complete: function(data) { }
@@ -228,7 +228,7 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 			        				sprint_html += '</ul></td>';
 			        			}
 	
-			        			$(".sprint-detail tbody").html(sprint_html);
+			        			$("#project-view tbody").html(sprint_html);
 			        			
 			        			$( ".stages ul" ).sortable({
 		        	        		connectWith: ".story",
@@ -380,7 +380,7 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 			        		data: post_data2,
 			        		async:false,
 			        		success: function( stories ) {
-				        			$(".sprint-detail tbody").html('<tr><td colspan="1"  class="green stages"></td><td colspan="1"  class="yellow stages" ></td><td colspan="1"  class="blue stages"></td><td colspan="1" class="pink stages"></td></tr>');
+				        			$("#sprint-view tbody").html('<tr><td colspan="1"  class="green stages"></td><td colspan="1"  class="yellow stages" ></td><td colspan="1"  class="blue stages"></td><td colspan="1" class="pink stages"></td></tr>');
 			        				var story_unassigned = '<div class="header" ><span></span>Sprint Stories</div><ul id="notstarted" class="story">';
 			        				var story_dev = '<div class="header" ><span></span>Development</div><ul id="dev" class="story">';
 			        				var story_review = '<div class="header" ><span></span>Review &amp; QA</div><ul id="review" class="story">';
@@ -794,8 +794,12 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
             populateUnassignedStories('');
             if(project_view ==1){
      	       	populateSprints();
+				$("#sprint-view").hide();
+				$("#project-view").show();
 			}else{
      	       	populateSprintStories(current_sprint);
+				$("#sprint-view").show();
+				$("#project-view").hide();
 			}
         	$(".currentSprint").live('click', function(){
         		var storyList = $(this).parent().parent().parent().attr("id").split("st")[1];			
@@ -984,6 +988,8 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 				$(".sprintview").css('color',"gray");
 				$(".sprintview").parent().css('background-color',"#FFFFFF");
 		       	populateSprints();
+				$("#sprint-view").hide();
+				$("#project-view").show();
 			});
 			
 			$(".sprintview").live('click',function(){
@@ -994,6 +1000,8 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 		       	$(".projectview").css('color',"gray");
 		       	$(".projectview").parent().css('background-color',"#FFFFFF");
 				populateSprintStories(current_sprint);
+				$("#sprint-view").show();
+				$("#project-view").hide();
 			});
 			
 			$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
@@ -1094,6 +1102,10 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 	                </div>
 	            </div>
                 <table id="project-view" class="sprint-detail">
+                    <tbody>
+                    </tbody>
+                </table>
+                <table id="sprint-view" class="sprint-detail">
                     <tbody>
                     </tbody>
                 </table>
