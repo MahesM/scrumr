@@ -104,7 +104,12 @@ import com.sun.jersey.api.json.JSONConfiguration;
 			List<UserStoryEntity> list = new ArrayList<UserStoryEntity>();
 			DatabaseHandler data = new DatabaseHandler();
 			String nameString = params.getFirst("nameString");
-			list = data.getAllUserStoryEntities(Long.parseLong(params.getFirst("projectId")),Integer.parseInt(params.getFirst("sprintId")),nameString);
+			String sprintId = params.getFirst("sprintId");
+			if(sprintId != null){
+				list = data.getAllUserStoryEntities(Long.parseLong(params.getFirst("projectId")),Integer.parseInt(sprintId));
+			}else{
+				list = data.getAllUserStoryEntities(Long.parseLong(params.getFirst("projectId")));
+			}
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 					   return mapper.writeValueAsString(list);

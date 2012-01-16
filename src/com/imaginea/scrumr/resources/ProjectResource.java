@@ -165,15 +165,8 @@ import com.sun.jersey.api.json.JSONConfiguration;
 						SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 						date = format.parse(params.getFirst("pStartDate"));
 						project.setStart_date(new java.sql.Date(date.getTime()));
-						if(date.after(new Date()) || date.equals(new Date())){
-							project.setCurrent_sprint(1);
-							project.setStatus("Not Started");
-						}else{
-							int cur = getCurrentSprint(date,Integer.parseInt(params.getFirst("pSprintDuration")));
-							System.out.println("CS: "+cur);
-							project.setCurrent_sprint(cur <= 0? 1: cur);
-							project.setStatus("In Progress");
-						}
+						project.setCurrent_sprint(0);
+						project.setStatus("Not Started");
 						SimpleDateFormat format1 = new SimpleDateFormat("MM/dd/yyyy");
 						date1 = format1.parse(params.getFirst("pEndDate"));
 						project.setEnd_date(new java.sql.Date(date1.getTime()));
@@ -204,8 +197,9 @@ import com.sun.jersey.api.json.JSONConfiguration;
 				for(int i=0;i<sprint_count;i++){
 
 					SprintEntity sprint = new SprintEntity();
+					sprint.setId(i+1);
 					sprint.setStartdate(new java.sql.Date(currentdate.getTime()));
-					Date enddate = new Date(currentdate.getTime() + ((7*duration)*23*59*58*1000));
+					Date enddate = new Date(currentdate.getTime() + ((7*duration)*24*60*60*1000));
 					if(enddate.before(date1)){
 						sprint.setEnddate(new java.sql.Date(enddate.getTime()));
 					}else{
@@ -218,6 +212,9 @@ import com.sun.jersey.api.json.JSONConfiguration;
 	            			sprint.setStatus("Finished");
 	            		}else{
 	            			sprint.setStatus("In Progress");
+	            			project.setCurrent_sprint(sprint.getId());
+	            			project.setStatus("In Progress");
+	            			data.updateProject(project);
 	            		}
 	        		}
 					data.createSprint(sprint,project.getId());

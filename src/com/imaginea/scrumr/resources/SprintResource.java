@@ -104,11 +104,33 @@ import com.sun.jersey.api.json.JSONConfiguration;
 		public String viewAllSprints(MultivaluedMap<String, String> params) {
 			List<SprintEntity> list = new ArrayList<SprintEntity>();
 			DatabaseHandler data = new DatabaseHandler();
-			String nameString = params.getFirst("nameString");
 			list = data.getAllSprints(Long.parseLong(params.getFirst("projectId")));
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 					   return mapper.writeValueAsString(list);
+			} catch (JsonGenerationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JsonMappingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "{}";
+		}
+		
+		@POST
+		@Produces(MediaType.APPLICATION_JSON)
+		@Path("/lookup")
+		public String viewSprint(MultivaluedMap<String, String> params) {
+			SprintEntity sprint = null;
+			DatabaseHandler data = new DatabaseHandler();
+			sprint = data.getSprint(Long.parseLong(params.getFirst("sprintId")),Long.parseLong(params.getFirst("projectId")));
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+					   return mapper.writeValueAsString(sprint);
 			} catch (JsonGenerationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

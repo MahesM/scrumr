@@ -1,5 +1,6 @@
 package com.imaginea.scrumr.entities;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Set;
@@ -21,7 +22,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "PROJECTS")
 @XmlRootElement
-public class ProjectEntity {
+public class ProjectEntity implements Serializable {
 	public ProjectEntity(){
 		this.title = null;
 		this.description = null;
@@ -111,7 +112,7 @@ public class ProjectEntity {
 		this.sprint_duration = sprint_duration;
 	}
 	
-	@Column(name = "pcurrentsprint", nullable = false)
+	@Column (name="pcurrentsprint", nullable = false)
 	public int getCurrent_sprint() {
 		return current_sprint;
 	}

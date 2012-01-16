@@ -166,7 +166,7 @@ public class DatabaseHandler {
         return story;
 	}
 	
-	public List<UserStoryEntity> getAllUserStoryEntities(Long projectId){
+	public List<UserStoryEntity> getAllUserStoryEntitiesList(Long projectId){
 		List<UserStoryEntity> stories = null;
 		Session session = HibernateSessionFactory.getSessionFactory().openSession();
 		Transaction transaction = session.beginTransaction();
@@ -186,21 +186,20 @@ System.out.println("PRJ: "+projectId);
         return stories;
 	}
 	
-	public List<UserStoryEntity> getAllUserStoryEntities(Long projectId, int sprintId, String nameString){
+	public List<UserStoryEntity> getAllUserStoryEntities(Long projectId, int sprintId){
 		List<UserStoryEntity> stories = null;
 		Session session = HibernateSessionFactory.getSessionFactory().openSession();
 		String query = null;
-		if(nameString != null && nameString.length() > 0){
-			query = "from UserStoryEntity as ustory join fetch ustory.project as p where p.id = "+projectId+" and ustory.sprint_id = "+sprintId+" and  lower(ustory.title) LIKE lower('%"+nameString+"%') order by ustory.id desc";
-		}else{
-			query = "from UserStoryEntity as ustory join fetch ustory.project as p where p.id = "+projectId+" and ustory.sprint_id = "+sprintId+" order by ustory.id desc";
-		}
+		System.out.println("BE: pj and sp: "+projectId+":"+sprintId);
+		query = "from UserStoryEntity as ustory where ustory.project.id = "+projectId+" and ustory.sprint_id.id ="+sprintId+" order by ustory.id desc";
+		
 		System.out.println("QUERY1: "+query);
 		try{
             Query q = session.createQuery(query);
             if(q.list().size() > 0){
             	stories = (List<UserStoryEntity>) q.list();
             }
+            System.out.println("Stories: "+stories);
          }
 		catch (HibernateException e) {
 			e.printStackTrace();
@@ -208,14 +207,58 @@ System.out.println("PRJ: "+projectId);
         return stories;
 	}
 	
-	public List<UserStoryEntity> getAllUserStoryEntities(Long projectId, int sprintId){
+	public List<UserStoryEntity> getAllUserStoryEntities(Long projectId, SprintEntity sprintId){
 		List<UserStoryEntity> stories = null;
 		Session session = HibernateSessionFactory.getSessionFactory().openSession();
 		String query = null;
+		System.out.println("BE: pj and sp: "+projectId+":"+sprintId);
+		if(sprintId == null){
+			query = "from UserStoryEntity as ustory where ustory.project.id = "+projectId+" and ustory.sprint_id is null order by ustory.id desc";
+		}else{
+			query = "from UserStoryEntity as ustory where ustory.project.id = "+projectId+" and ustory.sprint_id ="+sprintId+" order by ustory.id desc";
+		}
 		
-		query = "from UserStoryEntity as ustory join fetch ustory.project as p where p.id = "+projectId+" and ustory.sprint_id <= "+sprintId+" order by ustory.id desc";
+		System.out.println("QUERY1: "+query);
+		try{
+            Query q = session.createQuery(query);
+            if(q.list().size() > 0){
+            	stories = (List<UserStoryEntity>) q.list();
+            }
+            System.out.println("Stories: "+stories);
+         }
+		catch (HibernateException e) {
+			e.printStackTrace();
+		}
+        return stories;
+	}
+	
+	public List<UserStoryEntity> getAllUserStoryEntities(Long projectId, Long sprintId){
+		List<UserStoryEntity> stories = null;
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		String query = null;
+		System.out.println("BE: pj and sp: "+projectId+":"+sprintId);
+		query = "from UserStoryEntity as ustory where ustory.project.id = "+projectId+" and ustory.sprint_id.id ="+sprintId+" order by ustory.id desc";
 		
-		System.out.println("QUERY2: "+query);
+		System.out.println("QUERY1: "+query);
+		try{
+            Query q = session.createQuery(query);
+            if(q.list().size() > 0){
+            	stories = (List<UserStoryEntity>) q.list();
+            }
+            System.out.println("Stories: "+stories);
+         }
+		catch (HibernateException e) {
+			e.printStackTrace();
+		}
+        return stories;
+	}
+	
+	public List<UserStoryEntity> getAllUserStoryEntities(Long projectId){
+		List<UserStoryEntity> stories = null;
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		String query = null;
+		query = "from UserStoryEntity as ustory where ustory.project.id = "+projectId+" and ustory.sprint_id is null order by ustory.id desc";
+		
 		try{
             Query q = session.createQuery(query);
             if(q.list().size() > 0){
@@ -425,7 +468,9 @@ System.out.println("PRJ: "+projectId);
 			Query q2 = session.createQuery("from SprintEntity as s where s.id = "+sprint);
 			if(q.list().size() > 0){
             	story = (UserStoryEntity) q.list().get(0);
-            	sprintid = (SprintEntity) q2.list().get(0);
+            	if(q2.list().size() > 0){
+            		sprintid = (SprintEntity) q2.list().get(0);
+            	}
             	story.setSprint_id(sprintid);
             	story.setStatus(status);
             	session.save(story);
@@ -501,6 +546,23 @@ System.out.println("PRJ: "+projectId);
 		SprintEntity sprint = null;
 		try{
 			Query q = session.createQuery("from SprintEntity as s where s.id = "+id);
+			if(q.list().size() > 0){
+				sprint = (SprintEntity) q.list().get(0);
+			}
+		}
+		catch (HibernateException e) {
+			transaction.rollback();
+			e.printStackTrace();
+		}
+		return sprint;
+	}
+	
+	public SprintEntity getSprint(Long id, Long projectId){
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Transaction transaction = session.beginTransaction();
+		SprintEntity sprint = null;
+		try{
+			Query q = session.createQuery("from SprintEntity as s where s.id = "+id+" and s.project = "+projectId);
 			if(q.list().size() > 0){
 				sprint = (SprintEntity) q.list().get(0);
 			}

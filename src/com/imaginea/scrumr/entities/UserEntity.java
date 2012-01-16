@@ -1,5 +1,6 @@
 package com.imaginea.scrumr.entities;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -18,7 +19,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 @Entity
 @Table(name = "USERS")
 @XmlRootElement
-public class UserEntity {
+public class UserEntity implements Serializable {
 	private String id;
 	private String password;
 	private String name;

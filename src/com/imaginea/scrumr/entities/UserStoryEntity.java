@@ -1,5 +1,6 @@
 package com.imaginea.scrumr.entities;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Set;
@@ -19,7 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "USERSTORIES")
 @XmlRootElement
-public class UserStoryEntity {
+public class UserStoryEntity implements Serializable {
 	private Long id;
 	private ProjectEntity project;
 	private String title;

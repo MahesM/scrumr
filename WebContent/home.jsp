@@ -75,7 +75,7 @@ $(document).ready(function(){
 	});
 	
 	$(".feed-item").live('click',function(){
-		window.location.href = '/scrumr/sprintView.jsp?projectId='+$(this).attr("id");
+		window.location.href = '/scrumr/sprintView.jsp?&view=sprint&projectId='+$(this).attr("id");
 	});
 	
 	$.ajax({
@@ -113,7 +113,7 @@ $(document).ready(function(){
 								status = '<label><span>Sprint '+project.current_sprint+'</span> '+project.status+'</label>';
 							}
 						}else{
-							status = '<label>not Started</label>';
+							status = '<label>Not Started</label>';
 						}
 						var people="";
 						var people_count = project.assignees.length > 3 ? 3:project.assignees.length;

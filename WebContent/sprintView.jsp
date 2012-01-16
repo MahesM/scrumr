@@ -10,6 +10,7 @@
 	<script type="text/javascript" src="javascript/mwheelIntent.js"></script>
 	<script type="text/javascript" src="javascript/jscrollpane.min.js"></script>
 	<script type="text/javascript" src="javascript/mousewheel.js"></script>
+	<script type="text/javascript" src="javascript/common-functions.js"></script>
 	<script type="text/javascript" src="javascript/jquery.fancybox-1.3.4.js"></script>
 	<link type="text/css" rel="stylesheet" href="javascript/jquery.fancybox-1.3.4.css" />
 	<link type="text/css" rel="stylesheet" href="javascript/jquery-ui-1.8.16.custom.css" />
@@ -24,10 +25,12 @@ HttpSession sessionVar = request.getSession(false);
 currentSession = (String) sessionVar.getId();
 actualSession = (String) sessionVar.getAttribute("session");
 
+String view = "project";
 String username = "default";
 if(currentSession != null && actualSession != null && actualSession.equals(currentSession)){
 	username = (String) sessionVar.getAttribute("username");
 	projectId = request.getParameter("projectId");
+	view = request.getParameter("view");
 }else{
 	String destination = "/index.jsp";
 	request.setAttribute("error", "Please login to continue");
@@ -45,6 +48,16 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
         	var users = null;
         	var userObject = new Object();
         	var userLogged = "<%=username%>";
+        	var duration = '';
+        	var project_view = 1;
+        	<% if(view != null && view.equalsIgnoreCase("sprint")){ %>
+	    		project_view = 0;
+				$('.sprints').show();
+				$('.sprintview').css('color',"#00475C");
+				$('.sprintview').parent().css('background-color',"#F6EEE1");
+		       	$(".projectview").css('color',"gray");
+		       	$(".projectview").parent().css('background-color',"#FFFFFF");
+    		<% } %>
         	function days_between(date1, date2) {
 
         	    var ONE_DAY = 1000 * 60 * 60 * 24;
@@ -75,7 +88,21 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
             				if(title.length > 30){
             					title = title.substring(0,30)+" ...";
             				}
-            				$('#projectName').html(title.toUpperCase());
+    						/* if(project.start_date != null){
+    							var startdate = new Date(Date.parse(project.start_date));
+    							startdate = startdate.format("mm/dd/yyyy");
+    							duration += '<span></span>'+startdate;
+    						}else{
+    							duration += 'No Start Date';
+    						}
+    						if(project.end_date != null){
+    							var enddate = new Date(Date.parse(project.end_date));
+    							enddate = enddate.format("mm/dd/yyyy");
+    							duration += ' - <span></span>'+ enddate;
+    						}else{
+    							duration += ' - No End Date';
+    						} */
+            				$('#projectName').html(title);
             				users = project.assignees;
             				totalsprints = project.no_of_sprints;
             				$("#people").html('');
@@ -87,6 +114,16 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
             				}else{
             					$("#people").html('No assignees for the project');
             				}
+            				
+            				var user_html = '';
+            				if(users.length == 0){
+            					user_html += 'No users in the project';
+            				}else{
+	            				for(var i=0;i<users.length;i++){
+	            					user_html += "<li id='"+users[i].id+"'><img src='"+users[i].profile_picture+"' title='"+users[i].name+"''/></li>";
+	            				}
+            				}
+           					$('#user-list').html(user_html);
             			}
             		},
             		error: function(data) { },
@@ -94,7 +131,7 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
             	});
         	}
 			function populateUnassignedStories(name){
-				 var post_data1 = 'sprintId=0&nameString='+name+'&projectId=<%= projectId%>';
+				 var post_data1 = 'projectId=<%= projectId%>';
 	        	 $.ajax({
 	        		url: '/scrumr/restapi/stories/search',
 	        		type: 'POST',
@@ -106,14 +143,20 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 	        				for(var i=0;i<stories.length;i++){
 	        					var story = stories[i];
 	        					var userObj = userObject[story.createdby];
-	        					story_unassigned += '<li id="st'+story.id+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><div class="currentSprint float-rgt enable"></div></div></div><a href="javascript:void(0);" class="strRmv remove"></a></li>';
+	        					story_unassigned += '<li id="st'+story.id+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><a class="currentSprint float-rgt enable" href="javascript:void(0);"></a></div></div><a href="javascript:void(0);" class="strRmv remove"></a></li>';
 	        				}
 	        			}else{
 	        				story_unassigned += '<b>No pending stories for the project</b>';
 	        			}
         				$("#storyList ul").html(story_unassigned);
+        				$( "#storyList ul" ).sortable({
+        	        		connectWith: ".story",
+        	        		appendTo: 'body',
+        	        		forcePlaceholderSize: true,
+        	        		placeholder: 'ui-state-highlight',
+        	    		}).disableSelection();
+        				
         				$("#storyList").jScrollPane({
-        					autoReinitialise: true
         				});
 	        		},
 	        		error: function(data) { },
@@ -130,18 +173,162 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 		        		data: post_data2,
 		        		async:false,
 		        		success: function( sprints ) {
-		        			console.log(sprints);
-			        			$("#project-view").html('<tr><td colspan="1"  class="stages"></td><td colspan="1"  class="stages" ></td><td colspan="1"  class="stages"></td><td colspan="1" class="stages"></td></tr>');
-		        				
-			        			$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
+		        			if(sprints.length > 0){
+		        				var duration = '<span></span>';
+								if(sprints[0].project.start_date != null){
+									var startdate = new Date(Date.parse(sprints[0].project.start_date));
+									startdate = startdate.format("dd mmm yyyy");
+									duration += startdate;
+								}else{
+									duration += 'No Start Date';
+								}
+								if(sprints[0].project.end_date != null){
+									var enddate = new Date(Date.parse(sprints[0].project.end_date));
+									enddate = enddate.format("dd mmm yyyy");
+									duration += '&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<span></span>'+ enddate;
+								}else{
+									duration += ' - No End Date';
+								}
+								$('.duration-hd label').html(duration+'&nbsp;&nbsp;&nbsp;'+sprints[0].project.status);
+								
+				        		var sprint_html = '<tr>';
+			        			$(".table td").css("width",100/sprints.length+'%');
+			        			for(var k=0; k<sprints.length;k++ ){
+			        				sprint_html += '<td colspan="1"  class="stages"><div class="header "><span></span>Sprint '+(k+1)+'</div><ul id="sp'+sprints[k].id+'"class="story">';
+			        				var post_data2 = 'sprintId='+sprints[k].id+'&projectId=<%= projectId%>';
+						        	$.ajax({
+						        		url: '/scrumr/restapi/stories/search',
+						        		type: 'POST',
+						        		data: post_data2,
+						        		async:false,
+						        		success: function( stories ) {
+					        				if(stories != null && stories.length > 0){
+					        					for(var i=0;i<stories.length;i++){
+						        					var story = stories[i];
+						        					var userObj = userObject[story.createdby];
+						        					 if(story.assignees.length > 0){
+							        					var imageHTML = " ";
+							        					for(var j=0;j<story.assignees.length;j++){
+							        						if(j==5){
+																//imageHTML+="<a class='viewStory' href='#story-cont'>.. more</a>";
+																break;
+															}
+															imageHTML+="<img height='26' width='26' class='' src='"+story.assignees[j].profile_picture+"' title='"+story.assignees[j].name+"'>";
+														}
+							        					sprint_html +=  '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'<a class="viewStory" href="#story-cont" src="images/view.png" width="26" height="26" class=""></a></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+						        					}else{
+						        						sprint_html += '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><a class="viewStory" href="#story-cont" src="images/view.png" width="26" height="26" class=""></a></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+						        					} 
+						        				}
+					        				}
+						        		},
+						        		error: function(data) { },
+						        		complete: function(data) { }
+						        	});
+			        				sprint_html += '</ul></td>';
+			        			}
+	
+			        			$(".sprint-detail tbody").html(sprint_html);
+			        			
+			        			$( ".stages ul" ).sortable({
+		        	        		connectWith: ".story",
+		        	        		appendTo: 'body',
+		        	        		forcePlaceholderSize: true,
+		        	        		placeholder: 'ui-state-highlight',
+		        	        		update: function( event, ui ) {
+		        	        			var id = ui.item.attr("id").split("st")[1];
+		        	        			ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
+		        	        			var sprint = $(this).attr("id").split("sp")[1];
+		        		   				var success = addtoCurrentSprint(id,sprint);
+		        		   				ui.item.find("a.currentSprint").removeClass().addClass('viewStory');
+		        		   				if(success == false){
+		        		   					$(this).sortable('cancel');
+		        		   				}
+		        		   			}
+		        	    		}).disableSelection();
+			        			
+				        		$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
+				        		$("#storyList").jScrollPane({
+		        				});
+		        			}
 		        		},
 		        		error: function(data) { },
 		        		complete: function(data) { }
 		        	});
 			}
 			
+			function refreshStoryPortlet(storyId){
+				$('ul#user-list li').bind("click",function(){
+					addUserToStory($(this).attr('id'),storyId);
+					$.ajax({
+						url : '/scrumr/restapi/stories/' + storyId,
+						type : 'GET',
+						async : false,
+						success : function(stories) {
+							var imageHTML = " ";
+							for(var i=0;i<stories.assignees.length;i++){
+								if(i==5){
+									//imageHTML+="<a class='viewStory' href='#story-cont'>.. more</a>";
+									break;
+								}
+								imageHTML+="<img height='26' width='26' class='' src='"+stories.assignees[i].profile_picture+"' title='"+stories.assignees[i].name+"'>";
+							}
+							imageHTML += "<a class='viewStory' href='#story-cont' src='images/view.png' width='26' height='26' class=''></a>";
+							$('li#st'+storyId).find('.img-cont').html(imageHTML);
+							var bgColor = "";
+							$(".viewStory").fancybox({
+	        	        		'overlayColor' : '#000',
+	        	                'overlayOpacity' : '0.6',
+	        	                'autoScale' : false,
+	        	                'onComplete' : (function(){
+	        	                    scrollpane =$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+	        	                    $('#story-cont').css("background-color",bgColor);
+	        	                       }),
+	        	                       
+	        	                'onStart' : (function(){
+	        	                	bgColor = ($('li#st'+storyId).css('backgroundColor'));
+	        	                        }),
+	        	                'onClosed' : (function() {
+	        	                	$("#stPeople").hide();
+	        	                     scrollpane.destroy();
+	        	                       })
+
+	        	        	});
+						}
+					});
+				});
+					
+			}
+			
+			
+			function showAddUserPopup(elOffset){
+				if($('.popup-cont').find('div#pointerEl').hasClass('pointer-rgt')){
+					$('.popup-cont').find('div#pointerEl').removeClass('pointer-rgt').addClass('pointer');
+				}
+				var elTop = elOffset.top;
+				var elLeft = elOffset.left;
+				var new_left = elLeft+210;
+				var popupWidth =parseInt($('.popup-cont').css('width'));
+				var sectionWidth = parseInt($('section.right').css('width'))+parseInt($('section.right').css('padding-left'));
+				if(new_left+popupWidth > sectionWidth){
+					var current_left = elLeft-240;
+					$('.popup-cont').find('div#pointerEl').removeClass('pointer').addClass('pointer-rgt');
+					$('.popup-cont').css('top',elTop);
+					$('.popup-cont').css('left',current_left);
+				}else if(new_left > sectionWidth){
+					var current_left = elLeft-500;
+					$('.popup-cont').css('top',elTop);
+					$('.popup-cont').css('left',current_left);
+				}else{
+					$('.popup-cont').css('top',elTop);
+					$('.popup-cont').css('left',new_left);
+				}
+				
+				$('.popup-cont').show();
+			}
+			
 			function populateSprintStories(sprint){
-	        		 if(sprint == 0){
+	        		 if(totalsprints == 0){
 		        		 var string = '<label>No Sprints available for this project.</label>';
 		        		 $(".sprints").html(string);
 		        	 }else{
@@ -155,6 +342,36 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 			        	 }
 			        	 $(".sprints").html(sprintList);
 		        	 }
+	        		 
+	        		 var post_data2 = 'sprintId='+sprint+'&projectId=<%= projectId%>';
+			        	$.ajax({
+			        		url: '/scrumr/restapi/sprints/lookup',
+			        		type: 'POST',
+			        		data: post_data2,
+			        		async:false,
+			        		success: function( result ) {
+			        			if(result != null){
+				        			var duration = '<span></span>';
+		    						if(result.startdate != null){
+		    							var startdate = new Date(Date.parse(result.startdate));
+		    							startdate = startdate.format("dd mmm yyyy");
+		    							duration += startdate;
+		    						}else{
+		    							duration += 'No Start Date';
+		    						}
+		    						if(result.enddate != null){
+		    							var enddate = new Date(Date.parse(result.enddate));
+		    							enddate = enddate.format("dd mmm yyyy");
+		    							duration += '&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<span></span>'+ enddate;
+		    						}else{
+		    							duration += ' - No End Date';
+		    						}
+		    						$('.duration-hd label').html(duration+'&nbsp;&nbsp;&nbsp;'+result.status);
+			        			}
+			        		},
+			        		error: function(data) { },
+			        		complete: function(data) { }
+			        	});
 					
 	        		 var post_data2 = 'sprintId='+sprint+'&projectId=<%= projectId%>';
 			        	$.ajax({
@@ -163,17 +380,29 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 			        		data: post_data2,
 			        		async:false,
 			        		success: function( stories ) {
-				        			$("#sprint-view").html('<tr><td colspan="1"  class="green stages"></td><td colspan="1"  class="yellow stages" ></td><td colspan="1"  class="blue stages"></td><td colspan="1" class="pink stages"></td></tr>');
+				        			$(".sprint-detail tbody").html('<tr><td colspan="1"  class="green stages"></td><td colspan="1"  class="yellow stages" ></td><td colspan="1"  class="blue stages"></td><td colspan="1" class="pink stages"></td></tr>');
 			        				var story_unassigned = '<div class="header" ><span></span>Sprint Stories</div><ul id="notstarted" class="story">';
 			        				var story_dev = '<div class="header" ><span></span>Development</div><ul id="dev" class="story">';
 			        				var story_review = '<div class="header" ><span></span>Review &amp; QA</div><ul id="review" class="story">';
 			        				var story_finished = '<div class="header" ><span></span>Finished</div><ul id="finished" class="story">';
 				        			if(stories != null && stories.length > 0){
-			        					var str = '';	
+			        					var str = '';
 			        					for(var i=0;i<stories.length;i++){
 				        					var story = stories[i];
 				        					var userObj = userObject[story.createdby];
-				        					str = '<li id="st'+story.id+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><a class="viewStory" href="#story-cont" src="images/view.png" width="26" height="26" class=""></a></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+				        					 if(story.assignees.length > 0){
+						        					var imageHTML = " ";
+						        					for(var j=0;j<story.assignees.length;j++){
+						        						if(j==5){
+															//imageHTML+="<a class='viewStory' href='#story-cont'>.. more</a>";
+															break;
+														}
+														imageHTML+="<img height='26' width='26' class='' src='"+story.assignees[j].profile_picture+"' title='"+story.assignees[j].name+"'>";
+													}
+						        					str +=  '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'<a class="viewStory" href="#story-cont" src="images/view.png" width="26" height="26" class=""></a></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+					        					}else{
+				        							str += '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><a class="viewStory" href="#story-cont" src="images/view.png" width="26" height="26" class=""></a></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+					        					}
 				        					if(story.status == "Not Started"){
 				        						story_unassigned += str;
 				        					}else if(story.status == "Development"){
@@ -214,6 +443,9 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 				        		       				status = "Finished";
 				        		       			}
 				        		   				var success = updateStoryStatus(id.split("st")[1],status);
+				        		   				var elOffset = $(ui.item[0]).offset();
+				        		   				showAddUserPopup(elOffset);
+				        		   				refreshStoryPortlet(id.split("st")[1]);
 				        		   				if(success == false){
 				        		   					$(this).sortable('cancel');
 				        		   				}
@@ -284,15 +516,31 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 	        				var story_finished = '<div class="header " ><span></span>Finished</div><ul id="finished" class="story">';
 	        				for(var i=0;i<stories.length;i++){
 	        					var story = stories[i];
+	        					var duration = '<span></span>';
+	    						if(stories[0].sprint_id.startdate != null){
+	    							var startdate = new Date(Date.parse(stories[0].sprint_id.startdate));
+	    							startdate = startdate.format("mm/dd/yyyy");
+	    							duration += startdate;
+	    						}else{
+	    							duration += 'No Start Date';
+	    						}
+	    						if(stories[0].sprint_id.enddate != null){
+	    							var enddate = new Date(Date.parse(stories[0].sprint_id.enddate));
+	    							enddate = enddate.format("mm/dd/yyyy");
+	    							duration += ' - <span></span>'+ enddate;
+	    						}else{
+	    							duration += ' - No End Date';
+	    						}
+	    						$('.duration-hd label').html(duration);
 	        					var userObj = userObject[story.createdby];
 	        					if(story.status == "Not Started"){
-	        						story_unassigned += '<li id="st'+story.id+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+	        						story_unassigned += '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
 	        					}else if(story.status == "Development"){
-	        						story_dev += '<li id="st'+story.id+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+	        						story_dev += '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
 	        					}else if(story.status == "Review"){
-	        						story_review += '<li id="st'+story.id+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="i'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+	        						story_review += '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="i'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
 	        					}else if(story.status == "Finished"){
-	        						story_finished += '<li id="st'+story.id+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
+	        						story_finished += '<li id="st'+story.id+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.profile_picture+'" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a></li>';
 	        					}
 	        				}
 	       					story_unassigned += '</ul>';
@@ -544,20 +792,26 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
             
             populateProjectDetails();
             populateUnassignedStories('');
-	       	populateSprintStories(current_sprint);
-	       	populateSprints();
+            if(project_view ==1){
+     	       	populateSprints();
+			}else{
+     	       	populateSprintStories(current_sprint);
+			}
         	$(".currentSprint").live('click', function(){
         		var storyList = $(this).parent().parent().parent().attr("id").split("st")[1];			
        			addtoCurrentSprint(storyList,current_sprint);
        			populateUnassignedStories('');
-       		    populateSprintStories(current_sprint);
+       			if(project_view ==1){
+         	       	populateSprints();
+    			}else{
+         	       	populateSprintStories(current_sprint);
+    			}
         	});
         	
         	$(".sprintHead").live('click', function(){
         		var sp = $(".sprints li").index($(this)) + 1;
         		populateSprintStories(sp);
         		sprintinview = sp;
-        		current_sprint = sp;
         	});
         	
         	$('#story_form').submit(function(){
@@ -575,7 +829,11 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
         			success: function( result ) {
         				console.log(result);
         				populateUnassignedStories('');
-        		   	 	populateSprintStories(current_sprint);
+        				if(project_view ==1){
+        					populateSprints();
+        				}else{
+	        		   	 	populateSprintStories(current_sprint);
+        				}
         		   	 	title.val('');
         			},
         			error: function(data) { },
@@ -589,8 +847,12 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
         		var id = $(this).parent().attr("id");
         		id = id.replace("st","");
         		addtoCurrentSprint(id,0);
-        		 populateUnassignedStories('');
-     	       	populateSprintStories(sprintinview);
+        		populateUnassignedStories('');
+        		if(project_view ==1){
+	     	       	populateSprints();
+				}else{
+	     	       	populateSprintStories(sprintinview);
+				}
         	});
         	
         	$(".strRmv").live('click', function(){
@@ -598,15 +860,44 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
         		id = id.replace("st","");
         		deleteStory(id);
         		populateUnassignedStories('');
-     	       	populateSprintStories(sprintinview);
+        		if(project_view ==1){
+	     	       	populateSprints();
+				}else{
+	     	       	populateSprintStories(sprintinview);
+				}
         	});
         	
         	$("#searchStory").keyup(function(event) {
-        		  if ( event.which == 13 ) {
-        			     event.preventDefault();
-        			   }
-        			   populateUnassignedStories($("#searchStory").val());
-      			});
+    			if (event.which == 13) {
+    				event.preventDefault();
+    			}
+    			var query=$('#searchStory').val();
+    			var selector = $('#storyList .story');
+    			query = query.replace(/ /gi, '|'); //add OR for regex query  
+
+    			$(selector).children('li').each(
+    					function() {
+    						($(this).find('p').text()
+    								.search(new RegExp(query, "i")) < 0) ? $(this)
+    								.hide() : $(this).show();
+    					});
+    		});
+    		
+    		$("#searchUser").keyup(function(event) {
+    			if (event.which == 13) {
+    				event.preventDefault();
+    			}
+    			var query=$('#searchUser').val();
+    			var selector = $('#userList-cont').find('ul');
+    			query = query.replace(/ /gi, '|'); //add OR for regex query  
+    			$(selector).children('li').each(
+    					function() {
+    						($(this).find('label.name').text()
+    								.search(new RegExp(query, "i")) < 0) ? $(this)
+    								.hide() : $(this).show();
+    					});
+
+    		});
         	
         	$("#addPeople").fancybox({
         		'overlayColor' : '#000',
@@ -685,6 +976,26 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 				});
 			});
 			
+			$(".projectview").live('click',function(){
+				project_view = 1;
+				$('.sprints').hide();
+		       	$(this).css('color',"#00475C");
+		       	$(this).parent().css('background-color',"#F6EEE1");
+				$(".sprintview").css('color',"gray");
+				$(".sprintview").parent().css('background-color',"#FFFFFF");
+		       	populateSprints();
+			});
+			
+			$(".sprintview").live('click',function(){
+				project_view = 0;
+				$('.sprints').show();
+				$(this).css('color',"#00475C");
+				$(this).parent().css('background-color',"#F6EEE1");
+		       	$(".projectview").css('color',"gray");
+		       	$(".projectview").parent().css('background-color',"#FFFFFF");
+				populateSprintStories(current_sprint);
+			});
+			
 			$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
             $(window).resize(function() {
                 $('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
@@ -744,6 +1055,11 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
             <div class="stories-cont">
                 <div id="storyLabel" class="float-lft">
                        <label>User stories</label>
+                       <div class="priority">
+							<div class="p1"></div>
+							<div class="p2" ></div>
+							<div class="p3" ></div>
+						</div>
                 </div>
                 <div id="storyInput" class="float-lft">
 	                <input type="text" id="searchStory" placeholder="Search story by keyword..."/>
@@ -762,286 +1078,23 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
             
            
             <div class="sprint-cont float-lft" style="border:0;">
-            <div class="float-lft" style="width:100%;">
-                <ul class="sprints float-lft">
-                </ul>
-                <a href="" class="customize float-rgt">Customize</a>
-                </div>
-               <!--  <table id="sprint-view" class="sprint-detail">
-                    <tbody>
-                    
-                    </tbody>
-                </table> -->
+	            <div class="view-cont float-lft">
+	                <!-- <ul class="sprints float-lft">
+	                </ul> -->
+	                <div class="view-hd">
+	                	<div class="prj-view-hd"><label class="projectview">Project View</label></div>
+		                <div class="sp-view-hd"><label class="sprintview">Sprint View</label>
+		                <ul class="sprints float-lft">
+	                	</ul> 
+		                </div>
+	                </div>
+	                <div class="duration-hd">
+	                	<label><span></span>12/12/2011 - <span></span>12/12/2011</label>
+		                <a href="" class="customize float-rgt">Customize</a>
+	                </div>
+	            </div>
                 <table id="project-view" class="sprint-detail">
                     <tbody>
-                    	 <tr>
-                        <td class="">
-                            <div class="header "><span></span>Sprint 1</div>
-                            <ul class="story">
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                            </ul>
-                        </td>
-                        <td class="">
-                            <div class="header "><span></span>Sprint 2</div>
-                            <ul class="story">
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                            </ul>
-                        </td>
-                        <td class="">
-                            <div class="header "><span></span>Sprint 3</div>
-                            <ul class="story">
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                            </ul>
-                        </td>
-                        <td class="">
-                            <div class="header "><span></span>Sprint 4</div>
-                            <ul class="story">
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                            </ul>
-                        </td>
-                        <td class="">
-                            <div class="header "><span></span>Sprint 5</div>
-                            <ul class="story">
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                            </ul>
-                        </td>
-                        <td class="">
-                            <div class="header "><span></span>Sprint 6</div>
-                            <ul class="story">
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                            </ul>
-                        </td>
-                        <td class="">
-                            <div class="header "><span></span>Sprint 7</div>
-                            <ul class="story">
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                                <li>
-                                    <p class="p3">Hong Kong Phooey, number one super guy. Hong Kong Phooey...</p>
-
-                                    <div class="meta ">
-                                        <div class="img-cont float-lft"><img src="images/img.png" width="26" height="26"
-                                                                             class=""/><label class="">Created by
-                                            Samir</label></div>
-
-                                    </div>
-                                    <a href="#" class="remove"></a>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -1102,8 +1155,66 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 	                </div>
             	</div>
             </div>
-
         </div>
+        
+         <div class="popup-cont" style="display:none;">
+           <div class="c-box">
+               <div class="c-box-head">Assign to </div>
+               <div class="c-box-content">
+                   <ul id="user-list">
+                   
+                       
+                   </ul>
+
+               </div>
+                 <div class="actions-cont float-rgt">
+
+                       <input id="popup_close" type="button" class="float-rgt submit" value="Done"/>
+                       <a id="popup_cancel">later</a>
+                   </div>
+               <div id="pointerEl" class="pointer"></div> </div>
+       </div>
+       <script>
+                     $('#popup_cancel,#popup_close').bind("click",function(){
+                    	 $('.popup-cont').hide();
+                     }); 
+                     var priorityDisabledObj=[];
+                     $('.priority div').bind("click",function(){
+                    	 if($(this).hasClass('disabled')){
+                    		 $(this).removeClass('disabled');
+                    		 var index = priorityDisabledObj.indexOf($(this).attr('class'));
+                    		 priorityDisabledObj.splice(index, 1);
+                    		 showStoryOnPriority(priorityDisabledObj);
+                    		 
+                    	 }else{
+                    		 priorityDisabledObj[priorityDisabledObj.length] = $(this).attr('class');
+                    		 $(this).addClass('disabled');
+                    		 showStoryOnPriority(priorityDisabledObj);
+                    	 }
+                     });
+                     
+                     function showStoryOnPriority(priorityDisabledObj){
+                    	 $('#storyList ul.story').find('li').each(function(){
+                    		 $(this).show();
+                    		 for(var i=0;i<priorityDisabledObj.length;i++){
+                    			 if($(this).find('p').attr('class') == priorityDisabledObj[i]){
+                    				 $(this).hide();
+                    			 }
+                    		 }
+                        	 
+                         }); 
+                     }
+                     
+                  /*  complete: function(data) { 
+                	    $('.c-box-content').jScrollPane({
+                      		showArrows : true,
+                 				scrollbarWidth : '20'	   
+                         }).data().jsp; 
+                   } */
+                   
+                   
+                   
+                   </script>
     </section>
 </div>
 </body>
