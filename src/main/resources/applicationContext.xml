@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<import resource="applicationContext-security.xml" />
+	
+	<!-- Properties file place holder -->
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+                <value>classpath*:scrumr.properties</value>
+			</list>
+		</property>
+        <property name="ignoreResourceNotFound" value="true" />
+        <property name="searchSystemEnvironment" value="true" />
+	</bean>
+
+
+	<!-- Database Details -->
+	
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	
+	<!-- JPA Beans Processor -->
+	
+	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+
+	
+	<!-- Entity Manager -->
+	
+	<bean id="entityManagerFactory"	class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="database" value="MYSQL" />
+				<property name="showSql" value="true" />
+				<property name="generateDdl" value="true" />
+			</bean>
+		</property>
+		<property name="jpaPropertyMap">
+      		<map>
+		        <entry key="hibernate.c3p0.min_size" value="5"/>
+		        <entry key="hibernate.c3p0.max_size" value="20"/>
+		        <entry key="hibernate.c3p0.timeout" value="1800"/>
+		        <entry key="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+      		</map>
+    	</property>
+		
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+        </property>
+	</bean>
+
+	<!-- Transaction manager -->
+	
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- Dao Beans -->
+	
+	<bean id="genericDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target"  ref="genericDaoImpl" />
+    </bean>
+    
+	<bean id="genericDaoImpl" class="com.imaginea.scrumr.daos.GenericJpaDao"/>
+
+	<!-- Action Beans -->
+	
+	<bean id="genericActionSupport" class="com.imaginea.scrumr.controllers.GenericActionSupport" scope="prototype">
+		<property name="userServiceManager" ref="userServiceManager" />
+	
+	</bean>
+	
+	<bean id="homeAction" class="com.imaginea.scrumr.controllers.HomeAction" scope="prototype" >
+		<property name="userServiceManager" ref="userServiceManager" />
+	
+	</bean>
+	
+	<bean id="sprintAction" class="com.imaginea.scrumr.controllers.SprintAction" scope="prototype" >
+		<property name="userServiceManager" ref="userServiceManager" />
+	
+	</bean>
+	
+	<bean id="projectAction" class="com.imaginea.scrumr.controllers.ProjectAction" scope="prototype" >
+		<property name="userServiceManager" ref="userServiceManager" />
+	
+	</bean>
+	
+	<!-- Service Beans -->
+	
+	<bean id="projectManager" class="com.imaginea.scrumr.services.ProjectManagerImpl">
+		<property name="genericDao" ref="genericDao" />
+	</bean>
+	
+	<bean id="sprintManager" class="com.imaginea.scrumr.services.SprintManagerImpl">
+		<property name="genericDao" ref="genericDao" />
+	</bean>
+	
+	<bean id="commentManager" class="com.imaginea.scrumr.services.CommentManagerImpl">
+		<property name="genericDao" ref="genericDao" />
+	</bean>
+	
+	<bean id="storyManager" class="com.imaginea.scrumr.services.StoryManagerImpl">
+		<property name="genericDao" ref="genericDao" />
+	</bean>
+	
+	<bean id="taskManager" class="com.imaginea.scrumr.services.TaskManagerImpl">
+		<property name="genericDao" ref="genericDao" />
+	</bean>
+	
+	<!-- Service Beans Ends -->
+	
+</beans>

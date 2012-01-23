@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC 
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+	<!-- Object Factory -->
+	<constant name="struts.objectFactory" value="spring" />
+
+	<!-- Packages -->
+	
+	
+	<!-- Root  -->
+	
+	<package name="root" namespace="/" extends="json-default">
+	
+		<result-types>
+			<result-type name="json" class="org.apache.struts2.json.JSONResult">
+				<param name="ignoreHierarchy">false</param>
+			</result-type>
+		</result-types>
+		
+		<!-- Interceptors -->
+		
+		 <interceptors>
+            <interceptor-stack name="afDefaultStack">
+                <interceptor-ref name="defaultStack">
+                    <param name="exception.logEnabled">true</param>
+                    <param name="exception.logLevel">ERROR</param>
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="afDefaultStack" />
+        
+	   
+	   <!-- Global Error -->
+	   
+	    <global-results>
+            <result name="runtime">/WEB-INF/jsp/error.jsp</result>
+        </global-results>
+       
+        <global-exception-mappings>
+            <exception-mapping result="runtime" exception="java.lang.RuntimeException" />
+            <exception-mapping result="runtime" exception="java.lang.Exception"/>
+        </global-exception-mappings>
+       
+       
+		<!-- Actions -->
+		
+		<action name="">
+			<result>/index.jsp</result>
+		</action>
+		
+		<action name="login" class="homeAction" method="execute">
+			<result name="success">/WEB-INF/jsp/login.jsp</result>
+		</action>
+		
+		<action name="home" class="homeAction" method="prepareHome">
+			<result name="success">/WEB-INF/jsp/login.jsp</result>
+		</action>
+		
+		<action name="project" class="projectAction" method="prepareProjectHome">
+			<result name="success">/WEB-INF/jsp/project.jsp</result>
+		</action>
+		
+		<action name="sprint" class="sprintAction" method="prepareSprintHome">
+			<result name="success">/WEB-INF/jsp/sprintView.jsp</result>
+		</action>
+		
+	</package>
+	
+</struts>
