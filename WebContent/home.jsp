@@ -42,7 +42,6 @@ if(currentSession != null && actualSession != null && actualSession.equals(curre
 %>
 <script type="text/javascript">
 $(document).ready(function(){
-	 
 	 $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
      $(window).resize(function() {
          $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
@@ -84,7 +83,6 @@ $(document).ready(function(){
 		async:false,
 		success: function( obj ) {
 			var project_html = '<ul class="feed">';
-			console.log(obj);
 			if(obj.projects){
 				if(obj.projects.length > 0){
 					for(var i=0;i < obj.projects.length;i++){
@@ -186,7 +184,7 @@ $(document).ready(function(){
 				success: function( records ) {
 					if(records.id){
 						parent.$.fancybox.close();
-						window.location.href = '/scrumr/sprintView.jsp?projectId='+records.id;
+						window.location.href = '/scrumr/sprintView.jsp?visit=1&projectId='+records.id;
 					}
 				},
 				error: function(data) { },

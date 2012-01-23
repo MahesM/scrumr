@@ -8,8 +8,10 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.imaginea.scrumr.entities.CommentEntity;
 import com.imaginea.scrumr.entities.ProjectEntity;
 import com.imaginea.scrumr.entities.SprintEntity;
+import com.imaginea.scrumr.entities.TodoEntity;
 import com.imaginea.scrumr.entities.UserEntity;
 import com.imaginea.scrumr.entities.UserStoryEntity;
 import com.imaginea.scrumr.utilities.HibernateSessionFactory;
@@ -614,5 +616,122 @@ System.out.println("PRJ: "+projectId);
 		return false;
 	}
 	
+	public void deleteCommentEntity(Long commentID){
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Transaction transaction = session.beginTransaction();
+//		CommentEntity comment=null;
+		try{
+			Query q;		
+			q = session.createQuery("delete from CommentEntity where commentID="+commentID);
+			q.executeUpdate();
+//			session.delete(comment);
+			transaction.commit();
+		}catch(HibernateException e){
+			
+		}
+	}
 	
+	public List<CommentEntity> getStoryCommentEntity(Long storyID) {
+		// TODO Auto-generated method stub
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Transaction transaction = session.beginTransaction();
+		try{					
+			Query q = session.createQuery("from CommentEntity as c join fetch c.story as s where s.id="+storyID+" order by c.commentID");
+			if(q.list().size() > 0){
+				return q.list();			
+			}	
+			transaction.commit();
+		}catch(HibernateException e){
+			
+		}
+		return null;
+	}
+	
+	public void addCommentToStory(CommentEntity comment, String userID, Long storyID){
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Transaction transaction = session.beginTransaction();
+		UserStoryEntity story=null;
+		UserEntity user = null;
+		try{
+			Query q = session.createQuery("from UserEntity where id='"+userID+"'");
+			if (q.list().size() > 0)
+			{
+				user = (UserEntity) q.list().get(0);
+				comment.setUser(user);
+			}
+			
+			q = session.createQuery("from UserStoryEntity where id="+storyID);
+			if (q.list().size() > 0)
+			{
+				story = (UserStoryEntity) q.list().get(0);
+				comment.setStory(story);
+			}
+			session.save(comment);
+			transaction.commit();
+		}catch(HibernateException e){
+			
+		}
+	}
+
+	public List<TodoEntity> getStoryTodoEntity(Long storyID) {
+		// TODO Auto-generated method stub
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Transaction transaction = session.beginTransaction();
+		try{					
+			Query q = session.createQuery("from TodoEntity as t join fetch t.story as s where s.id="+storyID+" order by t.todoID desc");
+			if(q.list().size() > 0){
+				return q.list();			
+			}	
+			transaction.commit();
+		}catch(HibernateException e){
+			
+		}
+		return null;
+	}
+
+	public void addTodoToStory(TodoEntity todo, String userID, Long storyID) {
+		// TODO Auto-generated method stub
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Transaction transaction = session.beginTransaction();
+		UserStoryEntity story=null;
+		UserEntity user = null;
+		try{
+			Query q = session.createQuery("from UserEntity where id='"+userID+"'");
+			if (q.list().size() > 0)
+			{
+				user = (UserEntity) q.list().get(0);
+				todo.setUser(user);
+			}
+			
+			q = session.createQuery("from UserStoryEntity where id="+storyID);
+			if (q.list().size() > 0)
+			{
+				story = (UserStoryEntity) q.list().get(0);
+				todo.setStory(story);
+			}
+			System.out.println("------------------------------------------> Inserted the todo");
+			session.save(todo);
+			transaction.commit();
+			System.out.println("------------------------------------------> Inserted the todo");
+		}catch(HibernateException e){
+			
+		}
+	}
+
+	public void deleteTodoEntity(Long todoID) {
+		// TODO Auto-generated method stub
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Transaction transaction = session.beginTransaction();
+//		CommentEntity comment=null;
+		try{
+			Query q;		
+			q = session.createQuery("delete from TodoEntity where todoID="+todoID);
+			q.executeUpdate();
+//			session.delete(comment);
+			transaction.commit();
+		}catch(HibernateException e){
+			
+		}
+	}
+		
 }

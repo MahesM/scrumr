@@ -7,11 +7,11 @@ penddate Date,
 pnoofsprints int not null,
 pcurrentsprint int not null,
 psprintDuration int,
-pcreator varchar(100) NOT NULL REFERENCES users(uid),
+pcreator varchar(100) NOT NULL REFERENCES USERS(uid),
 pcreation DateTime not null,
 plastupdated DateTime not null,
 pstatus varchar(100) not null,
-pupdatedby varchar(100) NOT NULL REFERENCES users(uid)
+pupdatedby varchar(100) NOT NULL REFERENCES USERS(uid)
 )ENGINE=InnoDB;
 
 create table USERS(
@@ -27,33 +27,28 @@ uprofilepic varchar(100) )ENGINE=InnoDB;
 
 
 create table SPRINTS(
-sID varchar(100) NOT NULL PRIMARY KEY,
-sPID varchar(100) NOT NULL REFERENCES projects(pid),
-sStartdate Date NOT NULL,
-sEnddate Date NOT NULL,
-sStatus varchar(100) NOT NULL
+spid int NOT NULL,
+sppid int NOT NULL REFERENCES PROJECTS(pid),
+spstart Date NOT NULL,
+spend Date NOT NULL,
+spstatus varchar(100) NOT NULL,
+PRIMARY KEY(spid,sppid)
 )ENGINE=InnoDB;
 
 create table USERSTORIES(
 stid int NOT NULL auto_increment PRIMARY KEY,
-stpid int NOT NULL REFERENCES projects(pid),
+stpid int NOT NULL REFERENCES PROJECTS(pid),
 sttitle varchar(100) not null,
 stdescription varchar(600) NOT NULL,
 stpriority varchar(2) NOT NULL,
-stsprint int not null,
+stsprint int,
 stcreation DateTime not null,
-stcreator varchar(100) NOT NULL REFERENCES users(uid),
+stcreator varchar(100) NOT NULL REFERENCES USERS(uid),
 stlastupdated DateTime not null,
-stupdatedby varchar(100) NOT NULL REFERENCES users(uid),
+stupdatedby varchar(100) NOT NULL REFERENCES USERS(uid),
 ststatus varchar(100) NOT NULL,
 stviewcount int not null
 )ENGINE=InnoDB;
-
-
-INSERT INTO PROJECTS VALUES (1,"Network International","Project is about auctions of heavy equipment in network international",null,null,5,2,"1","aomkaram",NOW(),NOW(),"","");
-INSERT INTO PROJECTS VALUES ("LPID","Liquidation","Project is about auctions of heavy equipment in network international",null,null,5,"SP-NI-01","1","maheshs",NOW(),NOW(),"","");
-INSERT INTO PROJECTS VALUES ("Scrummr","Scrum tool","Project is about auctions of heavy equipment in network international",null,null,5,"SP-NI-01","1","chandru",NOW(),NOW(),"","");
-INSERT INTO PROJECTS VALUES ("AN-Crowdfail","Crowd Fail for android","Project is about auctions of heavy equipment in network international",null,null,5,"SP-NI-01","1","parthipan",NOW(),NOW(),"","");
 
 INSERT into USERS values("aomkaram","pramati123","Arun Krishna Omkaram","Development Engineer","Imaginea","Chennai","arun.o@imaginea.com","9989553484","themes/3.jpg");
 INSERT into USERS values("manip","pramati123","Manigandhan","Development Engineer","Imaginea","Chennai","mani.p@imaginea.com","9989553484","themes/4.jpg");
