@@ -1,0 +1,9 @@
+#build target files
+*.war
+/bin
+target
+/classes
+
+# backup files
+*~
+*.swp
