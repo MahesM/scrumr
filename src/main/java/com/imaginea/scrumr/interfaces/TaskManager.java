@@ -1,5 +1,8 @@
 package com.imaginea.scrumr.interfaces;
 
+import java.util.List;
+
+import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.Task;
 
 public interface TaskManager {
@@ -11,5 +14,9 @@ public interface TaskManager {
 	void updateTask(Task task);
 	
 	void deleteTask(Task task);
+	
+	List<Task> fetchTasksByStory(Integer pkey);
+	
+	List<Task> fetchTasksByStatus(String status);
 
 }

@@ -21,5 +21,5 @@ public interface StoryManager {
 	List<Story> fetchStoriesByStatus(Integer pkey, String status);
 	
 	List<Story> fetchUnAssignedStories(Integer pkey);
-
+	
 }

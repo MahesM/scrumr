@@ -1,5 +1,8 @@
 package com.imaginea.scrumr.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.Path;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +33,18 @@ public class TaskResource {
 
 
 	@RequestMapping(value="/{id}", method = RequestMethod.GET)
-	public @ResponseBody Task fetchTask(@PathVariable("id") String id) {
+	public @ResponseBody List<Task> fetchTask(@PathVariable("id") String id) {
 
 		Task task = taskManager.readTask(Integer.parseInt(id));
-		return task;
+		List<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+		return tasks;
+	}
+	
+	@RequestMapping(value="/story/{id}", method = RequestMethod.GET)
+	public @ResponseBody List<Task> fetchStoryTask(@PathVariable("id") String id) {
+
+		return taskManager.fetchTasksByStory(Integer.parseInt(id));
 	}
 
 	@RequestMapping(value="/create", method = RequestMethod.POST)

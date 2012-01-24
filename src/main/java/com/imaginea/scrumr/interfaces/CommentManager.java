@@ -1,5 +1,7 @@
 package com.imaginea.scrumr.interfaces;
 
+import java.util.List;
+
 import com.imaginea.scrumr.entities.Comment;
 
 public interface CommentManager {
@@ -12,4 +14,5 @@ public interface CommentManager {
 	
 	void deleteComment(Comment comment);
 
+	List<Comment> fetchCommentsByStory(Integer pkey);
 }

@@ -1,7 +1,6 @@
 package com.imaginea.scrumr.entities;
-
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -40,6 +39,8 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 	private Date creation_date;
 	private String status;
 	private String last_updatedby;
+	
+	
 
 
 	@Column(name = "ptitle", nullable = false, length = 500)
@@ -57,7 +58,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	@Column(name = "pstartdate", nullable = true)
 	public Date getStart_date() {
 		return start_date;

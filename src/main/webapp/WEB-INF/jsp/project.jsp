@@ -77,14 +77,14 @@ $(document).ready(function(){
 						var title = project.title;
 						var duration = '';
 						if(project.start_date != null){
-							var startdate = new Date(Date.parse(project.start_date));
+							var startdate = new Date(project.start_date);
 							startdate = startdate.format("mm/dd/yyyy");
 							duration += startdate;
 						}else{
 							duration += 'No Start Date';
 						}
 						if(project.end_date != null){
-							var enddate = new Date(Date.parse(project.end_date));
+							var enddate = new Date(project.end_date);
 							enddate = enddate.format("mm/dd/yyyy");
 							duration += ' - '+ enddate;
 						}else{

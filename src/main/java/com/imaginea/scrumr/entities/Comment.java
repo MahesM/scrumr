@@ -7,6 +7,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -15,6 +17,9 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @SuppressWarnings("serial")
 @Entity
 @Table(name="comments")
+@NamedQueries({
+	@NamedQuery(name="comments.fetchCommentsByStory", query="SELECT instance from Comment instance where instance.story=:story" )
+})
 @XmlRootElement
 public class Comment extends AbstractEntity implements IEntity, Serializable {
 

@@ -27,7 +27,8 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @NamedQueries({
 	@NamedQuery(name="stories.fetchStoriesByProject", query="SELECT instance from Story instance where instance.project=:project" ),
 	@NamedQuery(name="stories.fetchStoriesByStatus", query="SELECT instance from Story instance where instance.sprint_id=:sprint and instance.status=:status" ),
-	@NamedQuery(name="stories.fetchStoriesBySprint", query="SELECT instance from Story instance where instance.project=:project and instance.sprint_id=:sprint" ),
+	@NamedQuery(name="stories.fetchStoriesBySprint", query="SELECT instance from Story instance where instance.sprint_id=:sprint" ),
+	@NamedQuery(name="stories.fetchStoriesBySprintProject", query="SELECT instance from Story instance where instance.project=:project and instance.sprint_id=:sprint" ),
 	@NamedQuery(name="stories.fetchUnAssignedStories", query="SELECT instance from Story instance where instance.project=:project and instance.sprint_id is null" )
 })
 @XmlRootElement

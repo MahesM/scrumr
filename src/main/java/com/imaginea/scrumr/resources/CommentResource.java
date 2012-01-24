@@ -3,7 +3,9 @@ package com.imaginea.scrumr.resources;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.Path;
 
@@ -38,10 +40,18 @@ public class CommentResource {
 	UserServiceManager userServiceManager;
 
 	@RequestMapping(value="/{id}", method = RequestMethod.GET)
-	public @ResponseBody Comment fetchComment(@PathVariable("id") String id) {
+	public @ResponseBody List<Comment> fetchComment(@PathVariable("id") String id) {
 
 		Comment comment = commentManager.readComment(Integer.parseInt(id));
-		return comment;
+		List<Comment> comments = new ArrayList<Comment>();
+		comments.add(comment);
+		return comments;
+	}
+	
+	@RequestMapping(value="/story/{id}", method = RequestMethod.GET)
+	public @ResponseBody List<Comment> fetchCommentsByStory(@PathVariable("id") String id) {
+
+		return commentManager.fetchCommentsByStory(Integer.parseInt(id));
 	}
 
 	@RequestMapping(value="/create", method = RequestMethod.POST)
@@ -74,7 +84,7 @@ public class CommentResource {
 
 	}
 
-	@RequestMapping(value="/{id}", method = RequestMethod.GET)
+	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody String deleteComment(@PathVariable("id") String id) {
 
 		commentManager.deleteComment(commentManager.readComment(Integer.parseInt(id)));
