@@ -17,5 +17,7 @@
   <mapping class="com.imaginea.scrumr.entities.SprintEntity" />
   <mapping class="com.imaginea.scrumr.entities.CommentEntity" />
   <mapping class="com.imaginea.scrumr.entities.TodoEntity" />
+  <mapping class="com.imaginea.scrumr.entities.StoryUserEntity" />
+  
 </session-factory>
 </hibernate-configuration>
