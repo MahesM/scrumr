@@ -24,12 +24,12 @@ public class AuthTest extends AbstractDependencyInjectionSpringContextTests {
 	public void testInsertUser(){
 		User user = new User();
 		
-		user.setUsername("test");
+		user.setUsername("test2");
 		user.setPassword("test123");
 		user.setEmailId("a@a.com");
 		user.setFullName("testUser");
 		
-//		_userServiceManager.createUser(user);
+		_userServiceManager.createUser(user);
 		
 		User myUser = (User) _userServiceManager.loadUserByUsername("test");
 		

@@ -1,5 +1,6 @@
 package com.imaginea.scrumr.resources;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Path;
@@ -42,16 +43,25 @@ public class StoryResource {
 	StatusManager statusManager;
 
 	@RequestMapping(value="/{id}", method = RequestMethod.GET)
-	public @ResponseBody Story fetchStory(@PathVariable("id") String id) {
+	public @ResponseBody List<Story> fetchStory(@PathVariable("id") String id) {
 
 		Story story = storyManager.readStory(Integer.parseInt(id));
-		return story;
+		List<Story> stories = new ArrayList<Story>();
+		stories.add(story);
+		return stories;
 	}
 
 	@RequestMapping(value="/project/{id}", method = RequestMethod.GET)
 	public @ResponseBody List<Story> fetchStoriesByProject(@PathVariable("id") String id) {
 
 		return storyManager.fetchStoriesByProject(Integer.parseInt(id));
+
+	}
+	
+	@RequestMapping(value="{sprintid}/project/{id}", method = RequestMethod.GET)
+	public @ResponseBody List<Story> fetchStoriesByProjectSprint(@PathVariable("sprintid") String sid, @PathVariable("id") String pid) {
+		Sprint sprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(pid)), Integer.parseInt(sid));
+		return storyManager.fetchStoriesBySprint(sprint.getPkey());
 
 	}
 
@@ -116,8 +126,9 @@ public class StoryResource {
 
 		try{
 			Story story = storyManager.readStory(Integer.parseInt(stories));
-			Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(sprint));
+			Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)),Integer.parseInt(sprint));
 			story.setSprint_id(toSprint);
+			System.out.println(toSprint);
 			story.setStatus(status);
 			storyManager.updateStory(story);
 		}catch(Exception e){

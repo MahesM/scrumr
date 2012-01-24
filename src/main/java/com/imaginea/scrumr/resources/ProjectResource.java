@@ -2,6 +2,7 @@ package com.imaginea.scrumr.resources;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -36,15 +37,15 @@ public class ProjectResource {
 	UserServiceManager userServiceManager;
 
 	@RequestMapping(value="/{id}", method = RequestMethod.GET)
-	public @ResponseBody Project fetchProject(@PathVariable("id") String id) {
+	public @ResponseBody List<Project> fetchProject(@PathVariable("id") String id) {
 		Project project = projectManager.readProject(Integer.parseInt(id));
-		return project;
-			
+		List<Project> projects = new ArrayList<Project>();
+		projects.add(project);
+		return projects;
 	}
 	
 	@RequestMapping(value="/user/{userid}", method = RequestMethod.GET)
 	public @ResponseBody List<Project> fetchProjectsByUser(@PathVariable("userid") String id) {
-		System.out.println("fetchUserByProject");
 		User user = userServiceManager.readUser(id);
 		return user.getProjects();
 			
@@ -97,12 +98,12 @@ public class ProjectResource {
 				try {
 					SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 					date = format.parse(pStartDate);
-					project.setStart_date(new java.sql.Date(date.getTime()));
+					project.setStart_date(date);
 					project.setCurrent_sprint(0);
 					project.setStatus("Not Started");
 					SimpleDateFormat format1 = new SimpleDateFormat("MM/dd/yyyy");
 					date1 = format1.parse(pEndDate);
-					project.setEnd_date(new java.sql.Date(date1.getTime()));
+					project.setEnd_date(date);
 					sprint_count  = getSprintCount(date, date1,Integer.parseInt(pSprintDuration));
 					project.setNo_of_sprints(sprint_count);
 				} catch (ParseException e1) {

@@ -122,6 +122,10 @@
 		<property name="genericDao" ref="genericDao" />
 	</bean>
 	
+	<bean id="statusManager" class="com.imaginea.scrumr.services.StatusManagerImpl">
+		<property name="genericDao" ref="genericDao" />
+	</bean>
+	
 	<!-- Service Beans Ends -->
 	
 </beans>

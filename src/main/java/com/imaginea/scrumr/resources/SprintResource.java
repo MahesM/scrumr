@@ -1,6 +1,7 @@
 package com.imaginea.scrumr.resources;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,18 +33,22 @@ public class SprintResource {
 	UserServiceManager userServiceManager;
 
 	@RequestMapping(value="/{id}", method = RequestMethod.GET)
-	public @ResponseBody Sprint fetchSprint(@PathVariable("id") String id) {
+	public @ResponseBody List<Sprint> fetchSprint(@PathVariable("id") String id) {
 
 		Sprint sprint = sprintManager.readSprint(Integer.parseInt(id));
-		return sprint;
+		List<Sprint> sprints = new ArrayList<Sprint>();
+		sprints.add(sprint);
+		return sprints;
 	}
 
 	@RequestMapping(value="{sprintid}/project/{projectid}", method = RequestMethod.GET)
-	public @ResponseBody Sprint fetchSprintByProject(@PathVariable("sprintid") String id, @PathVariable("projectid") String pid) {
+	public @ResponseBody List<Sprint> fetchSprintByProject(@PathVariable("sprintid") String id, @PathVariable("projectid") String pid) {
 
-		Project project = projectManager.readProject(Integer.parseInt(id));
+		Project project = projectManager.readProject(Integer.parseInt(pid));
 		Sprint sprint = sprintManager.selectSprintByProject(project,Integer.parseInt(id));
-		return sprint;
+		List<Sprint> sprints = new ArrayList<Sprint>();
+		sprints.add(sprint);
+		return sprints;
 	}
 
 	@RequestMapping(value="/project/{id}", method = RequestMethod.GET)
@@ -64,9 +69,9 @@ public class SprintResource {
 		try {
 			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 			Date startdate = format.parse(start_date);
-			sprint.setStartdate(new java.sql.Date(startdate.getTime()));
+			sprint.setStartdate(startdate);
 			Date enddate = format.parse(start_date);
-			sprint.setEnddate(new java.sql.Date(enddate.getTime()));
+			sprint.setEnddate(enddate);
 			if(startdate.after(new Date())){
 				sprint.setStatus("Not Started");
 			}else{

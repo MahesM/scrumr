@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
@@ -101,6 +102,7 @@ public class User extends AbstractEntity implements IEntity, UserDetails, Serial
 		this.projects = projects;
 	}
 
+	@XmlTransient
 	@Transient
 	public Collection<GrantedAuthority> getAuthorities() {
 		return authorities;
