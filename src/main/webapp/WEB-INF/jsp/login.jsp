@@ -97,7 +97,7 @@ $(document).ready(function(){
 							if(records.id){
 								alert(records.id);
 								parent.$.fancybox.close();
-								window.location.href = '/scrumr/sprintView.jsp?projectId='+records.id;
+								window.location.href = '/scrumr/sprintView.jsp?visit=1&projectId='+records.id;
 							}
 						},
 						error: function(data) { },

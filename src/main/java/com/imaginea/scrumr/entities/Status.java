@@ -10,10 +10,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "status")
+@NamedQueries({
+	@NamedQuery(name="status.fetchStoryStatus", query="SELECT instance from Status instance where instance.story.id=:storyid and instance.stage=:stage" ),
+	@NamedQuery(name="status.clearUsersByStage", query="DELETE from Status instance where instance.story.id=:storyid and instance.stage=:stage" )
+})
 public class Status extends AbstractEntity implements Serializable{
 
 	private User user;

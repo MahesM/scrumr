@@ -1,5 +1,7 @@
 package com.imaginea.scrumr.interfaces;
 
+import java.util.List;
+
 import com.imaginea.scrumr.entities.Status;
 
 public interface StatusManager {
@@ -11,5 +13,10 @@ public interface StatusManager {
 	void updateStatus(Status Status);
 	
 	void deleteStatus(Status Status);
+	
+	List<Status> fetchStoryStatus(Integer storyid, String stage);
+	
+	String clearUsersByStage(Integer storyid, String stage);
+	
 	
 }

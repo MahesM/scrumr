@@ -1,8 +1,13 @@
 package com.imaginea.scrumr.services;
 
+import java.util.Hashtable;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.imaginea.scrumr.entities.Project;
+import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Status;
 import com.imaginea.scrumr.interfaces.IDao;
 import com.imaginea.scrumr.interfaces.IEntity;
@@ -47,6 +52,23 @@ public class StatusManagerImpl implements StatusManager {
 		}
 	}
 
+	public List<Status> fetchStoryStatus(Integer storyid, String stage){
+
+		Hashtable<String, Object> ht = new Hashtable<String, Object>();
+		ht.put("storyid", storyid);
+		ht.put("stage", stage);
+
+		return genericDao.getEntities(Status.class, "status.fetchStoryStatus",ht);
+	}
+	
+	public String clearUsersByStage(Integer storyid, String stage){
+
+		Hashtable<String, Object> ht = new Hashtable<String, Object>();
+		ht.put("storyid", storyid);
+		ht.put("stage", stage);
+
+		return (String) genericDao.getResult("status.clearUsersByStage",ht);
+	}
 	/* Getters and Setters */
 
 	public IDao<IEntity, Integer> getGenericDao() {

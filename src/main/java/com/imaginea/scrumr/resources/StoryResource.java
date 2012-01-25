@@ -204,4 +204,37 @@ public class StoryResource {
 		statusManager.createStatus(story_status);
 		return "{\"result\":\"success\"}";
 	}
+	
+	@RequestMapping(value="/getusers", method = RequestMethod.POST)
+	public @ResponseBody List<Status> getUsersFromStory(
+			@RequestParam String storyId,
+			@RequestParam String stage
+		) {
+		
+		return statusManager.fetchStoryStatus(Integer.parseInt(storyId), stage);
+	}
+	
+	@RequestMapping(value="/adduserswithstage", method = RequestMethod.POST)
+	public @ResponseBody String addUsersWithStage(
+			@RequestParam String userids,
+			@RequestParam String storyId,
+			@RequestParam String stage
+		) {
+		
+		String[] users = userids.split(",");
+		for(String s: users){
+			addUserWithStage(s,storyId,stage);
+		}
+		return "{\"result\":\"success\"}";
+	}
+	
+	@RequestMapping(value="/clearstoryassignees", method = RequestMethod.POST)
+	public @ResponseBody String removeUsersWithStage(
+			@RequestParam String storyId,
+			@RequestParam String stage
+		) {
+		
+		statusManager.clearUsersByStage(Integer.parseInt(storyId), stage);
+		return "{\"result\":\"success\"}";
+	}
 }

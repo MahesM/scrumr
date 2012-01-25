@@ -6,9 +6,8 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-   <title>Scrumr</title>
-<!-- Default Includes .. -->	
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Scrumr</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery-1.7.js"></script>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery-ui-1.8.16.custom.min.js"></script>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/mwheelIntent.js"></script>
@@ -16,21 +15,21 @@
 	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/mousewheel.js"></script>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/common-functions.js"></script>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery.fancybox-1.3.4.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/pagination.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/highcharts.js"></script>
-	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/pagination.css" />
+<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/pagination.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/highcharts.js"></script>
 	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/jquery.fancybox-1.3.4.css" />
 	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/jquery-ui-1.8.16.custom.css" />
 	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/jscrollpane.css" />
+	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/pagination.css" />
 	<link rel="shortcut icon" type="image/x-icon" href="http://www.qontext.com/wp-content/themes/qontext-v1.5/qontext.ico">
-   <link href="<%= request.getContextPath() %>/themes/style.css" rel="stylesheet"/>
-  <%
+    <link href="<%= request.getContextPath() %>/themes/style.css" rel="stylesheet"/>
+ <%
 	String view = request.getParameter("view");
-   String projectId = request.getParameter("projectId");
-  %>
+   	String projectId = request.getParameter("projectId");
+    String visit = request.getParameter("visit");
+ %>
   <script type='text/javascript'>
         $(function() {
-        	
         	var userLogged = '<s:property value="loggedInUser.username"/>';
         	
         	if(userLogged != null && userLogged != ""){
@@ -46,8 +45,13 @@
         	var creator;
         	var users = null;
         	var userObject = new Object();
+        	var creatorObj = new Object();
         	var duration = '';
         	var project_view = 1;
+        	var firstVisit = false;
+        	<% if(visit != null && visit.equals("1")){ %>
+        		firstVisit = true;
+        	<%}%>
         	<% if(view != null && view.equalsIgnoreCase("sprint")){ %>
 	    		project_view = 0;
 				$('.sprints').show();
@@ -122,7 +126,7 @@
 	            					user_html += "<li id='"+users[i].username+"'><img src='/scrumr/themes/images/1.jpg' title='"+users[i].fullName+"''/></li>";
 	            				}
             				}
-           					$('#user-list').html(user_html);
+           					$('#proj-user-list').html(user_html);
             			}
             		},
             		error: function(data) { },
@@ -139,12 +143,14 @@
 	        			if(stories != null && stories.length){
 	        				for(var i=0;i<stories.length;i++){
 	        					var story = stories[i];
-	        					var userObj = userObject[story.createdby];
+	        					creatorObj = userObject[story.createdby];
+							var userObj = userObject[story.createdby];
 	        					story_unassigned += '<li id="st'+story.pkey+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><div class="usrComment">0</div></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+
 	        				}
 	        			}else{
 	        				story_unassigned += '<b>No pending stories for the project</b>';
-	        				$('#storyList ul').css({'height': (($(window).height()) - 180) + 'px'});
+	        				$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
 	        			}
         				$("#storyList ul").html(story_unassigned);
         				$( "#storyList").jScrollPane({});
@@ -153,7 +159,11 @@
         	        		appendTo: 'body',
         	        		forcePlaceholderSize: true,
         	        		placeholder: 'ui-state-highlight',
-        	        		update:function(){
+        	        		update: function( event, ui ) {
+        	        			if(ui.item.closest('section').hasClass('right')){ //dropped to the stages section
+        	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
+        	        			};
+        	        			$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
         	        		}
         	    		}).disableSelection();
         				
@@ -207,18 +217,18 @@
 							        					var imageHTML = " ";
 							        					for(var j=0;j<story.assignees.length;j++){
 							        						if(j==2){
-																//imageHTML+="<a class='viewStory' href='#story-cont'>.. more</a>";
-																imageHTML+="<label>.....</label>";
+																imageHTML+="<a class='moreStory' href='#story-cont'>more</a>";
+																//imageHTML+="<label>.....</label>";
 																break;
 															}
-															imageHTML+="<img height='26' width='26' class='' src='/scrumr/themes/images/1.jpg' title='"+story.assignees[j].fullName+"'>";
+															imageHTML+="<img height='26' width='26' class='' src='"+story.assignees[j].profile_picture+"' title='"+story.assignees[j].name+"'>";
 														}
-							        					sprint_html +=  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'<div class="usrComment"></div></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+							        					sprint_html +=  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					}else{
-						        						sprint_html += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><div class="usrComment"></div></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+						        						sprint_html += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					} 
 						        				}
-					        					$(".viewStory").fancybox({
+					        					$(".viewStory, .moreStory").fancybox({
 					        		        		'overlayColor' : '#000',
 					        		                'overlayOpacity' : '0.6',
 					        		                'autoScale' : false,
@@ -259,7 +269,6 @@
 		        	        		placeholder: 'ui-state-highlight',
 		        	        		update: function( event, ui ) {
 		        	        			var id = ui.item.attr("id").split("st")[1];
-		        	        			console.log(ui.item.closest('section'));
 		        	        			if(ui.item.closest('section').hasClass('left')){ //dropped back to unassigned list
 		        	        				ui.item.find('a.remove').removeClass('sptRmv').addClass('strRmv');
 		        	        				addtoCurrentSprint(id,0);
@@ -291,25 +300,27 @@
 		        	});
 			}
 			
-			function refreshStoryPortlet(storyId){
-			//	addUserToStory(users_arr,storyId);
+			function refreshStoryPortlet(storyId,stageId,creatorObj){
+				var post_data="storyId="+storyId+"&stage="+stageId;
 				$.ajax({
-					url : '/scrumr/api/v1/stories/' + storyId,
-					type : 'GET',
+					//url : '/scrumr/restapi/stories/getusers?storyid='+storyId+'&stage='+stageId+'', 
+					url : '/scrumr/api/v1/stories/getusers',
+					type : 'POST',
+					data : post_data,
 					async : false,
-					success : function(stories) {
+					success : function(users) {
 						var imageHTML = " ";
-						if(stories.assignees.length > 0){
-							for(var i=0;i<stories.assignees.length;i++){
+						if(users!=null && users.length > 0){
+							for(var i=0;i<users.length;i++){
 								if(i==2){
-								//	imageHTML+="<a class='viewStory' href='#story-cont'>.. more</a>";
-									imageHTML+="<label>.....</label>";
+									imageHTML+="<a class='moreStory' href='#story-cont'>more</a>";
+									//imageHTML+="<label>.....</label>";
 									break;
 								}
-								imageHTML+="<img height='26' width='26' class='' src=/scrumr/themes/images/1.jpg' title='"+stories.assignees[i].fullName+"'>";
+								imageHTML+="<img height='26' width='26' class='' src='"+users[i].user.profile_picture+"' title='"+users[i].user.name+"'>";
 							}
 						}else{
-							imageHTML+="<img height='26' width='26' class='' src='"+stories.createdBy+"' title='"+stories.createdBy+"'><label class=''>Created by "+stories.createdBy+"</label>";
+							imageHTML+="<img height='26' width='26' class='' src='"+creatorObj.profile_picture+"' title='"+creatorObj.name+"'><label class=''>Created by "+creatorObj.id+"</label>";
 						}
 						$('li#st'+storyId).find('.img-cont').html(imageHTML);
 						viewStoryFancyBox();
@@ -329,8 +340,8 @@
 					},1000);
 				}); */
 				var bgColor = "";
-				$(".viewStory").fancybox({
-	        		'overlayColor' : '#000',
+				$(".viewStory, .moreStory").fancybox({
+				'overlayColor' : '#000',
 	                'overlayOpacity' : '0.6',
 	                'autoScale' : false,
 	                'onComplete' : (function(){
@@ -351,32 +362,37 @@
 			
 			
 			function showAddUserPopup(elOffset){
-				if($('.popup-cont').find('div#pointerEl').hasClass('pointer-rgt')){
-					$('.popup-cont').find('div#pointerEl').removeClass('pointer-rgt').addClass('pointer');
+				users_arr = [];
+				$('ul#proj-user-list li').each(function(){
+					$(this).css('border','none');
+				});
+				if($('.popup-story-cont').find('div#pointerEl').hasClass('pointer-rgt')){
+					$('.popup-story-cont').find('div#pointerEl').removeClass('pointer-rgt').addClass('pointer');
 				}
 				var elTop = elOffset.top;
 				var elLeft = elOffset.left;
 				var new_left = elLeft+210;
-				var popupWidth =parseInt($('.popup-cont').css('width'));
+				var popupWidth =parseInt($('.popup-story-cont').css('width'));
 				var sectionWidth = parseInt($('section.right').css('width'))+parseInt($('section.right').css('padding-left'));
 				if(new_left+popupWidth > sectionWidth){
 					var current_left = elLeft-240;
-					$('.popup-cont').find('div#pointerEl').removeClass('pointer').addClass('pointer-rgt');
-					$('.popup-cont').css('top',elTop);
-					$('.popup-cont').css('left',current_left);
+					$('.popup-story-cont').find('div#pointerEl').removeClass('pointer').addClass('pointer-rgt');
+					$('.popup-story-cont').css('top',elTop);
+					$('.popup-story-cont').css('left',current_left);
 				}else if(new_left > sectionWidth){
 					var current_left = elLeft-500;
-					$('.popup-cont').css('top',elTop);
-					$('.popup-cont').css('left',current_left);
+					$('.popup-story-cont').css('top',elTop);
+					$('.popup-story-cont').css('left',current_left);
 				}else{
-					$('.popup-cont').css('top',elTop);
-					$('.popup-cont').css('left',new_left);
+					$('.popup-story-cont').css('top',elTop);
+					$('.popup-story-cont').css('left',new_left);
 				}
 				
-				$('.popup-cont').show();
+				$('.popup-story-cont').show();
 			}
 			
 			function populateSprintStories(sprint){
+					var userObj='';
 	        		 if(totalsprints == 0){
 		        		 var string = '<label>No Sprints available for this project.</label>';
 		        		 $(".sprints").html(string);
@@ -428,7 +444,7 @@
 			        		type: 'GET',
 			        		async:false,
 			        		success: function( stories ) {
-				        			$("#sprint-view tbody").html('<tr><td colspan="1"  class="green stages"></td><td colspan="1"  class="yellow stages" ></td><td colspan="1"  class="blue stages"></td><td colspan="1" class="pink stages"></td></tr>');
+				        			$("#sprint-view tbody").html('<tr><td colspan="1"  class="green stages"></td><td colspan="1"  class="yellow stages" ></td><td colspan="1" class="blue stages"></td><td colspan="1" class="pink stages"></td></tr>');
 			        				var story_unassigned = '<div class="header" ><span></span>Sprint Stories</div><div class="sprintCont"><ul id="notstarted" class="story">';
 			        				var story_dev = '<div class="header" ><span></span>Development</div><div class="sprintCont"><ul id="dev" class="story">';
 			        				var story_review = '<div class="header" ><span></span>Review &amp; QA</div><div class="sprintCont"><ul id="review" class="story">';
@@ -436,31 +452,41 @@
 				        			if(stories != null && stories.length > 0){
 			        					var str = '';
 			        					var story='';
-			        					var userObj='';
 			        					for(var i=0;i<stories.length;i++){
 				        					story = stories[i];
 				        					userObj = userObject[story.createdby];
-				        					 if(story.assignees.length > 0){
-						        					var imageHTML = " ";
-						        					for(var j=0;j<story.assignees.length;j++){
-						        						if(j==2){
-															//imageHTML+="<a class='viewStory' href='#story-cont'>.. more</a>";
-															imageHTML+="<a class='viewStory' href='#story-cont'>.....</a>";
-															break;
-														}
-														imageHTML+="<img height='26' width='26' class='' src='/scrumr/themes/images/1.jpg' title='"+story.assignees[j].fullName+"'>";
-													}
-						        					str =  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'<div class="usrComment">0</div></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-					        					}else{
-				        							str = '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><div class="usrComment">0</div></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-					        					}
-				        					if(story.status == "Not Started"){
+				        					creatorObj = userObject[story.createdby];
+				        					var post_data="storyId="+story.pkey+"&stage="+story.status;
+				        					$.ajax({
+				        						url : '/scrumr/api/v1/stories/getusers',
+				        						type : 'POST',
+				        						async : false,
+				        						data: post_data,
+				        						success : function(users) {	
+						        					 if(users !=null && users.length > 0){
+								        					var imageHTML = " ";
+								        					for(var j=0;j<users.length;j++){
+								        						if(j==2){
+																	imageHTML+="<a class='moreStory' href='#story-cont'>more</a>";
+																	//imageHTML+="<a class='viewStory' href='#story-cont'>.....</a>";
+																	break;
+																}
+																imageHTML+="<img height='26' width='26' class='' src='/scrumr/themes/images/1.jpg' title='"+users[j].user.fullName+"'>";
+															}
+								        					str =  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+							        					}else{
+						        							str = '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+							        					}
+				        						}
+				        					});
+
+				        					if(story.status == "notstarted"){
 				        						story_unassigned += str;
-				        					}else if(story.status == "Development"){
+				        					}else if(story.status == "dev"){
 				        						story_dev += str;
-				        					}else if(story.status == "Review"){
+				        					}else if(story.status == "review"){
 				        						story_review += str;
-				        					}else if(story.status == "Finished"){
+				        					}else if(story.status == "finished"){
 				        						story_finished += str;
 				        					}
 				        				}
@@ -494,35 +520,40 @@
 			        	        		placeholder: 'ui-state-highlight',
 			        	        		update: function( event, ui ) {
 			        	   				 	var id = ui.item.attr("id");
-			        	   				 	var status = "Not Started";
+			        	   				 	var status = "notstarted";
 			        		   				var stat = $(this).attr("id");
 			        		   				if(stat == "dev"){
-			        		       				status = "Development";
+			        		       				status = "dev";
 			        		       			}else if(stat == "review"){
-			        		       				status = "Review";
+			        		       				status = "review";
 			        		       			}else if(stat == "notstarted"){
-			        		       				status = "Not Started";
+			        		       				status = "notstarted";
 			        		       				$(this).find("label:first").remove();
 			        		       			}else if(stat == "finished"){
-			        		       				status = "Finished";
+			        		       				status = "finished";
 			        		       			}
 			        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint);
 			        		   				var elOffset = $(ui.item[0]).offset();
 			        		   				if($(ui.item[0]).parents('td').hasClass('green')){
-			        		   					$(ui.item[0]).find('.img-cont').html("<img src='/scrumr/themes/images/1.jpg' width='26' height='26' class=''/><label class=''>Created by "+story.createdby+"</label>");
-			        		   					//call addUserToStory with empty users arr or call clear api that will remove all users from that story
+			        		   					$(ui.item[0]).find('.img-cont').html("<img src='/scrumr/themes/images/1.jpg' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.username+"</label>");
+			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   				}
 			        		   				if(!($(ui.item[0]).parents('td').hasClass('green')) && !($(ui.item[0]).closest('section').hasClass('left'))){
 			        		   					showAddUserPopup(elOffset);
 			        		   					//refreshStoryPortlet(id.split("st")[1]);
-			        		   					$('#popup_done').live("click",function(){
-			        		   						refreshStoryPortlet(id.split("st")[1]);
-			        		   						$(this).closest('.popup-cont').hide();
+			        		   					$('#popup_story_done').live("click",function(){
+			        		   						if(users_arr.length > 0){
+				        		   						removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+				        		   						addUserToStory(users_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
+				        		   						refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
+				        		   						$(this).closest('.popup-story-cont').hide();
+			        		   						}
 			        		   					});
 			        		   				}
 											if(($(ui.item[0]).closest('section').hasClass('left'))) {
 			        		   					var new_id = id.replace("st","");
 			        		   					$(ui.item[0]).find('a.remove').removeClass('sptRmv').addClass('strRmv');
+			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   					addtoCurrentSprint(new_id, 0);
 			        		   					populateUnassignedStories('');
 			        		   				}else{
@@ -545,7 +576,7 @@
 			function addtoCurrentSprint(storyList,sprint){
 				var projectId= <%= projectId%>;
     			var post_data = 'projectId='+projectId+'&stories='+storyList+'&status=Not Started&sprint='+sprint;
-    			alert(sprint);
+    			
     			$.ajax({
     				url: '/scrumr/api/v1/stories/addtosprint',
     				type: 'POST',
@@ -698,11 +729,11 @@
 				return stat;
 			}
 			
-			function addUserToStory(id,storyid){
+			function addUserToStory(user_arr,storyid,stageId){
 				var stat = false;
-				 var post_data = 'userid='+id+'&storyId='+storyid;
+				 var post_data = 'userid='+user_arr+'&storyId='+storyid+'&stage='+stageId;
 				$.ajax({
-					url: '/scrumr/api/v1/stories/adduser',
+					url: '/scrumr/api/v1/stories/adduserswithstage',
 					type: 'POST',
 					data: post_data,
 					async:false,
@@ -718,6 +749,20 @@
 				
 				return stat;
 			}
+			
+			function removeUserFromStoryInStage(storyid,stageid){
+				var post_data = 'storyId='+storyid+"&stage="+stageid;
+				$.ajax({
+					url: '/scrumr/api/v1/stories/clearstoryassignees',
+					type: 'POST',
+					data: post_data,
+					async:false,
+					success: function( rec ) {
+					},
+					error: function(data) { },
+					complete: function(data) { }
+					});
+				}
 			
 			function removeUserFromStory(id,storyid){
 				var stat = false;
@@ -741,6 +786,7 @@
 			}
 			
 			function populateStoryAssignees(id){
+				alert(id);
 				$.ajax({
 	        		url: '/scrumr/api/v1/stories/'+id,
 	        		type: 'GET',
@@ -752,14 +798,24 @@
 	        				var userObj = userObject[stories.createdby];
 	        				$("#st-creator").html('<img title="'+userObj.fullName+'" src="/scrumr/themes/images/1.jpg"/>');
 	        				var assign = '';
-	        				if(stories.assignees && stories.assignees.length > 0){
-	        					for(var i=0;i < stories.assignees.length; i++){
-	        						userObj = userObject[stories.assignees[i].pkey];
-	        						assign += '<div class="user"><img class="remove-user" alt="'+userObj.pkey+'" title="'+userObj.fullName+'" src="/scrumr/themes/images/1.jpg"/><span class="remvUser" >Remove</span></div>';
+	        				var post_data="storyId="+id+"&stage="+stories.status;
+	        				$.ajax({
+	        					url : '/scrumr/api/v1/stories/getusers',
+	        					type : 'POST',
+	        					data : post_data,
+	        					async : false,
+	        					success : function(users) {
+	    	        				if(users.length > 0){
+	    	        					for(var i=0;i < users.length; i++){
+	    	        						userObj = userObject[users[i].user.id];
+	    	        						assign += '<div class="user"><img class="remove-user" alt="'+userObj.id+'" title="'+userObj.name+'" src="'+userObj.profile_picture+'"/><span class="remvUser" >Remove</span></div>';
+	    	        					}
+	    	        				}else{
+	    	        					assign = "<label style=\"margin:5px;\">No user assgined</labal>";
+	    	        				}
 	        					}
-	        				}else{
-	        					assign = "<label style=\"margin:5px;\">No user assgined</labal>";
-	        				}
+	        				});
+
 	        				
 	        				$("#st-assignees").html(assign);
 	        				
@@ -775,12 +831,7 @@
 	        				}
 	        				$("#st-users").html(people);
 	        				// Comment Section 
-	        				
-	        				$('<input>').attr({
-				    			type: 'hidden',
-				    			id: 'current_story_id',
-				    			value: id
-							}).appendTo('form');	
+	        				$('<input>').attr({type: 'hidden', id: 'current_story_id',value: id }).appendTo('form');	
 							
 							// Ends Here
 	        			}
@@ -791,7 +842,7 @@
 	        	});
 			}
 			
-			$('ul#user-list li').live("click",function(){
+			$('ul#proj-user-list li').live("click",function(){
 				if($(this).hasClass("selected")){
 					$(this).removeClass("selected");
 					$(this).css('border','none');
@@ -803,57 +854,88 @@
 				}
 			});
 			
-			
-			$("#addPeople").live('click', function(){
+			function populateUserDetails(){
 				$.ajax({
-					url: '/scrumr/api/v1/users/search',
-					type: 'GET',
-					async:false,
-					success: function( records ) {
-						var total_users = records;
-						for(var j=0;j<total_users.length;j++){
-							for(var k=0;k<users.length;k++){
-								if(total_users[j].pkey === users[k].pkey){
-									total_users.splice(j,1);
-								}else if(total_users[j].pkey === creator){
-									total_users.splice(j,1);
-								}
+				url: '/scrumr/api/v1/users/search',
+				type: 'GET',
+				async:false,
+				success: function( records ) {
+					var total_users = records;
+					for(var j=0;j<total_users.length;j++){
+						for(var k=0;k<users.length;k++){
+							if(total_users[j].pkey === users[k].pkey){
+								total_users.splice(j,1);
+							}else if(total_users[j].pkey === creator){
+								total_users.splice(j,1);
 							}
 						}
-						var users_html = "<ul>";
-						for(var i=0;i<total_users.length;i++){
-							users_html += '<li><img src="/scrumr/themes/images/1.jpg"/></div><div class="details"><label class="name">'+total_users[i].fullName+'</label><a class="email">'+total_users[i].email+'</a><label class="desig">'+total_users[i].designation+'</label></div><div class="businessUnit"><label class="unit">'+total_users[i].business_unit+'</label><label class="location">'+total_users[i].location+'</label></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].pkey+'"></div></li>';
-						}
-						users_html += "</ul>";
-						$("#userList-cont").html(users_html);
-						
-					},
-					error: function(data) { },
-					complete: function(data) { }
-				});
-				
-				$(".adduser").live('click',function(){
-					var id = ($(this).attr("id"));
-					var success = addUser(id);
-					if(success == true){
-						populateProjectDetails();
-						$(this).parent().hide();
 					}
+				//	var users_html = "<ul>";
+					var users_html="";
+					for(var i=0;i<total_users.length;i++){
+						users_html += '<li><img src="/scrumr/themes/images/1.jpg"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].email+'</a><label class="desig">'+total_users[i].designation+'</label></div><div class="businessUnit"><label class="unit">'+total_users[i].business_unit+'</label><label class="location">'+total_users[i].location+'</label></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].id+'"></div></li>';
+					}
+					//users_html += "</ul>";
+					//$("#userList-cont").html(users_html);
+					$('.popup-proj-cont .c-box-content ul').html(users_html);
+					if(firstVisit){
+						$('.popup-proj-cont').show();
+						$('.popup-proj-cont .c-box-content ul').jScrollPane();
+					}
+					$("#addPeople").live('click', function(){
+						alert("hi");
+						$('.story-popup').hide();
+						$('.popup-proj-cont').show();
+						$('.popup-proj-cont .c-box-content ul').jScrollPane();
+						
+					});
+					$(".adduser").live('click',function(){
+						var id = ($(this).attr("id"));
+						var success = addUser(id);
+						if(success == true){
+							populateProjectDetails();
+							$(this).parent().hide();
+						}
+						
+					});
 					
-				});
-				
+				},
+				error: function(data) { },
+				complete: function(data) {
+				}
 			});
+			}
+			
+			$(document).live("click",function(event){
+				// if that user assign story popup is visible, hide it on click of anywhere outside the popup
+				var el = event.target;
+				if($(el).closest('.popup-story-cont').length === 0){
+					$('.popup-story-cont').hide();
+				}
+			});
+			
+			
+			$('#popup_proj_done').live("click",function(){
+           	 $('.popup-proj-cont').hide();
+           	 if(firstVisit){
+           		 $('.story-popup').show();
+           	 }
+            }); 
 			
 			$("#removePeople").live('click', function(){
 					var records = users;
-					var users_html = "<ul>";
+					//var users_html = "<ul>";
+					var users_html="";
 					for(var i=0;i<records.length;i++){
 						if(records[i].pkey != creator){
 							users_html += '<li><img src="/scrumr/themes/images/1.jpg"/></div><div class="details"><label class="name">'+records[i].fullName+'</label><a class="email">'+records[i].email+'</a><label class="desig">'+records[i].designation+'</label></div><div class="businessUnit"><label class="unit">'+records[i].business_unit+'</label><label class="location">'+records[i].location+'</label></div><div style="float:left;" class="removeUser float-rgt disable" id="'+records[i].pkey+'"></div></li>';
 						}
 					}
-					users_html += "</ul>";
-					$("#userList-cont").html(users_html);
+					//users_html += "</ul>";
+					$('.popup-proj-cont .c-box-content ul').html(users_html);
+					$('.popup-proj-cont').show();
+					$('.popup-proj-cont .c-box-content ul').jScrollPane();
+					//$("#userList-cont").html(users_html);
 				
 					$(".removeUser").live('click',function(){
 						var id = ($(this).attr("id"));
@@ -882,11 +964,12 @@
             
             populateProjectDetails();
             populateUnassignedStories('');
+            populateUserDetails();
 			
 			// Comments Section
-	       //	populateCommentingUserDetails();
-	       //	populateStoryComments();
-	       	//populateStoryTodos();
+	       /* 	populateCommentingUserDetails();
+	       	populateStoryComments();
+	       	populateStoryTodos(); */
 	       	// Ends Here
 			
             if(project_view ==1){
@@ -926,17 +1009,15 @@
         		viewStoryFancyBox();
         	}); */
         	
-        	$('.createStory').live('click',function(){
-        		alert("hi");
+        	<%-- $('#story_form').submit(function(){
         		var title = $('input[name=stTitle]');
         		var description = "No Description";
         		var priority = $('select[name=stPriority]');
-        		var user = userLogged;
+        		var user = "<%= username %>";
         		var projectId= <%= projectId%>;
-        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stPriority=' + priority.val() + '&user=' +user;
-        		alert(post_data);
+        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description + '&stPriority=' + priority.val() + '&user=' +user;
         		$.ajax({
-        			url: '/scrumr/api/v1/stories/create',
+        			url: '/scrumr/restapi/stories/create',
         			type: 'POST',
         			data: post_data,
         			async:false,
@@ -954,6 +1035,43 @@
         		});
         		
         		return false;
+        	}); --%>
+        	
+        	$('#addAnotherStory,#createStory').live("click",function(){
+        		var title = $('textarea[name=storyDesc]');
+        		var description = "No Description";
+        		var priority = $('select[name=stPriority]');
+        		if(title.val()==""){
+        			return;
+        		}
+        		var user = userLogged;
+        		var projectId= <%= projectId%>;
+        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description + '&stPriority=' + priority.val() + '&user=' +user;
+        		$.ajax({
+        			url: '/scrumr/api/v1/stories/create',
+        			type: 'POST',
+        			data: post_data,
+        			async:false,
+        			success: function( result ) {
+        				populateUnassignedStories('');
+        				if(project_view ==1){
+        					populateSprints();
+        				}else{
+	        		   	 	populateSprintStories(current_sprint);
+        				}
+        		   	 	title.val('');
+        			},
+        			error: function(data) { },
+        			complete: function(data) { }
+        		});
+        		if($(this).attr('id') == "addAnotherStory"){
+        			$('textarea[name=storyDesc]').val("");
+        			var select = $('select[name=stPriority]');
+        			select.val(jQuery('options:first', select).val());
+        		}else{
+        			$('.story-popup').hide();
+        		}
+        		
         	});
         	
         	$(".sptRmv").live('click', function(){
@@ -1006,23 +1124,23 @@
     					});
     		});
     		
-    		$("#searchUser").keyup(function(event) {
+    		$("#searchUser").live("keyup",function(event) {
     			if (event.which == 13) {
     				event.preventDefault();
     			}
     			var query=$('#searchUser').val();
-    			var selector = $('#userList-cont').find('ul');
+    			var selector = $('.popup-proj-cont .c-box .c-box-content').find('ul');
     			query = query.replace(/ /gi, '|'); //add OR for regex query  
-    			$(selector).children('li').each(
+    			$(selector).find('li').each(
     					function() {
-    						($(this).find('label.fullName').text()
+    						($(this).find('label.name').text()
     								.search(new RegExp(query, "i")) < 0) ? $(this)
     								.hide() : $(this).show();
     					});
 
     		});
         	
-        	$("#addPeople").fancybox({
+        	/* $("#addPeople").fancybox({
         		'overlayColor' : '#000',
                 'overlayOpacity' : '0.6',
                 'autoScale' : false,
@@ -1036,7 +1154,7 @@
                      scrollpane.destroy();
                        })
 
-        	});
+        	}); 
         	
 			$("#removePeople").fancybox({
         		'overlayColor' : '#000',
@@ -1052,7 +1170,7 @@
                      scrollpane.destroy();
                        })
 
-        	});
+        	});*/
 			viewStoryFancyBox();
 			$(".stAddmore").live('click', function(){
 				 if($(".stAddmore").html() == "Add More"){
@@ -1065,16 +1183,18 @@
 				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 			});
 			
-			$(".viewStory").live('click', function(){
-				var id = $(this).parent().attr("id");
-				alert(id);
+			$(".viewStory, .moreStory").live('click', function(){
+				var id = $(this).closest('li').attr("id");
         		id = id.replace("st","");
+        		var stageId = $(this).closest('ul').attr('id');
         		populateStoryAssignees(id);
-        		populateStoryComments();
-        		populateStoryTodos();
+        		populateCommentingUserDetails();
+    	       	populateStoryComments();
+    	       	populateStoryTodos();
 				$(".add-user").live('click', function(){
 					var eid = $(this).attr("alt");
-					addUserToStory(eid, id);
+					var eid_arr = [eid];
+					addUserToStory(eid_arr, id,stageId);
 					populateStoryAssignees(id);	
 				});
 				
@@ -1122,7 +1242,8 @@
                 $('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
             });
             
-/* //code for highcharts
+          
+//code for highcharts
     	var areaChart; // globally available
     	var pieChart;
     	var storyData=[];
@@ -1131,7 +1252,7 @@
     		var areaChartOptions = {
 	         chart: {
 	            renderTo: 'lineChart',
-	            defaultSeriesType: 'area',
+	            defaultSeriesType: 'area'
 	         },
 	         title: {
 	            text: '',
@@ -1147,7 +1268,7 @@
 	            gridLineColor:'#E6E6E6',
 	            lineColor:'#E6E6E6',
 	            gridLineDashStyle:'solid',
-	            tickmarkPlacement:'on',
+	            tickmarkPlacement:'on'
 	         },
 	         yAxis: {
 	            title: {
@@ -1162,7 +1283,7 @@
 				},	
 	            gridLineColor:'#E6E6E6',
 	            lineColor:'#E6E6E6',
-	            gridLineDashStyle:'longdash',
+	            gridLineDashStyle:'longdash'
 	            
 	         },
 	         tooltip: {
@@ -1207,7 +1328,7 @@
 		            dataLabels: {
 		               enabled: false
 		            },
-		            showInLegend: true,
+		            showInLegend: true
 				}
 			},
 			tooltip: {
@@ -1256,7 +1377,7 @@
 				size:'115%'
 				
 			}]
-		}); */
+		});
 	// Comment Section Code
         	
         	var month_list=new Array("January","Febraury","March","April","May","June","July","August","September","October","November","December");
@@ -1274,7 +1395,7 @@
         	
 			function populateStoryComments(){
 				var loggedDate='';
-				var id = $("#current_story_id").val();				
+				var id = $("#current_story_id").val();	
 				var commentsHtml = '<div>';								
 				$.ajax({
 					url : '/scrumr/api/v1/comments/story/'+id,
@@ -1455,7 +1576,7 @@
 					type : 'GET',
 					async : false,					
 					success :function(todos){
-						if (todos != null){
+						if (todos != null){							
 	        				if(todos.length > 0){
 		        				todosHtml += '<ul style="list-style:none;">';
 		        				for (var i=0;i<todos.length;i++){
@@ -1492,47 +1613,35 @@
             <label id="projectName" class="title"></label>
             <ul id="people" class="img-team">
             </ul>
-            <a id="addPeople" href="#people-cont">Add</a> /
-            <a id="removePeople" href="#people-cont">Remove</a> &nbsp;&nbsp;People
+            <a id="addPeople" href="javascript:void(0);">Add</a> /
+            <a id="removePeople" href="javascript:void(0);">Remove</a> 
             <div style="display:none;overflow:hidden !important;">
             	<div id="people-cont">
-            		<div class="title" class="float-lft">
-                       <label>Users</label>
-	                </div>
 	                <div id="userInput" class="">
-		                <input type="text" id="searchUser" placeholder="Search user by name..."/>
+		            <!--     <input type="text" id="searchUser" placeholder="Search user by name..."/> -->
 	                </div>
 	                <div id="userList-cont">
 	                </div>
             	</div>
             </div>
         </div>
-        <div class="cont float-lft" id="test">
-            <form id="story_form" method="POST">
-				<div class="sTitle">
-					<input type="text" id="storyTitle" name="stTitle" placeholder="Enter Story Title" min="1" max="5" required/>
-				</div>
-				<select name="stPriority" id="storyPriority">
-				<option selected="selected" value="1">Priority 1</option>
-				<option value="2">Priority 2</option>
-				<option value="3">Priority 3</option>
-				</select>
-				<input type="submit" class="createStory submit" value="Add Story"/>
-			</form>
-        </div>
+        
         <div class="scroll-cont float-lft">
             <div class="stories-cont">
                 <div id="storyLabel" class="float-lft">
                        <label>User stories</label>
-                       <div class="priority">
+                       <a id="addStory" style="float:right;" href="javascript:void(0);">Add Story</a>
+                      
+                </div>
+                <div id="storyInput" class="float-lft">
+	                <input type="text" id="searchStory" placeholder="Search story by keyword..."/>
+	                
+                </div>
+                 <div class="priority">
 							<div class="p1"></div>
 							<div class="p2" ></div>
 							<div class="p3" ></div>
 						</div>
-                </div>
-                <div id="storyInput" class="float-lft">
-	                <input type="text" id="searchStory" placeholder="Search story by keyword..."/>
-                </div>
                 <div class="cont" >
                 	<div id="storyList">
                 	<ul class="story">
@@ -1604,28 +1713,28 @@
 	                </div>
 	               <div class="storyCreated" class="float-lft">
                        <label>Created by:</label>
-                        <div id="st-creator" class="user"><img src="/scrumr/themes/images/1.jpg"/></div>
+                        <div id="st-creator" class="user"><img src="themes/1.jpg"/></div>
 	                </div>
 	                 <div class="storyAssignees" class="float-lft">
 	                    <label>Assigned to: <span class="stAddmore" style="float:right;font-size:10px;color:#00475C;cursor:pointer;">Add More</span></label>
                        <div id="st-assignees">
-                       		<div class="user"><img class="remove-user"  title="aomkaram" src="/scrumr/themes/images/1.jpg"/><span class="remvUser" >Remove</span></div>
-                       		<div class="user"><img class="remove-user"  title="aomkaram" src="/scrumr/themes/images/2.jpg"/><span class="remvUser" >Remove</span></div>
-                       		<div class="user"><img class="remove-user"  title="aomkaram" src="/scrumr/themes/images/3.jpg"/><span class="remvUser" >Remove</span></div>
+                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/1.jpg"/><span class="remvUser" >Remove</span></div>
+                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/2.jpg"/><span class="remvUser" >Remove</span></div>
+                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/3.jpg"/><span class="remvUser" >Remove</span></div>
                        </div>
                        
                        <div style="display:none;clear:both;" id="stPeople">
                        <label>People available:</label>
                        <div id="st-users">
-	                       <img class="add-user" title="aomkaram" src="/scrumr/themes/images/1.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="/scrumr/themes/images/2.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="/scrumr/themes/images/3.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="/scrumr/themes/images/1.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="/scrumr/themes/images/2.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="/scrumr/themes/images/3.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="/scrumr/themes/images/1.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="/scrumr/themes/images/2.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="/scrumr/themes/images/3.jpg"/>
+	                       <img class="add-user" title="aomkaram" src="themes/1.jpg"/>
+	                       <img class="story-user" title="aomkaram" src="themes/2.jpg"/>
+	                       <img class="story-user" title="aomkaram" src="themes/3.jpg"/>
+	                       <img class="story-user" title="aomkaram" src="themes/1.jpg"/>
+	                       <img class="story-user" title="aomkaram" src="themes/2.jpg"/>
+	                       <img class="story-user" title="aomkaram" src="themes/3.jpg"/>
+	                       <img class="story-user" title="aomkaram" src="themes/1.jpg"/>
+	                       <img class="story-user" title="aomkaram" src="themes/2.jpg"/>
+	                       <img class="story-user" title="aomkaram" src="themes/3.jpg"/>
 	                   </div>
 	                </div>
 	                </div>
@@ -1633,7 +1742,7 @@
 	                    <label>Todo List:</label>
                        <div id="todo-box" class="comment-cont">
                        		<div class="todo-box-user float-lft">
-								<img src="/scrumr/themes/images/1.jpg"/>
+								<img src="themes/1.jpg"/>
 							</div>
   							<form id="todo-form"> 
 		                 	<textarea class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
@@ -1653,7 +1762,7 @@
 		                 		<ul>
 		                	 		<li>
 		                	 			<a href="javascript:void(0);" class="cmtRmvTodo remove"></a>
-		                	 			<img src="/scrumr/themes/images/1.jpg"/>
+		                	 			<img src="themes/1.jpg"/>
 		                	 			<div>
 			                	 			<span class="name">Arun Krishna Omkaram: </span>
 			                	 			<span>This is my comment to test the total size of the text spans in how many lines</span>
@@ -1675,7 +1784,7 @@
 		                 <ul>
 		                	 <li>
 		                	 	<a href="javascript:void(0);" class="cmtRmvComment remove"></a>
-		                	 	<img src="/scrumr/themes/images/1.jpg"/>
+		                	 	<img src="themes/1.jpg"/>
 		                	 	<div>
 			                	 	<span class="name">Arun Krishna Omkaram: </span>
 			                	 	<span>This is my comment to test the total size of the text spans in how many lines</span>
@@ -1687,7 +1796,7 @@
 						</div>
 		                 <div class="comment-box">
 							<div class="comment-box-user float-lft">
-								<img src="/scrumr/themes/images/1.jpg"/>
+								<img src="themes/1.jpg"/>
 							</div>
 		                 	<textarea class="comment-text" placeholder="Write a comment..." name="commment"></textarea>
 		                 </div>
@@ -1697,11 +1806,14 @@
             </div>
         </div>
         
-         <div class="popup-cont" style="display:none;">
+        <div class="popup-proj-cont" style="display:none;">
            <div class="c-box">
-               <div class="c-box-head">Assign to </div>
+               <div class="c-box-head">Add people to the project</div>
                <div class="c-box-content">
-                   <ul id="user-list">
+               		<div id="userInput" class="">
+		                <input type="text" id="searchUser" placeholder="Search user by name..."/>
+	                </div>
+                   <ul id="total-user-list">
                    
                        
                    </ul>
@@ -1709,15 +1821,68 @@
                </div>
                  <div class="actions-cont float-rgt">
 
-                       <input id="popup_done" type="button" class="float-rgt submit" value="Done"/>
+                       <input id="popup_proj_done" type="button" class="float-rgt submit" value="Done"/>
+                   </div>
+               <div id="pointerEl" class="pointer"></div> </div>
+       </div>
+        
+         <div class="popup-story-cont" style="display:none;">
+           <div class="c-box">
+               <div class="c-box-head">Assign to </div>
+               <div class="c-box-content">
+                   <ul id="proj-user-list">
+                   
+                       
+                   </ul>
+
+               </div>
+                 <div class="actions-cont float-rgt">
+
+                       <input id="popup_story_done" type="button" class="float-rgt submit" value="Done"/>
                        <a id="popup_cancel">later</a>
+                   </div>
+               <div id="pointerEl" class="pointer"></div> </div>
+       </div>
+       
+       <div class="story-popup" style="display:none;">
+           <div class="c-box">
+               <div class="c-box-head">Add Story to this project </div>
+               <div class="c-box-content">
+                   <form id="story_form" method="POST">
+						<div class="sTitle">
+							<textarea id="storyDesc" name="storyDesc" rows="5" cols="1" placeholder="Enter Story Desc" required="required"></textarea>
+						</div>
+						<select name="stPriority" id="storyPriority">
+							<option selected="selected" value="1">Priority 1</option>
+							<option value="2">Priority 2</option>
+							<option value="3">Priority 3</option>
+							<option value="4">Priority 4</option>
+						</select>
+						<a id="addAnotherStory" href="javascript:void(0);" >+ Add another story</a>
+					</form>
+               </div>
+                 <div class="actions-cont float-rgt">
+
+                       <input id="createStory" type="button" class="float-rgt submit" value="Done"/>
+                       <a id="popup_story_cancel">Later</a>
                    </div>
                <div id="pointerEl" class="pointer"></div> </div>
        </div>
        <script>
                      $('#popup_cancel').live("click",function(){
-                    	 $('.popup-cont').hide();
+                    	 $('.popup-story-cont').hide();
                      }); 
+                     
+                     $('#popup_story_cancel').live("click",function(){
+                    	 $('.story-popup').hide();
+                     }); 
+                     
+                     
+                     
+                     $('#addStory').live("click",function(){
+                    	 $('.popup-proj-cont').hide();
+                    	 $('.story-popup').show();
+                     });
                      
                      //code to toggle chart container
                      $('.toggleChart').live("click",function(){
@@ -1731,6 +1896,7 @@
                     		 }
                     	 });
                      });
+                     
                      
                      //code to show stories based on priority
                      var priorityDisabledObj=[];
