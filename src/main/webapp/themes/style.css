@@ -898,8 +898,8 @@ span.p3 {
 
 #story-cont{
 	width:700px;
-	height:400px;
-	overflow:scroll;
+	height:auto;
+	overflow:hidden;
 }
 
 #story-cont .storyTitle{
@@ -940,7 +940,8 @@ span.p3 {
 	font-weight: bold;
 	width:auto;
 	display:block;
-	line-height: 20px
+	line-height: 20px;
+	float:left;
 }
 
 #story-cont p{
@@ -965,12 +966,14 @@ span.p3 {
 .comment-cont ul{
 	margin:5px;
 	float: left;
+	width:100%;
 }
 .comment-cont ul li{
 	position: relative;
 	clear:both;
 	border-bottom:1px solid #D2D9E7;
 	float:left;
+	list-style-type:none;
 }
 .comment-cont img{
 	float:left;
@@ -1539,7 +1542,7 @@ border-top-right-radius: 4px;
 
 .popup-proj-cont {
     position: absolute;
-    top:30px;
+    top:80px;
     left:290px;
 }
 
@@ -1602,13 +1605,13 @@ border-top-right-radius: 4px;
 .popup-proj-cont .c-box-content .details{
 	float: left;
     margin-left: 20px;
-    width: 150px;
+    width: 110px;
 }
 
 .popup-proj-cont .c-box-content .businessUnit{
 	float: left;
     margin-left: 20px;
-    width: 75px;
+    width: 100px;
 }
 
 .popup-proj-cont .c-box-content ul {
@@ -1866,4 +1869,81 @@ ul.col li.pink .header span {
     height: 14px;
     margin-right: 5px;
     width: 14px;
+}
+
+//styles for story details page
+
+/* popup styles */
+
+.storyDetails {
+    width:600px;
+    margin: 0 auto;
+}
+
+.storyDetails .acc-cont {
+    width: 100%;
+    float: left;
+    border:1px solid #2c2c2c;
+}
+
+.acc-head {
+    float: left;
+    height: auto;
+    width:560px;
+    margin: 10px 20px;
+    border-bottom: 1px solid #b8ceeb;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+}
+
+.acc-head label {
+    color: #00475c;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.acc-content {
+    float: left;
+    height: auto;
+    width:560px;
+    margin: 10px 20px;
+    border-bottom: 1px solid #b8ceeb;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+}
+
+.acc-content p {
+    color: #666;
+}
+
+.acc-content .div label {
+    color: #666;
+    font-weight: bold;
+    font-size: 12px;
+    width: 560px;
+    float: left;
+    margin-bottom: 5px;
+}
+
+.acc-content .div {
+    float: left;
+    height: auto;
+    width: 100%;
+    margin: 10px 0 5px 0;
+}
+
+.down {
+	cursor:pointer;
+    float: right;
+    width: 16px;
+    height: 10px;
+    background: url("images/down.png") no-repeat;
+}
+
+.open {
+	cursor:pointer;
+    float: right;
+    width: 10px;
+    height: 16px;
+    background: url("images/right.png") no-repeat;
 }

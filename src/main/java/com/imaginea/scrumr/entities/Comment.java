@@ -18,7 +18,7 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @Entity
 @Table(name="comments")
 @NamedQueries({
-	@NamedQuery(name="comments.fetchCommentsByStory", query="SELECT instance from Comment instance where instance.story=:story" )
+	@NamedQuery(name="comments.fetchCommentsByStory", query="SELECT instance from Comment instance where instance.story.id=:story_id" )
 })
 @XmlRootElement
 public class Comment extends AbstractEntity implements IEntity, Serializable {

@@ -105,7 +105,7 @@ public class StoryResource {
 			story.setLast_updated(new java.sql.Date(System.currentTimeMillis()));
 			story.setLast_updatedby(user);
 			story.setCreation_date(new java.sql.Date(System.currentTimeMillis()));
-			story.setStatus("Not Started");
+			story.setStatus("notstarted");
 			story.setView_count(0);
 			story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
 			storyManager.createStory(story);
@@ -154,7 +154,8 @@ public class StoryResource {
 		return "{\"result\":\"success\"}";
 	}
 
-	@RequestMapping(value="/{id}/removeuser/{uid}", method = RequestMethod.GET)
+	//@RequestMapping(value="/{id}/removeuser/{uid}", method = RequestMethod.POST)
+	@RequestMapping(value="removeuser", method = RequestMethod.POST)
 	public @ResponseBody String removeUserFromStory(@PathVariable("id") String id, @PathVariable("uid") String uid) {
 
 		User user = userServiceManager.readUser(id);
@@ -201,6 +202,7 @@ public class StoryResource {
 		story_status.setUser(userServiceManager.readUser(userid));
 		story_status.setStory(storyManager.readStory(Integer.parseInt(storyId)));
 		story_status.setStage(stage);
+		System.out.println("Stage :"+stage+", User :"+userid+", story"+storyId);
 		statusManager.createStatus(story_status);
 		return "{\"result\":\"success\"}";
 	}
@@ -233,7 +235,7 @@ public class StoryResource {
 			@RequestParam String storyId,
 			@RequestParam String stage
 		) {
-		
+		System.out.println("In Story Resource clear:story id ="+storyId+", stage ="+stage);
 		statusManager.clearUsersByStage(Integer.parseInt(storyId), stage);
 		return "{\"result\":\"success\"}";
 	}

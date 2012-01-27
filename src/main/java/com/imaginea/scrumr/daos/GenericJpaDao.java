@@ -55,9 +55,14 @@ public class GenericJpaDao<E extends IEntity, K extends Serializable> implements
 		return null;
 	}
 
-	public void delete(E inEntity) throws DataAccessException {
-		if(inEntity != null)
+	public void delete(E inEntity) {
+		try{
+		//System.out.println("Going to delete entity :"+inEntity.getPkey());
+		if(inEntity != null){
 			entityManager.remove(inEntity);
+			//System.out.println("Entity Removed");
+			}
+		}catch(Exception e){System.out.println("Exception in Delete :"+e.toString());}
 	}
 	
 	

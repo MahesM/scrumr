@@ -1,11 +1,13 @@
 package com.imaginea.scrumr.services;
 
+import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imaginea.scrumr.entities.Comment;
+import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.interfaces.CommentManager;
 import com.imaginea.scrumr.interfaces.IDao;
@@ -52,8 +54,12 @@ public class CommentManagerImpl implements CommentManager {
 	
 	public List<Comment> fetchCommentsByStory(Integer pkey){
 		
-		Story story = genericDao.find(Story.class, pkey);
-		return story.getComments();
+		//Story story = genericDao.find(Story.class, pkey);		
+		//return story.getComments();
+		Hashtable<String, Object> ht = new Hashtable<String, Object>();
+		System.out.println("Story id :"+pkey);
+		ht.put("story_id", pkey);
+		return genericDao.getEntities(Comment.class, "comments.fetchCommentsByStory",ht);
 	}
 	
 	

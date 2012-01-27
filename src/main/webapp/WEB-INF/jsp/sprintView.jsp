@@ -145,7 +145,7 @@
 	        					var story = stories[i];
 	        					creatorObj = userObject[story.createdby];
 							var userObj = userObject[story.createdby];
-	        					story_unassigned += '<li id="st'+story.pkey+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label><div class="usrComment">0</div></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        					story_unassigned += '<li id="st'+story.pkey+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 
 	        				}
 	        			}else{
@@ -233,13 +233,13 @@
 					        		                'overlayOpacity' : '0.6',
 					        		                'autoScale' : false,
 					        		                'onComplete' : (function(){
-					        		                    scrollpane =$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+					        		                    //scrollpane =$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 					        		                       }),
 					        		                'onStart' : (function(el){
 					        		                        }),
 					        		                'onClosed' : (function() {
 					        		                	$("#stPeople").hide();
-					        		                     scrollpane.destroy();
+					        		                    // scrollpane.destroy();
 					        		                       })
 
 					        		        	});
@@ -317,7 +317,7 @@
 									//imageHTML+="<label>.....</label>";
 									break;
 								}
-								imageHTML+="<img height='26' width='26' class='' src='"+users[i].user.profile_picture+"' title='"+users[i].user.name+"'>";
+								imageHTML+="<img height='26' width='26' class='' src='themes/images/1.jpg' title='"+users[i].user.fullName+"'>";
 							}
 						}else{
 							imageHTML+="<img height='26' width='26' class='' src='"+creatorObj.profile_picture+"' title='"+creatorObj.name+"'><label class=''>Created by "+creatorObj.id+"</label>";
@@ -339,22 +339,22 @@
 						height:"300px"
 					},1000);
 				}); */
-				var bgColor = "";
+				//var bgColor = "";
 				$(".viewStory, .moreStory").fancybox({
 				'overlayColor' : '#000',
 	                'overlayOpacity' : '0.6',
 	                'autoScale' : false,
 	                'onComplete' : (function(){
-	                    scrollpane =$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-	                    $('#story-cont').css("background-color",bgColor);
+	                   // viewStoryScrollpane =$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+	                  //  $('#story-cont').css("background-color",bgColor);
 	                       }),
 	                'onStart' : (function(el){
-	                	var storyEl=$(el).closest('li');
-	                	bgColor = ($(storyEl).css('backgroundColor'));
+	                	/* var storyEl=$(el).closest('li');
+	                	bgColor = ($(storyEl).css('backgroundColor')); */
 	                        }),
 	                'onClosed' : (function() {
 	                	$("#stPeople").hide();
-	                     scrollpane.destroy();
+	                	//viewStoryScrollpane.destroy();
 	                       })
 
 	        	}); 
@@ -415,17 +415,18 @@
 			        		type: 'GET',
 			        		async:false,
 			        		success: function( result ) {
+			        			result=result[0];
 			        			if(result != null){
 				        			var duration = '<span></span>';
 		    						if(result.startdate != null){
-		    							var startdate = new Date(Date.parse(result.startdate));
+		    							var startdate = new Date(result.startdate);
 		    							startdate = startdate.format("dd mmm yyyy");
 		    							duration += startdate;
 		    						}else{
 		    							duration += 'No Start Date';
 		    						}
 		    						if(result.enddate != null){
-		    							var enddate = new Date(Date.parse(result.enddate));
+		    							var enddate = new Date(result.enddate);
 		    							enddate = enddate.format("dd mmm yyyy");
 		    							duration += '&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<span></span>'+ enddate;
 		    						}else{
@@ -511,7 +512,7 @@
 				        				$(".blue").html(story_review);
 				        				$(".pink").html(story_finished);
 				        				
-				        				$("#notstarted").html('<label style="margin:5px;float:left">No Stories assigned to this sprint.</label>');
+				        				$("#notstarted").html('<label id="noStories" style="margin:5px;float:left">No Stories assigned to this sprint.</label>');
 				        			}
 				        			$( ".stages ul" ).sortable({
 			        	        		connectWith: ".story",
@@ -528,13 +529,13 @@
 			        		       				status = "review";
 			        		       			}else if(stat == "notstarted"){
 			        		       				status = "notstarted";
-			        		       				$(this).find("label:first").remove();
+			        		       				$(this).find("label#noStories").remove();
 			        		       			}else if(stat == "finished"){
 			        		       				status = "finished";
 			        		       			}
-			        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint);
+			        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint); 
 			        		   				var elOffset = $(ui.item[0]).offset();
-			        		   				if($(ui.item[0]).parents('td').hasClass('green')){
+			        		   				 if($(ui.item[0]).parents('td').hasClass('green')){
 			        		   					$(ui.item[0]).find('.img-cont').html("<img src='/scrumr/themes/images/1.jpg' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.username+"</label>");
 			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   				}
@@ -544,7 +545,7 @@
 			        		   					$('#popup_story_done').live("click",function(){
 			        		   						if(users_arr.length > 0){
 				        		   						removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
-				        		   						addUserToStory(users_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
+					      		   						addUserToStory(users_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
 				        		   						refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
 				        		   						$(this).closest('.popup-story-cont').hide();
 			        		   						}
@@ -559,9 +560,9 @@
 			        		   				}else{
 			        		   					$(ui.item[0]).find('a.remove').removeClass('strRmv').addClass('sptRmv');
 			        		   				}
-			        		   				if(success == false){
+			        		   				  if(success == false){
 			        		   					$(this).sortable('cancel');
-			        		   				}
+			        		   				}  
 			        		   			}
 			        	    		}).disableSelection();
 				        			$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
@@ -575,7 +576,7 @@
 			
 			function addtoCurrentSprint(storyList,sprint){
 				var projectId= <%= projectId%>;
-    			var post_data = 'projectId='+projectId+'&stories='+storyList+'&status=Not Started&sprint='+sprint;
+    			var post_data = 'projectId='+projectId+'&stories='+storyList+'&status=notstarted&sprint='+sprint;
     			
     			$.ajax({
     				url: '/scrumr/api/v1/stories/addtosprint',
@@ -619,13 +620,13 @@
 	    						}
 	    						$('.duration-hd label').html(duration);
 	        					var userObj = userObject[story.createdby];
-	        					if(story.status == "Not Started"){
+	        					if(story.status == "notstarted"){
 	        						story_unassigned += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-	        					}else if(story.status == "Development"){
+	        					}else if(story.status == "dev"){
 	        						story_dev += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-	        					}else if(story.status == "Review"){
+	        					}else if(story.status == "review"){
 	        						story_review += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-	        					}else if(story.status == "Finished"){
+	        					}else if(story.status == "finished"){
 	        						story_finished += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 	        					}
 	        				}
@@ -647,7 +648,6 @@
 			function updateStoryStatus(id,status,sprint){
 				var stat = false;
 				var post_data = 'stories=' + id + '&status='+status+ '&sprint='+sprint +'&projectId=<%= projectId %>';
-				alert(sprint);
 					$.ajax({
 						url: '/scrumr/api/v1/stories/addtosprint',
 						type: 'POST',
@@ -668,11 +668,10 @@
 			
 			function deleteStory(id){
 				var stat = false;
-				var post_data = 'storyid=' + id;
+			//	var post_data = 'storyid=' + id;
 					$.ajax({
-						url: '/scrumr/api/v1/stories/deletestory',
-						type: 'POST',
-						data: post_data,
+						url: '/scrumr/api/v1/stories/delete/'+id,
+						type: 'GET',
 						async:false,
 						success: function( rec ) {
 							var records = eval("("+rec+")");
@@ -691,13 +690,13 @@
 				var stat = false;
 				 var post_data = 'userid='+id+'&projectId=<%= projectId%>';
 				$.ajax({
-					url: '/scrumr/api/v1/project/adduser',
+					url: '/scrumr/api/v1/projects/adduser',
 					type: 'POST',
 					data: post_data,
 					async:false,
 					success: function( rec ) {
 						var records = eval("("+rec+")");
-						if(records != null && records.result == true){
+						if(records != null && records.result == "success"){
 							stat = true;
 						}
 					},
@@ -712,13 +711,13 @@
 				var stat = false;
 				 var post_data = 'userid='+id+'&projectId=<%= projectId%>';
 				$.ajax({
-					url: '/scrumr/api/v1/project/removeuser',
+					url: '/scrumr/api/v1/projects/removeuser',
 					type: 'POST',
 					data: post_data,
 					async:false,
 					success: function( rec ) {
 						var records = eval("("+rec+")");
-						if(records != null && records.result == true){
+						if(records != null && records.result == "success"){
 							stat = true;
 						}
 					},
@@ -731,7 +730,7 @@
 			
 			function addUserToStory(user_arr,storyid,stageId){
 				var stat = false;
-				 var post_data = 'userid='+user_arr+'&storyId='+storyid+'&stage='+stageId;
+				 var post_data = 'userids='+user_arr+'&storyId='+storyid+'&stage='+stageId;
 				$.ajax({
 					url: '/scrumr/api/v1/stories/adduserswithstage',
 					type: 'POST',
@@ -739,7 +738,7 @@
 					async:false,
 					success: function( rec ) {
 						var records = eval("("+rec+")");
-						if(records != null && records.result == true){
+						if(records != null && records.result == "success"){
 							stat = true;
 						}
 					},
@@ -764,9 +763,9 @@
 					});
 				}
 			
-			function removeUserFromStory(id,storyid){
+			function removeUserFromStory(id,storyid,stageId){
 				var stat = false;
-				 var post_data = 'userid='+id+'&storyId='+storyid;
+				 var post_data = 'userid='+id+'&storyId='+storyid+'&stageId='+stageId;
 				$.ajax({
 					url: '/scrumr/api/v1/stories/removeuser',
 					type: 'POST',
@@ -786,7 +785,6 @@
 			}
 			
 			function populateStoryAssignees(id){
-				alert(id);
 				$.ajax({
 	        		url: '/scrumr/api/v1/stories/'+id,
 	        		type: 'GET',
@@ -807,8 +805,8 @@
 	        					success : function(users) {
 	    	        				if(users.length > 0){
 	    	        					for(var i=0;i < users.length; i++){
-	    	        						userObj = userObject[users[i].user.id];
-	    	        						assign += '<div class="user"><img class="remove-user" alt="'+userObj.id+'" title="'+userObj.name+'" src="'+userObj.profile_picture+'"/><span class="remvUser" >Remove</span></div>';
+	    	        						userObj = userObject[users[i].user.username];
+	    	        						assign += '<div class="user"><img class="remove-user" alt="'+userObj.username+'" title="'+userObj.fullName+'" src="themes/images/1.jpg"/><span class="remvUser" >Remove</span></div>';
 	    	        					}
 	    	        				}else{
 	    	        					assign = "<label style=\"margin:5px;\">No user assgined</labal>";
@@ -818,7 +816,11 @@
 
 	        				
 	        				$("#st-assignees").html(assign);
-	        				
+	        				if(stories.status !== "notstarted" && stories.status !=="Not Started"){
+	        					$('.stAddmore').show();
+	        				}else{
+	        					$('.stAddmore').hide();
+	        				}
 	        				var people = '';
 	        				if(users && users.length > 0){
 	        					var user;
@@ -856,16 +858,16 @@
 			
 			function populateUserDetails(){
 				$.ajax({
-				url: '/scrumr/api/v1/users/search',
+				url: '/scrumr/api/v1/users/all',
 				type: 'GET',
 				async:false,
 				success: function( records ) {
 					var total_users = records;
 					for(var j=0;j<total_users.length;j++){
 						for(var k=0;k<users.length;k++){
-							if(total_users[j].pkey === users[k].pkey){
+							if(total_users[j].username === users[k].username){
 								total_users.splice(j,1);
-							}else if(total_users[j].pkey === creator){
+							}else if(total_users[j].username === creator){
 								total_users.splice(j,1);
 							}
 						}
@@ -873,7 +875,7 @@
 				//	var users_html = "<ul>";
 					var users_html="";
 					for(var i=0;i<total_users.length;i++){
-						users_html += '<li><img src="/scrumr/themes/images/1.jpg"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].email+'</a><label class="desig">'+total_users[i].designation+'</label></div><div class="businessUnit"><label class="unit">'+total_users[i].business_unit+'</label><label class="location">'+total_users[i].location+'</label></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].id+'"></div></li>';
+						users_html += '<li><img src="/scrumr/themes/images/1.jpg"/></div><div class="details"><label class="name">'+total_users[i].fullName+'</label><a class="email">'+total_users[i].emailId+'</a></div><div class="businessUnit"><label class="unit">'+total_users[i].business_unit+'</label><label class="location">'+total_users[i].location+'</label></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].username+'"></div></li>';
 					}
 					//users_html += "</ul>";
 					//$("#userList-cont").html(users_html);
@@ -883,7 +885,6 @@
 						$('.popup-proj-cont .c-box-content ul').jScrollPane();
 					}
 					$("#addPeople").live('click', function(){
-						alert("hi");
 						$('.story-popup').hide();
 						$('.popup-proj-cont').show();
 						$('.popup-proj-cont .c-box-content ul').jScrollPane();
@@ -892,7 +893,7 @@
 					$(".adduser").live('click',function(){
 						var id = ($(this).attr("id"));
 						var success = addUser(id);
-						if(success == true){
+						if(success ==true){
 							populateProjectDetails();
 							$(this).parent().hide();
 						}
@@ -927,8 +928,8 @@
 					//var users_html = "<ul>";
 					var users_html="";
 					for(var i=0;i<records.length;i++){
-						if(records[i].pkey != creator){
-							users_html += '<li><img src="/scrumr/themes/images/1.jpg"/></div><div class="details"><label class="name">'+records[i].fullName+'</label><a class="email">'+records[i].email+'</a><label class="desig">'+records[i].designation+'</label></div><div class="businessUnit"><label class="unit">'+records[i].business_unit+'</label><label class="location">'+records[i].location+'</label></div><div style="float:left;" class="removeUser float-rgt disable" id="'+records[i].pkey+'"></div></li>';
+						if(records[i].username != creator){
+							users_html += '<li><img src="/scrumr/themes/images/1.jpg"/></div><div class="details"><label class="name">'+records[i].fullName+'</label><a class="email">'+records[i].emailId+'</a></div><div class="businessUnit"><label class="unit">'+records[i].business_unit+'</label><label class="location">'+records[i].location+'</label></div><div style="float:left;" class="removeUser float-rgt disable" id="'+records[i].username+'"></div></li>';
 						}
 					}
 					//users_html += "</ul>";
@@ -1173,12 +1174,12 @@
         	});*/
 			viewStoryFancyBox();
 			$(".stAddmore").live('click', function(){
-				 if($(".stAddmore").html() == "Add More"){
+				 if($(".stAddmore").html() == "+Add People"){
 					$(".stAddmore").html("Hide");
 					$("#stPeople").show();
 				}else{
 					$("#stPeople").hide();
-					$(".stAddmore").html("Add More");
+					$(".stAddmore").html("+Add People");
 				} 
 				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 			});
@@ -1200,9 +1201,10 @@
 				
 				$(".remvUser").live('click', function(){
 					var eid = $(this).parent().find('img').attr("alt");
-					removeUserFromStory(eid, id);
+					removeUserFromStory(eid, id,stageId);
 					populateStoryAssignees(id);
 				});
+				viewStoryFancyBox();
 			});
 			
 			$(".projectview").live('click',function(){
@@ -1402,7 +1404,10 @@
 					type : 'GET',
 					async : false,					
 					success :function(comments){
-						if (comments != null){							
+						
+					
+						if (comments != null){	
+							$('#comments_section').prev().find('label').html('Comments ('+comments.length+')');							
 	        				if(comments.length > 0){
 		        				commentsHtml += '<ul style="list-style:none;">';
 		        				for (var i=0;i<comments.length;i++){
@@ -1410,7 +1415,7 @@
 			        				var newDate = new Date(comment.logDate);
 			        				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();				        				    				
 			        				//alert($.datepicker.parseDate('MM d,yy',new Date(parseInt(comment.logDate))));			        																						        		
-			        				commentsHtml += '<li class="comment-list" style="width:100%;"><a id='+comment.commentID+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span class="name">'+comment.user.fullName+'</span><span><pre style="float:right;">'+comment.content+'</pre></span><div>'+dtString+'</div></div></li>';				        						        	
+			        				commentsHtml += '<li class="comment-list" style="width:100%;"><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>';				        						        	
 			        				}
 		        				commentsHtml += '</ul></div>';
 		        			}			        				        			        			
@@ -1418,7 +1423,7 @@
 								commentsHtml += '</div>';
 							}
 						
-						$(".comment-display").html(commentsHtml);
+						$(".comment-display ul").html(commentsHtml);
 						$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;																
 					},
 					error : function(data){},
@@ -1436,9 +1441,9 @@
 
         		var post_data = 'commentID='+commentID;
         		$.ajax({
-          			url: '/scrumr/api/v1/comments/delete',
-          			type: 'POST',
-          			data: post_data,
+          			url: '/scrumr/api/v1/comments/delete/'+commentID+'',
+          			type: 'GET',
+          			//data: post_data,
           			async:false,
           			success: function( result ) {
               										                  			
@@ -1498,11 +1503,12 @@
               			data: post_data,
               			async:false,
               			success: function( comment ) {
+              				comment = comment[0];
                   			e.preventDefault();
               				$('.comment-text').val('');							            				             			
               				var newDate = new Date(comment.logDate);
               				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();              				         				              			
-              				$('.comment-display ul').append('<li class="comment-list" style="width:100%";><a id='+comment.commentID+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span class="name">'+comment.user.fullName+'</span><span><pre style="float:right;">'+comment.content+'</pre></span><div>'+dtString+'</div></div></li>');
+              				$('.comment-display ul').append('<li class="comment-list" style="width:100%";><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullName+'" src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>');
 //              				alert('came here');              				 
               				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
               				$('.comment-text').focus();         				              				                 
@@ -1517,7 +1523,7 @@
          // Todo Code starts here
                   
          
-         $('#todo-form').submit(function(){
+         $('#todo-form .submit').live("click",function(){
              
         	 var user = userLogged;
         	 var story_id = $("#current_story_id").val();	
@@ -1532,10 +1538,11 @@
       			type: 'POST',
       			data: post_data,
       			async:false,
-      			success: function( todo ) {          			
+      			success: function( todo ) {  
+      				todo = todo[0];
       				$('.todo-text').val('');
       				$('#todo-milestones').val('Milestones');							            				             			      				              				         				              			
-      				$('.todo-display ul').prepend('<li class="todo-list" style="width:100%";><a id='+todo.todoID+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span class="name">'+todo.user.fullName+'</span><span><pre style="float:right;">'+todo.content+'</pre></span><div>Milestone Period :'+todo.milestonePeriod+'</div></div></li>');
+      				$('.todo-display ul').prepend('<li class="todo-list" style="width:100%";><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period :'+todo.milestonePeriod+'</div></div></li>');
       				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
       				$('.todo-text').focus();         				              				                 
       			},
@@ -1550,7 +1557,7 @@
 
      		var post_data = 'todoID='+todoID;
      		$.ajax({
-       			url: '/scrumr/api/v1/todo/delete',
+       			url: '/scrumr/api/v1/todo/delete/',
        			type: 'POST',
        			data: post_data,
        			async:false,
@@ -1576,12 +1583,13 @@
 					type : 'GET',
 					async : false,					
 					success :function(todos){
-						if (todos != null){							
+						if (todos != null){		
+							$('#todo_section').prev().find('label').html('Todos ('+todos.length+')');	
 	        				if(todos.length > 0){
 		        				todosHtml += '<ul style="list-style:none;">';
 		        				for (var i=0;i<todos.length;i++){
 		        					todo = todos[i];			        								        				    						        							        																						        	
-			        				todosHtml += '<li class="todo-list" style="width:100%;"><a id='+todo.todoID+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span class="name">'+todo.user.fullName+'</span><span><pre style="float:right;">'+todo.content+'</pre></span><div>Milestone Period: '+todo.milestonePeriod+'</div></div></li>';				        						        	
+			        				todosHtml += '<li class="todo-list" style="width:100%;"><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period: '+todo.milestonePeriod+'</div></div></li>';				        						        	
 			        				}
 		        				todosHtml += '</ul></div>';
 		        			}			        				        			        			
@@ -1589,7 +1597,7 @@
 								todosHtml += '</div>';
 							}
 						
-						$(".todo-display").html(todosHtml);
+						$(".todo-display ul").html(todosHtml);
 						$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;																
 					},
 					error : function(data){},
@@ -1707,100 +1715,130 @@
             
             <div style="display:none;overflow:hidden !important;">
             	<div id="story-cont">
-            		<div class="storyTitle" class="float-lft">
-                       <label>Story:</label><span id="st-priority" class="p1"></span>
-                       <p id="st-title">The story content is here</p>
-	                </div>
-	               <div class="storyCreated" class="float-lft">
-                       <label>Created by:</label>
-                        <div id="st-creator" class="user"><img src="themes/1.jpg"/></div>
-	                </div>
-	                 <div class="storyAssignees" class="float-lft">
-	                    <label>Assigned to: <span class="stAddmore" style="float:right;font-size:10px;color:#00475C;cursor:pointer;">Add More</span></label>
-                       <div id="st-assignees">
-                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/1.jpg"/><span class="remvUser" >Remove</span></div>
-                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/2.jpg"/><span class="remvUser" >Remove</span></div>
-                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/3.jpg"/><span class="remvUser" >Remove</span></div>
-                       </div>
-                       
-                       <div style="display:none;clear:both;" id="stPeople">
-                       <label>People available:</label>
-                       <div id="st-users">
-	                       <img class="add-user" title="aomkaram" src="themes/1.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="themes/2.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="themes/3.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="themes/1.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="themes/2.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="themes/3.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="themes/1.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="themes/2.jpg"/>
-	                       <img class="story-user" title="aomkaram" src="themes/3.jpg"/>
-	                   </div>
-	                </div>
-	                </div>
-	                <div class="todo" class="float-lft">
-	                    <label>Todo List:</label>
-                       <div id="todo-box" class="comment-cont">
-                       		<div class="todo-box-user float-lft">
-								<img src="themes/1.jpg"/>
-							</div>
-  							<form id="todo-form"> 
-		                 	<textarea class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
-		                 	<select id="todo-milestones">
-		                 		<option value="" selected="selected">Milestones</option>
-		                 		<option value="1 Day">1 Day</option>
-		                 		<option value="2 Days">2 Days</option>
-		                 		<option value="3 Days">3 Days</option>
-		                 		<option value="4 Days">4 Days</option>
-		                 		<option value="5 Days">5 Days</option>
-		                 		<option value="6 Days">6 Days</option>
-		                 		<option value="7 Days">7 Days</option>
-		                 	</select>
-		                 	<input class="submit" type="submit" value="Done" />
-		                 	</form>
-		                 	<div class="todo-display">
-		                 		<ul>
-		                	 		<li>
-		                	 			<a href="javascript:void(0);" class="cmtRmvTodo remove"></a>
-		                	 			<img src="themes/1.jpg"/>
-		                	 			<div>
-			                	 			<span class="name">Arun Krishna Omkaram: </span>
-			                	 			<span>This is my comment to test the total size of the text spans in how many lines</span>
-			                	 			<div class="actions">January 26, 2012 9:09 am</div>
-			                	 			<span></span>
-		                	 			</div>
-		                	 		</li>
-		                 		</ul>
-							</div>
-<!--  		                 	<textarea class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
-		                 	<input type="hidden" id="todo-milestone-picker" /> -->
-                       </div>
-                                              
-	                </div>
-	                <div class="storyComments" class="float-lft">
-	                 <label>Comments:</label>
-	                 <div class="comment-cont">
-						<div class="comment-display">
-		                 <ul>
-		                	 <li>
-		                	 	<a href="javascript:void(0);" class="cmtRmvComment remove"></a>
-		                	 	<img src="themes/1.jpg"/>
-		                	 	<div>
-			                	 	<span class="name">Arun Krishna Omkaram: </span>
-			                	 	<span>This is my comment to test the total size of the text spans in how many lines</span>
-			                	 	<div class="actions">January 26, 2012 9:09 am</div>
-			                	 	<span></span>
-		                	 	</div>
-		                	 </li>
-		                 </ul>
+                       <div class="popup">
+    						<div class="acc-cont">
+        						<div class="acc">
+	        						<div class="acc-head">
+	            						<label>Story details</label>
+	            						<div class="down"></div>
+	        						</div>
+	        						<div id="story_details_section" class="acc-content">
+	            						<p id="st-title">Hong Kong Phooey, number one super guy. Hong Kong Phooey. The stories begin at the police headquarters,
+							                where Hong Kong Phooey's alter ego, Penry, works as a mild-mannered janitor under the glare of Sergeant
+							                Flint.</p>
+	            						<div class="div">
+	            							<label>Created by</label>
+	            							<div id="st-creator" style="clear:both;" class="user"><img src="themes/images/1.jpg"/></div>
+	           							</div>
+	            						<div class="div">
+	            							<label>Owned by</label>
+	            							<div id="st-assignees" style="clear:both;">
+					                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/1.jpg"/><span class="remvUser" >Remove</span></div>
+					                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/2.jpg"/><span class="remvUser" >Remove</span></div>
+					                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/3.jpg"/><span class="remvUser" >Remove</span></div>
+					                       </div>
+					                       <span class="stAddmore" style="font-size:12px;cursor:pointer;">+Add People</span>
+	            						</div>
+	            						<div style="display:none;clear:both;" id="stPeople">
+					                       <label>People available:</label>
+					                       <div id="st-users">
+						                      
+						                   </div>
+						                </div>
+	        						</div>
+            					</div>
+          						<div class="acc">
+        							<div class="acc-head">
+            							<label>Todos</label>
+							            <div class="open"></div>
+							        </div>
+							        <div id="todo_section" class="acc-content" style="display:none">
+							            <div class="todo" class="float-lft">
+						                    <label>Todo List:</label>
+					                       	<div id="todo-box" class="comment-cont">
+					                       		<div class="todo-box-user float-lft">
+													<img src="themes/images/1.jpg"/>
+												</div>
+					  							<form id="todo-form"> 
+							                 	<textarea class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
+							                 	<select id="todo-milestones">
+							                 		<option value="" selected="selected">Milestones</option>
+							                 		<option value="1 Day">1 Day</option>
+							                 		<option value="2 Days">2 Days</option>
+							                 		<option value="3 Days">3 Days</option>
+							                 		<option value="4 Days">4 Days</option>
+							                 		<option value="5 Days">5 Days</option>
+							                 		<option value="6 Days">6 Days</option>
+							                 		<option value="7 Days">7 Days</option>
+							                 	</select>
+							                 	<input class="submit" type="button" value="Done" />
+							                 	</form>
+							                 	<div class="todo-display">
+							                 		<ul>
+							                	 		<li>
+							                	 			<a href="javascript:void(0);" class="cmtRmvTodo remove"></a>
+							                	 			<img src="themes/images/1.jpg"/>
+							                	 			<div>
+								                	 			<span class="name">Arun Krishna Omkaram: </span>
+								                	 			<span>This is my comment to test the total size of the text spans in how many lines</span>
+								                	 			<div class="actions">January 26, 2012 9:09 am</div>
+								                	 			<span></span>
+							                	 			</div>
+							                	 		</li>
+							                 		</ul>
+												</div>
+					<!--  		                 	<textarea class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
+							                 	<input type="hidden" id="todo-milestone-picker" /> -->
+					                       </div>
+					                                              
+						                </div>
+						            </div>
+            					</div>
+         						<div class="acc">
+        							<div class="acc-head">
+            							<label>History</label>
+							            <div class="open"></div>
+							            <div id="history_section" class="acc-content" style="display:none"></div>
+        							</div>
+
+            					</div>
+         						<div class="acc">
+        							<div class="acc-head">
+            							<label>Comments</label>
+							            <div class="open"></div>
+        							</div>
+        							<div id="comments_section" class="acc-content" style="display:none">
+	        							<div class="storyComments" class="float-lft">
+							                 <label>Comments:</label>
+							                 <div class="comment-cont">
+												<div class="comment-display">
+								                 <ul>
+								                	 <li>
+								                	 	<a href="javascript:void(0);" class="cmtRmvComment remove"></a>
+								                	 	<img src="themes/images/1.jpg"/>
+								                	 	<div>
+									                	 	<span class="name">Arun Krishna Omkaram: </span>
+									                	 	<span>This is my comment to test the total size of the text spans in how many lines</span>
+									                	 	<div class="actions">January 26, 2012 9:09 am</div>
+									                	 	<span></span>
+								                	 	</div>
+								                	 </li>
+								                 </ul>
+												</div>
+								                 <div class="comment-box">
+													<div class="comment-box-user float-lft">
+														<img src="themes/images/1.jpg"/>
+													</div>
+								                 	<textarea class="comment-text" placeholder="Write a comment..." name="commment"></textarea>
+								                 </div>
+							                 </div>
+							                </div>
+							            </div>
+					            </div>
+   							 </div>
 						</div>
-		                 <div class="comment-box">
-							<div class="comment-box-user float-lft">
-								<img src="themes/1.jpg"/>
-							</div>
-		                 	<textarea class="comment-text" placeholder="Write a comment..." name="commment"></textarea>
-		                 </div>
-	                 </div>
+                       
+                       
 	                </div>
             	</div>
             </div>
@@ -1876,6 +1914,27 @@
                      $('#popup_story_cancel').live("click",function(){
                     	 $('.story-popup').hide();
                      }); 
+                     
+					 //code for story details accordion
+                     
+                     $('div.down,div.open').live("click",function(){
+                    	 if($(this).hasClass('open')){
+                    		var current_div = $(this);
+                    		$('div.down').each(function(){
+                    			if($(this) != current_div){
+                    				$(this).removeClass('down').addClass('open');
+                    				$(this).parent().next('.acc-content').slideUp("slow");
+                    			}
+                    		}); 
+                    		$(this).removeClass('open').addClass('down');
+                    		$(this).parent().next(".acc-content").slideDown("slow");
+                    	}else{
+                    		$(this).removeClass('down').addClass('open');
+                    		$(this).parent().next(".acc-content").slideUp("slow");
+                    	}
+                    	 $("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+                     });
+                     
                      
                      
                      

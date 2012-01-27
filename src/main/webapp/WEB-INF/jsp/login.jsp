@@ -22,7 +22,6 @@
    <link href="<%= request.getContextPath() %>/themes/style.css" rel="stylesheet"/>
 <script type="text/javascript">
 $(document).ready(function(){
-	 
 	var user = '<s:property value="loggedInUser.username"/>';
 	 
 	 $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
@@ -34,7 +33,7 @@ $(document).ready(function(){
      $('select').val('');
      
      if(user != null && user != ''){
-     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="themes/1.jpg"/><label class="float-lft loginLabel">Hi! '+user+',</label><a href="<%= request.getContextPath() %>/j_spring_security_logout" class="logout">Logout</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
+     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="themes/images/1.jpg"/><label class="float-lft loginLabel">Hi! '+user+',</label><a href="<%= request.getContextPath() %>/j_spring_security_logout" class="logout">Logout</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
      }else{
      	$(".right-div").html('<a href="#sign-in" class="signin">Sign In</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
      }
@@ -74,12 +73,10 @@ $(document).ready(function(){
 			var duration = $('select[name=pSprintDuration]');
 			
 			var days = days_between(new Date(Date.parse(start_date.val())),new Date(Date.parse(end_date.val())));
-			alert(days);
 				if((days < (7*duration.val()))){
 					$("#proj-error").html("Project duration conflicts with sprint duration");
 					return false;
 				} 
-				alert(user);
 				if(user == "" || user == null){
 					$(".signin").trigger('click');
 					return false;
@@ -94,10 +91,9 @@ $(document).ready(function(){
 						data: post_data,
 						async:false,
 						success: function( records ) {
-							if(records.id){
-								alert(records.id);
+							if(records[0].pkey){
 								parent.$.fancybox.close();
-								window.location.href = '/scrumr/sprintView.jsp?visit=1&projectId='+records.id;
+								window.location.href = '/scrumr/sprint.action?&visit=1&projectId='+records[0].pkey;
 							}
 						},
 						error: function(data) { },

@@ -1,5 +1,6 @@
 package com.imaginea.scrumr.resources;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,8 +61,10 @@ public class ProjectResource {
     		@RequestParam String projectId
 		) {
 		String uid = userid;
+		System.out.println("User Id :"+uid);
 		Integer pid = Integer.parseInt(projectId);
 		Project project = projectManager.readProject(pid);
+		System.out.println("User Object :"+userServiceManager.readUser(uid));
 		project.addAssignees(userServiceManager.readUser(uid));
 		projectManager.updateProject(project);
 		return "{\"result\":\"success\"}";
@@ -77,17 +83,20 @@ public class ProjectResource {
 		return "{\"result\":\"success\"}";
 	}
 	
-	@RequestMapping(value="/create", method = RequestMethod.POST)
-    public @ResponseBody String createProject(
+	@RequestMapping(value="/create", method = RequestMethod.POST)	
+    public @ResponseBody List<Project> createProject(
     		@RequestParam String pTitle,
     		@RequestParam String pDescription,
     		@RequestParam String pSprintDuration,
     		@RequestParam String pStartDate,
     		@RequestParam String pEndDate,
     		@RequestParam String assignees
-    		) {
+    		)
+	
+	{
+		Project project = new Project();	
 		try {
-			Project project = new Project();
+			
 			project.setTitle(pTitle);
 			project.setDescription(pDescription);
 			Date date = null;
@@ -158,9 +167,14 @@ public class ProjectResource {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return "{\"result\":\"failure\"}";
+            return null;
         }
-		return "{\"result\":\"success\"}";
+       
+        List<Project> result = new ArrayList<Project>();
+        result.add(project);
+		
+	    return result;
+		
     }
 	
 	int getSprintCount(Date start, Date end, int duration){

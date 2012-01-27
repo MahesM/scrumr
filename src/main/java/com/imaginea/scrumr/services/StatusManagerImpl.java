@@ -1,6 +1,7 @@
 package com.imaginea.scrumr.services;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -66,8 +67,20 @@ public class StatusManagerImpl implements StatusManager {
 		Hashtable<String, Object> ht = new Hashtable<String, Object>();
 		ht.put("storyid", storyid);
 		ht.put("stage", stage);
-
-		return (String) genericDao.getResult("status.clearUsersByStage",ht);
+		System.out.println("Deleting status");
+		//return (String) genericDao.getResult("status.clearUsersByStage",ht);
+		List<Status> statusObj = genericDao.getEntities(Status.class, "status.fetchStoryStatus",ht);
+		System.out.println("Size of Array :"+statusObj.size());
+		try{
+		
+		Iterator<Status> iterator = statusObj.iterator();
+		while (iterator.hasNext()){
+			Status status = iterator.next();
+			System.out.println("Deleting Status Object :"+status.getUser().getFullName());
+			genericDao.delete(status);
+		}
+		}catch(Exception e){System.out.println(e.toString());}
+		return "success";
 	}
 	/* Getters and Setters */
 

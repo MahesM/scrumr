@@ -55,7 +55,7 @@ public class CommentResource {
 	}
 
 	@RequestMapping(value="/create", method = RequestMethod.POST)
-	public @ResponseBody String createSprint(
+	public @ResponseBody List<Comment> createSprint(
 			@RequestParam String logdate,
 			@RequestParam String user,
 			@RequestParam String content,
@@ -74,20 +74,25 @@ public class CommentResource {
 			comment.setLogDate(logDate);
 			comment.setUser(userServiceManager.readUser(user));
 			comment.setStory(storyManager.readStory(Integer.parseInt(storyid)));
-
+			
+			commentManager.createComment(comment);
 		} catch (ParseException e) {
 			e.printStackTrace();
-			return "{\"result\":\"failure\"}";
+			return null;
 		}
 
-		return "{\"result\":\"success\"}";
+		List<Comment> result = new ArrayList<Comment>();
+		result.add(comment);
+		return result;
 
 	}
 
-	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
-	public @ResponseBody String deleteComment(@PathVariable("id") String id) {
-
-		commentManager.deleteComment(commentManager.readComment(Integer.parseInt(id)));
+	@RequestMapping(value="/delete", method = RequestMethod.POST)
+	public @ResponseBody String deleteComment(@RequestParam("commentID") String id) {
+		Comment comment = commentManager.readComment(Integer.parseInt(id));
+		System.out.println("Comment : "+comment.getContent());		
+		commentManager.deleteComment(comment);
+		System.out.println("Comment deleted");
 		return "{\"result\":\"success\"}";
 	}
 

@@ -16,6 +16,7 @@
 
 		<intercept-url pattern="/api/v1/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />		
 		<intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
+<!-- 		<intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" /> -->
 		
 		<!-- form login -->
 		<form-login login-page="/login.action" login-processing-url="/j_spring_security_check" 

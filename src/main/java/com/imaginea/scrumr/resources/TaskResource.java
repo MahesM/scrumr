@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.imaginea.scrumr.entities.Comment;
 import com.imaginea.scrumr.entities.Task;
 import com.imaginea.scrumr.interfaces.StoryManager;
 import com.imaginea.scrumr.interfaces.TaskManager;
@@ -48,7 +49,7 @@ public class TaskResource {
 	}
 
 	@RequestMapping(value="/create", method = RequestMethod.POST)
-	public @ResponseBody String createSprint(
+	public @ResponseBody List<Task> createSprint(
 			@RequestParam String milestonePeriod,
 			@RequestParam String user,
 			@RequestParam String content,
@@ -63,20 +64,23 @@ public class TaskResource {
 			task.setMilestonePeriod(milestonePeriod);
 			task.setUser(userServiceManager.readUser(user));
 			task.setStory(storyManager.readStory(Integer.parseInt(storyid)));
-
+			taskManager.createTask(task);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "{\"result\":\"failure\"}";
+			return null;
 		}
 
-		return "{\"result\":\"success\"}";
+		List<Task> result = new ArrayList<Task>();
+		result.add(task);
+		return result;
 
 	}
 
-	@RequestMapping(value="/delete/{id}", method = RequestMethod.GET)
-	public @ResponseBody String deleteTask(@PathVariable("id") String id) {
+	@RequestMapping(value="/delete", method = RequestMethod.POST)
+	public @ResponseBody String deleteTask(@RequestParam("todoID") String id) {
 
-		taskManager.deleteTask(taskManager.readTask(Integer.parseInt(id)));
+		Task task = taskManager.readTask(Integer.parseInt(id));
+		taskManager.deleteTask(task);
 		return "{\"result\":\"success\"}";
 	}
 }

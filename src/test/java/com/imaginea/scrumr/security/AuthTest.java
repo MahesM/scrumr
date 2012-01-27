@@ -10,12 +10,12 @@ import com.imaginea.scrumr.interfaces.UserServiceManager;
 @SuppressWarnings("deprecation")
 public class AuthTest extends AbstractDependencyInjectionSpringContextTests {
 	
-	private IDao<IEntity, Integer> genericDao;
+	//private IDao<IEntity, Integer> genericDao;
 	private UserServiceManager _userServiceManager;
 
-	public void setGenericDao(IDao<IEntity, Integer> genericDao) {
+	/*public void setGenericDao(IDao<IEntity, Integer> genericDao) {
 		this.genericDao = genericDao;
-	}
+	}*/
 	
 	public void setUserServiceManager(UserServiceManager _userServiceManager) {
 		this._userServiceManager = _userServiceManager;
@@ -24,8 +24,8 @@ public class AuthTest extends AbstractDependencyInjectionSpringContextTests {
 	public void testInsertUser(){
 		User user = new User();
 		
-		user.setUsername("test2");
-		user.setPassword("test123");
+		user.setUsername("sangeetha");
+		user.setPassword("pramati123");
 		user.setEmailId("a@a.com");
 		user.setFullName("testUser");
 		
