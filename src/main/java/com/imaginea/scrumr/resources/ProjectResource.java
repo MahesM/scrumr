@@ -112,7 +112,7 @@ public class ProjectResource {
 					project.setStatus("Not Started");
 					SimpleDateFormat format1 = new SimpleDateFormat("MM/dd/yyyy");
 					date1 = format1.parse(pEndDate);
-					project.setEnd_date(date);
+					project.setEnd_date(date1);
 					sprint_count  = getSprintCount(date, date1,Integer.parseInt(pSprintDuration));
 					project.setNo_of_sprints(sprint_count);
 				} catch (ParseException e1) {
