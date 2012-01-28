@@ -18,13 +18,13 @@
 	</properties>
 
 	<dependencies>
-	
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.5</version>
-				<scope>test</scope>
-			</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.5</version>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -70,19 +70,19 @@
 			<artifactId>spring-core</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
- 
- 		<dependency>
+
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
@@ -142,25 +142,25 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
-		<dependency>
-	      <groupId>org.springframework</groupId>
-	      <artifactId>spring-oxm</artifactId>
-	      <version>3.0.5.RELEASE</version>
-	    </dependency>
 
-		<dependency>  
-		  <artifactId>jaxb-api</artifactId>  
-		  <groupId>javax.xml.bind</groupId>  
-		  <version>2.1</version>  
-		</dependency>  
-		  
-		<dependency>  
-		  <artifactId>jaxb-impl</artifactId>  
-		  <groupId>com.sun.xml.bind</groupId>  
-		  <version>2.1.3</version>  
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+			<version>3.0.5.RELEASE</version>
 		</dependency>
-		
+
+		<dependency>
+			<artifactId>jaxb-api</artifactId>
+			<groupId>javax.xml.bind</groupId>
+			<version>2.1</version>
+		</dependency>
+
+		<dependency>
+			<artifactId>jaxb-impl</artifactId>
+			<groupId>com.sun.xml.bind</groupId>
+			<version>2.1.3</version>
+		</dependency>
+
 		<dependency>
 			<groupId>aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
@@ -186,7 +186,7 @@
 			<artifactId>struts2-json-plugin</artifactId>
 			<version>${struts.version}</version>
 		</dependency>
-			 
+
 		<dependency>
 			<groupId>displaytag</groupId>
 			<artifactId>displaytag-export-poi</artifactId>
@@ -204,19 +204,19 @@
 			<artifactId>poi</artifactId>
 			<version>3.7</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.poi</groupId> -->
-<!-- 			<artifactId>ooxml-schemas</artifactId> -->
-<!-- 			<version>1.1</version> -->
-<!-- 		</dependency> -->
-			 
-		<!-- JSTL --> 
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.poi</groupId> -->
+		<!-- <artifactId>ooxml-schemas</artifactId> -->
+		<!-- <version>1.1</version> -->
+		<!-- </dependency> -->
+
+		<!-- JSTL -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.1.2</version>
 		</dependency>
-	 
+
 		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>
@@ -299,9 +299,9 @@
 		<!-- quartz -->
 
 		<dependency>
-		<groupId>opensymphony</groupId>
-		<artifactId>quartz</artifactId>
-		<version>1.6.3</version>
+			<groupId>opensymphony</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.6.3</version>
 		</dependency>
 
 
@@ -361,7 +361,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 
 		<!-- Javax Mail -->
 
@@ -371,13 +371,27 @@
 			<version>1.4</version>
 		</dependency>
 
+		<dependency>
+			<groupId>qontext-client</groupId>
+			<artifactId>qontext-client</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.oauth</groupId>
+			<artifactId>oauth</artifactId>
+			<version>1</version>
+		</dependency>
 
-
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
 
-	<finalName>scrumr</finalName>
+		<finalName>scrumr</finalName>
 
 		<plugins>
 
