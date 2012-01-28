@@ -866,10 +866,10 @@
 					var total_users = new Array();
 					for(var j=0;j<records.length;j++){
 						for(var k=0;k<users.length;k++){
-							if(!records[j].username === users[k].username){
-								total_users.push(records[j].username);
-							}else if(!records[j].username === creator){
-								total_users.push(records[j].username);
+							if(records[j].username != users[k].username){
+								total_users.push(records[j]);
+							}else if(records[j].username != creator){
+								total_users.push(records[j]);
 							}
 						}
 					}
