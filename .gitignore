@@ -3,7 +3,11 @@
 /bin
 target
 /classes
+.settings
 
 # backup files
 *~
 *.swp
+
+# old folder structure
+WebContent
