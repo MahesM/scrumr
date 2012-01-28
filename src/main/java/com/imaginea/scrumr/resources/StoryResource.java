@@ -140,7 +140,9 @@ public class StoryResource {
 	@RequestMapping(value="/delete/{id}", method = RequestMethod.GET)
 	public @ResponseBody String deleteStory(@PathVariable("id") String id) {
 
-		storyManager.deleteStory(storyManager.readStory(Integer.parseInt(id)));
+		Story story = storyManager.readStory(Integer.parseInt(id));
+		System.out.println("Title: "+story.getTitle());
+		storyManager.deleteStory(story);
 		return "{\"result\":\"success\"}";
 	}
 
@@ -154,14 +156,21 @@ public class StoryResource {
 		return "{\"result\":\"success\"}";
 	}
 
-	//@RequestMapping(value="/{id}/removeuser/{uid}", method = RequestMethod.POST)
-	@RequestMapping(value="removeuser", method = RequestMethod.POST)
-	public @ResponseBody String removeUserFromStory(@PathVariable("id") String id, @PathVariable("uid") String uid) {
+	@RequestMapping(value="/{id}/remove/{uid}", method = RequestMethod.POST)
+	public @ResponseBody String removeUserFromStory(@RequestParam("id") String id, @RequestParam("uid") String uid) {
 
 		User user = userServiceManager.readUser(id);
 		Story story = storyManager.readStory(Integer.parseInt(id));
 		story.removeAssignees(user);
 		storyManager.updateStory(story);
+		return "{\"result\":\"success\"}";
+	}
+	
+	@RequestMapping(value="removeuser", method = RequestMethod.POST)
+	public @ResponseBody String removeUserFromStage(@RequestParam("userid") String uid, @RequestParam("storyId") String stid, @RequestParam("stageId") String stage ) {
+
+		Status status = statusManager.fetchUserStoryStatus(Integer.parseInt(stid), stage, uid);
+		statusManager.deleteStatus(status);
 		return "{\"result\":\"success\"}";
 	}
 

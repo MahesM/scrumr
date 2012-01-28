@@ -159,7 +159,7 @@
         	        		appendTo: 'body',
         	        		forcePlaceholderSize: true,
         	        		placeholder: 'ui-state-highlight',
-        	        		update: function( event, ui ) {
+        	        		receive: function( event, ui ) {
         	        			if(ui.item.closest('section').hasClass('right')){ //dropped to the stages section
         	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
         	        			};
@@ -267,7 +267,7 @@
 		        	        		//appendTo: 'body',
 		        	        		forcePlaceholderSize: true,
 		        	        		placeholder: 'ui-state-highlight',
-		        	        		update: function( event, ui ) {
+		        	        		receive: function( event, ui ) {
 		        	        			var id = ui.item.attr("id").split("st")[1];
 		        	        			if(ui.item.closest('section').hasClass('left')){ //dropped back to unassigned list
 		        	        				ui.item.find('a.remove').removeClass('sptRmv').addClass('strRmv');
@@ -519,7 +519,7 @@
 			        	        		//appendTo: 'body',
 			        	        		forcePlaceholderSize: true,
 			        	        		placeholder: 'ui-state-highlight',
-			        	        		update: function( event, ui ) {
+			        	        		receive: function( event, ui ) {
 			        	   				 	var id = ui.item.attr("id");
 			        	   				 	var status = "notstarted";
 			        		   				var stat = $(this).attr("id");
@@ -548,6 +548,7 @@
 					      		   						addUserToStory(users_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
 				        		   						refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
 				        		   						$(this).closest('.popup-story-cont').hide();
+				        		   						$('#popup_story_done').die();
 			        		   						}
 			        		   					});
 			        		   				}
@@ -862,13 +863,13 @@
 				type: 'GET',
 				async:false,
 				success: function( records ) {
-					var total_users = records;
-					for(var j=0;j<total_users.length;j++){
+					var total_users = new Array();
+					for(var j=0;j<records.length;j++){
 						for(var k=0;k<users.length;k++){
-							if(total_users[j].username === users[k].username){
-								total_users.splice(j,1);
-							}else if(total_users[j].username === creator){
-								total_users.splice(j,1);
+							if(!records[j].username === users[k].username){
+								total_users.push(records[j].username);
+							}else if(!records[j].username === creator){
+								total_users.push(records[j].username);
 							}
 						}
 					}
@@ -1555,11 +1556,9 @@
 
          function deleteStoryTodo(todoID){
 
-     		var post_data = 'todoID='+todoID;
      		$.ajax({
-       			url: '/scrumr/api/v1/todo/delete/',
-       			type: 'POST',
-       			data: post_data,
+       			url: '/scrumr/api/v1/todo/delete/'+todoID,
+       			type: 'GET',
        			async:false,
        			success: function( result ) {
            										                  			
@@ -1610,7 +1609,7 @@
 </head>
 <body>
 <header>
-    <a href="<%= request.getContextPath() %>/" class="logo float-lft"></a>
+    <a href="<%= request.getContextPath() %>/home.action" class="logo float-lft"></a>
     <div class="tabs dashboard-tab"><a class="dashboard" href="">Dashboard</a></div>
     <div class="tabs project-tab"><a class="projects" href="<%= request.getContextPath() %>/project.action">Projects</a></div>
     <div class="right-div" style="float:right;"></div>

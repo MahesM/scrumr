@@ -193,7 +193,7 @@ $(document).ready(function(){
 </head>
 <body>
 	<header>
-    	<a href="<%= request.getContextPath() %>/" class="logo float-lft"></a>
+    	<a href="<%= request.getContextPath() %>/home.action" class="logo float-lft"></a>
     	<div class="tabs dashboard-tab"><a class="dashboard" href="">Dashboard</a></div>
     	<div class="tabs project-tab cur"><a class="projects" href="<%= request.getContextPath() %>/project.action">Projects</a></div>
     	<div class="right-div" style="float:right;"></div>

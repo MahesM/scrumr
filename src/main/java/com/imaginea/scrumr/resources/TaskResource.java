@@ -76,8 +76,8 @@ public class TaskResource {
 
 	}
 
-	@RequestMapping(value="/delete", method = RequestMethod.POST)
-	public @ResponseBody String deleteTask(@RequestParam("todoID") String id) {
+	@RequestMapping(value="/delete/{id}", method = RequestMethod.GET)
+	public @ResponseBody String deleteTask(@PathVariable("id") String id) {
 
 		Task task = taskManager.readTask(Integer.parseInt(id));
 		taskManager.deleteTask(task);

@@ -18,6 +18,7 @@ import javax.persistence.Table;
 @Table(name = "status")
 @NamedQueries({
 	@NamedQuery(name="status.fetchStoryStatus", query="SELECT instance from Status instance where instance.story.id=:storyid and instance.stage=:stage" ),
+	@NamedQuery(name="status.fetchUserStoryStatus", query="SELECT instance from Status instance where instance.user.username =:userid and instance.story.id=:storyid and instance.stage=:stage" ),
 	@NamedQuery(name="status.clearUsersByStage", query="DELETE from Status instance where instance.story.id=:storyid and instance.stage=:stage" )
 })
 public class Status extends AbstractEntity implements Serializable{
@@ -29,7 +30,7 @@ public class Status extends AbstractEntity implements Serializable{
 	/**
 	 * @return the user
 	 */
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn (name="userid", nullable = false)
 	public User getUser() {
 		return user;
@@ -43,7 +44,7 @@ public class Status extends AbstractEntity implements Serializable{
 	/**
 	 * @return the story
 	 */
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn (name="storyid", nullable = false)
 	public Story getStory() {
 		return story;

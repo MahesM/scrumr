@@ -18,5 +18,7 @@ public interface StatusManager {
 	
 	String clearUsersByStage(Integer storyid, String stage);
 	
+	Status fetchUserStoryStatus(Integer storyid, String stage, String userid);
+	
 	
 }

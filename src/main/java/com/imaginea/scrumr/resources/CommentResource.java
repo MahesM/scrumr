@@ -87,8 +87,8 @@ public class CommentResource {
 
 	}
 
-	@RequestMapping(value="/delete", method = RequestMethod.POST)
-	public @ResponseBody String deleteComment(@RequestParam("commentID") String id) {
+	@RequestMapping(value="/delete/{id}", method = RequestMethod.GET)
+	public @ResponseBody String deleteComment(@PathVariable("id") String id) {
 		Comment comment = commentManager.readComment(Integer.parseInt(id));
 		System.out.println("Comment : "+comment.getContent());		
 		commentManager.deleteComment(comment);

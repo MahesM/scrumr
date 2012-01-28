@@ -62,6 +62,16 @@ public class StatusManagerImpl implements StatusManager {
 		return genericDao.getEntities(Status.class, "status.fetchStoryStatus",ht);
 	}
 	
+	public Status fetchUserStoryStatus(Integer storyid, String stage, String userid){
+
+		Hashtable<String, Object> ht = new Hashtable<String, Object>();
+		ht.put("storyid", storyid);
+		ht.put("stage", stage);
+		ht.put("userid", userid);
+
+		return genericDao.getEntity(Status.class, "status.fetchUserStoryStatus",ht);
+	}
+	
 	public String clearUsersByStage(Integer storyid, String stage){
 
 		Hashtable<String, Object> ht = new Hashtable<String, Object>();

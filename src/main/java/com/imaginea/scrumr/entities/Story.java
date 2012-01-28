@@ -48,7 +48,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 	private int view_count;
 
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne()
 	@JoinColumn (name="stpid", nullable = false)
 	public Project getProject() {
 		return project;

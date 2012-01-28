@@ -29,8 +29,7 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
 	private String status;
 
 
-	@ManyToOne(cascade = CascadeType.ALL)	
-	//	@JoinColumn (name="uid", nullable = false)
+	@ManyToOne	
 	public User getUser() {
 		return user;
 	}
@@ -69,8 +68,7 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
 	/**
 	 * @return the story
 	 */
-	@ManyToOne(cascade = CascadeType.ALL)
-	//	@JoinColumn (name="stid", nullable = false)
+	@ManyToOne
 	public Story getStory() {
 		return story;
 	}
