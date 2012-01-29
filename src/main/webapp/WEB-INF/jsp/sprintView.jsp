@@ -202,7 +202,7 @@
 				        		var sprint_html = '<ul id="holderforpage" class="col">';
 			        			$("ul.col li").css("width",100/sprints.length+'%');
 			        			for(var k=0; k<sprints.length;k++ ){
-			        				sprint_html += '<li class="stages"><div class="header "><span></span>Sprint '+(k+1)+'</div><ul id="sp'+sprints[k].pkey+'"class="story">';
+			        				sprint_html += '<li class="stages"><div class="header "><span></span>Sprint '+(k+1)+'</div><ul id="sp'+sprints[k].id+'"class="story">';
 			        				var post_data2 = 'sprintId='+sprints[k].pkey+'&projectId=<%= projectId%>';
 						        	$.ajax({
 						        		url: '/scrumr/api/v1/stories/sprint/'+sprints[k].pkey,
@@ -576,6 +576,7 @@
 			}
 			
 			function addtoCurrentSprint(storyList,sprint){
+				alert(sprint);
 				var projectId= <%= projectId%>;
     			var post_data = 'projectId='+projectId+'&stories='+storyList+'&status=notstarted&sprint='+sprint;
     			

@@ -14,7 +14,7 @@
 		<intercept-url pattern="/" filters="none" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/login.action" filters="none" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 
-		<intercept-url pattern="/api/v1/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />		
+		<intercept-url pattern="/api/v1/**" access="IS_AUTHENTICATED_FULLY" />		
 		<intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
 <!-- 		<intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" /> -->
 		
