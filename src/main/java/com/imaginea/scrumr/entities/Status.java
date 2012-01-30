@@ -13,9 +13,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "status")
+@Table(name = "status",
+uniqueConstraints = {@UniqueConstraint(columnNames={"stage", "userid","storyid"})})
 @NamedQueries({
 	@NamedQuery(name="status.fetchStoryStatus", query="SELECT instance from Status instance where instance.story.id=:storyid and instance.stage=:stage" ),
 	@NamedQuery(name="status.fetchUserStoryStatus", query="SELECT instance from Status instance where instance.user.username =:userid and instance.story.id=:storyid and instance.stage=:stage" ),
