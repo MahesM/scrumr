@@ -317,11 +317,11 @@
 									//imageHTML+="<label>.....</label>";
 									break;
 								}
-								imageHTML+="<img height='26' width='26' class='' src='themes/images/1.jpg' title='"+users[i].user.fullName+"'>";
+								imageHTML+="<img height='26' width='26' class='' id = '"+users[i].user.username+"' src='themes/images/1.jpg' title='"+users[i].user.fullName+"'>";
 							}
 						}else{
-							imageHTML+="<img height='26' width='26' class='' src='"+creatorObj.profile_picture+"' title='"+creatorObj.name+"'><label class=''>Created by "+creatorObj.id+"</label>";
-						}
+								imageHTML+="<img height='26' width='26' class='' src='themes/images/1.jpg' title='"+creatorObj.fullName+"'><label class=''>Created by "+creatorObj.username+"</label>";
+							}						
 						$('li#st'+storyId).find('.img-cont').html(imageHTML);
 						viewStoryFancyBox();
 					}
@@ -365,6 +365,7 @@
 				users_arr = [];
 				$('ul#proj-user-list li').each(function(){
 					$(this).css('border','none');
+					$(this).removeClass('selected');
 				});
 				if($('.popup-story-cont').find('div#pointerEl').hasClass('pointer-rgt')){
 					$('.popup-story-cont').find('div#pointerEl').removeClass('pointer-rgt').addClass('pointer');
@@ -475,8 +476,9 @@
 																imageHTML+="<img height='26' width='26' class='' src='/scrumr/themes/images/1.jpg' title='"+users[j].user.fullName+"'>";
 															}
 								        					str =  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-							        					}else{
-						        							str = '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+							        					}else{							        						
+							        						str = '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+							        						
 							        					}
 				        						}
 				        					});
@@ -535,12 +537,26 @@
 			        		       			}
 			        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint); 
 			        		   				var elOffset = $(ui.item[0]).offset();
-			        		   				 if($(ui.item[0]).parents('td').hasClass('green')){
+			        		   				 if($(ui.item[0]).closest('ul').attr('id') == 'notstarted'){
 			        		   					$(ui.item[0]).find('.img-cont').html("<img src='/scrumr/themes/images/1.jpg' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.username+"</label>");
 			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   				}
-			        		   				if(!($(ui.item[0]).parents('td').hasClass('green')) && !($(ui.item[0]).closest('section').hasClass('left'))){
+			        		   				if($(ui.item[0]).closest('ul').attr('id') == 'finished'){			        		   								        		   				
+			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+			        		   					//alert(creatorObj.userName);
+			        		   					refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
+			        		   				}
+			        		   				if(!($(ui.item[0]).closest('ul').attr('id') == 'notstarted') && !($(ui.item[0]).closest('ul').attr('id') == 'finished')&& !($(ui.item[0]).closest('section').hasClass('left'))){
+			        		   					
+			        		   					
 			        		   					showAddUserPopup(elOffset);
+			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+			        		   					var existing_user_arr = [];
+			        		   					console.log($(id));
+			        		   					$("#"+id).find('img').each(function(){
+			        		   						existing_user_arr.push($(this).attr('id'));
+			        		   					});
+			      		   						addUserToStory(existing_user_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
 			        		   					//refreshStoryPortlet(id.split("st")[1]);
 			        		   					$('#popup_story_done').live("click",function(){
 			        		   						if(users_arr.length > 0){
@@ -576,7 +592,7 @@
 			}
 			
 			function addtoCurrentSprint(storyList,sprint){
-				alert(sprint);
+
 				var projectId= <%= projectId%>;
     			var post_data = 'projectId='+projectId+'&stories='+storyList+'&status=notstarted&sprint='+sprint;
     			
@@ -752,13 +768,14 @@
 			}
 			
 			function removeUserFromStoryInStage(storyid,stageid){
-				var post_data = 'storyId='+storyid+"&stage="+stageid;
+				var post_data = 'storyId='+storyid+"&stage="+stageid;				
 				$.ajax({
 					url: '/scrumr/api/v1/stories/clearstoryassignees',
 					type: 'POST',
 					data: post_data,
 					async:false,
-					success: function( rec ) {
+					success: function( rec ) {						
+					
 					},
 					error: function(data) { },
 					complete: function(data) { }
@@ -1406,12 +1423,11 @@
 					type : 'GET',
 					async : false,					
 					success :function(comments){
-						
-					
+											    
 						if (comments != null){	
 							$('#comments_section').prev().find('label').html('Comments ('+comments.length+')');							
 	        				if(comments.length > 0){
-		        				commentsHtml += '<ul style="list-style:none;">';
+		        			//	commentsHtml += '<ul style="list-style:none;">';
 		        				for (var i=0;i<comments.length;i++){
 			        				comment = comments[i];
 			        				var newDate = new Date(comment.logDate);
@@ -1419,7 +1435,7 @@
 			        				//alert($.datepicker.parseDate('MM d,yy',new Date(parseInt(comment.logDate))));			        																						        		
 			        				commentsHtml += '<li class="comment-list" style="width:100%;"><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>';				        						        	
 			        				}
-		        				commentsHtml += '</ul></div>';
+		        				commentsHtml += '</div>';
 		        			}			        				        			        			
 						}else{
 								commentsHtml += '</div>';
@@ -1505,15 +1521,15 @@
               			data: post_data,
               			async:false,
               			success: function( comment ) {
+              				
               				comment = comment[0];
                   			e.preventDefault();
               				$('.comment-text').val('');							            				             			
               				var newDate = new Date(comment.logDate);
               				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();              				         				              			
-              				$('.comment-display ul').append('<li class="comment-list" style="width:100%";><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullName+'" src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>');
-//              				alert('came here');              				 
+              				$('.comment-display ul').append('<li class="comment-list" style="width:100%;"><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullName+'" src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>');
               				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-              				$('.comment-text').focus();         				              				                 
+              				$('.comment-text').focus(); 				              				                 
               			},
               			error: function(data) { },
              			complete: function(data) { }            		
@@ -1533,7 +1549,6 @@
         	         	 
 			 var milestonePeriod = $("#todo-milestones").val();			 
 			 todoText = parsedString(todoText);
-        	 		                    	 			                   	               	        	          	                 	      
              var post_data = '&content='+ todoText+'&storyid='+story_id+'&milestonePeriod='+milestonePeriod+'&user='+user;                     
              $.ajax({
       			url: '/scrumr/api/v1/todo/create',
@@ -1813,16 +1828,7 @@
 							                 <div class="comment-cont">
 												<div class="comment-display">
 								                 <ul>
-								                	 <li>
-								                	 	<a href="javascript:void(0);" class="cmtRmvComment remove"></a>
-								                	 	<img src="themes/images/1.jpg"/>
-								                	 	<div>
-									                	 	<span class="name">Arun Krishna Omkaram: </span>
-									                	 	<span>This is my comment to test the total size of the text spans in how many lines</span>
-									                	 	<div class="actions">January 26, 2012 9:09 am</div>
-									                	 	<span></span>
-								                	 	</div>
-								                	 </li>
+								                	
 								                 </ul>
 												</div>
 								                 <div class="comment-box">
