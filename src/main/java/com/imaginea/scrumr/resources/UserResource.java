@@ -76,22 +76,29 @@ public class UserResource {
 	@RequestMapping(value="/create", method = RequestMethod.POST)
 	public @ResponseBody String cacheUser(
 			@RequestParam String username,
+			@RequestParam String displayname,
 			@RequestParam String fullname,
-			@RequestParam String emailid
+			@RequestParam String emailid,
+			@RequestParam String avatarurl
 			) {
 
 		try {
-
+			System.out.println("Create User: "+displayname);
 			User user = new User();
-			user.setEmailId(emailid);
 			user.setUsername(username);
-			user.setFullName(fullname);
-			userServiceManager.createUser(user);
+			user.setFullname(fullname);
+			user.setAvatarurl(avatarurl);
+			user.setDisplayname(displayname);
+			user.setEmailid(emailid);
+			System.out.println(user.toString());
+			User userExisting = userServiceManager.readUser(username);
+			if(userExisting == null){
+				userServiceManager.createUser(user);
+			}
 
 		}catch(Exception e){
 			return "{\"result\":\"failure\"}";
 		}
 		return "{\"result\":\"success\"}";
-
 	}
 }

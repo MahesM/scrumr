@@ -39,7 +39,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 	private int priority;
 	private Sprint sprint_id;
 	private Date creation_date;
-	private String createdby;
+	private String creator;
 	private Date last_updated;
 	private String last_updatedby;
 	private String status;
@@ -91,11 +91,11 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 	}
 
 	@Column(name = "stcreator", nullable = false, length = 100)
-	public String getCreatedby() {
-		return createdby;
+	public String getCreator() {
+		return creator;
 	}
-	public void setCreatedby(String createdby) {
-		this.createdby = createdby;
+	public void setCreator(String creator) {
+		this.creator = creator;
 	}
 
 	@Column(name = "stlastupdated", nullable = false)

@@ -86,7 +86,7 @@ public class StatusManagerImpl implements StatusManager {
 		Iterator<Status> iterator = statusObj.iterator();
 		while (iterator.hasNext()){
 			Status status = iterator.next();
-			System.out.println("Deleting Status Object :"+status.getUser().getFullName());
+			System.out.println("Deleting Status Object :"+status.getUser().getFullname());
 			genericDao.delete(status);
 		}
 		}catch(Exception e){System.out.println(e.toString());}

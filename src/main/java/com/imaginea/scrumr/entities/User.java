@@ -28,7 +28,7 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "users", uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"username"}),
+		@UniqueConstraint(columnNames = {"userid"}),
 		@UniqueConstraint(columnNames = {"emailid"})
 })
 @NamedQueries({
@@ -39,10 +39,11 @@ import com.imaginea.scrumr.interfaces.IEntity;
 public class User extends AbstractEntity implements IEntity, UserDetails, Serializable {
 
 	private String username;
+	private String displayname;
+	private String fullname;
+	private String emailid;
+	private String avatarurl;
 	private String password;
-
-	private String fullName;
-	private String emailId;
 
 	private List<Project> projects;
 
@@ -55,40 +56,50 @@ public class User extends AbstractEntity implements IEntity, UserDetails, Serial
 
 	/* Getters and Setters */
 
-	@Column(name = "username", nullable = false )
+	@Column(name = "userid", nullable = false )
 	public String getUsername() {
 		return username;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUsername(String userid) {
+		this.username = userid;
 	}
 
-	@Column(name = "password", nullable = false )
-	public String getPassword() {
-		return password;
+	@Column(name = "displayname", nullable = false )
+	public String getDisplayname() {
+		return displayname;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setDisplayname(String displayname) {
+		this.displayname = displayname;
 	}
 
-	@Column(name = "fullname")
-	public String getFullName() {
-		return fullName;
+	@Column(name = "fullname", nullable = false )
+	public String getFullname() {
+		return fullname;
 	}
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
+	public void setFullname(String fullname) {
+		this.fullname = fullname;
 	}
 
-	@Column(name = "emailid" )
-	public String getEmailId() {
-		return emailId;
+	@Column(name = "emailid", nullable = false )
+	public String getEmailid() {
+		return emailid;
 	}
 
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
+	public void setEmailid(String emailid) {
+		this.emailid = emailid;
+	}
+	
+
+	@Column(name = "avatarurl", nullable = false )
+	public String getAvatarurl() {
+		return avatarurl;
+	}
+
+	public void setAvatarurl(String avatarurl) {
+		this.avatarurl = avatarurl;
 	}
 
 	@JsonIgnore
@@ -150,6 +161,14 @@ public class User extends AbstractEntity implements IEntity, UserDetails, Serial
 
 	public void removeProject(Project project){
 		this.projects.add(project);
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

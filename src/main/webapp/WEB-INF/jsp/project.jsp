@@ -27,12 +27,12 @@ $(document).ready(function(){
          $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
      });
      
-     var username = '<s:property value="loggedInUser.username"/>';
-     if(username != null && username != ''){
+     var username = '<%=session.getAttribute("userLogged")%>';
+     <%-- if(username != null && username != ''){
       	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="themes/images/1.jpg"/><label class="float-lft loginLabel">Hi! '+username+',</label><a href="<%= request.getContextPath() %>/j_spring_security_logout" class="logout">Logout</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
       }else{
       	$(".right-div").html('<a href="#sign-in" class="signin">Sign In</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-      }
+      } --%>
      
      function days_between(date1, date2) {
  	    var ONE_DAY = 1000 * 60 * 60 * 24;
@@ -104,7 +104,7 @@ $(document).ready(function(){
 						var people_count = project.assignees.length > 3 ? 3:project.assignees.length;
 						if(people_count > 0){
 							for(var j=0; j<people_count; j++){
-								people += '<img class="story-user" title="'+project.assignees[j].name+'" src="themes/images/1.jpg"/>';
+								people += '<img class="story-user" title="'+project.assignees[j].fullname+'" src="'+project.assignees[j].avatarurl+'"/>';
 							}
 						}else{
 							people = 'No Assignees';
@@ -122,7 +122,7 @@ $(document).ready(function(){
 		}
 	});
 	
-	$.ajax({
+	/* $.ajax({
 		url: '/scrumr/api/v1/users/all',
 		type: 'GET',
 		async:false,
@@ -140,7 +140,7 @@ $(document).ready(function(){
 	$(".userBtn").live('click',function(){
 			$(this).attr("value","Release");
 			projAssignees.push($(this).attr("id"));
-	});
+	}); */
 		
 	$('#new_project_form').submit(function(){
 			var title = $('input[name=pTitle]');

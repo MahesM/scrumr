@@ -2,6 +2,8 @@ package com.imaginea.scrumr.utils;
 
 import java.util.Date;
 
+import com.imaginea.scrumr.entities.User;
+
 public abstract class Utils {
 	
 	public static int getCurrentSprint(Date start, int duration){
@@ -16,4 +18,5 @@ public abstract class Utils {
 		}
 		return count;
 	}
+	
 }

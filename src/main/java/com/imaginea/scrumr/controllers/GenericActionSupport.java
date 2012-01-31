@@ -25,10 +25,10 @@ public class GenericActionSupport extends ActionSupport implements Preparable, S
 	}
 
 	public void prepare() throws Exception {
-		System.out.println("PREPARE");
+		System.out.println("PREPARE1");
 		if( SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null) {
-
-			String loggedInUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+			System.out.println("PREPARE2");
+			String loggedInUserName = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 
 			if (loggedInUserName.equals("anonymousUser")) {
 				loggedInUser = new User();

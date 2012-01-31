@@ -1198,7 +1198,7 @@ ul.sprints li a {
 }
 
 #storyList{
-	height:515px;
+	height:700px;
 	margin-top:10px;
 }
 .createStory{
@@ -1226,6 +1226,8 @@ ul.sprints li a:hover, ul.sprints li a.selected {
 
 #people img{
 	margin:0px 2px 0px 0px;
+	width:36px;
+	height:36px;
 }
 table.sprint-detail td {
     border: 1px solid #e6e6e6;
@@ -1605,7 +1607,7 @@ border-top-right-radius: 4px;
 .popup-proj-cont .c-box-content .details{
 	float: left;
     margin-left: 20px;
-    width: 110px;
+    width: 200px;
 }
 
 .popup-proj-cont .c-box-content .businessUnit{
@@ -1621,6 +1623,16 @@ border-top-right-radius: 4px;
     width: 93%;
     margin:10px;
     overflow:hidden;
+}
+
+.popup-proj-cont .c-box-content .user-loading {
+    float: left;
+    height: 300px;
+    width: 93%;
+    margin:10px;
+    background-color:#000000;
+    opacity:0.4;
+    background:#000000 url(images/lightbox-ico-loading.gif) no-repeat 0 0;
 }
 
 .popup-proj-cont .c-box-content ul li {

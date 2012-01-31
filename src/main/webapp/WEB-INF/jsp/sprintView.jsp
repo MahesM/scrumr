@@ -2,6 +2,13 @@
     pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="auth" uri="http://www.springframework.org/security/tags" %>
+<%@ page import="java.io.*" %>
+<%@ page import="org.codehaus.jettison.json.JSONObject" %>
+<%@ page import="net.oauth.*" %>
+<%@ page import="org.codehaus.jettison.json.*" %>
+<%@ page import="org.apache.commons.httpclient.protocol.Protocol" %>
+<%@ page import="org.apache.commons.httpclient.protocol.ProtocolSocketFactory" %>
+<%@ page import="com.imaginea.scrumr.qontextclient.*" %>
 
 <!DOCTYPE HTML>
 <html>
@@ -28,15 +35,41 @@
    	String projectId = request.getParameter("projectId");
     String visit = request.getParameter("visit");
  %>
+ <%
+    QontextRestApiInvocationUtil helper = (QontextRestApiInvocationUtil)session.getAttribute("helper");
+	String accountId = helper.getAccountId();
+	String content;
+	JSONObject successResponse = null;
+	String errorResponse = ""; 
+	
+	if (helper.lastOperationSuccess) {
+	
+		content = helper.invoke("/search/services/search/people?sort=Alphabetical&showTotalCount=true&start=0&startIndex=0&count=10");
+		if (helper.lastOperationSuccess) {
+			
+			successResponse = new JSONObject(content);
+			//out.println(successResponse);
+		} else {
+			errorResponse = content;
+			//out.println(errorResponse);
+		}
+	} else {
+		content = accountId;
+		errorResponse = content;
+		//out.println(errorResponse);
+	}
+	String user = (String)session.getAttribute("userLogged");
+%>
   <script type='text/javascript'>
         $(function() {
-        	var userLogged = '<s:property value="loggedInUser.username"/>';
+        	var userLogged = '<%=user%>';
+        	var allUsersResponse = $.parseJSON('<%=content%>');
         	
-        	if(userLogged != null && userLogged != ""){
+        	<%-- if(userLogged != null && userLogged != ""){
         		$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="<%= request.getContextPath() %>/themes/images/1.jpg"/><label class="float-lft loginLabel">Hi! '+userLogged+',</label><a href="<%= request.getContextPath() %>/j_spring_security_logout" class="logout">Logout</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
             }else{
             	$(".right-div").html('<a href="#sign-in" class="signin">Sign In</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-            }
+            } --%>
         	
         	var current_sprint = 0;
         	var users_arr = [];
@@ -111,7 +144,7 @@
             				$("#people").html('');
             				if(users != null && users.length > 0){
             					for(var i=0;i< users.length;i++){
-            						$("#people").append('<li><img title="'+users[i].fullName+'" src="/scrumr/themes/images/1.jpg" width="36px" height="36px"/></li>');
+            						$("#people").append('<li><img title="'+users[i].fullname+'" src="'+users[i].avatarurl+'" /></li>');
             						userObject[users[i].username] = users[i];
             					}
             				}else{
@@ -123,7 +156,7 @@
             					user_html += 'No users in the project';
             				}else{
 	            				for(var i=0;i<users.length;i++){
-	            					user_html += "<li id='"+users[i].username+"'><img src='/scrumr/themes/images/1.jpg' title='"+users[i].fullName+"''/></li>";
+	            					user_html += "<li id='"+users[i].username+"'><img src='"+users[i].avatarurl+"' title='"+users[i].fullname+"''/></li>";
 	            				}
             				}
            					$('#proj-user-list').html(user_html);
@@ -143,23 +176,23 @@
 	        			if(stories != null && stories.length){
 	        				for(var i=0;i<stories.length;i++){
 	        					var story = stories[i];
-	        					creatorObj = userObject[story.createdby];
-							var userObj = userObject[story.createdby];
-	        					story_unassigned += '<li id="st'+story.pkey+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        					creatorObj = userObject[story.creator];
+							var userObj = userObject[story.creator];
+	        					story_unassigned += '<li id="st'+story.pkey+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+story.creator+'</label></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 
 	        				}
 	        			}else{
 	        				story_unassigned += '<b>No pending stories for the project</b>';
-	        				$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
+	        				$('#storyList ul').css({'height': (($(window).height()) - 250) + 'px'});
 	        			}
         				$("#storyList ul").html(story_unassigned);
         				$( "#storyList").jScrollPane({});
         				$( "#storyList ul" ).sortable({
         	        		connectWith: ".story",
-        	        		appendTo: 'body',
+        	        		//appendTo: 'body',
         	        		forcePlaceholderSize: true,
         	        		placeholder: 'ui-state-highlight',
-        	        		receive: function( event, ui ) {
+        	        		update: function( event, ui ) {
         	        			if(ui.item.closest('section').hasClass('right')){ //dropped to the stages section
         	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
         	        			};
@@ -212,7 +245,7 @@
 					        				if(stories != null && stories.length > 0){
 					        					for(var i=0;i<stories.length;i++){
 						        					var story = stories[i];
-						        					var userObj = userObject[story.createdby];
+						        					var userObj = userObject[story.creator];
 						        					 if(story.assignees.length > 0){
 							        					var imageHTML = " ";
 							        					for(var j=0;j<story.assignees.length;j++){
@@ -221,11 +254,11 @@
 																//imageHTML+="<label>.....</label>";
 																break;
 															}
-															imageHTML+="<img height='26' width='26' class='' src='"+story.assignees[j].profile_picture+"' title='"+story.assignees[j].name+"'>";
+															imageHTML+="<img height='26' width='26' class='' src='"+story.assignees[j].avatarurl+"' title='"+story.assignees[j].fullname+"'>";
 														}
 							        					sprint_html +=  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					}else{
-						        						sprint_html += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+						        						sprint_html += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+story.creator+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					} 
 						        				}
 					        					$(".viewStory, .moreStory").fancybox({
@@ -267,7 +300,7 @@
 		        	        		//appendTo: 'body',
 		        	        		forcePlaceholderSize: true,
 		        	        		placeholder: 'ui-state-highlight',
-		        	        		receive: function( event, ui ) {
+		        	        		update: function( event, ui ) {
 		        	        			var id = ui.item.attr("id").split("st")[1];
 		        	        			if(ui.item.closest('section').hasClass('left')){ //dropped back to unassigned list
 		        	        				ui.item.find('a.remove').removeClass('sptRmv').addClass('strRmv');
@@ -317,10 +350,10 @@
 									//imageHTML+="<label>.....</label>";
 									break;
 								}
-								imageHTML+="<img height='26' width='26' class='' src='themes/images/1.jpg' title='"+users[i].user.fullName+"'>";
+								imageHTML+="<img height='26' width='26' class='' id = '"+users[i].user.username+"' src='"+users[i].user.avatarurl+"' title='"+users[i].user.fullname+"'>";
 							}
 						}else{
-							imageHTML+="<img height='26' width='26' class='' src='"+creatorObj.profile_picture+"' title='"+creatorObj.name+"'><label class=''>Created by "+creatorObj.id+"</label>";
+							imageHTML+="<img height='26' width='26' class='' src='"+creatorObj.avatarurl+"' title='"+creatorObj.fullname+"'><label class=''>Created by "+creatorObj.fullname+"</label>";
 						}
 						$('li#st'+storyId).find('.img-cont').html(imageHTML);
 						viewStoryFancyBox();
@@ -365,6 +398,7 @@
 				users_arr = [];
 				$('ul#proj-user-list li').each(function(){
 					$(this).css('border','none');
+					$(this).removeClass('selected');
 				});
 				if($('.popup-story-cont').find('div#pointerEl').hasClass('pointer-rgt')){
 					$('.popup-story-cont').find('div#pointerEl').removeClass('pointer-rgt').addClass('pointer');
@@ -455,8 +489,8 @@
 			        					var story='';
 			        					for(var i=0;i<stories.length;i++){
 				        					story = stories[i];
-				        					userObj = userObject[story.createdby];
-				        					creatorObj = userObject[story.createdby];
+				        					userObj = userObject[story.creator];
+				        					creatorObj = userObject[story.creator];
 				        					var post_data="storyId="+story.pkey+"&stage="+story.status;
 				        					$.ajax({
 				        						url : '/scrumr/api/v1/stories/getusers',
@@ -472,11 +506,11 @@
 																	//imageHTML+="<a class='viewStory' href='#story-cont'>.....</a>";
 																	break;
 																}
-																imageHTML+="<img height='26' width='26' class='' src='/scrumr/themes/images/1.jpg' title='"+users[j].user.fullName+"'>";
+																imageHTML+="<img height='26' width='26' class='' src='"+users[j].user.avatarurl+"' title='"+users[j].user.fullName+"'>";
 															}
 								        					str =  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 							        					}else{
-						        							str = '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+						        							str = '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 							        					}
 				        						}
 				        					});
@@ -519,7 +553,7 @@
 			        	        		//appendTo: 'body',
 			        	        		forcePlaceholderSize: true,
 			        	        		placeholder: 'ui-state-highlight',
-			        	        		receive: function( event, ui ) {
+			        	        		update: function( event, ui ) {
 			        	   				 	var id = ui.item.attr("id");
 			        	   				 	var status = "notstarted";
 			        		   				var stat = $(this).attr("id");
@@ -535,12 +569,25 @@
 			        		       			}
 			        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint); 
 			        		   				var elOffset = $(ui.item[0]).offset();
-			        		   				 if($(ui.item[0]).parents('td').hasClass('green')){
-			        		   					$(ui.item[0]).find('.img-cont').html("<img src='/scrumr/themes/images/1.jpg' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.username+"</label>");
+			        		   				 if($(ui.item[0]).closest('ul').attr('id') == 'notstarted'){
+			        		   					$(ui.item[0]).find('.img-cont').html("<img src='"+creatorObj.avatarurl+"' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.username+"</label>");
 			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   				}
-			        		   				if(!($(ui.item[0]).parents('td').hasClass('green')) && !($(ui.item[0]).closest('section').hasClass('left'))){
+			        		   				if($(ui.item[0]).closest('ul').attr('id') == 'finished'){			        		   								        		   				
+			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+			        		   					//alert(creatorObj.userName);
+			        		   					refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
+			        		   				}
+			        		   				if(!($(ui.item[0]).closest('ul').attr('id') == 'notstarted') && !($(ui.item[0]).closest('ul').attr('id') == 'finished')&& !($(ui.item[0]).closest('section').hasClass('left'))){
+			        		   					
+			        		   					
 			        		   					showAddUserPopup(elOffset);
+			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+			        		   					var existing_user_arr = [];
+			        		   					$("#"+id).find('img').each(function(){
+			        		   						existing_user_arr.push($(this).attr('id'));
+			        		   					});
+			      		   						addUserToStory(existing_user_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
 			        		   					//refreshStoryPortlet(id.split("st")[1]);
 			        		   					$('#popup_story_done').live("click",function(){
 			        		   						if(users_arr.length > 0){
@@ -576,7 +623,6 @@
 			}
 			
 			function addtoCurrentSprint(storyList,sprint){
-				alert(sprint);
 				var projectId= <%= projectId%>;
     			var post_data = 'projectId='+projectId+'&stories='+storyList+'&status=notstarted&sprint='+sprint;
     			
@@ -621,15 +667,15 @@
 	    							duration += ' - No End Date';
 	    						}
 	    						$('.duration-hd label').html(duration);
-	        					var userObj = userObject[story.createdby];
+	        					var userObj = userObject[story.creator];
 	        					if(story.status == "notstarted"){
-	        						story_unassigned += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        						story_unassigned += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 	        					}else if(story.status == "dev"){
-	        						story_dev += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        						story_dev += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 	        					}else if(story.status == "review"){
-	        						story_review += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        						story_review += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 	        					}else if(story.status == "finished"){
-	        						story_finished += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="/scrumr/themes/images/1.jpg" width="26" height="26" class=""/><label class="">Created by '+story.createdby+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        						story_finished += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 	        					}
 	        				}
 	       					story_unassigned += '</ul>';
@@ -688,23 +734,38 @@
 					return stat;
         	}
 			
-			function addUser(id){
+			function addUser(userDetails){
 				var stat = false;
-				 var post_data = 'userid='+id+'&projectId=<%= projectId%>';
+				var post_data = 'userid='+userDetails.username+'&projectId=<%= projectId%>';
 				$.ajax({
-					url: '/scrumr/api/v1/projects/adduser',
+					url: '/scrumr/api/v1/users/create',
 					type: 'POST',
-					data: post_data,
+					data: userDetails,
 					async:false,
 					success: function( rec ) {
 						var records = eval("("+rec+")");
 						if(records != null && records.result == "success"){
 							stat = true;
 						}
+						$.ajax({
+							url: '/scrumr/api/v1/projects/adduser',
+							type: 'POST',
+							data: post_data,
+							async:false,
+							success: function( rec ) {
+								var records = eval("("+rec+")");
+								if(records != null && records.result == "success"){
+									stat = true;
+								}
+							},
+							error: function(data) { },
+							complete: function(data) { }
+						});
 					},
 					error: function(data) { },
 					complete: function(data) { }
 				});
+				
 				
 				return stat;
 			}
@@ -795,8 +856,8 @@
 	        			if(stories != null && stories.length > 0){
 							stories = stories[0];
 	        				$("#st-title").html(stories.title);
-	        				var userObj = userObject[stories.createdby];
-	        				$("#st-creator").html('<img title="'+userObj.fullName+'" src="/scrumr/themes/images/1.jpg"/>');
+	        				var userObj = userObject[stories.creator];
+	        				$("#st-creator").html('<img title="'+userObj.fullname+'" src="'+userObj.avatarurl+'"/>');
 	        				var assign = '';
 	        				var post_data="storyId="+id+"&stage="+stories.status;
 	        				$.ajax({
@@ -808,7 +869,7 @@
 	    	        				if(users.length > 0){
 	    	        					for(var i=0;i < users.length; i++){
 	    	        						userObj = userObject[users[i].user.username];
-	    	        						assign += '<div class="user"><img class="remove-user" alt="'+userObj.username+'" title="'+userObj.fullName+'" src="themes/images/1.jpg"/><span class="remvUser" >Remove</span></div>';
+	    	        						assign += '<div class="user"><img class="remove-user" alt="'+userObj.username+'" title="'+userObj.fullname+'" src="'+userObj.avatarurl+'"/><span class="remvUser" >Remove</span></div>';
 	    	        					}
 	    	        				}else{
 	    	        					assign = "<label style=\"margin:5px;\">No user assgined</labal>";
@@ -828,7 +889,7 @@
 	        					var user;
 	        					for(var i=0;i < users.length; i++){
 	        						user = userObject[users[i].username];
-	        						people += '<div class="user"><img class="add-user" alt="'+user.username+'" title="'+user.fullName+'" src="/scrumr/themes/images/1.jpg"/></div>';
+	        						people += '<div class="user"><img class="add-user" alt="'+user.username+'" title="'+user.fullname+'" src="'+user.avatarurl+'"/></div>';
 	        					}
 	        				}else{
 	        					people = "<label style=\"margin:5px;\">No people in the project</labal>";
@@ -859,25 +920,19 @@
 			});
 			
 			function populateUserDetails(){
-				$.ajax({
-				url: '/scrumr/api/v1/users/all',
-				type: 'GET',
-				async:false,
-				success: function( records ) {
-					var total_users = new Array();
-					for(var j=0;j<records.length;j++){
-						for(var k=0;k<users.length;k++){
-							if(records[j].username != users[k].username){
-								total_users.push(records[j]);
-							}else if(records[j].username != creator){
-								total_users.push(records[j]);
-							}
+				var records = allUsersResponse.success.body.objects;
+				var total_users = records;
+				for(var j=0;j<records.length;j++){
+					for(var k=0;k<users.length;k++){
+						if(records[j].ownerAccountId == users[k].username ){
+							total_users.splice(j,1);
 						}
 					}
+				}
 				//	var users_html = "<ul>";
 					var users_html="";
 					for(var i=0;i<total_users.length;i++){
-						users_html += '<li><img src="/scrumr/themes/images/1.jpg"/></div><div class="details"><label class="name">'+total_users[i].fullName+'</label><a class="email">'+total_users[i].emailId+'</a></div><div class="businessUnit"><label class="unit">'+total_users[i].business_unit+'</label><label class="location">'+total_users[i].location+'</label></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].username+'"></div></li>';
+						users_html += '<li><img src="'+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
 					}
 					//users_html += "</ul>";
 					//$("#userList-cont").html(users_html);
@@ -894,7 +949,13 @@
 					});
 					$(".adduser").live('click',function(){
 						var id = ($(this).attr("id"));
-						var success = addUser(id);
+						var userDetails = {};
+						userDetails.username = id;
+						userDetails.fullname = $(this).prev('.details').find('label.name').html();
+						userDetails.avatarurl = $(this).closest('li').find('img').attr('src');
+						userDetails.displayname = $(this).prev('.details').find('label.name').html();
+						userDetails.emailid = $(this).prev('.details').find('a.email').html();
+						var success = addUser(userDetails);
 						if(success ==true){
 							populateProjectDetails();
 							$(this).parent().hide();
@@ -902,11 +963,7 @@
 						
 					});
 					
-				},
-				error: function(data) { },
-				complete: function(data) {
-				}
-			});
+				
 			}
 			
 			$(document).live("click",function(event){
@@ -931,7 +988,7 @@
 					var users_html="";
 					for(var i=0;i<records.length;i++){
 						if(records[i].username != creator){
-							users_html += '<li><img src="/scrumr/themes/images/1.jpg"/></div><div class="details"><label class="name">'+records[i].fullName+'</label><a class="email">'+records[i].emailId+'</a></div><div class="businessUnit"><label class="unit">'+records[i].business_unit+'</label><label class="location">'+records[i].location+'</label></div><div style="float:left;" class="removeUser float-rgt disable" id="'+records[i].username+'"></div></li>';
+							users_html += '<li><img src="'+records[i].avatarurl+'"/></div><div class="details"><label class="name">'+records[i].fullname+'</label><a class="email">'+records[i].emailid+'</a></div><div style="float:left;" class="removeUser float-rgt disable" id="'+records[i].username+'"></div></li>';
 						}
 					}
 					//users_html += "</ul>";
@@ -1116,8 +1173,8 @@
     				event.preventDefault();
     			}
     			var query=$('#searchStory').val();
-    			var selector = $('#storyList .story');
-    			query = query.replace(/ /gi, '|'); //add OR for regex query  
+    			var selector = $('#storyList').find('ul.story');
+    			//query = query.replace(/ /gi, '|'); //add OR for regex query  
 
     			$(selector).children('li').each(
     					function() {
@@ -1131,7 +1188,9 @@
     			if (event.which == 13) {
     				event.preventDefault();
     			}
-    			var query=$('#searchUser').val();
+    			//$(this).closest('.popup-proj-cont').find('.user-loading').show();
+    			//$(this).closest('.popup-proj-cont').find('#total-user-list').hide();
+    			 var query=$('#searchUser').val();
     			var selector = $('.popup-proj-cont .c-box .c-box-content').find('ul');
     			query = query.replace(/ /gi, '|'); //add OR for regex query  
     			$(selector).find('li').each(
@@ -1139,7 +1198,8 @@
     						($(this).find('label.name').text()
     								.search(new RegExp(query, "i")) < 0) ? $(this)
     								.hide() : $(this).show();
-    					});
+    					}); 
+    			
 
     		});
         	
@@ -1248,7 +1308,7 @@
             
           
 //code for highcharts
-    	var areaChart; // globally available
+    	/* var areaChart; // globally available
     	var pieChart;
     	var storyData=[];
     	var colors = Highcharts.getOptions().colors;
@@ -1381,7 +1441,7 @@
 				size:'115%'
 				
 			}]
-		});
+		}); */
 	// Comment Section Code
         	
         	var month_list=new Array("January","Febraury","March","April","May","June","July","August","September","October","November","December");
@@ -1391,7 +1451,7 @@
         		var commentBoxHtml = '';
 				var user = userLogged;	
 				var current_user = userObject[user];
-				commentBoxHtml = '<img src="/scrumr/themes/images/1.jpg">';							
+				commentBoxHtml = '<img src="'+current_user.avatarurl+'">';							
 				$(".comment-box-user").html(commentBoxHtml);
 				$(".todo-box-user").html(commentBoxHtml);
 				
@@ -1411,15 +1471,14 @@
 						if (comments != null){	
 							$('#comments_section').prev().find('label').html('Comments ('+comments.length+')');							
 	        				if(comments.length > 0){
-		        				commentsHtml += '<ul style="list-style:none;">';
 		        				for (var i=0;i<comments.length;i++){
 			        				comment = comments[i];
 			        				var newDate = new Date(comment.logDate);
 			        				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();				        				    				
 			        				//alert($.datepicker.parseDate('MM d,yy',new Date(parseInt(comment.logDate))));			        																						        		
-			        				commentsHtml += '<li class="comment-list" style="width:100%;"><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>';				        						        	
+			        				commentsHtml += '<li class="comment-list" style="width:100%;"><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>';				        						        	
 			        				}
-		        				commentsHtml += '</ul></div>';
+		        				commentsHtml += '</div>';
 		        			}			        				        			        			
 						}else{
 								commentsHtml += '</div>';
@@ -1496,7 +1555,8 @@
                  if (e.which == 13){                                                                
                 	 var user = userLogged;
                 	 var story_id = $("#current_story_id").val();	
-                	 var commentText = $('.comment-text').val();                	 
+                	 var commentText = $('.comment-text').val(); 
+                	 if(commentText =="") return;
 					 commentText = parsedString(commentText);		                    	 			                   	               	        	          	                 	      
                      var post_data = '&content='+ commentText+'&storyid='+story_id+'&logdate='+$.datepicker.formatDate('yy-mm-dd', new Date())+'&user='+user;                     
                      $.ajax({
@@ -1510,7 +1570,7 @@
               				$('.comment-text').val('');							            				             			
               				var newDate = new Date(comment.logDate);
               				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();              				         				              			
-              				$('.comment-display ul').append('<li class="comment-list" style="width:100%";><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullName+'" src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>');
+              				$('.comment-display ul').append('<li class="comment-list" style="width:100%";><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>');
 //              				alert('came here');              				 
               				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
               				$('.comment-text').focus();         				              				                 
@@ -1530,8 +1590,8 @@
         	 var user = userLogged;
         	 var story_id = $("#current_story_id").val();	
         	 var todoText = $(".todo-text").val();                       	  	 
-        	         	 
-			 var milestonePeriod = $("#todo-milestones").val();			 
+			 var milestonePeriod = $("#todo-milestones").val();		
+			 if(todoText == "") return;   
 			 todoText = parsedString(todoText);
         	 		                    	 			                   	               	        	          	                 	      
              var post_data = '&content='+ todoText+'&storyid='+story_id+'&milestonePeriod='+milestonePeriod+'&user='+user;                     
@@ -1543,8 +1603,8 @@
       			success: function( todo ) {  
       				todo = todo[0];
       				$('.todo-text').val('');
-      				$('#todo-milestones').val('Milestones');							            				             			      				              				         				              			
-      				$('.todo-display ul').prepend('<li class="todo-list" style="width:100%";><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period :'+todo.milestonePeriod+'</div></div></li>');
+      				$('#todo-milestones').val('1 Day');							            				             			      				              				         				              			
+      				$('.todo-display ul').prepend('<li class="todo-list" style="width:100%";><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period :'+todo.milestonePeriod+'</div></div></li>');
       				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
       				$('.todo-text').focus();         				              				                 
       			},
@@ -1589,7 +1649,7 @@
 		        				todosHtml += '<ul style="list-style:none;">';
 		        				for (var i=0;i<todos.length;i++){
 		        					todo = todos[i];			        								        				    						        							        																						        	
-			        				todosHtml += '<li class="todo-list" style="width:100%;"><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img src="/scrumr/themes/images/1.jpg"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period: '+todo.milestonePeriod+'</div></div></li>';				        						        	
+			        				todosHtml += '<li class="todo-list" style="width:100%;"><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period: '+todo.milestonePeriod+'</div></div></li>';				        						        	
 			        				}
 		        				todosHtml += '</ul></div>';
 		        			}			        				        			        			
@@ -1661,7 +1721,7 @@
     </section>
     <section class="right">
         <div class="content float-lft">
-            <div class="chart-container">
+            <%-- <div class="chart-container">
 					<div class="float-lft" style="width: 50%;">
 						<p>Burn out charts</p>
 						<select class="float-lft" name="sprintDuration">
@@ -1682,7 +1742,7 @@
 				
 				<div class=toggleChartLine>
 				<a class="toggleChart" href="javascript:void(0);"></a>
-				</div>
+				</div> --%>
 				
 				
            
@@ -1761,9 +1821,8 @@
 												</div>
 					  							<form id="todo-form"> 
 							                 	<textarea class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
-							                 	<select id="todo-milestones">
-							                 		<option value="" selected="selected">Milestones</option>
-							                 		<option value="1 Day">1 Day</option>
+							                 	<select id="todo-milestones">							                 		
+							                 		<option value="1 Day" selected="selected">1 Day</option>
 							                 		<option value="2 Days">2 Days</option>
 							                 		<option value="3 Days">3 Days</option>
 							                 		<option value="4 Days">4 Days</option>
@@ -1813,16 +1872,7 @@
 							                 <div class="comment-cont">
 												<div class="comment-display">
 								                 <ul>
-								                	 <li>
-								                	 	<a href="javascript:void(0);" class="cmtRmvComment remove"></a>
-								                	 	<img src="themes/images/1.jpg"/>
-								                	 	<div>
-									                	 	<span class="name">Arun Krishna Omkaram: </span>
-									                	 	<span>This is my comment to test the total size of the text spans in how many lines</span>
-									                	 	<div class="actions">January 26, 2012 9:09 am</div>
-									                	 	<span></span>
-								                	 	</div>
-								                	 </li>
+								                	 
 								                 </ul>
 												</div>
 								                 <div class="comment-box">
@@ -1851,6 +1901,8 @@
                		<div id="userInput" class="">
 		                <input type="text" id="searchUser" placeholder="Search user by name..."/>
 	                </div>
+	               <div class="user-loading" id="user_loading" style="display:none;"></div>
+	               
                    <ul id="total-user-list">
                    
                        

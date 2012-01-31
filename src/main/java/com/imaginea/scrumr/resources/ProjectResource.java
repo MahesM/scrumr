@@ -90,7 +90,8 @@ public class ProjectResource {
     		@RequestParam String pSprintDuration,
     		@RequestParam String pStartDate,
     		@RequestParam String pEndDate,
-    		@RequestParam String assignees
+    		@RequestParam String assignees,
+    		@RequestParam String current_user
     		)
 	
 	{
@@ -129,9 +130,9 @@ public class ProjectResource {
 			}
 			project.setAssignees(userList);
 			project.setSprint_duration(duration);
-			project.setCreatedby("aomkaram");
+			project.setCreatedby(current_user);
 			project.setLast_updated(new java.sql.Date(System.currentTimeMillis()));
-			project.setLast_updatedby("aomkaram");
+			project.setLast_updatedby(current_user);
 			project.setCreation_date(new java.sql.Date(System.currentTimeMillis()));
 
 			projectManager.createProject(project);

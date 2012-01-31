@@ -98,10 +98,11 @@ public class StoryResource {
 			) {
 
 		Story story = new Story();
+		System.out.println("User :"+user);
 		try {
 			story.setTitle(stTitle);
 			story.setPriority(Integer.parseInt(stPriority));
-			story.setCreatedby(user);
+			story.setCreator(user);
 			story.setLast_updated(new java.sql.Date(System.currentTimeMillis()));
 			story.setLast_updatedby(user);
 			story.setCreation_date(new java.sql.Date(System.currentTimeMillis()));
