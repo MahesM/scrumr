@@ -813,13 +813,14 @@
 			}
 			
 			function removeUserFromStoryInStage(storyid,stageid){
-				var post_data = 'storyId='+storyid+"&stage="+stageid;
+				var post_data = 'storyId='+storyid+"&stage="+stageid;				
 				$.ajax({
 					url: '/scrumr/api/v1/stories/clearstoryassignees',
 					type: 'POST',
 					data: post_data,
 					async:false,
-					success: function( rec ) {
+					success: function( rec ) {						
+					
 					},
 					error: function(data) { },
 					complete: function(data) { }
@@ -1466,8 +1467,7 @@
 					type : 'GET',
 					async : false,					
 					success :function(comments){
-						
-					
+											    
 						if (comments != null){	
 							$('#comments_section').prev().find('label').html('Comments ('+comments.length+')');							
 	        				if(comments.length > 0){
@@ -1565,15 +1565,15 @@
               			data: post_data,
               			async:false,
               			success: function( comment ) {
+              				
               				comment = comment[0];
                   			e.preventDefault();
               				$('.comment-text').val('');							            				             			
               				var newDate = new Date(comment.logDate);
               				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();              				         				              			
               				$('.comment-display ul').append('<li class="comment-list" style="width:100%";><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>');
-//              				alert('came here');              				 
               				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-              				$('.comment-text').focus();         				              				                 
+              				$('.comment-text').focus(); 				              				                 
               			},
               			error: function(data) { },
              			complete: function(data) { }            		
@@ -1593,7 +1593,6 @@
 			 var milestonePeriod = $("#todo-milestones").val();		
 			 if(todoText == "") return;   
 			 todoText = parsedString(todoText);
-        	 		                    	 			                   	               	        	          	                 	      
              var post_data = '&content='+ todoText+'&storyid='+story_id+'&milestonePeriod='+milestonePeriod+'&user='+user;                     
              $.ajax({
       			url: '/scrumr/api/v1/todo/create',
@@ -1872,7 +1871,7 @@
 							                 <div class="comment-cont">
 												<div class="comment-display">
 								                 <ul>
-								                	 
+
 								                 </ul>
 												</div>
 								                 <div class="comment-box">

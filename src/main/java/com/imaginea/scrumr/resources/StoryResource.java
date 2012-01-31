@@ -206,15 +206,18 @@ public class StoryResource {
 			@RequestParam String userid,
 			@RequestParam String storyId,
 			@RequestParam String stage
-		) {
-
+		) throws Exception {
+		try{
 		Status story_status = new Status();
 		story_status.setUser(userServiceManager.readUser(userid));
 		story_status.setStory(storyManager.readStory(Integer.parseInt(storyId)));
 		story_status.setStage(stage);
 		System.out.println("Stage :"+stage+", User :"+userid+", story"+storyId);
 		statusManager.createStatus(story_status);
-		return "{\"result\":\"success\"}";
+		}catch(Exception e){
+			throw new Exception(e.toString());
+		}
+		return "{\"result\":\"success\"}";		
 	}
 	
 	@RequestMapping(value="/getusers", method = RequestMethod.POST)
@@ -232,12 +235,24 @@ public class StoryResource {
 			@RequestParam String storyId,
 			@RequestParam String stage
 		) {
-		
+		boolean isFailed = false;
+		String exceptionString = "";
 		String[] users = userids.split(",");
 		for(String s: users){
+			try{
 			addUserWithStage(s,storyId,stage);
+			}catch(Exception e){
+				isFailed = true;
+				exceptionString += s+",";
+			}
 		}
-		return "{\"result\":\"success\"}";
+		if (isFailed){
+			//System.out.println("string :"+exceptionString.substring(0,exceptionString.length()-1));
+			exceptionString = exceptionString.substring(0,exceptionString.length()-1);			
+			return "{\"result\":\"failure: Exception occured while adding some users. Users :"+exceptionString+"\"}";
+		}
+		return "{\"result\":\"success\"}";		
+		//return "{\"result\":\"failure\"}";
 	}
 	
 	@RequestMapping(value="/clearstoryassignees", method = RequestMethod.POST)

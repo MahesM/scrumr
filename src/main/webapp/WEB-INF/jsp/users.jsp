@@ -7,50 +7,38 @@
 <%@ page import="org.codehaus.jettison.json.*" %>
 <%@ page import="org.apache.commons.httpclient.protocol.Protocol" %>
 <%@ page import="org.apache.commons.httpclient.protocol.ProtocolSocketFactory" %>
-<%@ page import="com.imaginea.scrumr.qontextclient.*" %>
+<%@ page import="com.imaginea.scrumr.qontextclient.*" %> 
 
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>Scrumr</title>
-
-	<%
-	
-	     // Ignore https certificate verification errors. For staging server only. Comment for production servers
+<%
+// Ignore https certificate verification errors. For staging server only. Comment for production servers
     Protocol easyhttps = new Protocol("https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), 443);
     Protocol.registerProtocol("https", easyhttps);
 
-	//set the consumer key and secret
-	String consumerKey =  "chennaiScrum";
-	String consumerSecret =  "chennaiScrum";
+	//set the consumer key and secret for localhost
+	String consumerKey =  "J5UMvBgIDG2tYQBPbiJ4LtA1dOuYJEmWBOrRrT8+Bx4=";
+	String consumerSecret =  "NstSq/2UYTljQR37MVzROA==";
+	
+	//Consumer Key and secret for SCRUMR CHENNAI -		J5UMvBgIDG2tYQBPbiJ4Ludo5KeqYHTWJwgTpcIBd2w=
+	//Consumer Secret -     HugcFh7TpCvvCwfZrMlPYw==
 	
     //modify this to Qontext Host URL
-    //String qontextHostUrl = "https://www.staging.qontext.com";
 	String qontextHostUrl = "https://pramati.staging.qontext.com";
-	String token = (String)session.getAttribute(OAuth.OAUTH_TOKEN);
-	System.out.println("token is: " +token);
-	request.setAttribute(OAuth.OAUTH_TOKEN, token);
+
+    Settings mySettings = Settings.getInstance(request, qontextHostUrl, consumerKey, consumerSecret);
+    mySettings.saveToSession(session);
     QontextRestApiInvocationUtil helper = new QontextRestApiInvocationUtil();
-    helper.init(request, qontextHostUrl, consumerKey, consumerSecret);
-	String accountId = helper.getAccountId();
-	String content;
-	String successResponse = null;
-	String errorResponse = "";
-	if (helper.lastOperationSuccess) {
-	
-		content = helper.invoke("/search/services/search/people?sort=Alphabetical&showTotalCount=true&start=0&startIndex=0&count=5");
-		if (helper.lastOperationSuccess) {
-			successResponse = JSONObject.quote(content);
-			out.println(successResponse);
-		} else {
-			errorResponse = content;
-			out.println(errorResponse);
-		}
-	} else {
-		content = accountId;
-		errorResponse = content;
-		out.println(errorResponse);
-	}
-	
+    boolean initialized = false;
+    if (helper.hasRequiredParameters(request))  {
+        helper.init(request, mySettings);
+        request.setAttribute("helper", helper);
+        initialized = true;
+    } else {
+        mySettings.saveToSession(session);
+        //request.getRequestDispatcher("/configure.jsp").include(request, response);
+        return;
+    }
+out.println(helper.getBasicProfile());
+String accessToken = request.getParameter(QontextRestApiInvocationUtil.OAUTH_V2_GRANT_ACCESS_TOKEN);
+out.println(helper.getOAuthToken());
+mySettings.saveOAuthAccessToken(session, accessToken);
 %>

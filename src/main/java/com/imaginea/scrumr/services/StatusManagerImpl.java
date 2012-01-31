@@ -71,16 +71,16 @@ public class StatusManagerImpl implements StatusManager {
 
 		return genericDao.getEntity(Status.class, "status.fetchUserStoryStatus",ht);
 	}
-	
+	@Transactional
 	public String clearUsersByStage(Integer storyid, String stage){
 
 		Hashtable<String, Object> ht = new Hashtable<String, Object>();
 		ht.put("storyid", storyid);
 		ht.put("stage", stage);
-		System.out.println("Deleting status");
+		//System.out.println("Deleting status");
 		//return (String) genericDao.getResult("status.clearUsersByStage",ht);
 		List<Status> statusObj = genericDao.getEntities(Status.class, "status.fetchStoryStatus",ht);
-		System.out.println("Size of Array :"+statusObj.size());
+		//System.out.println("Size of Array :"+statusObj.size());
 		try{
 		
 		Iterator<Status> iterator = statusObj.iterator();
@@ -88,6 +88,7 @@ public class StatusManagerImpl implements StatusManager {
 			Status status = iterator.next();
 			System.out.println("Deleting Status Object :"+status.getUser().getFullname());
 			genericDao.delete(status);
+
 		}
 		}catch(Exception e){System.out.println(e.toString());}
 		return "success";
