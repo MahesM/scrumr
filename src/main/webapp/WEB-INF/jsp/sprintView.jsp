@@ -23,11 +23,13 @@
 	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/common-functions.js"></script>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery.fancybox-1.3.4.js"></script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/pagination.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery.dd.js"></script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/highcharts.js"></script>
 	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/jquery.fancybox-1.3.4.css" />
 	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/jquery-ui-1.8.16.custom.css" />
 	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/jscrollpane.css" />
 	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/pagination.css" />
+		<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/dd.css" />
 	<link rel="shortcut icon" type="image/x-icon" href="http://www.qontext.com/wp-content/themes/qontext-v1.5/qontext.ico">
     <link href="<%= request.getContextPath() %>/themes/style.css" rel="stylesheet"/>
  <%

@@ -73,19 +73,20 @@ $(document).ready(function(){
 			String emailId= basicInfo.getString("userId");
 			JSONObject headers = (JSONObject) jsonObject.get("headers");
 			String api_version = headers.getString("api-version");
-			//System.out.println(basicProfile.has("api-version"));
-			String avatarUrl=""+qontextHostUrl+"/portal/st/"+api_version+"/profile/defaultUser.gif";
+			String baseUrl = mySettings.getQontextHostUrl();
+			String avatarUrl=""+baseUrl+"/portal/st/"+api_version+"/profile/defaultUser.gif";
 			 if(basicInfo.has("avatarUrl")){
-                 avatarUrl= qontextHostUrl+""+basicInfo.getString("avatarUrl");
+                 avatarUrl= baseUrl+""+basicInfo.getString("avatarUrl");
 			 }
-			session.setAttribute("userLogged", userId);
+			 
+			//session.setAttribute("userLogged", userId);
 			session.setAttribute("helper", helper);
+			session.setAttribute("baseUrl",baseUrl);
 			
 			String accessToken = request.getParameter(QontextRestApiInvocationUtil.OAUTH_V2_GRANT_ACCESS_TOKEN);
 			mySettings.saveOAuthAccessToken(session, accessToken);
-			System.out.println(accessToken);
 			request.getSession().setAttribute("token", accessToken);
-			request.getSession().setAttribute("userid", userId);
+			//request.getSession().setAttribute("userid", userId);
 			session.setAttribute("fullname", fullName);
 			session.setAttribute("avatar", avatarUrl);
 			%>
