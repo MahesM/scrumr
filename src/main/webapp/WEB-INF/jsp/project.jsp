@@ -22,18 +22,22 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	 
-	 $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
+	 $('.bg-pat').css({'height': ($(window).height()) + 'px'});
      $(window).resize(function() {
          $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
-     });
+     }); 
      
      var username = '<%=session.getAttribute("userLogged")%>';
+     var avatar = '<%=session.getAttribute("avatar")%>';
+     	var fullName = '<%=session.getAttribute("fullname")%>'; 
      <%-- if(username != null && username != ''){
       	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="themes/images/1.jpg"/><label class="float-lft loginLabel">Hi! '+username+',</label><a href="<%= request.getContextPath() %>/j_spring_security_logout" class="logout">Logout</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
       }else{
       	$(".right-div").html('<a href="#sign-in" class="signin">Sign In</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
       } --%>
-     
+       if(username != null && username != ''){
+	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatar+'"/><label class="float-lft loginLabel">Hi!, '+fullName+'</label>');
+	    }  
      function days_between(date1, date2) {
  	    var ONE_DAY = 1000 * 60 * 60 * 24;
  	    var date1_ms = date1.getTime();
@@ -202,7 +206,7 @@ $(document).ready(function(){
    <div class="left-cont">
 	   	<div class="caption-cont">
 	   		<h2>Projects</h2>
-	   		<a id="newproj" href="#create-project"><input style="float:right;margin: 30px 30px 10px 20px;border-radius:3px;" type="submit" class="status submit" value="Create Project"/></a>
+	   		<!-- <a id="newproj" href="#create-project"><input style="float:right;margin: 30px 30px 10px 20px;border-radius:3px;" type="submit" class="status submit" value="Create Project"/></a> -->
 	   </div>
 	   <div style="display:none;overflow:hidden !important;height:400px !importent;">
           	<div id="create-project" class="bg-pat">

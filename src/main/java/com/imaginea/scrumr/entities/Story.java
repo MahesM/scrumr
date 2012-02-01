@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -17,6 +18,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.imaginea.scrumr.interfaces.IEntity;
 
@@ -46,6 +50,8 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 	private Set<User> assignees;
 	private List<Comment> comments;
 	private int view_count;
+	
+	private List<Status> statusList; 
 
 
 	@ManyToOne()
@@ -158,5 +164,15 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
+	
+	@OneToMany(cascade =CascadeType.ALL, fetch=FetchType.LAZY,  mappedBy= "story")
+	@JsonIgnore
+	public List<Status> getStatusList() {
+		return statusList;
+	}
+	public void setStatusList(List<Status> statusList) {
+		this.statusList = statusList;
+	}
+	
 
 }

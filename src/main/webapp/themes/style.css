@@ -526,8 +526,8 @@ span.p3 {
 }
 
 .left-cont{
-	height:inherit;
-	width:74%;
+	height:100%;
+	width:98%;
 	margin-left: 1%;
 	display:inline-block;
 	background-color: #F5F5F5;

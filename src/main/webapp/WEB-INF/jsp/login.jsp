@@ -2,6 +2,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="auth" uri="http://www.springframework.org/security/tags" %>
 <%@ page import="java.io.*" %>
+<%@ page import="java.util.*" %>
 <%@ page import="org.codehaus.jettison.json.JSONObject" %>
 <%@ page import="net.oauth.*" %>
 <%@ page import="org.codehaus.jettison.json.*" %>
@@ -39,12 +40,12 @@ $(document).ready(function(){
 			Protocol.registerProtocol("https", easyhttps);
 			
 			//set the consumer key and secret for localhost
-			//String consumerKey =  "J5UMvBgIDG2tYQBPbiJ4LtA1dOuYJEmWBOrRrT8+Bx4=";
-			//String consumerSecret =  "NstSq/2UYTljQR37MVzROA==";
+			String consumerKey =  "J5UMvBgIDG2tYQBPbiJ4LtA1dOuYJEmWBOrRrT8+Bx4=";
+			String consumerSecret =  "NstSq/2UYTljQR37MVzROA==";
 					
 			//consumer key and secret key for chennai scrumr
-			String consumerKey = "J5UMvBgIDG2tYQBPbiJ4Ludo5KeqYHTWJwgTpcIBd2w=";
-			String consumerSecret ="HugcFh7TpCvvCwfZrMlPYw==";
+			//tring consumerKey = "J5UMvBgIDG2tYQBPbiJ4Ludo5KeqYHTWJwgTpcIBd2w=";
+			//String consumerSecret ="HugcFh7TpCvvCwfZrMlPYw==";
 			
 			//modify this to Qontext Host URL
 			//String qontextHostUrl = "https://www.staging.qontext.com";
@@ -63,12 +64,20 @@ $(document).ready(function(){
 		        return;
 		    }
 			JSONObject basicProfile = helper.getBasicProfile();
-			System.out.println(basicProfile);
+			JSONObject jsonObject = (JSONObject) basicProfile.get("success");
+            JSONObject bodyObject = (JSONObject) jsonObject.get("body");
+        	JSONObject basicInfo = (JSONObject) bodyObject.get("basicInfo");
 			String userId= helper.getAccountId();
-			String displayName= basicProfile.getString("displayName");
-			String fullName= basicProfile.getString("fullName");
-			String emailId= basicProfile.getString("userId");
-			String avatarUrl= basicProfile.getString("avatarUrl");
+			String displayName= basicInfo.getString("displayName");
+			String fullName= basicInfo.getString("fullName");
+			String emailId= basicInfo.getString("userId");
+			JSONObject headers = (JSONObject) jsonObject.get("headers");
+			String api_version = headers.getString("api-version");
+			//System.out.println(basicProfile.has("api-version"));
+			String avatarUrl=""+qontextHostUrl+"/portal/st/"+api_version+"/profile/defaultUser.gif";
+			 if(basicInfo.has("avatarUrl")){
+                 avatarUrl= qontextHostUrl+""+basicInfo.getString("avatarUrl");
+			 }
 			session.setAttribute("userLogged", userId);
 			session.setAttribute("helper", helper);
 			
@@ -77,6 +86,8 @@ $(document).ready(function(){
 			System.out.println(accessToken);
 			request.getSession().setAttribute("token", accessToken);
 			request.getSession().setAttribute("userid", userId);
+			session.setAttribute("fullname", fullName);
+			session.setAttribute("avatar", avatarUrl);
 			%>
 			var user = '<%= userId %>';
 			//temp code that accesses profile.json locally
@@ -88,7 +99,9 @@ $(document).ready(function(){
 			     	$(".right-div").html('<a href="#sign-in" class="signin">Sign In</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
 			     }
 			}); --%>
-	
+			if(user != null && user != ''){
+		     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="<%=avatarUrl%>"/><label class="float-lft loginLabel">Hi!, <%=fullName%></label>');
+		     }
 	 
 			 $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
 		     $(window).resize(function() {
@@ -140,7 +153,7 @@ $(document).ready(function(){
 					return false;
 				}else{
 					<%-- var post_data1 = 'userid='+user +'&displayname=<%=displayName%>&fullname=<%=fullName%>&emailid=<%=emailId%>&avatarurl=<%=avatarUrl%>'; --%>
-					var post_data1 = {'userid':user,'displayname':'<%=displayName%>','fullname':'<%=fullName%>','emailid':'<%=emailId%>','avatarurl':'<%=avatarUrl%>'};
+					var post_data1 = {'username':user,'displayname':'<%=displayName%>','fullname':'<%=fullName%>','emailid':'<%=emailId%>','avatarurl':'<%=avatarUrl%>'};
 					$.ajax({
 						url: '/scrumr/api/v1/users/create',
 						type: 'POST',
@@ -159,7 +172,6 @@ $(document).ready(function(){
 								success: function( records ) {
 									if(records[0].pkey){
 										parent.$.fancybox.close();
-										alert("success");
 										window.location.href = '/scrumr/sprint.action?&visit=1&projectId='+records[0].pkey;
 									}
 								},

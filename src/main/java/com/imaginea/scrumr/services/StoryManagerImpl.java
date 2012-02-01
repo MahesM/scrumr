@@ -46,6 +46,8 @@ public class StoryManagerImpl implements StoryManager {
 	@Transactional
 	public void deleteStory(Story story) {
 		if(story != null) {
+			
+			
 
 			System.out.println("Deleting story");
 			genericDao.delete(story);

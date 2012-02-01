@@ -64,13 +64,18 @@
         $(function() {
         	var userLogged = '<%=user%>';
         	var allUsersResponse = $.parseJSON('<%=content%>');
-        	
+        	var avatar = '<%=session.getAttribute("avatar")%>';
+         	var fullName = '<%=session.getAttribute("fullname")%>';
         	<%-- if(userLogged != null && userLogged != ""){
         		$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="<%= request.getContextPath() %>/themes/images/1.jpg"/><label class="float-lft loginLabel">Hi! '+userLogged+',</label><a href="<%= request.getContextPath() %>/j_spring_security_logout" class="logout">Logout</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
             }else{
             	$(".right-div").html('<a href="#sign-in" class="signin">Sign In</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
             } --%>
-        	
+            
+            if(userLogged != null && userLogged != ''){
+    	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatar+'"/><label class="float-lft loginLabel">Hi!, '+fullName+'</label>');
+    	     } 
+            var qontextHostUrl = "https://pramati.staging.qontext.com";
         	var current_sprint = 0;
         	var users_arr = [];
         	var sprintinview = 0;
@@ -178,7 +183,7 @@
 	        					var story = stories[i];
 	        					creatorObj = userObject[story.creator];
 							var userObj = userObject[story.creator];
-	        					story_unassigned += '<li id="st'+story.pkey+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+story.creator+'</label></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        					story_unassigned += '<li id="st'+story.pkey+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 
 	        				}
 	        			}else{
@@ -258,7 +263,7 @@
 														}
 							        					sprint_html +=  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					}else{
-						        						sprint_html += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+story.creator+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+						        						sprint_html += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					} 
 						        				}
 					        					$(".viewStory, .moreStory").fancybox({
@@ -570,7 +575,7 @@
 			        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint); 
 			        		   				var elOffset = $(ui.item[0]).offset();
 			        		   				 if($(ui.item[0]).closest('ul').attr('id') == 'notstarted'){
-			        		   					$(ui.item[0]).find('.img-cont').html("<img src='"+creatorObj.avatarurl+"' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.username+"</label>");
+			        		   					$(ui.item[0]).find('.img-cont').html("<img src='"+creatorObj.avatarurl+"' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.fullname+"</label>");
 			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   				}
 			        		   				if($(ui.item[0]).closest('ul').attr('id') == 'finished'){			        		   								        		   				
@@ -932,8 +937,12 @@
 				}
 				//	var users_html = "<ul>";
 					var users_html="";
+					var apiVersion = allUsersResponse.success.headers["api-version"];
 					for(var i=0;i<total_users.length;i++){
-						users_html += '<li><img src="'+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
+						if(!total_users[i].avatar){
+        					total_users[i].avatar = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
+        				}
+						users_html += '<li><img src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
 					}
 					//users_html += "</ul>";
 					//$("#userList-cont").html(users_html);
@@ -1191,7 +1200,7 @@
     			}
     			//$(this).closest('.popup-proj-cont').find('.user-loading').show();
     			//$(this).closest('.popup-proj-cont').find('#total-user-list').hide();
-    			 var query=$('#searchUser').val();
+    			var query=$('#searchUser').val();
     			var selector = $('.popup-proj-cont .c-box .c-box-content').find('ul');
     			query = query.replace(/ /gi, '|'); //add OR for regex query  
     			$(selector).find('li').each(
@@ -1944,8 +1953,7 @@
 						<select name="stPriority" id="storyPriority">
 							<option selected="selected" value="1">Priority 1</option>
 							<option value="2">Priority 2</option>
-							<option value="3">Priority 3</option>
-							<option value="4">Priority 4</option>
+							<option value="3">Priority 3</option>							
 						</select>
 						<a id="addAnotherStory" href="javascript:void(0);" >+ Add another story</a>
 					</form>

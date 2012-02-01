@@ -47,7 +47,7 @@ public class Status extends AbstractEntity implements Serializable{
 	 * @return the story
 	 */
 	@ManyToOne
-	@JoinColumn (name="storyid", nullable = false)
+	@JoinColumn (name="storyid", nullable = true)
 	public Story getStory() {
 		return story;
 	}
