@@ -1,6 +1,14 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib prefix="auth" uri="http://www.springframework.org/security/tags" %>
+<%@ page import="java.io.*" %>
+<%@ page import="java.util.*" %>
+<%@ page import="org.codehaus.jettison.json.JSONObject" %>
+<%@ page import="net.oauth.*" %>
+<%@ page import="org.codehaus.jettison.json.*" %>
+<%@ page import="org.apache.commons.httpclient.protocol.Protocol" %>
+<%@ page import="org.apache.commons.httpclient.protocol.ProtocolSocketFactory" %>
+<%@ page import="com.imaginea.scrumr.qontextclient.*" %> 
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,9 +35,29 @@ $(document).ready(function(){
          $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
      }); 
      
-     var username = '<%=session.getAttribute("userLogged")%>';
-     var avatar = '<%=session.getAttribute("avatar")%>';
-     	var fullName = '<%=session.getAttribute("fullname")%>'; 
+     
+     <%
+     	QontextRestApiInvocationUtil helper = (QontextRestApiInvocationUtil)session.getAttribute("helper");
+     	JSONObject basicProfile = helper.getBasicProfile();
+		JSONObject jsonObject = (JSONObject) basicProfile.get("success");
+     	JSONObject bodyObject = (JSONObject) jsonObject.get("body");
+ 		JSONObject basicInfo = (JSONObject) bodyObject.get("basicInfo");
+		String userId= helper.getAccountId();
+		String displayName= basicInfo.getString("displayName");
+		String fullName= basicInfo.getString("fullName");
+		String emailId= basicInfo.getString("userId");
+		JSONObject headers = (JSONObject) jsonObject.get("headers");
+		String api_version = headers.getString("api-version");
+		String baseUrl = (String)session.getAttribute("baseUrl");
+		String avatarUrl=""+baseUrl+"/portal/st/"+api_version+"/profile/defaultUser.gif";
+		if(basicInfo.has("avatarUrl")){
+          avatarUrl= baseUrl+""+basicInfo.getString("avatarUrl");
+		}
+     
+     %>
+     var username = '<%=userId%>';
+     var avatar = '<%=avatarUrl%>';
+     	var fullName = '<%=fullName%>'; 
      <%-- if(username != null && username != ''){
       	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="themes/images/1.jpg"/><label class="float-lft loginLabel">Hi! '+username+',</label><a href="<%= request.getContextPath() %>/j_spring_security_logout" class="logout">Logout</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
       }else{
@@ -165,19 +193,31 @@ $(document).ready(function(){
 					return false;
 				} 
 			}
-			var post_data = 'pTitle=' + title.val() + '&current_user='+user + '&pDescription=' + description.val() + '&assignees='
-				+ assignees + '&pStartDate=' + start_date.val() + '&pEndDate=' + end_date.val() +'&pSprintDuration=' +duration.val();
-			
+			var post_data1 = {'username':user,'displayname':'<%=displayName%>','fullname':'<%=fullName%>','emailid':'<%=emailId%>','avatarurl':'<%=avatarUrl%>'};
 			$.ajax({
-				url: '/scrumr/api/v1/projects/create',
+				url: '/scrumr/api/v1/users/create',
 				type: 'POST',
-				data: post_data,
+				data: post_data1,
 				async:false,
 				success: function( records ) {
-					if(records[0].pkey){
-						parent.$.fancybox.close();
-						window.location.href = '/scrumr/sprint.action?visit=1&projectId='+records[0].pkey;
-					}
+					var assignees = new Array();
+					assignees.push(user);
+					var post_data = 'pTitle=' + title.val() + '&current_user='+user + '&pDescription=' + description.val() + '&assignees='
+						+ assignees + '&pStartDate=' + start_date.val() + '&pEndDate=' + end_date.val() +'&pSprintDuration=' +duration.val();
+					$.ajax({
+						url: '/scrumr/api/v1/projects/create',
+						type: 'POST',
+						data: post_data,
+						async:false,
+						success: function( records ) {
+							if(records[0].pkey){
+								parent.$.fancybox.close();
+								window.location.href = '/scrumr/sprint.action?&visit=1&projectId='+records[0].pkey;
+							}
+						},
+						error: function(data) { },
+						complete: function(data) { }
+					});
 				},
 				error: function(data) { },
 				complete: function(data) { }
@@ -206,9 +246,9 @@ $(document).ready(function(){
    <div class="left-cont">
 	   	<div class="caption-cont">
 	   		<h2>Projects</h2>
-	   		<!-- <a id="newproj" href="#create-project"><input style="float:right;margin: 30px 30px 10px 20px;border-radius:3px;" type="submit" class="status submit" value="Create Project"/></a> -->
+	   		<a id="newproj" href="#create-project"><input style="float:right;margin: 30px 30px 10px 20px;border-radius:3px;" type="submit" class="status submit" value="Create Project"/></a> 
 	   </div>
-	   <div style="display:none;overflow:hidden !important;height:400px !importent;">
+	   <div style="display:none;overflow:hidden !important;height:400px !important;width:500px !important;">
           	<div id="create-project" class="bg-pat">
 	       <div class="bg-pat form-cont">
 	           <h2>Create New Project</h2>
