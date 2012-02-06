@@ -53,11 +53,13 @@ public class TaskManagerImpl implements TaskManager {
 	
 	public List<Task> fetchTasksByStory(Integer pkey){
 		
-		Story story = genericDao.find(Story.class, pkey);
+		//Story story = genericDao.find(Story.class, pkey);
 		Hashtable<String, Object> ht = new Hashtable<String, Object>();
-		ht.put("story", story);
-		
-		return genericDao.getEntities(Task.class, "tasks.fetchTasksByStory",ht);
+		ht.put("storyid", pkey);
+		System.out.println("--------------->>> Pkey of story:"+pkey);
+		List<Task>tasks =genericDao.getEntities(Task.class, "tasks.fetchTasksByStory",ht);
+		System.out.println("-------------------->>>>>> "+tasks);
+		return tasks;
 	}
 	
 	public List<Task> fetchTasksByStatus(String status){

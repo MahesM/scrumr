@@ -17,7 +17,7 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @Entity
 @Table(name="tasks")
 @NamedQueries({
-	@NamedQuery(name="tasks.fetchTasksByStory", query="SELECT instance from Task instance where instance.story=:story" )
+	@NamedQuery(name="tasks.fetchTasksByStory", query="SELECT instance from Task instance where instance.story.id=:storyid" )
 })
 @XmlRootElement
 public class Task extends AbstractEntity implements IEntity, Serializable {
