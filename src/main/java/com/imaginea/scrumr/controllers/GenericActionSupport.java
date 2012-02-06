@@ -72,7 +72,7 @@ public class GenericActionSupport extends ActionSupport implements Preparable, S
 		//String qontextHostUrl = "https://www.staging.qontext.com";
 		String qontextHostUrl = "https://pramati.staging.qontext.com";
 		Settings mySettings = Settings.getInstance(request, qontextHostUrl, consumerKey, consumerSecret);
-	    
+	    session.setAttribute("mySettings", mySettings);
 		mySettings.saveToSession(session);
 		boolean isInitialized = QontextUserUtils.initialize(request, mySettings);
 		if (isInitialized == false){
