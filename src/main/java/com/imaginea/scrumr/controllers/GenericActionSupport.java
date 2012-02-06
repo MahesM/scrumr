@@ -15,9 +15,8 @@ public class GenericActionSupport extends ActionSupport implements Preparable, S
 
 	protected HttpServletRequest request;
 	protected UserServiceManager userServiceManager;
-	protected User loggedInUser;
-
-
+	protected User loggedInUser = null;
+	public String source = "DATABASE";
 
 	// Default action method
 	public String execute() {
@@ -27,21 +26,8 @@ public class GenericActionSupport extends ActionSupport implements Preparable, S
 	public void prepare() throws Exception {
 		System.out.println("PREPARE1");
 		if( SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null) {
-			System.out.println("PREPARE2");
-			String loggedInUserName = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-
-			if (loggedInUserName.equals("anonymousUser")) {
-				loggedInUser = new User();
-				loggedInUser.setUsername(loggedInUserName);
-			} else {
-				loggedInUser = userServiceManager.readUser(loggedInUserName);
-			}
-			System.out.println(loggedInUserName);
-			System.out.println(loggedInUser.getAuthorities());
+			loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		}
-
-		// Override to prepare the required fields
-
 	}
 
 

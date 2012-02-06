@@ -35,37 +35,18 @@ $(document).ready(function(){
          $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
      }); 
      
+ 	var username = '<s:property value="loggedInUser.username"/>';
+	var fullname = '<s:property value="loggedInUser.fullname"/>';
+	var displayname = '<s:property value="loggedInUser.displayname"/>';
+	var avatarurl = '<s:property value="loggedInUser.avatarurl"/>';
+	var emailid = '<s:property value="loggedInUser.emailid"/>';
+	var source = '<s:property value="source"/>';
+	alert(source);
+	
+     if(username != null && username != ''){
+     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatarurl+'"/><label class="float-lft loginLabel">Hi!, '+fullname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
+     }
      
-     <%
-     	QontextRestApiInvocationUtil helper = (QontextRestApiInvocationUtil)session.getAttribute("helper");
-     	JSONObject basicProfile = helper.getBasicProfile();
-		JSONObject jsonObject = (JSONObject) basicProfile.get("success");
-     	JSONObject bodyObject = (JSONObject) jsonObject.get("body");
- 		JSONObject basicInfo = (JSONObject) bodyObject.get("basicInfo");
-		String userId= helper.getAccountId();
-		String displayName= basicInfo.getString("displayName");
-		String fullName= basicInfo.getString("fullName");
-		String emailId= basicInfo.getString("userId");
-		JSONObject headers = (JSONObject) jsonObject.get("headers");
-		String api_version = headers.getString("api-version");
-		String baseUrl = (String)session.getAttribute("baseUrl");
-		String avatarUrl=""+baseUrl+"/portal/st/"+api_version+"/profile/defaultUser.gif";
-		if(basicInfo.has("avatarUrl")){
-          avatarUrl= baseUrl+""+basicInfo.getString("avatarUrl");
-		}
-     
-     %>
-     var username = '<%=userId%>';
-     var avatar = '<%=avatarUrl%>';
-     	var fullName = '<%=fullName%>'; 
-     <%-- if(username != null && username != ''){
-      	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="themes/images/1.jpg"/><label class="float-lft loginLabel">Hi! '+username+',</label><a href="<%= request.getContextPath() %>/j_spring_security_logout" class="logout">Logout</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-      }else{
-      	$(".right-div").html('<a href="#sign-in" class="signin">Sign In</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-      } --%>
-       if(username != null && username != ''){
-	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatar+'"/><label class="float-lft loginLabel">Hi!, '+fullName+'</label>');
-	    }  
      function days_between(date1, date2) {
  	    var ONE_DAY = 1000 * 60 * 60 * 24;
  	    var date1_ms = date1.getTime();
@@ -193,7 +174,7 @@ $(document).ready(function(){
 					return false;
 				} 
 			}
-			var post_data1 = {'username':user,'displayname':'<%=displayName%>','fullname':'<%=fullName%>','emailid':'<%=emailId%>','avatarurl':'<%=avatarUrl%>'};
+			var post_data1 = {'username':user,'displayname':displayname,'fullname':fullname,'emailid':emailid,'avatarurl':avatarurl};
 			$.ajax({
 				url: '/scrumr/api/v1/users/create',
 				type: 'POST',

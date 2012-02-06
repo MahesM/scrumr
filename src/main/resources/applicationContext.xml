@@ -87,9 +87,16 @@
 	
 	<bean id="homeAction" class="com.imaginea.scrumr.controllers.HomeAction" scope="prototype" >
 		<property name="userServiceManager" ref="userServiceManager" />
-	
 	</bean>
 	
+	<bean id="qontextHelper" class="com.imaginea.scrumr.qontextclient.QontextRestApiInvocationUtil" >
+	</bean>
+	<bean id="qontextHelperUtil" class="com.imaginea.scrumr.utils.QontextHelperUtil" scope="prototype" >
+		<property name="consumerKey" value="${qontext.consumerkey}" />
+		<property name="consumerSecret" value="${qontext.consumersecret}" />
+		<property name="qontextHostUrl" value="${qontext.host}" />
+		<property name="helper" ref="qontextHelper"/>
+	</bean>
 	<bean id="sprintAction" class="com.imaginea.scrumr.controllers.SprintAction" scope="prototype" >
 		<property name="userServiceManager" ref="userServiceManager" />
 	

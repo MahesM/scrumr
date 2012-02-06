@@ -8,7 +8,8 @@
 <%@ page import="org.codehaus.jettison.json.*" %>
 <%@ page import="org.apache.commons.httpclient.protocol.Protocol" %>
 <%@ page import="org.apache.commons.httpclient.protocol.ProtocolSocketFactory" %>
-<%@ page import="com.imaginea.scrumr.qontextclient.*" %> 
+<%@ page import="com.imaginea.scrumr.qontextclient.*" %>
+<%@ page import="com.imaginea.scrumr.entities.User" %>  
 
 <!DOCTYPE html>
 <html>
@@ -30,87 +31,24 @@
    <link href="<%= request.getContextPath() %>/themes/style.css" rel="stylesheet"/>
 <script type="text/javascript">
 $(document).ready(function(){
- 	<%
-			/* String token = request.getParameter(OAuth.OAUTH_TOKEN);
-		    if(token != null)
-		    	session.setAttribute(OAuth.OAUTH_TOKEN, token); */
-	
-			    // Ignore https certificate verification errors. For staging server only. Comment for production servers
-			Protocol easyhttps = new Protocol("https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), 443);
-			Protocol.registerProtocol("https", easyhttps);
-			
-			//set the consumer key and secret for localhost
-			String consumerKey =  "J5UMvBgIDG2tYQBPbiJ4LtA1dOuYJEmWBOrRrT8+Bx4=";
-			String consumerSecret =  "NstSq/2UYTljQR37MVzROA==";
-					
-			//consumer key and secret key for chennai scrumr
-			//tring consumerKey = "J5UMvBgIDG2tYQBPbiJ4Ludo5KeqYHTWJwgTpcIBd2w=";
-			//String consumerSecret ="HugcFh7TpCvvCwfZrMlPYw==";
-			
-			//modify this to Qontext Host URL
-			//String qontextHostUrl = "https://www.staging.qontext.com";
-			String qontextHostUrl = "https://pramati.staging.qontext.com";
-			Settings mySettings = Settings.getInstance(request, qontextHostUrl, consumerKey, consumerSecret);
-		    mySettings.saveToSession(session);
-		    QontextRestApiInvocationUtil helper = new QontextRestApiInvocationUtil();
-		    boolean initialized = false;
-		    if (helper.hasRequiredParameters(request))  {
-		        helper.init(request, mySettings);
-		        request.setAttribute("helper", helper);
-		        initialized = true;
-		    } else {
-		        mySettings.saveToSession(session);
-		        //request.getRequestDispatcher("/configure.jsp").include(request, response);
-		        return;
-		    }
-			JSONObject basicProfile = helper.getBasicProfile();
-			JSONObject jsonObject = (JSONObject) basicProfile.get("success");
-            JSONObject bodyObject = (JSONObject) jsonObject.get("body");
-        	JSONObject basicInfo = (JSONObject) bodyObject.get("basicInfo");
-			String userId= helper.getAccountId();
-			String displayName= basicInfo.getString("displayName");
-			String fullName= basicInfo.getString("fullName");
-			String emailId= basicInfo.getString("userId");
-			JSONObject headers = (JSONObject) jsonObject.get("headers");
-			String api_version = headers.getString("api-version");
-			String baseUrl = mySettings.getQontextHostUrl();
-			String avatarUrl=""+baseUrl+"/portal/st/"+api_version+"/profile/defaultUser.gif";
-			 if(basicInfo.has("avatarUrl")){
-                 avatarUrl= baseUrl+""+basicInfo.getString("avatarUrl");
-			 }
-			 
-			//session.setAttribute("userLogged", userId);
-			session.setAttribute("helper", helper);
-			session.setAttribute("baseUrl",baseUrl);
-			
-			String accessToken = request.getParameter(QontextRestApiInvocationUtil.OAUTH_V2_GRANT_ACCESS_TOKEN);
-			mySettings.saveOAuthAccessToken(session, accessToken);
-			request.getSession().setAttribute("token", accessToken);
-			//request.getSession().setAttribute("userid", userId);
-			session.setAttribute("fullname", fullName);
-			session.setAttribute("avatar", avatarUrl);
-			%>
-			var user = '<%= userId %>';
-			//temp code that accesses profile.json locally
-			<%-- $.getJSON("<%= request.getContextPath() %>/themes/json/profile.json",function(object){
-				user = object.success.body.basicInfo.displayName;
-			     if(user != null && user != ''){
-			     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="themes/images/1.jpg"/><label class="float-lft loginLabel">Hi! '+user+',</label><a href="<%= request.getContextPath() %>/j_spring_security_logout" class="logout">Logout</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-			     }else{
-			     	$(".right-div").html('<a href="#sign-in" class="signin">Sign In</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-			     }
-			}); --%>
-			if(user != null && user != ''){
-		     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="<%=avatarUrl%>"/><label class="float-lft loginLabel">Hi!, <%=fullName%></label>');
-		     }
-	 
-			 $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
-		     $(window).resize(function() {
-		         $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
-		     });
-		     $('input[text]').val('');
-		     $('textarea').val('');
-		     $('select').val('');
+ 	
+		var user = '<s:property value="loggedInUser.username"/>';
+		var fullname = '<s:property value="loggedInUser.fullname"/>';
+		var displayname = '<s:property value="loggedInUser.displayname"/>';
+		var avatarurl = '<s:property value="loggedInUser.avatarurl"/>';
+		var emailid = '<s:property value="loggedInUser.emailid"/>';
+		var source = '<s:property value="source"/>';
+		if(user != null && user != ''){
+	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatarurl+'"/><label class="float-lft loginLabel">Welcome!, '+displayname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
+	     }
+ 
+		 $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
+	     $(window).resize(function() {
+	         $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
+	     });
+	     $('input[text]').val('');
+	     $('textarea').val('');
+	     $('select').val('');
      function days_between(date1, date2) {
  	    var ONE_DAY = 1000 * 60 * 60 * 24;
  	    var date1_ms = date1.getTime();
@@ -153,8 +91,7 @@ $(document).ready(function(){
 				if(user == "" || user == null){
 					return false;
 				}else{
-					<%-- var post_data1 = 'userid='+user +'&displayname=<%=displayName%>&fullname=<%=fullName%>&emailid=<%=emailId%>&avatarurl=<%=avatarUrl%>'; --%>
-					var post_data1 = {'username':user,'displayname':'<%=displayName%>','fullname':'<%=fullName%>','emailid':'<%=emailId%>','avatarurl':'<%=avatarUrl%>'};
+					var post_data1 = {'username':user,'displayname':'<s:property value="loggedInUser.displayname"/>','fullname':'<s:property value="loggedInUser.fullname"/>','emailid':'<s:property value="loggedInUser.emailid"/>','avatarurl':'<s:property value="loggedInUser.avatarurl"/>'};
 					$.ajax({
 						url: '/scrumr/api/v1/users/create',
 						type: 'POST',
@@ -196,18 +133,6 @@ $(document).ready(function(){
         'autoScale' : false
 	});
 	
-	$(".signin").fancybox({
-		'overlayColor' : '#000',
-        'overlayOpacity' : '0.3',
-        'autoScale' : false,
-        'onComplete' : (function(){
-               }),
-        'onStart' : (function(){
-                }),
-        'onClosed' : (function() {
-               })
-
-	});
 }); 
 </script>
 </head>
@@ -242,19 +167,6 @@ $(document).ready(function(){
 	       <label id="proj-error" class="error-msg"></label>
        </div>
    </div>
-   <div style="display:none;overflow:hidden !important;height:400px !importent;">
-          	<div id="sign-in" class="">
-		           <div class="loginHead float-lft">Sign In</div>
-				       <form id="login-form" method="post" action="<%= request.getContextPath() %>/j_spring_security_check" accept-charset="utf-8">
-				       <label>Username / Email:</label>
-			           <input type="text" class="inp-box margin-rgt" placeholder="Enter Username" required id="username" name="j_username" maxlength="30" class="username">
-			           <label>Password:</label>
-			           <input type="password" class="inp-box margin-rgt" placeholder="Enter Password" required name="j_password" id="password" class="password">
-			           <input type="submit" class="float-left submit" value="Login"/>
-			           <label id="user-error" class="error-msg"></label> 
-	      		 </form>
-	      	  </div>
-   			</div>
    </section>
 </body>
 </html>
