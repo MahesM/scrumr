@@ -5,7 +5,6 @@ import java.util.Set;
 
 import javax.ws.rs.Path;
 
-import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +21,7 @@ import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.StoryManager;
 import com.imaginea.scrumr.interfaces.TaskManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
-import com.imaginea.scrumr.qontextclient.QontextRestApiInvocationUtil;
-import com.imaginea.scrumr.utils.QontextUserUtils;
+import com.imaginea.scrumr.utils.QontextHelperUtil;
 
 @Controller
 @RequestMapping("/users")
@@ -40,6 +38,9 @@ public class UserResource {
 
 	@Autowired
 	TaskManager taskManager;
+	
+	@Autowired
+	QontextHelperUtil helperUtil;
 
 	@RequestMapping(value="/{id}", method = RequestMethod.GET)
 	public @ResponseBody User fetchUser(@PathVariable("id") String id) {
@@ -49,12 +50,48 @@ public class UserResource {
 	}
 	
 	@RequestMapping(value="/all", method = RequestMethod.GET)
-	public @ResponseBody List<User> fetchUsers() {
+	public @ResponseBody List<User> fetchAllUsers() {
 
 		List<User> users = userServiceManager.fetchAllUsers();
 		return users;
 	}
+	
+	@RequestMapping(value="/fetchusers", method = RequestMethod.POST)
+	public @ResponseBody List<User> fetchUsers(
+			@RequestParam String index,
+			@RequestParam String source,
+			@RequestParam String count		
+	) {
 
+		List<User> users = null;
+		if(source.equalsIgnoreCase("QONTEXT")){
+			helperUtil.populateQontextUsers(Integer.parseInt(index), Integer.parseInt(count));
+		}else{
+			users = userServiceManager.fetchAllUsers();
+		}
+		return users;
+	}
+	
+	@RequestMapping(value="/fetchqontextusers", method = RequestMethod.POST)
+	public @ResponseBody String fetchQontextUsers(
+			@RequestParam String index,
+			@RequestParam String count		
+	) {
+
+		String str = helperUtil.populateQontextUsers(Integer.parseInt(index), Integer.parseInt(count));
+		System.out.println("Output: "+str);
+		return str;
+	}
+
+	@RequestMapping(value="/searchqontext", method = RequestMethod.POST)
+	public @ResponseBody String searchUsers (@RequestParam String sortType, @RequestParam boolean showTotalCount,@RequestParam int startIndex,@RequestParam int count){
+		String userList = null;		
+		userList = helperUtil.searchUser(sortType, showTotalCount, startIndex, count);
+		System.out.println("Users List Arun:"+userList);
+		return userList;
+		
+	}
+	
 	@RequestMapping(value="/project/{id}", method = RequestMethod.GET)
 	public @ResponseBody Set<User> fetchUsersByProject(@PathVariable("id") String id) {
 
@@ -103,30 +140,5 @@ public class UserResource {
 			return "{\"result\":\"failure\"}";
 		}
 		return "{\"result\":\"success\"}";
-	}
-	
-	@RequestMapping(value="/populate", method = RequestMethod.POST)
-	public @ResponseBody String populateUsers(@RequestParam int startIndex,@RequestParam int count){
-		String userList = null;		
-		userList = QontextUserUtils.populateUsers(startIndex, count);
-		System.out.println("Users List Prasanna:"+userList);
-		if (userList == null)
-		{
-			return "{\"result\":\"failure\"}";
-		}else
-			return userList;
-	}
-	
-	@RequestMapping(value="/search", method = RequestMethod.POST)
-	public @ResponseBody String searchUsers (@RequestParam String sortType, @RequestParam boolean showTotalCount,@RequestParam int startIndex,@RequestParam int count){
-		String userList = null;		
-		userList = QontextUserUtils.searchUser(sortType, showTotalCount, startIndex, count);
-		System.out.println("Users List Prasanna:"+userList);
-		if (userList == null)
-		{
-			return "{\"result\":\"failure\"}";
-		}else
-			return userList;
-		
 	}
 }

@@ -34,49 +34,20 @@
 	String view = request.getParameter("view");
    	String projectId = request.getParameter("projectId");
     String visit = request.getParameter("visit");
-    int startIndex = 1;
  %>
- <%
-    QontextRestApiInvocationUtil helper = (QontextRestApiInvocationUtil)session.getAttribute("helper");
- 	//out.println("till here success");
-	String accountId = helper.getAccountId();
-	String content;
-	JSONObject successResponse = null;
-	String errorResponse = ""; 
-	
-	if (helper.lastOperationSuccess) {
-	
-		content = helper.invoke("/search/services/search/people?sort=Alphabetical&showTotalCount=true&start=0&startIndex=0&count=10");
-		if (helper.lastOperationSuccess) {
-			
-			successResponse = new JSONObject(content);
-			//out.println(successResponse);
-		} else {
-			errorResponse = content;
-			//out.println(errorResponse);
-		}
-	} else {
-		content = accountId;
-		errorResponse = content;
-		//out.println(errorResponse);
-	}
-	String user = (String)session.getAttribute("userLogged");
-%>
   <script type='text/javascript'>
         $(function() {
-        	var userLogged = '<%=user%>';
         	var userIndex = 1;
-        	var count=10;
-        	var avatar = '<%=session.getAttribute("avatar")%>';
-         	var fullName = '<%=session.getAttribute("fullname")%>';
-        	<%-- if(userLogged != null && userLogged != ""){
-        		$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="<%= request.getContextPath() %>/themes/images/1.jpg"/><label class="float-lft loginLabel">Hi! '+userLogged+',</label><a href="<%= request.getContextPath() %>/j_spring_security_logout" class="logout">Logout</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-            }else{
-            	$(".right-div").html('<a href="#sign-in" class="signin">Sign In</a><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-            } --%>
+        	var userLogged = '<s:property value="loggedInUser.username"/>';
+        	var fullName = '<s:property value="loggedInUser.fullname"/>';
+        	var displayname = '<s:property value="loggedInUser.displayname"/>';
+        	var avatar = '<s:property value="loggedInUser.avatarurl"/>';
+        	var emailid = '<s:property value="loggedInUser.emailid"/>';
+        	var data = '<s:property value="successResponse"/>';
+        	var source = '<s:property value="source"/>';
             
             if(userLogged != null && userLogged != ''){
-    	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatar+'"/><label class="float-lft loginLabel">Hi!, '+fullName+'</label>');
+    	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatar+'"/><label class="float-lft loginLabel">Hi!, '+fullName+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
     	     } 
             var qontextHostUrl = "https://pramati.staging.qontext.com";
         	var current_sprint = 0;
@@ -939,53 +910,53 @@
 				
 				var post_data = "startIndex="+startIndex+"&count="+((10+users.length));
 				
-				//alert(post_data);
+				var post_data = 'source=DATABASE&index=0&count=10';
 				$.ajax({
-					url : '/scrumr/api/v1/users/populate/',
-					type : 'POST',
-					data : post_data,
-					async :false,
-					success :function(userList){
-						var users_object = $.parseJSON(userList);
-						var records = users_object.success.body.objects;
-						var total_users = records;
-						//alert("total users length from qontext :"+total_users.length);
-						for(var j=0;j<records.length;j++){
-							for(var k=0;k<users.length;k++){
-								if(records[j].ownerAccountId == users[k].username ){									
-							//		alert(users[k].displayname);
-									total_users.splice(j,1);
+        			url: '/scrumr/api/v1/users/fetchqontextusers',
+        			type: 'POST',
+        			data: post_data,
+        			async:false,
+        			success: function( records ) {
+        				if(records != null){
+							records = $.parseJSON(records);
+							if(records.success.body.totalObjects > 0){
+								var total_users = records.success.body.objects;
+								for(var j=0;j<records.length;j++){
+									for(var k=0;k<users.length;k++){
+										if(records[j].ownerAccountId == users[k].username ){
+											total_users.splice(j,1);
+										}
+									}
 								}
-							}
+							//	var users_html = "<ul>";
+								var users_html="";
+								var apiVersion = records.success.headers["api-version"];
+								for(var i=0;i<total_users.length;i++){
+									if(!total_users[i].avatar){
+			        					total_users[i].avatar = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
+			        				}
+									users_html += '<li><img src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
+								}
+								
+								
+								if (isAppend){
+									$('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);							
+									userIndex += 1;
+								}else{
+									$('.popup-proj-cont .c-box-content ul').html(users_html);
+									userIndex += 10;
+								}	
+								//alert('length : '+$('.popup-proj-cont .c-box-content li').size());
+        				}else{
+							$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");	
 						}
-						
-						var users_html="";
-						var apiVersion = users_object.success.headers["api-version"];
-						for(var i=0;i<total_users.length;i++){
-							
-							//alert(total_users[i].name);
-							if(!total_users[i].avatar){
-	        					total_users[i].avatar = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
-	        				}
-							users_html += '<li><img src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
-						}
-						
-						
-						if (isAppend){
-							$('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);							
-							userIndex += 1;
-						}else{
-							$('.popup-proj-cont .c-box-content ul').html(users_html);
-							userIndex += 10;
-						}	
-						//alert('length : '+$('.popup-proj-cont .c-box-content li').size());
+        			 }
 					},
 					failure :function(){
 						},					
 					complete : function(){}											
 					});
 				}
-			}
 				//	var users_html = "<ul>";
 					
 					if(firstVisit){
@@ -1017,7 +988,8 @@
 					});
 					
 				
-			
+			}
+        
 			
 			$(document).live("click",function(event){
 				// if that user assign story popup is visible, hide it on click of anywhere outside the popup
@@ -1243,34 +1215,40 @@
     			if (event.which == 13 ||event.which == 8) {
     				event.preventDefault();
     			}
+    			//$(this).closest('.popup-proj-cont').find('.user-loading').show();
+    			//$(this).closest('.popup-proj-cont').find('#total-user-list').hide();
     			var query=$('#searchUser').val();
     			var selector = $('.popup-proj-cont .c-box .c-box-content').find('ul');
     			
     			var post_data = "sortType="+query+"&showTotalCount=false&startIndex=1&count=10";
     					$.ajax({
-    						url : '/scrumr/api/v1/users/search/',
+    						url : '/scrumr/api/v1/users/searchqontext/',
     						type : 'POST',
     						data : post_data,
     						async :false,
     						success :function(userList){
     							var users_html="";
     							var users_object = $.parseJSON(userList);
-    							var total_users = users_object.success.body.objects;
-    							var apiVersion = users_object.success.headers["api-version"];
-    							//alert("total users length in search result:"+users_object.success.body.count);
-    							if (users_object.success.body.count==0){
-    								users_html += '<li></li>';
-    								$('.popup-proj-cont .c-box-content ul').html(users_html);
-    							}
-    							for(var i=0;i<total_users.length&&i<10;i++){
-    								
-    								//alert(total_users[i].basicInfo.displayName);
-    								if(!total_users[i].basicInfo.avatar){
-    			    					total_users[i].basicInfo.avatar = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
-    			    				}
-    								users_html += '<li><img src="'+qontextHostUrl+total_users[i].basicInfo.avatarUrl+'"/></div><div class="details"><label class="name">'+total_users[i].basicInfo.displayName+'</label><a class="email">'+total_users[i].basicInfo.primaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].accountId+'"></div></li>';
-    								$('.popup-proj-cont .c-box-content ul').html(users_html);							    								
-    							}    							
+    							if(users_object.success.body.totalObjects > 0){
+	    							var total_users = users_object.success.body.objects;
+	    							var apiVersion = users_object.success.headers["api-version"];
+	    							//alert("total users length in search result:"+users_object.success.body.count);
+	    							if (users_object.success.body.count==0){
+	    								users_html += '<li></li>';
+	    								$('.popup-proj-cont .c-box-content ul').html(users_html);
+	    							}
+	    							for(var i=0;i<total_users.length&&i<10;i++){
+	    								
+	    								//alert(total_users[i].basicInfo.displayName);
+	    								if(!total_users[i].basicInfo.avatarUrl){
+	    			    					total_users[i].basicInfo.avatarUrl = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
+	    			    				}
+	    								users_html += '<li><img src="'+qontextHostUrl+total_users[i].basicInfo.avatarUrl+'"/></div><div class="details"><label class="name">'+total_users[i].basicInfo.displayName+'</label><a class="email">'+total_users[i].basicInfo.primaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].accountId+'"></div></li>';
+	    								$('.popup-proj-cont .c-box-content ul').html(users_html);							    								
+	    							}    							
+	    						}else{
+	    							$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");	
+	    						}
     						}
     					});    			    		
     		});

@@ -171,7 +171,6 @@ header {
 
 #login-form{
 	width: 364px;
-	margin:20px;
 }
 
 #login-form label{
@@ -476,6 +475,8 @@ span.p3 {
 #sign-in {
 	width:400px;
 	height:245px !important;
+	margin:0 auto;
+	padding-top:200px;
 }
 
 .signin, .logout{
