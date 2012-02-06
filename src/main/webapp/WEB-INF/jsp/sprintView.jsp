@@ -37,7 +37,7 @@
  %>
   <script type='text/javascript'>
         $(function() {
-        	var userIndex = 1;
+        	var userIndex = 0;
         	var userLogged = '<s:property value="loggedInUser.username"/>';
         	var fullName = '<s:property value="loggedInUser.fullname"/>';
         	var displayname = '<s:property value="loggedInUser.displayname"/>';
@@ -61,6 +61,10 @@
         	var duration = '';
         	var project_view = 1;
         	var firstVisit = false;
+        	var storyListScroll = null;
+        	var sprintStageScroll = null;
+        	var projStageScroll = null;
+        	var addUserScroll = null;
         	<% if(visit != null && visit.equals("1")){ %>
         		firstVisit = true;
         	<%}%>
@@ -146,6 +150,11 @@
             	});
         	}
 			function populateUnassignedStories(name){
+				 $('#storyList ul').css({'height': (($(window).height()) - 350) + 'px'});
+				 if(storyListScroll){
+					 var api = $('#storyList ul').data('jsp');
+					 api.destroy();
+				 }
 	        	 $.ajax({
 	        		url: '/scrumr/api/v1/stories/backlog/<%= projectId%>',
 	        		type: 'GET',
@@ -162,12 +171,12 @@
 	        				}
 	        			}else{
 	        				story_unassigned += '<b>No pending stories for the project</b>';
-	        				$('#storyList ul').css({'height': (($(window).height()) - 250) + 'px'});
+	        				//$('#storyList ul').css({'height': (($(window).height()) - 250) + 'px'});
 	        			}
         				$("#storyList ul").html(story_unassigned);
-        				$( "#storyList").jScrollPane({});
         				$( "#storyList ul" ).sortable({
         	        		connectWith: ".story",
+        	        		items:'li',
         	        		//appendTo: 'body',
         	        		forcePlaceholderSize: true,
         	        		placeholder: 'ui-state-highlight',
@@ -175,10 +184,11 @@
         	        			if(ui.item.closest('section').hasClass('right')){ //dropped to the stages section
         	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
         	        			};
-        	        			$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
+        	        			//$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
+        	        			storyListScroll = $('#storyList ul').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
         	        		}
         	    		}).disableSelection();
-        				
+        				storyListScroll = $('#storyList ul').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 	        		},
 	        		error: function(data) { },
 	        		complete: function(data) { }
@@ -276,6 +286,7 @@
 			        			//$( ".stages " ).jScrollPane({});
 			        			$( ".stages ul" ).sortable({
 		        	        		connectWith: ".story",
+		        	        		items:'li',
 		        	        		//appendTo: 'body',
 		        	        		forcePlaceholderSize: true,
 		        	        		placeholder: 'ui-state-highlight',
@@ -529,6 +540,7 @@
 				        			}
 				        			$( ".stages ul" ).sortable({
 			        	        		connectWith: ".story",
+			        	        		items:'li',
 			        	        		//appendTo: 'body',
 			        	        		forcePlaceholderSize: true,
 			        	        		placeholder: 'ui-state-highlight',
@@ -558,8 +570,6 @@
 			        		   					refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
 			        		   				}
 			        		   				if(!($(ui.item[0]).closest('ul').attr('id') == 'notstarted') && !($(ui.item[0]).closest('ul').attr('id') == 'finished')&& !($(ui.item[0]).closest('section').hasClass('left'))){
-			        		   					
-			        		   					
 			        		   					showAddUserPopup(elOffset);
 			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   					var existing_user_arr = [];
@@ -875,10 +885,6 @@
 	        					people = "<label style=\"margin:5px;\">No people in the project</labal>";
 	        				}
 	        				$("#st-users").html(people);
-	        				// Comment Section 
-	        				$('<input>').attr({type: 'hidden', id: 'current_story_id',value: id }).appendTo('form');	
-							
-							// Ends Here
 	        			}
 	        			
 	        		},
@@ -900,18 +906,18 @@
 			});
 			
 			function populateUserDetails(startIndex, isAppend){
-				
-				var no_of_users = $('.popup-proj-cont .c-box-content li').length;
-				//alert((10+users.length)-no_of_users);
-				if (no_of_users < 10 || isAppend){
-					if (isAppend){
-						startIndex = startIndex+users.length;		
+				if(!isAppend){
+					$('.popup-proj-cont').show();
+					$('.popup-proj-cont .c-box-content .user-loading').show();
+					if(addUserScroll){
+						var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
+						api.destroy();
 					}
-				
-				var post_data = "startIndex="+startIndex+"&count="+((10+users.length));
-				
-				var post_data = 'source=DATABASE&index=0&count=10';
-				$.ajax({
+					$('.popup-proj-cont .c-box-content ul').hide();
+				}
+				var post_data = "source=DATABASE&index="+startIndex+"&count=40";
+				setTimeout(function(){
+					$.ajax({
         			url: '/scrumr/api/v1/users/fetchqontextusers',
         			type: 'POST',
         			data: post_data,
@@ -937,58 +943,77 @@
 			        				}
 									users_html += '<li><img src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
 								}
-								
-								
+								$('.popup-proj-cont .c-box-content .user-loading').hide();
 								if (isAppend){
-									$('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);							
-									userIndex += 1;
+									$('.popup-proj-cont .c-box-content .more-load').hide();
+									$('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);	
 								}else{
+									$('.popup-proj-cont .c-box-content ul').show();
 									$('.popup-proj-cont .c-box-content ul').html(users_html);
-									userIndex += 10;
-								}	
-								//alert('length : '+$('.popup-proj-cont .c-box-content li').size());
+								}
+								var atBottom = false;
+								addUserScroll = $('.popup-proj-cont .c-box-content ul').bind('jsp-scroll-y',function(event, scrollPositionY, isAtTop, isAtBottom){
+											if(isAtBottom & !atBottom){
+												$('.popup-proj-cont .c-box-content .more-load').show();
+												atBottom = true;
+												userIndex += 1;
+												var startIndex = (userIndex * 40) + 1;
+												populateUserDetails(startIndex,true);
+											}
+										}).jScrollPane({'maintainPosition':true}).data().jsp;
         				}else{
-							$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");	
+        					if (isAppend){
+								$('.popup-proj-cont .c-box-content .more-load').hide();
+								//$('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);	
+							}else{
+								$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");	
+							}
+							
 						}
-        			 }
+        				}
 					},
 					failure :function(){
 						},					
 					complete : function(){}											
 					});
-				}
+				},1000);
 				//	var users_html = "<ul>";
 					
-					if(firstVisit){
+					/* if(firstVisit){
 						$('.popup-proj-cont').show();
 						$('.popup-proj-cont .c-box-content ul').jScrollPane();
-					}
-					$("#addPeople").live('click', function(){
-						alert('add people');						
-						$('.story-popup').hide();
-						$('.popup-proj-cont').show();
-						$('.popup-proj-cont .c-box-content ul').jScrollPane();
-												
-					});
-					$(".adduser").live('click',function(){
-						var id = ($(this).attr("id"));
-						var userDetails = {};
-						userDetails.username = id;
-						userDetails.fullname = $(this).prev('.details').find('label.name').html();
-						userDetails.avatarurl = $(this).closest('li').find('img').attr('src');
-						userDetails.displayname = $(this).prev('.details').find('label.name').html();
-						userDetails.emailid = $(this).prev('.details').find('a.email').html();
-						var success = addUser(userDetails);
-						if(success ==true){
-							populateProjectDetails();
-							$(this).parent().hide();
-							populateUserDetails(userIndex,true);
-						}
-						
-					});
+					} */
+					
 					
 				
 			}
+			
+			$("#addPeople").live('click', function(){
+				populateUserDetails(userIndex,false);
+				$('.story-popup').hide();
+				//$('.popup-proj-cont .c-box-content ul').jScrollPane();
+										
+			});
+			$(".adduser").live('click',function(){
+				$(this).css('background', 'url("themes/images/ajax-loader.gif") no-repeat');
+				var el = $(this);
+				setTimeout(function(){
+					var id = (el.attr("id"));
+					var userDetails = {};
+					userDetails.username = id;
+					userDetails.fullname = el.prev('.details').find('label.name').html();
+					userDetails.avatarurl = el.closest('li').find('img').attr('src');
+					userDetails.displayname = el.prev('.details').find('label.name').html();
+					userDetails.emailid = el.prev('.details').find('a.email').html();
+					var success = addUser(userDetails);
+					if(success ==true){
+						populateProjectDetails();
+						el.parent().hide();
+					//	populateUserDetails(userIndex,false);
+					}
+				},1000);
+				
+			});
         
 			
 			$(document).live("click",function(event){
@@ -1002,8 +1027,10 @@
 			
 			$('#popup_proj_done').live("click",function(){
            	 $('.popup-proj-cont').hide();
+           	 userIndex = 0;
            	 if(firstVisit){
            		 $('.story-popup').show();
+           		 firstVisit = false;
            	 }
             }); 
 			
@@ -1017,20 +1044,25 @@
 						}
 					}
 					//users_html += "</ul>";
+					$('.popup-proj-cont .c-box-head').html("Remove people from the project");
 					$('.popup-proj-cont .c-box-content ul').html(users_html);
 					$('.popup-proj-cont').show();
 					$('.popup-proj-cont .c-box-content ul').jScrollPane();
 					//$("#userList-cont").html(users_html);
 				
 					$(".removeUser").live('click',function(){
-						var id = ($(this).attr("id"));
-						if(id != creator){
-						var success = removeUser(id);
-							if(success == true){
-								populateProjectDetails();
-								$(this).parent().hide();
+						$(this).css('background', 'url("themes/images/ajax-loader.gif") no-repeat');
+						var el = $(this);
+						setTimeout(function(){
+							var id = (el.attr("id"));
+							if(id != creator){
+							var success = removeUser(id);
+								if(success == true){
+									populateProjectDetails();
+									el.parent().hide();
+								}
 							}
-						}
+						},1000);
 					
 				});
 				
@@ -1050,7 +1082,9 @@
             populateProjectDetails();
             populateUnassignedStories('');
             //populateUserDetails();
-            populateUserDetails(userIndex,false);
+            if(firstVisit){
+            	populateUserDetails(userIndex,false);
+            }
             
 			
 			// Comments Section
@@ -1218,39 +1252,49 @@
     			//$(this).closest('.popup-proj-cont').find('.user-loading').show();
     			//$(this).closest('.popup-proj-cont').find('#total-user-list').hide();
     			var query=$('#searchUser').val();
-    			var selector = $('.popup-proj-cont .c-box .c-box-content').find('ul');
-    			
-    			var post_data = "sortType="+query+"&showTotalCount=false&startIndex=1&count=10";
-    					$.ajax({
-    						url : '/scrumr/api/v1/users/searchqontext/',
-    						type : 'POST',
-    						data : post_data,
-    						async :false,
-    						success :function(userList){
-    							var users_html="";
-    							var users_object = $.parseJSON(userList);
-    							if(users_object.success.body.totalObjects > 0){
-	    							var total_users = users_object.success.body.objects;
-	    							var apiVersion = users_object.success.headers["api-version"];
-	    							//alert("total users length in search result:"+users_object.success.body.count);
-	    							if (users_object.success.body.count==0){
-	    								users_html += '<li></li>';
-	    								$('.popup-proj-cont .c-box-content ul').html(users_html);
-	    							}
-	    							for(var i=0;i<total_users.length&&i<10;i++){
-	    								
-	    								//alert(total_users[i].basicInfo.displayName);
-	    								if(!total_users[i].basicInfo.avatarUrl){
-	    			    					total_users[i].basicInfo.avatarUrl = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
-	    			    				}
-	    								users_html += '<li><img src="'+qontextHostUrl+total_users[i].basicInfo.avatarUrl+'"/></div><div class="details"><label class="name">'+total_users[i].basicInfo.displayName+'</label><a class="email">'+total_users[i].basicInfo.primaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].accountId+'"></div></li>';
-	    								$('.popup-proj-cont .c-box-content ul').html(users_html);							    								
-	    							}    							
-	    						}else{
-	    							$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");	
-	    						}
+    			//var selector = $('.popup-proj-cont .c-box .c-box-content').find('ul');
+    			var post_data = "sortType="+query+"&showTotalCount=false&startIndex=1&count=20";
+    			var el = $(this);
+    			el.next().css('background','url("themes/images/ajax-loader.gif") no-repeat');
+    			setTimeout(function(){
+    				$.ajax({
+						url : '/scrumr/api/v1/users/searchqontext/',
+						type : 'POST',
+						data : post_data,
+						async :false,
+						success :function(userList){
+							var users_html="";
+							var users_object = $.parseJSON(userList);
+							if(users_object.success.body.totalObjects > 0){
+    							var total_users = users_object.success.body.objects;
+    							var apiVersion = users_object.success.headers["api-version"];
+    							//alert("total users length in search result:"+users_object.success.body.count);
+    							if (users_object.success.body.count==0){
+    								users_html += '<li></li>';
+    								$('.popup-proj-cont .c-box-content ul').html(users_html);
+    							}
+    							for(var i=0;i<total_users.length&&i<10;i++){
+    								
+    								//alert(total_users[i].basicInfo.displayName);
+    								if(!total_users[i].basicInfo.avatarUrl){
+    			    					total_users[i].basicInfo.avatarUrl = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
+    			    				}
+    								users_html += '<li><img src="'+qontextHostUrl+total_users[i].basicInfo.avatarUrl+'"/></div><div class="details"><label class="name">'+total_users[i].basicInfo.displayName+'</label><a class="email">'+total_users[i].basicInfo.primaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].accountId+'"></div></li>';
+    								$('.popup-proj-cont .c-box-content ul').html(users_html);							    								
+    							}    							
+    						}else{
+    							$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");	
     						}
-    					});    			    		
+							el.next().addClass('close-search').css('background','url("themes/images/close.png") no-repeat');
+							$('.close-search').live('click',function(){
+								el.val("");
+				        		populateUserDetails(userIndex,false);
+				        		el.next().removeClass('close-search').css('background','url("themes/images/search.jpg") no-repeat');
+				        	});
+						}
+					});    			
+    			},1000);
+    					    		
     		});
         	
         	/* $("#addPeople").fancybox({
@@ -1285,6 +1329,8 @@
 
         	});*/
 			viewStoryFancyBox();
+        	
+        	
 			$(".stAddmore").live('click', function(){
 				 if($(".stAddmore").html() == "+Add People"){
 					$(".stAddmore").html("Hide");
@@ -1296,11 +1342,20 @@
 				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 			});
 			
+			function setStoryId (storyId){
+				// Comment Section				
+				//$('<input>').attr({type: 'hidden', id: 'current_story_id',value: storyId }).appendTo('form');
+				$("#current_story_id").val(storyId);
+				// Ends Here
+			}
+			
 			$(".viewStory, .moreStory").live('click', function(){
 				var id = $(this).closest('li').attr("id");
         		id = id.replace("st","");
         		var stageId = $(this).closest('ul').attr('id');
         		populateStoryAssignees(id);
+        		
+        		setStoryId(id);
         		populateCommentingUserDetails();
     	       	populateStoryComments();
     	       	populateStoryTodos();
@@ -1518,7 +1573,8 @@
 					success :function(comments){
 											    
 						if (comments != null){	
-							$('#comments_section').prev().find('label').html('Comments ('+comments.length+')');							
+							$('#comments_section').prev().find('label').html('Comments ('+comments.length+')');	
+							$('#comments-count').val(comments.length);
 	        				if(comments.length > 0){
 		        				for (var i=0;i<comments.length;i++){
 			        				comment = comments[i];
@@ -1617,6 +1673,12 @@
               				
               				comment = comment[0];
                   			e.preventDefault();
+
+                  			var count =  parseInt($('#comments-count').val());
+              				count = count+1;
+              				$('#comments-count').val(count);
+              				$('#comments_section').prev().find('label').html('Comments ('+count+')');
+                  			
               				$('.comment-text').val('');							            				             			
               				var newDate = new Date(comment.logDate);
               				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();              				         				              			
@@ -1650,6 +1712,10 @@
       			async:false,
       			success: function( todo ) {  
       				todo = todo[0];
+      				var count = parseInt($('#todos-count').val());
+      				count = count+1;
+      				$('#todos-count').val(count);
+      				$('#todo_section').prev().find('label').html('Todos ('+count+')');
       				$('.todo-text').val('');
       				$('#todo-milestones').val('1 Day');							            				             			      				              				         				              			
       				$('.todo-display ul').prepend('<li class="todo-list" style="width:100%";><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period :'+todo.milestonePeriod+'</div></div></li>');
@@ -1693,6 +1759,7 @@
 					success :function(todos){
 						if (todos != null){		
 							$('#todo_section').prev().find('label').html('Todos ('+todos.length+')');	
+							$('#todos-count').val(todos.length);
 	        				if(todos.length > 0){
 		        				todosHtml += '<ul style="list-style:none;">';
 		        				for (var i=0;i<todos.length;i++){
@@ -1859,6 +1926,7 @@
         							<div class="acc-head">
             							<label>Todos</label>
 							            <div class="open"></div>
+							            <input type="hidden" id="todos-count" />
 							        </div>
 							        <div id="todo_section" class="acc-content" style="display:none">
 							            <div class="todo" class="float-lft">
@@ -1868,7 +1936,7 @@
 													<img src="themes/images/1.jpg"/>
 												</div>
 					  							<form id="todo-form"> 
-							                 	<textarea class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
+							                 	<textarea style="resize:none;" class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
 							                 	<select id="todo-milestones">							                 		
 							                 		<option value="1 Day" selected="selected">1 Day</option>
 							                 		<option value="2 Days">2 Days</option>
@@ -1912,6 +1980,7 @@
          						<div class="acc">
         							<div class="acc-head">
             							<label>Comments</label>
+            							<input type="hidden" id="comments-count" />
 							            <div class="open"></div>
         							</div>
         							<div id="comments_section" class="acc-content" style="display:none">
@@ -1927,7 +1996,7 @@
 													<div class="comment-box-user float-lft">
 														<img src="themes/images/1.jpg"/>
 													</div>
-								                 	<textarea class="comment-text" placeholder="Write a comment..." name="commment"></textarea>
+								                 	<textarea style="resize:none;" class="comment-text" placeholder="Write a comment..." name="commment"></textarea>
 								                 </div>
 							                 </div>
 							                </div>
@@ -1941,6 +2010,7 @@
             	</div>
             </div>
         </div>
+        <input type="hidden" id="current_story_id" />
         
         <div class="popup-proj-cont" style="display:none;">
            <div class="c-box">
@@ -1948,6 +2018,7 @@
                <div class="c-box-content">
                		<div id="userInput" class="">
 		                <input type="text" id="searchUser" placeholder="Search user by name..."/>
+		                <a class="search-input" href="javascript:void(0);" ></a>
 	                </div>
 	               <div class="user-loading" id="user_loading" style="display:none;"></div>
 	               
@@ -1955,8 +2026,9 @@
                    
                        
                    </ul>
-
+				   <div class="more-load" style="display:none;"></div>
                </div>
+              
                  <div class="actions-cont float-rgt">
 
                        <input id="popup_proj_done" type="button" class="float-rgt submit" value="Done"/>
@@ -1988,7 +2060,7 @@
                <div class="c-box-content">
                    <form id="story_form" method="POST">
 						<div class="sTitle">
-							<textarea id="storyDesc" name="storyDesc" rows="5" cols="1" placeholder="Enter Story Desc" required="required"></textarea>
+							<textarea id="storyDesc" style="resize:none;" name="storyDesc" rows="5" cols="1" placeholder="Enter Story Desc" required="required"></textarea>
 						</div>
 						<select name="stPriority" id="storyPriority">
 							<option selected="selected" value="1">Priority 1</option>

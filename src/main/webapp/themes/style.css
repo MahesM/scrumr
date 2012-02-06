@@ -408,8 +408,10 @@ ul.story li p {
     font-size: 13px;
     margin-bottom: 5px;
     padding-left:30px;
-    padding-right:10px;
+    padding-right:40px;
     line-height: 18px;
+    word-wrap:break-word;
+    width:150px;
 }
 
 p.p1 {
@@ -443,7 +445,7 @@ span.p3 {
 }
 
 .disable {
-    background: url("images/delete.png") no-repeat;
+    background: url("images/remove-user.png") no-repeat;
     width: 22px;
     height: 22px;
     margin: 13px 0 0 10px;
@@ -451,7 +453,7 @@ span.p3 {
 }
 
 .enable {
-    background: url("images/enable.png") no-repeat;
+    background: url("images/add-user.png") no-repeat;
     width: 22px;
     height: 22px;
     margin: 13px 0 0 10px;
@@ -826,6 +828,16 @@ span.p3 {
     height: 24px;
     padding: 4px;
     border-radius:3px;
+    
+}
+
+#storyInput .search-input, #userInput .search-input{
+	background: url("images/search.jpg") no-repeat 0 0;
+	height:20px;
+	width:20px;
+	position:absolute;
+	top:50px;
+	right:30px;
 }
 
 .priority div{
@@ -1552,7 +1564,7 @@ border-top-right-radius: 4px;
 .popup-proj-cont .c-box {
     position: relative;
     float: left;
-    height: 450px;
+    height: auto;
     width:380px;
        box-shadow: 0 0 3px 2px #999;
      -moz-box-shadow:0 0 3px 2px #999;
@@ -1595,7 +1607,7 @@ border-top-right-radius: 4px;
     padding: 10px 0;
     float: left;
     width: 100%;
-    height:350px;
+    height:auto;
 }
 
 .popup-proj-cont .c-box-content #userInput {
@@ -1631,9 +1643,14 @@ border-top-right-radius: 4px;
     height: 300px;
     width: 93%;
     margin:10px;
-    background-color:#000000;
-    opacity:0.4;
-    background:#000000 url(images/lightbox-ico-loading.gif) no-repeat 0 0;
+    background:url(images/ajax-loader.gif) no-repeat 160px 110px;
+}
+
+.popup-proj-cont .c-box-content .more-load {
+	width:100%;
+	height:20px;
+	background:url("images/more-loader.gif") no-repeat 170px 3px;
+	float:left;
 }
 
 .popup-proj-cont .c-box-content ul li {
@@ -1671,6 +1688,7 @@ border-top-right-radius: 4px;
 
 .popup-proj-cont .actions-cont {
     margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 .popup-proj-cont .actions-cont a {
@@ -1831,7 +1849,6 @@ ul.col {
 ul.col li.stages {
 	width:24%;
 	margin-right:5px;
-	height:300px;
 	border: 1px solid #E6E6E6;
 	float:left;
 }
