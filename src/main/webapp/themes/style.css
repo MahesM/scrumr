@@ -117,6 +117,7 @@ body {
 
 a:link, a:visited, a:active, a:hover {
     text-decoration: none;
+    color: #00475C;
 }
 
 .float-lft {
@@ -133,6 +134,10 @@ a:link, a:visited, a:active {
 
 a:hover {
     text-decoration: underline;
+}
+
+.scroll{
+	overflow:auto;
 }
 
 header {
@@ -159,9 +164,9 @@ header {
 
 .form-cont {
     margin: 0 auto;
-    top: 20%;
+    top: 65px;
+    padding:15px;
     position: relative;
-    width: 665px;
     height: 365px !important;
 }
 
@@ -177,9 +182,62 @@ header {
 	font-size:12px;
 	margin-bottom:10px;
 	font-weight:bold;
-	display:inline-block;
+	display:block;
 }
 
+.project-list{
+	height:100%;
+	width:100%;
+	font-size: 13px;
+}
+
+.project-list .header{
+	 background-color: #DDDDDD;
+    font-weight: bold;
+    height: 30px;
+    text-align: center;
+    width: 100%;
+}
+
+.project-list .header td{
+	width:auto;
+	height:auto;
+	padding:10px;
+}
+
+.project-list .content{
+	height:100%;
+	width:100%;
+}
+
+.project-list .content tr.even{
+	background-color: #F9F9F9;
+}
+
+.project-list .content tr.odd{
+	background-color: #FFFFFF;
+}
+
+.project-list .content td.users{
+	text-align: left;
+}
+
+.project-list .content td{
+	border: 1px solid #E6E6E6;
+    height: auto;
+    max-width: 14%;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    width: auto;
+}
+
+.project-list .content td img{
+	width:36px;
+	height:36px;
+	margin:1px;
+	text-align: left;
+}
 .loginHead {
 	background-color: #F6EEE2;
     display: block;
@@ -195,6 +253,7 @@ header {
 
 #login-form input{
 	margin-bottom: 10px;
+	display:block;
 }
 
 h1 {
@@ -209,7 +268,7 @@ h1 {
 .form-cont h2 {
     font-size: 20px;
     text-align: center;
-    color: #0f0f0f;
+    color: #DDDDDD;
     text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.25);
     text-transform: uppercase;
     font-weight: normal;
@@ -227,9 +286,9 @@ h1 {
     -moz-box-shadow: inset 0 0 5px #e2e9e2;
     -webkit-box-shadow: inset 0 0 5px #e2e9e2;
     box-shadow: inner 0 0 5px #e2e9e2;
-    width: 352px;
+    width: 225px;
     height: 25px;
-    padding: 5px;
+    padding: 4px;
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
     border-radius: 2px;
@@ -258,7 +317,7 @@ textarea {
     -moz-border-radius: 2px;
     border-radius: 2px;
     background-color: #fff !important;
-    width: 663px;
+    width: 530px;
     margin-top: 10px;
 }
 
@@ -475,7 +534,7 @@ span.p3 {
 }
 
 #sign-in {
-	width:400px;
+	width:235px;
 	height:245px !important;
 	margin:0 auto;
 	padding-top:200px;
@@ -533,7 +592,7 @@ span.p3 {
 	width:98%;
 	margin-left: 1%;
 	display:inline-block;
-	background-color: #F5F5F5;
+	background-color: #FFFFFF;
 }
 .right-cont{
 	position:fixed;
@@ -628,7 +687,7 @@ span.p3 {
 }
 .caption-cont h2{
 	float: left;
-    font-size: 26px;
+    font-size: 22px;
     font-weight: normal;
     line-height: 26px;
     margin: 30px 10px 10px 0;
