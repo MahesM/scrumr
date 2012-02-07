@@ -378,7 +378,20 @@
 	                'onClosed' : (function() {
 	                	$("#stPeople").hide();
 	                	//viewStoryScrollpane.destroy();
-	                       })
+	                	
+	                	var storyObj =$(this).attr('orig').context['parentElement'];
+	                	var storyId = storyObj['id'].split("st")[1];
+	                	var stageId = $(storyObj).parent().attr('id');
+	                	if (storyId == null || stageId == null){
+	                		
+	                		storyObj = $(this).attr('orig').context['offsetParent'];
+	                		storyId = storyObj['id'].split("st")[1];
+	                		stageId = $(storyObj).parent().attr('id');
+	                		//alert('story id='+storyId+", stage id="+stageId);
+	                		//alert($(this).attr('orig').context['offsetParent']['id']);	                		
+	                	}
+	                	refreshStoryPortlet(storyId, stageId, creatorObj);
+	                   })
 
 	        	}); 
 			}
@@ -726,6 +739,7 @@
 			function addUser(userDetails){
 				var stat = false;
 				var post_data = 'userid='+userDetails.username+'&projectId=<%= projectId%>';
+				console.log(userDetails);
 				$.ajax({
 					url: '/scrumr/api/v1/users/create',
 					type: 'POST',
@@ -875,6 +889,7 @@
 	        					$('.stAddmore').hide();
 	        				}
 	        				var people = '';
+	        				console.log(users);
 	        				if(users && users.length > 0){
 	        					var user;
 	        					for(var i=0;i < users.length; i++){
@@ -936,6 +951,7 @@
 								}
 							//	var users_html = "<ul>";
 								var users_html="";
+								console.log(records);
 								var apiVersion = records.success.headers["api-version"];
 								for(var i=0;i<total_users.length;i++){
 									if(!total_users[i].avatar){
