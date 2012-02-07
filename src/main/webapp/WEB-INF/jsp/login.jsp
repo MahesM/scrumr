@@ -8,9 +8,7 @@
 <%@ page import="org.codehaus.jettison.json.*" %>
 <%@ page import="org.apache.commons.httpclient.protocol.Protocol" %>
 <%@ page import="org.apache.commons.httpclient.protocol.ProtocolSocketFactory" %>
-<%@ page import="com.imaginea.scrumr.qontextclient.*" %>
-<%@ page import="com.imaginea.scrumr.entities.User" %>  
-
+<%@ page import="com.imaginea.scrumr.qontextclient.*" %> 
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,24 +29,22 @@
    <link href="<%= request.getContextPath() %>/themes/style.css" rel="stylesheet"/>
 <script type="text/javascript">
 $(document).ready(function(){
- 	
-		var user = '<s:property value="loggedInUser.username"/>';
-		var fullname = '<s:property value="loggedInUser.fullname"/>';
-		var displayname = '<s:property value="loggedInUser.displayname"/>';
-		var avatarurl = '<s:property value="loggedInUser.avatarurl"/>';
-		var emailid = '<s:property value="loggedInUser.emailid"/>';
-		var source = '<s:property value="source"/>';
-		if(user != null && user != ''){
-	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatarurl+'"/><label class="float-lft loginLabel">Welcome!, '+displayname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-	     }
- 
-		 $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
-	     $(window).resize(function() {
-	         $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
-	     });
-	     $('input[text]').val('');
-	     $('textarea').val('');
-	     $('select').val('');
+	 $('.bg-pat').css({'height': ($(window).height()) + 'px'});
+     $(window).resize(function() {
+         $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
+     }); 
+     
+ 	var username = '<s:property value="loggedInUser.username"/>';
+	var fullname = '<s:property value="loggedInUser.fullname"/>';
+	var displayname = '<s:property value="loggedInUser.displayname"/>';
+	var avatarurl = '<s:property value="loggedInUser.avatarurl"/>';
+	var emailid = '<s:property value="loggedInUser.emailid"/>';
+	var source = '<s:property value="source"/>';
+	
+     if(username != null && username != ''){
+     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatarurl+'"/><label class="float-lft loginLabel">Hi!, '+fullname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
+     }
+     
      function days_between(date1, date2) {
  	    var ONE_DAY = 1000 * 60 * 60 * 24;
  	    var date1_ms = date1.getTime();
@@ -57,6 +53,9 @@ $(document).ready(function(){
  	    return Math.round(difference_ms/ONE_DAY);
  	}
      
+	var projAssignees = new Array();
+		projAssignees.push(username);
+	
 	var dates = $( "#datepickerFrom, #datepickerTo" ).datepicker({
 		defaultDate: "+1w",
 		changeMonth: true,
@@ -73,34 +72,172 @@ $(document).ready(function(){
 	});
 	
 	$(".feed-item").live('click',function(){
-		window.location.href = '/scrumr/sprintView.jsp?projectId='+$(this).attr("id");
+		window.location.href = '/scrumr/sprint.action?&view=sprint&projectId='+$(this).attr("id");
 	});
 	
-	$('#new_project_form').submit(function(){
-			var title = $('input[name=pTitle]');
-			var description = $('textarea[name=pDescription]');
-			var start_date = $('input[name=pStartDate]');
-			var end_date = $('input[name=pEndDate]');
-			var duration = $('select[name=pSprintDuration]');
-			
-			var days = days_between(new Date(Date.parse(start_date.val())),new Date(Date.parse(end_date.val())));
-				if((days < (7*duration.val()))){
-					$("#proj-error").html("Project duration conflicts with sprint duration");
-					return false;
-				} 
-				if(user == "" || user == null){
-					return false;
-				}else{
-					var post_data1 = {'username':user,'displayname':'<s:property value="loggedInUser.displayname"/>','fullname':'<s:property value="loggedInUser.fullname"/>','emailid':'<s:property value="loggedInUser.emailid"/>','avatarurl':'<s:property value="loggedInUser.avatarurl"/>'};
-					$.ajax({
-						url: '/scrumr/api/v1/users/create',
-						type: 'POST',
-						data: post_data1,
-						async:false,
-						success: function( records ) {
-							var assignees = new Array();
-							assignees.push(user);
-							var post_data = 'pTitle=' + title.val() + '&current_user='+user + '&pDescription=' + description.val() + '&assignees='
+	$("#edit-proj").live('click',function(){
+		$("#heading").html("Update Project");
+		$(".proj_submit").val("Update");
+		$(".proj_submit").attr("id","update");
+		var title = $('input[name=pTitle]');
+		var description = $('textarea[name=pDescription]');
+		var start_date = $('input[name=pStartDate]');
+		var end_date = $('input[name=pEndDate]');
+		var duration = $('select[name=pSprintDuration]');
+		var pno = $('input[name=pNo]');
+		var id = $(this).parent().parent().find('.pno').attr("id");
+		$.ajax({
+    		url: '/scrumr/api/v1/projects/'+id,
+    		type: 'GET',
+    		async:false,
+    		success: function( project ) {
+    			if(project != null && project.length > 0){
+    				project = project[0];
+    				title.val( project.title);
+    				description.val(project.description);
+    				$('#datepickerFrom').datepicker("setDate", new Date(project.start_date) );
+    				$('#datepickerFrom').attr("disabled",true);
+    				$('#datepickerTo').attr("disabled",true);
+    				duration.attr("disabled",true);
+    				if(project.end_date){
+	    				$('#datepickerTo').datepicker("setDate", new Date(project.end_date) );
+    				}
+    				duration.val(project.duration);
+    				pno.val(id);
+    			}
+    				
+    		},
+    		error: function(data) { },
+    		complete: function(data) { }
+    	});
+	});
+	
+	$("#newproj").live('click',function(){
+		$("#heading").html("Create Project");
+		$(".proj_submit").val("Create");
+		$(".proj_submit").attr("id","create");
+		var title = $('input[name=pTitle]');
+		var description = $('textarea[name=pDescription]');
+		var start_date = $('input[name=pStartDate]');
+		var end_date = $('input[name=pEndDate]');
+		var duration = $('select[name=pSprintDuration]');
+		title.val("");
+		description.val("");
+		$('#datepickerFrom').attr("disabled",false);
+		$('#datepickerTo').attr("disabled",false);
+		duration.attr("disabled",false);
+		$('#datepickerFrom').datepicker("setDate", new Date() );
+		duration.val("");
+	});
+	
+	$("#delete-proj").live('click',function(){
+		var id = $(this).parent().parent().find('.pno').attr("id");
+		$.ajax({
+			url: '/scrumr/api/v1/projects/delete/'+id,
+			type: 'GET',
+			async:false,
+			success: function( obj ) {
+				obj = $.parseJSON(obj);
+				if(obj && obj.result == "success"){
+					 populateProjects();
+				}
+			}
+		});
+	});
+
+	function populateProjects(){
+		$.ajax({
+			url: '/scrumr/api/v1/projects/user/'+username,
+			type: 'GET',
+			async:false,
+			success: function( obj ) {
+				var project_html = '<ul class="feed">';
+				if(obj){
+					if(obj.length > 0){
+						for(var i=0;i < obj.length;i++){
+							var project = obj[i];
+							var title = project.title;
+							var duration = '';
+							if(project.start_date != null){
+								var startdate = new Date(project.start_date);
+								startdate = startdate.format("mm/dd/yyyy");
+								duration += startdate;
+							}else{
+								duration += 'No Start Date';
+							}
+							if(project.end_date != null){
+								var enddate = new Date(project.end_date);
+								enddate = enddate.format("mm/dd/yyyy");
+								duration += ' - '+ enddate;
+							}else{
+								duration += ' - No End Date';
+							}
+							var status ="Not Started";
+							if(project.current_sprint > 0){
+								if(project.status == "Finished"){
+									status = '<label>Finished</label>';
+								}else{
+									status = '<label><span>Sprint '+project.current_sprint+'</span> '+project.status+'</label>';
+								}
+							}else{
+								status = '<label>Not Started</label>';
+							}
+							var people="";
+							var people_count = project.assignees.length > 3 ? 3:project.assignees.length;
+							if(people_count > 0){
+								for(var j=0; j<people_count; j++){
+									people += '<img class="story-user" title="'+project.assignees[j].fullname+'" src="'+project.assignees[j].avatarurl+'"/>';
+								}
+							}else{
+								people = 'No Assignees';
+							}
+							var even = "odd";
+							if(((i+1)%2) == 0){
+								even = "even";
+							}
+							project_html += '<tr class="'+even+'"><td class="pno" id="'+project.pkey+'"><a href="/scrumr/sprint.action?&visit=1&projectId='+project.pkey+'">'+project.pkey+'</a></td><td class="ptitle"><a href="/scrumr/sprint.action?&visit=1&projectId='+project.pkey+'">'+title+'</a></td><td class="pdesc">'+project.description+'</td><td class="pstart">'+duration+'</td><td class="status">'+status+'</td><td class="users">'+people+'</td><td class="actions"><a id="edit-proj" href="#create-project"><img title="edit" style="width:16px;height:16px;margin-right:5px;cursor:pointer;" src="/scrumr/themes/images/edit.gif"/></a><img id="delete-proj" style="width:16px;height:16px;cursor:pointer;" title="delete" src="/scrumr/themes/images/delete.gif"/></td></tr>';
+							
+						}
+						project_html += "</ul>";
+						$("#project-list tbody.content").html(project_html);
+					}else{
+						project_html = '<p style="margin:10px 0px 10px 0px;display: inline-block;">Currently no projects available.</p>';
+						$("#project-list tbody.content").html(project_html);
+					}
+				}else {
+					project_html = '<p style="margin:10px 0px 10px 0px;display: inline-block;">Currently no projects available.</p>';
+					$("#project-list tbody.content").html(project_html);
+				}
+			}
+		});
+	}
+	function createProject(update){
+		var id = $('input[name=pNo]');
+		var title = $('input[name=pTitle]');
+		var description = $('textarea[name=pDescription]');
+		var start_date = $('input[name=pStartDate]');
+		var end_date = $('input[name=pEndDate]');
+		var duration = $('select[name=pSprintDuration]');
+		
+		var days = days_between(new Date(Date.parse(start_date.val())),new Date(Date.parse(end_date.val())));
+			if((days < (7*duration.val()))){
+				$("#proj-error").html("Project duration conflicts with sprint duration");
+				return false;
+			} 
+			if(username == "" || username == null){
+				return false;
+			}else{
+				var post_data1 = {'username':username,'displayname':'<s:property value="loggedInUser.displayname"/>','fullname':'<s:property value="loggedInUser.fullname"/>','emailid':'<s:property value="loggedInUser.emailid"/>','avatarurl':'<s:property value="loggedInUser.avatarurl"/>'};
+				$.ajax({
+					url: '/scrumr/api/v1/users/create',
+					type: 'POST',
+					data: post_data1,
+					async:false,
+					success: function( records ) {
+						var assignees = new Array();
+						assignees.push(username);
+						if(update == false){
+							var post_data = 'pTitle=' + title.val() + '&current_user='+username + '&pDescription=' + description.val() + '&assignees='
 								+ assignees + '&pStartDate=' + start_date.val() + '&pEndDate=' + end_date.val() +'&pSprintDuration=' +duration.val();
 							$.ajax({
 								url: '/scrumr/api/v1/projects/create',
@@ -116,21 +253,60 @@ $(document).ready(function(){
 								error: function(data) { },
 								complete: function(data) { }
 							});
-						},
-						error: function(data) { },
-						complete: function(data) { }
-					});
-					
-					
-				}
-			
-			return false;
+						}else{
+							var post_data = 'pNo='+id.val()+'&pTitle=' + title.val() + '&current_user='+username + '&pDescription=' + description.val() + '&assignees='
+							+ assignees + '&pStartDate=' + start_date.val() + '&pEndDate=' + end_date.val() +'&pSprintDuration=' +duration.val();
+							$.ajax({
+								url: '/scrumr/api/v1/projects/update',
+								type: 'POST',
+								data: post_data,
+								async:false,
+								success: function( records ) {
+									if(records[0].pkey){
+										parent.$.fancybox.close();
+										window.location.href = '/scrumr/sprint.action?&visit=1&projectId='+records[0].pkey;
+									}
+								},
+								error: function(data) { },
+								complete: function(data) { }
+							});
+						}
+					},
+					error: function(data) { },
+					complete: function(data) { }
+				});
+				
+				
+			}
+		
+		return false;
+	}
+	
+	populateProjects();
+	 
+	$(".feed-item").live('click',function(){
+		window.location.href = '/scrumr/sprint.action?&visit=1&projectId='+$(this).attr("id");
+	});
+	
+	$('#create').live('click',function(){
+			createProject(false);
+	});
+	
+	$('#update').live('click',function(){
+		createProject(true);
 	});
 	
 	$("#newproj").fancybox({
 		'overlayColor' : '#000',
-        'overlayOpacity' : '0.6',
-        'autoScale' : false
+	    'overlayOpacity' : '0.6',
+	    'autoScale' : false,
+	    'autoDimensions':false
+	});
+	$("#edit-proj").fancybox({
+		'overlayColor' : '#000',
+	    'overlayOpacity' : '0.6',
+	    'autoScale' : false,
+	    'autoDimensions':false
 	});
 	
 }); 
@@ -138,24 +314,41 @@ $(document).ready(function(){
 </head>
 <body>
 	<header>
-    	<a href="<%= request.getContextPath() %>/" class="logo float-lft"></a>
-    	<div class="tabs dashboard-tab"><a class="dashboard" href="">Dashboard</a></div>
-    	<div class="tabs project-tab"><a class="projects" href="<%= request.getContextPath() %>/project.action">Projects</a></div>
-    	<div class="right-div" style="float:right;">
-    	</div>
+    	<a href="<%= request.getContextPath() %>/home.action" class="logo float-lft"></a>
+    	<div class="right-div" style="float:right;"></div>
 	</header>
    <section class="bg-pat">
-   <div id="create-project" class="bg-pat">
+   <div class="left-cont scroll">
+	   	<div class="caption-cont">
+	   		<h2>Projects</h2>
+	   		<a id="newproj" href="#create-project"><input style="float:right;margin: 30px 0px 10px 20px;border-radius:3px;" type="submit" class="status submit" value="Create Project"/></a>
+	   		<table id="project-list" class="project-list">
+             	 <thead>
+	             	 <tr class="header">
+	             	 	<td>Project #</td>
+	             	 	<td>Title</td>
+	             	 	<td>Description</td>
+	             	 	<td>Duration</td>
+	             	 	<td>Status</td>
+	             	 	<td>People</td>
+	             	 	<td>Actions</td>
+	             	 </tr>
+	             </thead>
+             	 <tbody class="content">
+              	</tbody>
+             </table> 
+	   </div>
+	   <div style="display:none;overflow:hidden !important;height:400px !important;width:500px !important;">
+          	<div id="create-project" class="bg-pat">
 	       <div class="bg-pat form-cont">
-	           <h1>Create New Project</h1>
-	           <div class="bor float-lft"></div>
+	           <h2 id="heading" >Create Project</h2>
 	       <form class="float-lft" id="new_project_form" method="POST">
+	        	<input type="hidden" name="pNo" id="pNo" value=""/>
 	           <input type="text" name="pTitle" class="inp-box margin-rgt" placeholder="Give project name" required/>
 	           <input type="date" id="datepickerFrom" name="pStartDate" class="cal inp-box" placeholder="Start date" required/>
 	           <input type="date" id="datepickerTo" name="pEndDate" class="cal inp-box margin-left" placeholder="End date" required/>
 	           <textarea cols="80" rows="3" name="pDescription"></textarea>
 	           <select class="float-lft" name="pSprintDuration" >
-	               <option value="1">Choose Sprint duration</option>
 	               <option value="1">1 Week</option>
 	               <option value="2">2 Week</option>
 	               <option value="3">3 Week</option>
@@ -164,9 +357,11 @@ $(document).ready(function(){
 	           </select>
 	           <input type="submit" class="float-rgt submit proj_submit" value="Create Project" />
 	       </form>
-	       <label id="proj-error" class="error-msg"></label>
+	       <label id=#proj-error" class="error-msg"></label>
        </div>
    </div>
-   </section>
+       </div>
+   </div>
+      </section>
 </body>
 </html>

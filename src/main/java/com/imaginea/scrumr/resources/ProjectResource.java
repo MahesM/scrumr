@@ -51,7 +51,11 @@ public class ProjectResource {
 	@RequestMapping(value="/user/{userid}", method = RequestMethod.GET)
 	public @ResponseBody List<Project> fetchProjectsByUser(@PathVariable("userid") String id) {
 		User user = userServiceManager.readUser(id);
-		return user.getProjects();
+		if(user != null){
+			return user.getProjects();
+		}else{
+			return null;
+		}
 			
 	}
 	
@@ -177,6 +181,58 @@ public class ProjectResource {
 	    return result;
 		
     }
+	
+	@RequestMapping(value="/update", method = RequestMethod.POST)	
+    public @ResponseBody List<Project> updateProject(
+    		@RequestParam String pNo,
+    		@RequestParam String pTitle,
+    		@RequestParam String pDescription,
+    		@RequestParam String pSprintDuration,
+    		@RequestParam String pStartDate,
+    		@RequestParam String pEndDate,
+    		@RequestParam String assignees,
+    		@RequestParam String current_user
+    		)
+	
+	{
+		Project project = projectManager.readProject(Integer.parseInt(pNo));
+		List<Project> result = new ArrayList<Project>();
+		
+		if(project != null){
+			try {
+				
+				project.setTitle(pTitle);
+				project.setDescription(pDescription);
+				project.setLast_updated(new java.sql.Date(System.currentTimeMillis()));
+				project.setLast_updatedby(current_user);
+				
+				projectManager.updateProject(project);
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+			result.add(project);
+		}
+       
+		
+	    return result;
+		
+    }
+	
+	@RequestMapping(value="/delete/{id}", method = RequestMethod.GET)
+	public @ResponseBody String deleteProject(@PathVariable("id") String id) {
+		Project project = projectManager.readProject(Integer.parseInt(id));
+		if(project != null){
+			projectManager.deleteProject(project);
+			System.out.println("SUCCESS");
+			return "{\"result\":\"success\"}";
+		}else{
+			System.out.println("FAILURE");
+			return "{\"result\":\"failure\"}";
+		}
+	}
 	
 	int getSprintCount(Date start, Date end, int duration){
 		int count = (int)(((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))/(7*duration));

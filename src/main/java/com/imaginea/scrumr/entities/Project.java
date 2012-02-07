@@ -12,8 +12,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.imaginea.scrumr.interfaces.IEntity;
 
@@ -39,6 +42,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 	private Date creation_date;
 	private String status;
 	private String last_updatedby;
+	private Set<Sprint> sprints;
 	
 	
 
@@ -108,7 +112,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 		this.createdby = createdby;
 	}
 
-	@ManyToMany(fetch= FetchType.LAZY, cascade = CascadeType.ALL, targetEntity=User.class)
+	@ManyToMany(fetch= FetchType.LAZY, cascade = CascadeType.PERSIST, targetEntity=User.class)
 	@JoinTable(name = "project_users", joinColumns = { @JoinColumn(name = "ppid") }, inverseJoinColumns = { @JoinColumn(name = "puserid") })
 	public Set<User> getAssignees() {
 		return assignees;
@@ -156,5 +160,15 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 	public void setLast_updatedby(String last_updatedby) {
 		this.last_updatedby = last_updatedby;
 	}
+	
+	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="project")
+	public Set<Sprint> getSprints() {
+		return sprints;
+	}
+	public void setSprints(Set<Sprint> sprints) {
+		this.sprints = sprints;
+	}
 
+	
 }
