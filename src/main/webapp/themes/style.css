@@ -436,7 +436,7 @@ ul.img-team li {
 div.sprintCont {
 	margin-top: 5px;
     width: 100%;
-    height:auto;
+	overflow:hidden;    
 }
 
 ul.story {
@@ -470,7 +470,7 @@ ul.story li p {
     padding-right:40px;
     line-height: 18px;
     word-wrap:break-word;
-    width:150px;
+    width:123px;
 }
 
 p.p1 {
@@ -1510,7 +1510,7 @@ left: -5px;
 .popup-story-cont .c-box {
     position: relative;
     float: left;
-    height: 180px;
+    height: auto;
     width:220px;
        box-shadow: 0 0 3px 2px #999;
      -moz-box-shadow:0 0 3px 2px #999;
@@ -1561,7 +1561,7 @@ border-top-right-radius: 4px;
     padding: 10px 0;
     float: left;
     width: 100%;
-    height:80px;
+    height:auto;
 }
 
 .popup-story-cont .c-box-content ul {
@@ -1602,6 +1602,7 @@ border-top-right-radius: 4px;
 
 .popup-story-cont .actions-cont {
     margin-right: 10px;
+    margin-bottom:5px;
 }
 
 .popup-story-cont .actions-cont a {
@@ -1993,7 +1994,7 @@ ul.col li.pink .header span {
 
 .acc-content {
     float: left;
-    height: auto;
+    height: 250px;
     width:560px;
     margin: 10px 20px;
     border-bottom: 1px solid #b8ceeb;
