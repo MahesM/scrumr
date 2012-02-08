@@ -1,8 +1,10 @@
 package com.imaginea.scrumr.controllers;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.interceptor.ServletRequestAware;
+import org.apache.struts2.interceptor.ServletResponseAware;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.imaginea.scrumr.entities.User;
@@ -11,9 +13,10 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 
 @SuppressWarnings("serial")
-public class GenericActionSupport extends ActionSupport implements Preparable, ServletRequestAware {
+public class GenericActionSupport extends ActionSupport implements Preparable, ServletRequestAware, ServletResponseAware {
 
 	protected HttpServletRequest request;
+	protected HttpServletResponse response;
 	protected UserServiceManager userServiceManager;
 	protected User loggedInUser = null;
 	public String source = "DATABASE";
@@ -77,4 +80,9 @@ public class GenericActionSupport extends ActionSupport implements Preparable, S
 		this.loggedInUser = loggedInUser;
 	}
 
+	public void setServletResponse(HttpServletResponse httpServletResponse) {
+		this.response = httpServletResponse;
+	}
+
+	
 }
