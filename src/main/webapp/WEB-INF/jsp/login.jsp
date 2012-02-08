@@ -8,7 +8,6 @@
 <%@ page import="org.codehaus.jettison.json.*" %>
 <%@ page import="org.apache.commons.httpclient.protocol.Protocol" %>
 <%@ page import="org.apache.commons.httpclient.protocol.ProtocolSocketFactory" %>
-<%@ page import="com.imaginea.scrumr.qontextclient.*" %> 
 <!DOCTYPE html>
 <html>
 <head>
@@ -41,9 +40,8 @@ $(document).ready(function(){
 	var emailid = '<s:property value="loggedInUser.emailid"/>';
 	var source = '<s:property value="source"/>';
 	var qontextHostUrl = '<s:property value="qontextHostUrl"/>';
-	
      if(username != null && username != ''){
-     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatarurl+'"/><label class="float-lft loginLabel">Hi!, '+fullname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
+     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+qontextHostUrl+avatarurl+'"/><label class="float-lft loginLabel">Hi!, '+fullname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
      }
      
      function days_between(date1, date2) {
@@ -187,7 +185,7 @@ $(document).ready(function(){
 							var people_count = project.assignees.length > 3 ? 3:project.assignees.length;
 							if(people_count > 0){
 								for(var j=0; j<people_count; j++){
-									people += '<img class="story-user" title="'+project.assignees[j].fullname+'" src="'+project.assignees[j].avatarurl+'"/>';
+									people += '<img class="story-user" title="'+project.assignees[j].fullname+'" src="'+qontextHostUrl+project.assignees[j].avatarurl+'"/>';
 								}
 							}else{
 								people = 'No Assignees';
@@ -196,7 +194,7 @@ $(document).ready(function(){
 							if(((i+1)%2) == 0){
 								even = "even";
 							}
-							project_html += '<tr class="'+even+'"><td class="pno" id="'+project.pkey+'"><a href="/scrumr/sprint.action?&view=sprint&visit=1&projectId='+project.pkey+'">'+project.pkey+'</a></td><td class="ptitle"><a href="/scrumr/sprint.action?&view=sprint&visit=1&projectId='+project.pkey+'">'+title+'</a></td><td class="pdesc">'+project.description+'</td><td class="pstart">'+duration+'</td><td class="status">'+status+'</td><td class="users">'+people+'</td><td class="actions"><a id="edit-proj" href="#create-project"><img title="edit" style="width:16px;height:16px;margin-right:5px;cursor:pointer;" src="/scrumr/themes/images/edit.gif"/></a><img id="delete-proj" style="width:16px;height:16px;cursor:pointer;" title="delete" src="/scrumr/themes/images/delete.gif"/></td></tr>';
+							project_html += '<tr class="'+even+'"><td class="pno" id="'+project.pkey+'"><a href="/scrumr/sprint.action?&view=sprint&visit=0&projectId='+project.pkey+'">'+project.pkey+'</a></td><td class="ptitle"><a href="/scrumr/sprint.action?&view=sprint&visit=0&projectId='+project.pkey+'">'+title+'</a></td><td class="pdesc">'+project.description+'</td><td class="pstart">'+duration+'</td><td class="status">'+status+'</td><td class="users">'+people+'</td><td class="actions"><a id="edit-proj" href="#create-project"><img title="edit" style="width:16px;height:16px;margin-right:5px;cursor:pointer;" src="/scrumr/themes/images/edit.gif"/></a><img id="delete-proj" style="width:16px;height:16px;cursor:pointer;" title="delete" src="/scrumr/themes/images/delete.gif"/></td></tr>';
 							
 						}
 						project_html += "</ul>";
@@ -219,12 +217,18 @@ $(document).ready(function(){
 		var start_date = $('input[name=pStartDate]');
 		var end_date = $('input[name=pEndDate]');
 		var duration = $('select[name=pSprintDuration]');
-		
-		var days = days_between(new Date(Date.parse(start_date.val())),new Date(Date.parse(end_date.val())));
-			if((days < (7*duration.val()))){
-				$("#proj-error").html("Project duration conflicts with sprint duration");
-				return false;
-			} 
+		if(trim(title.val()) == ""){
+			$("#proj-error").html("Project title is mandatory");
+			return false;
+		}
+			if(end_date.val() != ""){
+				var days = days_between(new Date(Date.parse(start_date.val())),new Date(Date.parse(end_date.val())));
+					if((days < (7*duration.val()))){
+						$("#proj-error").html("Project duration conflicts with sprint duration");
+						return false;
+					} 
+			}
+			
 			if(username == "" || username == null){
 				return false;
 			}else{
@@ -285,10 +289,6 @@ $(document).ready(function(){
 	
 	populateProjects();
 	 
-	$(".feed-item").live('click',function(){
-		window.location.href = '/scrumr/sprint.action?&visit=1&projectId='+$(this).attr("id");
-	});
-	
 	$('#create').live('click',function(){
 			createProject(false);
 	});
@@ -345,8 +345,8 @@ $(document).ready(function(){
 	           <h2 id="heading" >Create Project</h2>
 	       <form class="float-lft" id="new_project_form" method="POST">
 	        	<input type="hidden" name="pNo" id="pNo" value=""/>
-	           <input type="text" name="pTitle" class="inp-box margin-rgt" placeholder="Give project name" required/>
-	           <input type="date" id="datepickerFrom" name="pStartDate" class="cal inp-box" placeholder="Start date" required/>
+	           <input type="text" name="pTitle" class="inp-box margin-rgt" placeholder="Give project name" required="required"/>
+	           <input type="date" id="datepickerFrom" name="pStartDate" class="cal inp-box" placeholder="Start date" required="required"/>
 	           <input type="date" id="datepickerTo" name="pEndDate" class="cal inp-box margin-left" placeholder="End date"/>
 	           <textarea cols="80" rows="3" name="pDescription"></textarea>
 	           <select class="float-lft" name="pSprintDuration" >
@@ -356,9 +356,9 @@ $(document).ready(function(){
 	               <option value="4">4 Week</option>
 	               <option value="5">5 Week</option>
 	           </select>
-	           <input type="submit" class="float-rgt submit proj_submit" value="Create Project" />
+	           <input type="button" class="float-rgt submit proj_submit" value="Create Project" />
 	       </form>
-	       <label id=#proj-error" class="error-msg"></label>
+	       <label id="proj-error" class="error-msg"></label>
        </div>
    </div>
        </div>

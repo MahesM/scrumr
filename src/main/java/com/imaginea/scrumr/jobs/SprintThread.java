@@ -64,37 +64,43 @@ class SprintThread extends TimerTask {
 				}else{
 					Sprint old_sprint = null;
 					Sprint current = null;
-					List<Story> stories = null;
+					List<Story> storiesLastSprint = null;
+					List<Story> storiesInBackLog = null;
 					if(p.getCurrent_sprint() != 0){
 						old_sprint = sprintManager.selectSprintByProject(p, p.getCurrent_sprint());
 						Date spend = old_sprint.getEnddate();
 						if(spend.before(new Date())){
-							stories = storyManager.fetchUnfinishedStories(old_sprint.getPkey());
+							storiesLastSprint = storyManager.fetchUnfinishedStories(old_sprint.getPkey());
+							storiesInBackLog = storyManager.fetchUnAssignedStories(p.getPkey());
 						}
 					}
-					System.out.println("Unifinished: "+stories.size());
-					if(stories != null && stories.size() > 0){
+					if((storiesLastSprint != null && storiesLastSprint.size() > 0) || (storiesInBackLog != null && storiesInBackLog.size() > 0)){
 						current = new Sprint();
 						current.setId(p.getCurrent_sprint()+1);
-						current.setStartdate(new Date(old_sprint.getEnddate().getTime()+ (1*24*60*60*1000)));
-						current.setEnddate(new Date(old_sprint.getEnddate().getTime()+ (1*24*60*60*1000) + ((7*p.getSprint_duration())*24*60*60*1000)));
+						current.setStartdate(new Date(old_sprint.getEnddate().getTime()+ 86400000));
+						current.setEnddate(new Date(old_sprint.getEnddate().getTime()+ 86400000 + ((7*p.getSprint_duration())*86400000) - 86400000));
 						current.setStatus("In Progress");
 						p.setCurrent_sprint(current.getId());
 						p.setStatus("In Progress");
 						projectManager.updateProject(p);
 						current.setProject(p);
 						sprintManager.createSprint(current);
-						for(Story us: stories){
-							if(!us.getStatus().equalsIgnoreCase("finished")){
-								if(current != null){
-									us.setSprint_id(current);
-								}else{
-									us.setSprint_id(null);
+						if(storiesLastSprint != null && storiesLastSprint.size() > 0){
+							for(Story us: storiesLastSprint){
+								if(!us.getStatus().equalsIgnoreCase("finished")){
+									if(current != null){
+										us.setSprint_id(current);
+									}else{
+										us.setSprint_id(null);
+									}
+									us.setStatus("notstarted");
+									storyManager.updateStory(us);
 								}
-								us.setStatus("notstarted");
-								storyManager.updateStory(us);
 							}
 						}
+					}else{
+						p.setStatus("Finished");
+						projectManager.updateProject(p);
 					}
 				}
 			}

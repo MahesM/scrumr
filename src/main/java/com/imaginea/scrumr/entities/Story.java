@@ -41,6 +41,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
 	private Project project;
 	private String title;
+	private String description;
 	private int priority;
 	private Sprint sprint_id;
 	private Date creation_date;
@@ -65,14 +66,21 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 		this.project = project;
 	}
 
-	@Column(name = "sttitle")
+	@Column(name = "sttitle", length=100)
 	public String getTitle() {
 		return title;
 	}
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
+	
+	@Column(name = "stdescription", length=500)
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
 	@Column(name = "stpriority", nullable = false)
 	public int getPriority() {
 		return priority;

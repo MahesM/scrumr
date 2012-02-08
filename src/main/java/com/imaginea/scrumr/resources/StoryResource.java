@@ -92,6 +92,7 @@ public class StoryResource {
 	@RequestMapping(value="/create", method = RequestMethod.POST)
 	public @ResponseBody String createStory(
 			@RequestParam String stTitle,
+			@RequestParam String stDescription,
 			@RequestParam String stPriority,
 			@RequestParam String user,
 			@RequestParam String projectId
@@ -101,6 +102,7 @@ public class StoryResource {
 		System.out.println("User :"+user);
 		try {
 			story.setTitle(stTitle);
+			story.setDescription(stDescription);
 			story.setPriority(Integer.parseInt(stPriority));
 			story.setCreator(user);
 			story.setLast_updated(new java.sql.Date(System.currentTimeMillis()));

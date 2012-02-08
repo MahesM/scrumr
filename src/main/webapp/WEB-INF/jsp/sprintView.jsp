@@ -45,11 +45,10 @@
         	var emailid = '<s:property value="loggedInUser.emailid"/>';
         	var data = '<s:property value="successResponse"/>';
         	var source = '<s:property value="source"/>';
-            
+        	var qontextHostUrl = '<s:property value="qontextHostUrl"/>';
             if(userLogged != null && userLogged != ''){
-    	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatar+'"/><label class="float-lft loginLabel">Hi!, '+fullName+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
+    	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+qontextHostUrl+avatar+'"/><label class="float-lft loginLabel">Hi!, '+fullName+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
     	     } 
-            var qontextHostUrl = '<s:property value="qontextHostUrl"/>';
         	var current_sprint = 0;
         	var users_arr = [];
         	var sprintinview = 0;
@@ -127,7 +126,7 @@
             				$("#people").html('');
             				if(users != null && users.length > 0){
             					for(var i=0;i< users.length;i++){
-            						$("#people").append('<li><img title="'+users[i].fullname+'" src="'+users[i].avatarurl+'" /></li>');
+            						$("#people").append('<li><img title="'+users[i].fullname+'" src="'+qontextHostUrl+users[i].avatarurl+'" /></li>');
             						userObject[users[i].username] = users[i];
             					}
             				}else{
@@ -139,7 +138,7 @@
             					user_html += 'No users in the project';
             				}else{
 	            				for(var i=0;i<users.length;i++){
-	            					user_html += "<li id='"+users[i].username+"'><img src='"+users[i].avatarurl+"' title='"+users[i].fullname+"''/></li>";
+	            					user_html += "<li id='"+users[i].username+"'><img src='"+qontextHostUrl+users[i].avatarurl+"' title='"+users[i].fullname+"''/></li>";
 	            				}
             				}
            					$('#proj-user-list').html(user_html);
@@ -166,7 +165,7 @@
 	        					var story = stories[i];
 	        					creatorObj = userObject[story.creator];
 							var userObj = userObject[story.creator];
-	        					story_unassigned += '<li id="st'+story.pkey+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        					story_unassigned += '<li class="unassigned" id="st'+story.pkey+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+qontextHostUrl+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 
 	        				}
 	        			}else{
@@ -219,8 +218,19 @@
 								}else{
 									duration += ' - No End Date';
 								}
-								$('.duration-hd label').html(duration+'&nbsp;&nbsp;&nbsp;'+sprints[0].project.status);
 								
+								var status = '<span class="total">0</span><span class="finished">0</span>';
+								$.ajax({
+					        		url: '/scrumr/api/v1/projects/storycount/<%= projectId%>',
+					        		type: 'GET',
+					        		async:false,
+					        		success: function( result ) {
+					        			result = $.parseJSON(result);
+										 status = '<span id="project_total" class="total">'+result.result+'</span><span id="project_finished" class="finished">'+result.result+'</span>';
+					        		}
+								});
+								$('.duration-hd label').html(duration+'&nbsp;&nbsp;&nbsp;'+sprints[0].project.status+'&nbsp;&nbsp;&nbsp;'+status);
+								var finished = 0;
 				        		var sprint_html = '<ul id="holderforpage" class="col">';
 			        			$("ul.col li").css("width",100/sprints.length+'%');
 			        			for(var k=0; k<sprints.length;k++ ){
@@ -235,6 +245,9 @@
 					        					for(var i=0;i<stories.length;i++){
 						        					var story = stories[i];
 						        					var creatorObj = userObject[story.creator];
+						        					if(story.status == "finished"){
+						        						finished = finished+1;
+						        					}
 						        					 if(story.assignees.length > 0){
 							        					var imageHTML = " ";
 							        					for(var j=0;j<story.assignees.length;j++){
@@ -243,11 +256,11 @@
 																//imageHTML+="<label>.....</label>";
 																break;
 															}
-															imageHTML+="<img height='26' width='26' class='' src='"+story.assignees[j].avatarurl+"' title='"+story.assignees[j].fullname+"'>";
+															imageHTML+="<img height='26' width='26' class='' src='"+qontextHostUrl+""+story.assignees[j].avatarurl+"' title='"+story.assignees[j].fullname+"'>";
 														}
 							        					sprint_html +=  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					}else{
-						        						sprint_html += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+						        						sprint_html += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+qontextHostUrl+''+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					} 
 						        				}
 					        					$(".viewStory, .moreStory").fancybox({
@@ -274,6 +287,7 @@
 			        				sprint_html +='</li>';
 			        				
 			        			}
+			        			$("#project_finished").html(finished);
 			        			
 			        			sprint_html +='</ul>';
 			        			$("#project-view").html(sprint_html);
@@ -340,10 +354,10 @@
 									//imageHTML+="<label>.....</label>";
 									break;
 								}
-								imageHTML+="<img height='26' width='26' class='' id = '"+users[i].user.username+"' src='"+users[i].user.avatarurl+"' title='"+users[i].user.fullname+"'>";
+								imageHTML+="<img height='26' width='26' class='' id = '"+users[i].user.username+"' src='"+qontextHostUrl+''+users[i].user.avatarurl+"' title='"+users[i].user.fullname+"'>";
 							}
 						}else{
-							imageHTML+="<img height='26' width='26' class='' src='"+creatorObj.avatarurl+"' title='"+creatorObj.fullname+"'><label class=''>Created by "+creatorObj.fullname+"</label>";
+							imageHTML+="<img height='26' width='26' class='' src='"+qontextHostUrl+''+creatorObj.avatarurl+"' title='"+creatorObj.fullname+"'><label class=''>Created by "+creatorObj.fullname+"</label>";
 						}
 						$('li#st'+storyId).find('.img-cont').html(imageHTML);
 						viewStoryFancyBox();
@@ -430,12 +444,12 @@
 			
 			function populateSprintStories(sprint){
 					var userObj='';
+					 var sprintTitle = '';
 	        		 if(totalsprints == 0){
-		        		 var string = '<label>No Sprints available for this project.</label>';
-		        		 $(".sprints").html(string);
+	        			 sprintTitle = '<label>No Sprints available for this project.</label>';
+		        		// $(".sprints").html(string);
 		        	 }else{
-		        		 var sprintList = "";
-		        		 sprintList += '<li class="sprintHead">Sprint '+sprint+' </li>';
+		        		 sprintTitle = '<span class="sprintHead">Sprint '+sprint+' </span>';
 			        	 /* for(var i=1; i<=totalsprints;i++){
 			        		 if(i == sprint){
 				        		 sprintList += '<li class="sprintHead current">Sprint '+i+' &#187; </li>';
@@ -443,7 +457,7 @@
 			        			 sprintList += '<li class="sprintHead">Sprint '+i+' &#187; </li>';
 			        		 }
 			        	 } */
-			        	 $(".sprints").html(sprintList);
+			        	 //$(".sprints").html(sprintList);
 		        	 }
 	        		 
 	        		 var post_data2 = 'sprintId='+sprint+'&projectId=<%= projectId%>';
@@ -469,7 +483,9 @@
 		    						}else{
 		    							duration += ' - No End Date';
 		    						}
-		    						$('.duration-hd label').html(duration+'&nbsp;&nbsp;&nbsp;'+result.status);
+		    						var status = '<span id="sprint_total" class="total">0</span><span id="sprint_finished" class="finished">0</span>';
+		    						$('.duration-hd label').html(sprintTitle+'&nbsp;&nbsp;&nbsp;'+duration+'&nbsp;&nbsp;&nbsp;'+result.status+'&nbsp;&nbsp;&nbsp;'+status);
+		    						$('.duration-hd label').show();
 			        			}
 			        		},
 			        		error: function(data) { },
@@ -487,7 +503,8 @@
 			        				var story_dev = '<div class="header" ><span></span>Development</div><div class="sprintCont"><ul id="dev" class="story">';
 			        				var story_review = '<div class="header" ><span></span>Review &amp; QA</div><div class="sprintCont"><ul id="review" class="story">';
 			        				var story_finished = '<div class="header" ><span></span>Finished</div><div class="sprintCont"><ul id="finished" class="story">';
-				        			if(stories != null && stories.length > 0){
+				        			var finished = 0;
+			        				if(stories != null && stories.length > 0){
 			        					var str = '';
 			        					var story='';
 			        					for(var i=0;i<stories.length;i++){
@@ -509,11 +526,11 @@
 																	//imageHTML+="<a class='viewStory' href='#story-cont'>.....</a>";
 																	break;
 																}
-																imageHTML+="<img height='26' width='26' class='' src='"+users[j].user.avatarurl+"' title='"+users[j].user.fullName+"'>";
+																imageHTML+="<img height='26' width='26' class='' src='"+qontextHostUrl+""+users[j].user.avatarurl+"' title='"+users[j].user.fullName+"'>";
 															}
 								        					str =  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 							        					}else{
-						        							str = '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+						        							str = '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+qontextHostUrl+''+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 							        					}
 				        						}
 				        					});
@@ -526,9 +543,11 @@
 				        						story_review += str;
 				        					}else if(story.status == "finished"){
 				        						story_finished += str;
+				        						finished = finished + 1;
 				        					}
 				        				}
-				        				
+				        				$("#sprint_total").html(stories.length);
+				        				$("#sprint_finished").html(finished);
 				        				
 				        				story_unassigned += '</div></ul>';
 				       					story_dev += '</div></ul>';
@@ -574,7 +593,7 @@
 			        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint); 
 			        		   				var elOffset = $(ui.item[0]).offset();
 			        		   				 if($(ui.item[0]).closest('ul').attr('id') == 'notstarted'){
-			        		   					$(ui.item[0]).find('.img-cont').html("<img src='"+creatorObj.avatarurl+"' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.fullname+"</label>");
+			        		   					$(ui.item[0]).find('.img-cont').html("<img src='"+qontextHostUrl+""+creatorObj.avatarurl+"' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.fullname+"</label>");
 			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   				}
 			        		   				if($(ui.item[0]).closest('ul').attr('id') == 'finished'){			        		   								        		   				
@@ -612,7 +631,17 @@
 			        		   				}
 			        		   				  if(success == false){
 			        		   					$(this).sortable('cancel');
-			        		   				}  
+			        		   				}
+			        		   				 var clss = ui.item.attr("class");
+				        	   				 if(clss == "unassigned"){
+				        	   					ui.item.removeClass("unassigned");
+				        	   					var c = parseInt($("#sprint_total").html());
+				        	   		        	$("#sprint_total").html(c + 1);
+				        	   	        		if($(this).attr("id") == "finished"){
+				        	   	        			var f = parseInt($("#sprint_finished").html());
+				        	   	    	        	$("#sprint_finished").html(f + 1);
+				        	   	        		}
+				        	   				 }
 			        		   			}
 			        	    		}).disableSelection();
 				        			$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
@@ -668,16 +697,17 @@
 	    						}else{
 	    							duration += ' - No End Date';
 	    						}
-	    						$('.duration-hd label').html(duration);
+	    						var status = '<span class="total">12</span><span class="finished">13</span>';
+	    						$('.duration-hd label').html(duration+'&nbsp;&nbsp;&nbsp;'+status);
 	        					var userObj = userObject[story.creator];
 	        					if(story.status == "notstarted"){
-	        						story_unassigned += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        						story_unassigned += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+qontextHostUrl+''+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 	        					}else if(story.status == "dev"){
-	        						story_dev += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        						story_dev += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+qontextHostUrl+''+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 	        					}else if(story.status == "review"){
-	        						story_review += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        						story_review += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+qontextHostUrl+''+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 	        					}else if(story.status == "finished"){
-	        						story_finished += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        						story_finished += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+qontextHostUrl+''+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 	        					}
 	        				}
 	       					story_unassigned += '</ul>';
@@ -739,7 +769,7 @@
 			function addUser(userDetails){
 				var stat = false;
 				var post_data = 'userid='+userDetails.username+'&projectId=<%= projectId%>';
-				console.log(userDetails);
+				//console.log(userDetails);
 				$.ajax({
 					url: '/scrumr/api/v1/users/create',
 					type: 'POST',
@@ -860,8 +890,10 @@
 	        			if(stories != null && stories.length > 0){
 							stories = stories[0];
 	        				$("#st-title").html(stories.title);
+	        				$("#st-title").css("font-weight","bold");
+	        				$("#st-description").html(stories.description);
 	        				var userObj = userObject[stories.creator];
-	        				$("#st-creator").html('<img title="'+userObj.fullname+'" src="'+userObj.avatarurl+'"/>');
+	        				$("#st-creator").html('<img title="'+userObj.fullname+'" src="'+qontextHostUrl+''+userObj.avatarurl+'"/>');
 	        				var assign = '';
 	        				var post_data="storyId="+id+"&stage="+stories.status;
 	        				$.ajax({
@@ -873,7 +905,7 @@
 	    	        				if(users.length > 0){
 	    	        					for(var i=0;i < users.length; i++){
 	    	        						userObj = userObject[users[i].user.username];
-	    	        						assign += '<div class="user"><img class="remove-user" alt="'+userObj.username+'" title="'+userObj.fullname+'" src="'+userObj.avatarurl+'"/><span class="remvUser" >Remove</span></div>';
+	    	        						assign += '<div class="user"><img class="remove-user" alt="'+userObj.username+'" title="'+userObj.fullname+'" src="'+qontextHostUrl+''+userObj.avatarurl+'"/><span class="remvUser" >Remove</span></div>';
 	    	        					}
 	    	        				}else{
 	    	        					assign = "<label style=\"margin:5px;\">No user assgined</labal>";
@@ -889,12 +921,12 @@
 	        					$('.stAddmore').hide();
 	        				}
 	        				var people = '';
-	        				console.log(users);
+	        				//console.log(users);
 	        				if(users && users.length > 0){
 	        					var user;
 	        					for(var i=0;i < users.length; i++){
 	        						user = userObject[users[i].username];
-	        						people += '<div class="user"><img class="add-user" alt="'+user.username+'" title="'+user.fullname+'" src="'+user.avatarurl+'"/></div>';
+	        						people += '<div class="user"><img class="add-user" alt="'+user.username+'" title="'+user.fullname+'" src="'+qontextHostUrl+''+user.avatarurl+'"/></div>';
 	        					}
 	        				}else{
 	        					people = "<label style=\"margin:5px;\">No people in the project</labal>";
@@ -951,13 +983,13 @@
 								}
 							//	var users_html = "<ul>";
 								var users_html="";
-								console.log(records);
+								//console.log(records);
 								var apiVersion = records.success.headers["api-version"];
 								for(var i=0;i<total_users.length;i++){
 									if(!total_users[i].avatar){
 			        					total_users[i].avatar = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
 			        				}
-									users_html += '<li><img src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
+									users_html += '<li><img url="'+total_users[i].avatar+'" src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
 								}
 								$('.popup-proj-cont .c-box-content .user-loading').hide();
 								if (isAppend){
@@ -1018,7 +1050,7 @@
 					var userDetails = {};
 					userDetails.username = id;
 					userDetails.fullname = el.prev('.details').find('label.name').html();
-					userDetails.avatarurl = el.closest('li').find('img').attr('src');
+					userDetails.avatarurl = el.closest('li').find('img').attr('url');
 					userDetails.displayname = el.prev('.details').find('label.name').html();
 					userDetails.emailid = el.prev('.details').find('a.email').html();
 					var success = addUser(userDetails);
@@ -1056,7 +1088,7 @@
 					var users_html="";
 					for(var i=0;i<records.length;i++){
 						if(records[i].username != creator){
-							users_html += '<li><img src="'+records[i].avatarurl+'"/></div><div class="details"><label class="name">'+records[i].fullname+'</label><a class="email">'+records[i].emailid+'</a></div><div style="float:left;" class="removeUser float-rgt disable" id="'+records[i].username+'"></div></li>';
+							users_html += '<li><img src="'+qontextHostUrl+records[i].avatarurl+'"/></div><div class="details"><label class="name">'+records[i].fullname+'</label><a class="email">'+records[i].emailid+'</a></div><div style="float:left;" class="removeUser float-rgt disable" id="'+records[i].username+'"></div></li>';
 						}
 					}
 					//users_html += "</ul>";
@@ -1113,6 +1145,7 @@
      	       	populateSprints();
 				$("#sprint-view").hide();
 				$("#project-view").show();
+				$(".sprintHead").hide();
 				$(".duration-hd").find('label').show();
 				$(".duration-hd").find('#pageCtrls').show();
 				$(".duration-hd").find('ul').hide();
@@ -1120,7 +1153,8 @@
      	       	populateSprintStories(current_sprint);
 				$("#sprint-view").show();
 				$("#project-view").hide();
-				$(".duration-hd").find('label').hide();
+				$(".sprintHead").show();
+				//$(".duration-hd").find('label').hide();
 				$(".duration-hd").find('#pageCtrls').hide();
 				$(".duration-hd").find('ul').show();
 			}
@@ -1175,15 +1209,15 @@
         	}); --%>
         	
         	$('#addAnotherStory,#createStory').live("click",function(){
-        		var title = $('textarea[name=storyDesc]');
-        		var description = "No Description";
+        		var title = $('input[name=storyTitle]');
+        		var description = $('textarea[name=storyDesc]');
         		var priority = $('select[name=stPriority]');
         		if(title.val()==""){
         			return;
         		}
         		var user = userLogged;
         		var projectId= <%= projectId%>;
-        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description + '&stPriority=' + priority.val() + '&user=' +user;
+        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority.val() + '&user=' +user;
         		$.ajax({
         			url: '/scrumr/api/v1/stories/create',
         			type: 'POST',
@@ -1216,6 +1250,16 @@
         		id = id.replace("st","");
         		addtoCurrentSprint(id,0);
         		$(this).parent().hide("fade","slow");
+        		var c = parseInt($("#sprint_total").html());
+        		if(c > 0){
+	        		$("#sprint_total").html(c - 1);
+        		}
+        		if($(this).parent().parent().attr("id") == "finished"){
+        			var f = parseInt($("#sprint_finished").html());
+            		if(f > 0){
+    	        		$("#sprint_finished").html(f - 1);
+            		}
+        		}
         		setTimeout(function(){ //execute with a delay inorder to show the fade effect
         			populateUnassignedStories('');
         			//commented this out as i feel it is unnecessary to populate content. On refresh, it will populate anyways.
@@ -1295,7 +1339,7 @@
     								if(!total_users[i].basicInfo.avatarUrl){
     			    					total_users[i].basicInfo.avatarUrl = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
     			    				}
-    								users_html += '<li><img src="'+qontextHostUrl+total_users[i].basicInfo.avatarUrl+'"/></div><div class="details"><label class="name">'+total_users[i].basicInfo.displayName+'</label><a class="email">'+total_users[i].basicInfo.primaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].accountId+'"></div></li>';
+    								users_html += '<li><img url="'+total_users[i].basicInfo.avatarUrl+'" src="'+qontextHostUrl+total_users[i].basicInfo.avatarUrl+'"/></div><div class="details"><label class="name">'+total_users[i].basicInfo.displayName+'</label><a class="email">'+total_users[i].basicInfo.primaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].accountId+'"></div></li>';
     								$('.popup-proj-cont .c-box-content ul').html(users_html);							    								
     							}    							
     						}else{
@@ -1400,6 +1444,7 @@
 		       	populateSprints();
 				$("#sprint-view").hide();
 				$("#project-view").show();
+				$(".sprintHead").hide();
 				$(".duration-hd").find('label').show();
 				$(".duration-hd").find('#pageCtrls').show();
 				$(".duration-hd").find('ul').hide();
@@ -1416,7 +1461,7 @@
 				populateSprintStories(current_sprint);
 				$("#sprint-view").show();
 				$("#project-view").hide();
-				$(".duration-hd").find('label').hide();
+				$(".sprintHead").show();
 				$(".duration-hd").find('#pageCtrls').hide();
 				$(".duration-hd").find('ul').show();
 				viewStoryFancyBox();
@@ -1572,7 +1617,7 @@
         		var commentBoxHtml = '';
 				var user = userLogged;	
 				var current_user = userObject[user];
-				commentBoxHtml = '<img src="'+current_user.avatarurl+'">';							
+				commentBoxHtml = '<img src="'+qontextHostUrl+current_user.avatarurl+'">';							
 				$(".comment-box-user").html(commentBoxHtml);
 				$(".todo-box-user").html(commentBoxHtml);
 				
@@ -1597,7 +1642,7 @@
 			        				var newDate = new Date(comment.logDate);
 			        				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();				        				    				
 			        				//alert($.datepicker.parseDate('MM d,yy',new Date(parseInt(comment.logDate))));			        																						        		
-			        				commentsHtml += '<li class="comment-list" style="width:100%;"><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>';				        						        	
+			        				commentsHtml += '<li class="comment-list" style="width:100%;"><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+qontextHostUrl+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>';				        						        	
 			        				}
 		        				commentsHtml += '</div>';
 		        			}			        				        			        			
@@ -1698,7 +1743,7 @@
               				$('.comment-text').val('');							            				             			
               				var newDate = new Date(comment.logDate);
               				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();              				         				              			
-              				$('.comment-display ul').append('<li class="comment-list" style="width:100%";><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>');
+              				$('.comment-display ul').append('<li class="comment-list" style="width:100%";><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+qontextHostUrl+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>');
               				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
               				$('.comment-text').focus(); 				              				                 
               			},
@@ -1734,7 +1779,7 @@
       				$('#todo_section').prev().find('label').html('Todos ('+count+')');
       				$('.todo-text').val('');
       				$('#todo-milestones').val('1 Day');							            				             			      				              				         				              			
-      				$('.todo-display ul').prepend('<li class="todo-list" style="width:100%";><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period :'+todo.milestonePeriod+'</div></div></li>');
+      				$('.todo-display ul').prepend('<li class="todo-list" style="width:100%";><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period :'+todo.milestonePeriod+'</div></div></li>');
       				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
       				$('.todo-text').focus();         				              				                 
       			},
@@ -1780,7 +1825,7 @@
 		        				todosHtml += '<ul style="list-style:none;">';
 		        				for (var i=0;i<todos.length;i++){
 		        					todo = todos[i];			        								        				    						        							        																						        	
-			        				todosHtml += '<li class="todo-list" style="width:100%;"><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period: '+todo.milestonePeriod+'</div></div></li>';				        						        	
+			        				todosHtml += '<li class="todo-list" style="width:100%;"><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period: '+todo.milestonePeriod+'</div></div></li>';				        						        	
 			        				}
 		        				todosHtml += '</ul></div>';
 		        			}			        				        			        			
@@ -1888,7 +1933,7 @@
 		                 <a href="" class="customize float-rgt">Customize</a>
 	                </div>
 	                <div class="duration-hd">
-	                	<label style="display:none;float:left;"><span></span>12/12/2011 - <span></span>12/12/2011</label>
+	                	<label style="display:none;"></label>
 	                	<ul class="sprints float-lft">
 	                	</ul> 
 	                	<div id="pageCtrls" style="display:none;float:right;width:auto;height:30px;"></div>
@@ -1914,6 +1959,9 @@
 	        						</div>
 	        						<div id="story_details_section" class="acc-content">
 	            						<p id="st-title">Hong Kong Phooey, number one super guy. Hong Kong Phooey. The stories begin at the police headquarters,
+							                where Hong Kong Phooey's alter ego, Penry, works as a mild-mannered janitor under the glare of Sergeant
+							                Flint.</p>
+							                <p id="st-description">Hong Kong Phooey, number one super guy. Hong Kong Phooey. The stories begin at the police headquarters,
 							                where Hong Kong Phooey's alter ego, Penry, works as a mild-mannered janitor under the glare of Sergeant
 							                Flint.</p>
 	            						<div class="div">
@@ -2075,7 +2123,10 @@
                <div class="c-box-content">
                    <form id="story_form" method="POST">
 						<div class="sTitle">
-							<textarea id="storyDesc" style="resize:none;" name="storyDesc" rows="5" cols="1" placeholder="Enter Story Desc" required="required"></textarea>
+							<input id="storyDesc" style="resize:none;" name="storyTitle" placeholder="Enter Story Title" size="100" required="required"></input>
+						</div>
+						<div class="sDesc">
+							<textarea required="required" id="storyDesc" style="resize:none;" maxlength="500" name="storyDesc" rows="5" cols="1" placeholder="Enter Story Desc"></textarea>
 						</div>
 						<select name="stPriority" id="storyPriority">
 							<option selected="selected" value="1">Priority 1</option>
