@@ -224,14 +224,14 @@
 									duration += ' - No End Date';
 								}
 								
-								var status = '<span class="total">0</span><span class="finished">0</span>';
+								var status = '<div class="project_count">Completed:<span id="project_total" class="total">0</span><h3>Total: </h3><span id="project_finished" class="finished">0</span> </div>';
 								$.ajax({
 					        		url: '/scrumr/api/v1/projects/storycount/<%= projectId%>',
 					        		type: 'GET',
 					        		async:false,
 					        		success: function( result ) {
 					        			result = $.parseJSON(result);
-										 status = '<span id="project_total" class="total">'+result.result+'</span><span id="project_finished" class="finished">'+result.result+'</span>';
+										 status = '<div class="project_count"><h3><b>Stories </b>Completed: </h3><span id="project_total" class="total">'+result.result+'</span> <h3>Total: </h3><span id="project_finished" class="finished">'+result.result+'</span></div>';
 					        		}
 								});
 								$('.duration-hd label').html(duration+'&nbsp;&nbsp;&nbsp;'+sprints[0].project.status+'&nbsp;&nbsp;&nbsp;'+status);
@@ -488,7 +488,7 @@
 		    						}else{
 		    							duration += ' - No End Date';
 		    						}
-		    						var status = '<span id="sprint_total" class="total">0</span><span id="sprint_finished" class="finished">0</span>';
+		    						var status = '<div class="project_count"><h3><b>Stories </b>Completed: </h3><span id="sprint_total" class="total">0</span> <h3>Total: </h3><span id="sprint_finished" class="finished">0</span></div>';
 		    						$('.duration-hd label').html(sprintTitle+'&nbsp;&nbsp;&nbsp;'+duration+'&nbsp;&nbsp;&nbsp;'+result.status+'&nbsp;&nbsp;&nbsp;'+status);
 		    						$('.duration-hd label').show();
 			        			}

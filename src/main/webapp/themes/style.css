@@ -825,12 +825,23 @@ span.p3 {
     margin: 10px;
 }
 
+.project_count{
+	float:right;
+}
+
+.project_count h3{
+	display:inline;
+	font-weight: normal;
+}
+
+.project_count b{
+	font-weight: bold;
+	font-size: 13px;
+}
 .duration-hd span.total{
 	 background: none repeat scroll 0 0 #FFFFFF !important;
     border: 1px solid gray !important;
     border-radius: 4px 4px 4px 4px;
-    display: inline;
-    float: right;
     font-size: 10px;
     font-weight: bold;
     margin-left: 5px;
@@ -843,8 +854,6 @@ span.p3 {
 	 background: none repeat scroll 0 0 #FDE9E9 !important;
     border: 1px solid #D17897 !important;
     border-radius: 4px 4px 4px 4px;
-    display: inline;
-    float: right;
     font-size: 10px;
     font-weight: bold;
     margin-left: 5px;
