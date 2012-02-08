@@ -88,6 +88,7 @@
 	<bean id="homeAction" class="com.imaginea.scrumr.controllers.HomeAction" scope="prototype" >
 		<property name="userServiceManager" ref="userServiceManager" />
 		<property name="qontextHostUrl" value="${qontext.host}" />
+		<property name="redirectUrl" value="${qontext.auth}" />
 	</bean>
 	
 	<bean id="qontextHelper" class="com.imaginea.scrumr.qontextclient.QontextRestApiInvocationUtil" >

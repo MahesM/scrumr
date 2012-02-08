@@ -2,23 +2,24 @@ package com.imaginea.scrumr.controllers;
 
 import org.apache.log4j.Logger;
 
-import com.imaginea.scrumr.qontextclient.QontextRestApiInvocationUtil;
-
 @SuppressWarnings("serial")
 public class HomeAction extends GenericActionSupport {
 
 	public static final Logger LOGGER = Logger.getLogger(HomeAction.class);
 	private String qontextHostUrl;
+	private String redirectUrl;
 	
 	public String prepareAuthHome() throws Exception{
-		super.prepare();
+		/*super.prepare();
 		if(loggedInUser != null){
 			super.source = "DATABASE";
 			return SUCCESS;
 		}else{
 			return ERROR;
-		}
-		
+		}*/
+		System.out.println("Redirecting: "+qontextHostUrl+""+redirectUrl);
+		response.sendRedirect(qontextHostUrl+""+redirectUrl);
+		return SUCCESS;
 	}
 	
 	public String prepareQontextHome() throws Exception {
@@ -34,5 +35,15 @@ public class HomeAction extends GenericActionSupport {
 	public void setQontextHostUrl(String qontextHostUrl) {
 		this.qontextHostUrl = qontextHostUrl;
 	}
+
+	public String getRedirectUrl() {
+		return redirectUrl;
+	}
+
+	public void setRedirectUrl(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
+	}
+	
+	
 
 }
