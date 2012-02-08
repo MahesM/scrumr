@@ -150,11 +150,8 @@
             	});
         	}
 			function populateUnassignedStories(name){
-				 $('#storyList ul').css({'height': (($(window).height()) - 350) + 'px'});
-				 if(storyListScroll){
-					 var api = $('#storyList ul').data('jsp');
-					 api.destroy();
-				 }
+				 $('#storyList ul').css({'height': (($(window).height()) - 320) + 'px'});
+				 $('#storyList').css({'height': (($(window).height()) - 300) + 'px'});
 	        	 $.ajax({
 	        		url: '/scrumr/api/v1/stories/backlog/<%= projectId%>',
 	        		type: 'GET',
@@ -185,10 +182,18 @@
         	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
         	        			};
         	        			//$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
-        	        			storyListScroll = $('#storyList ul').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        	        			if(storyListScroll){
+        	   					 var api = $('#storyList').data('jsp');
+        	   					 if(api)api.destroy();
+        	   				 	}
+        	        			storyListScroll = $('#storyList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
         	        		}
         	    		}).disableSelection();
-        				storyListScroll = $('#storyList ul').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        				if(storyListScroll){
+	       					 var api = $('#storyList').data('jsp');
+	       					 if(api)api.destroy();
+       					 }
+        				storyListScroll = $('#storyList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 	        		},
 	        		error: function(data) { },
 	        		complete: function(data) { }
@@ -613,11 +618,20 @@
 			        		   				  if(success == false){
 			        		   					$(this).sortable('cancel');
 			        		   				}  
+			        		   				if(sprintStageScroll) {
+			        		   					var api = $('.sprintCont').data('jsp');
+			        		   					if(api)api.destroy();
+			        		   				}
+			        		   				sprintStageScroll =$('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
 			        		   			}
 			        	    		}).disableSelection();
 				        			$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
-				        			//$('.stages div.sprintCont').css({'height': (($(window).height()) - 450) + 'px'});
-				        			//$( ".stages div.sprintCont" ).jScrollPane({});
+				        			$('.sprintCont').css({'height': (($(window).height()) - 160) + 'px'});
+				        			if(sprintStageScroll) {
+	        		   					var api = $('.sprintCont').data('jsp');
+	        		   					if(api)api.destroy();
+	        		   				}
+									sprintStageScroll =$('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
 			        		},
 			        		error: function(data) { },
 			        		complete: function(data) { }
@@ -922,10 +936,6 @@
 				if(!isAppend){
 					$('.popup-proj-cont').show();
 					$('.popup-proj-cont .c-box-content .user-loading').show();
-					 if(addUserScroll){
-						var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
-						if(api)api.destroy();
-					} 
 					$('.popup-proj-cont .c-box-content ul').hide();
 				}
 				var post_data = "source=DATABASE&index="+startIndex+"&count=40";
@@ -957,16 +967,28 @@
 									users_html += '<li><img src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
 								}
 								$('.popup-proj-cont .c-box-content .user-loading').hide();
-								if (isAppend){
-									$('.popup-proj-cont .c-box-content .more-load').hide();
-									$('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);	
-								}else{
+								//if (isAppend){
+									
+								//}else{
+									$('.popup-proj-cont .c-box-head').html("Add people to the project");
+									$('.popup-proj-cont .c-box-content input').attr('id',"searchUser");
+									$('#searchUser').val("");
+									$('#searchUser').next().removeClass().addClass('search-input').css('background','url("themes/images/search.jpg") no-repeat');;
 									$('.popup-proj-cont .c-box-content ul').show();
-									$('.popup-proj-cont .c-box-cont input').attr('id',"searchUser");
-									$('.popup-proj-cont .c-box-content ul').html(users_html);
-								}
+									
+								//}
+								if(isAppend) {
+									  $('.popup-proj-cont .c-box-content .more-load').hide();
+									  $('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);	
+								  }else if(addUserScroll == null){
+									  $('.popup-proj-cont .c-box-content ul').html(users_html);
+								  }
 								var atBottom = false;
-								addUserScroll = $('.popup-proj-cont .c-box-content ul').bind('jsp-scroll-y',function(event, scrollPositionY, isAtTop, isAtBottom){
+							 	if(addUserScroll && !isAppend){
+									var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
+									if(api){
+										api.getContentPane().html(users_html);	
+										$('.popup-proj-cont .c-box-content ul').bind('jsp-scroll-y',function(event, scrollPositionY, isAtTop, isAtBottom){
 											if(isAtBottom & !atBottom){
 												$('.popup-proj-cont .c-box-content .more-load').show();
 												atBottom = true;
@@ -974,7 +996,21 @@
 												var startIndex = (userIndex * 40) + 1;
 												populateUserDetails(startIndex,true);
 											}
-										}).jScrollPane({'maintainPosition':true}).data().jsp;
+										});
+										api.reinitialise();
+									}
+								  }  else   {
+									  
+									  addUserScroll = $('.popup-proj-cont .c-box-content ul').bind('jsp-scroll-y',function(event, scrollPositionY, isAtTop, isAtBottom){
+										if(isAtBottom & !atBottom){
+											$('.popup-proj-cont .c-box-content .more-load').show();
+											atBottom = true;
+											userIndex += 1;
+											var startIndex = (userIndex * 40) + 1;
+											populateUserDetails(startIndex,true);
+										}
+									}).jScrollPane({'maintainPosition':true}).data().jsp;
+								  }
         				}else{
         					if (isAppend){
 								$('.popup-proj-cont .c-box-content .more-load').hide();
@@ -1063,6 +1099,8 @@
 					}
 					$('.popup-proj-cont .c-box-head').html("Remove people from the project");
 					$('.popup-proj-cont .c-box-content input').attr('id',"searchRmvUser");
+					$('#searchRmvUser').val("");
+					$('#searchRmvUser').next().removeClass().addClass('search-input').css('background','url("themes/images/search.jpg") no-repeat');;
 					$('.popup-proj-cont .c-box-content ul').html(users_html);
 					$('.popup-proj-cont').show();
 					addUserScroll = $('.popup-proj-cont .c-box-content ul').jScrollPane();
@@ -1292,11 +1330,12 @@
     			if (event.which == 13 ||event.which == 8) {
     				event.preventDefault();
     			}
+    			
     			var el = $(this);
     			el.next().css('background','url("themes/images/ajax-loader.gif") no-repeat');
     			setTimeout(function(){
     				var query=$('#searchUser').val();
-        			var post_data = "sortType="+query+"&showTotalCount=false&startIndex=1&count=20";
+        			var post_data = "sortType="+query+"&showTotalCount=false&startIndex=0&count=20";
     				$.ajax({
 						url : '/scrumr/api/v1/users/searchqontext/',
 						type : 'POST',
@@ -1313,15 +1352,26 @@
     								users_html += '<li></li>';
     								$('.popup-proj-cont .c-box-content ul').html(users_html);
     							}
-    							for(var i=0;i<total_users.length&&i<10;i++){
+    							for(var i=0;i<total_users.length;i++){
     								
     								//alert(total_users[i].basicInfo.displayName);
     								if(!total_users[i].basicInfo.avatarUrl){
     			    					total_users[i].basicInfo.avatarUrl = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
     			    				}
     								users_html += '<li><img src="'+qontextHostUrl+total_users[i].basicInfo.avatarUrl+'"/></div><div class="details"><label class="name">'+total_users[i].basicInfo.displayName+'</label><a class="email">'+total_users[i].basicInfo.primaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].accountId+'"></div></li>';
-    								$('.popup-proj-cont .c-box-content ul').html(users_html);							    								
-    							}    							
+    								
+    							}
+    								
+								if(addUserScroll){
+									var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
+									if(api){
+										api.getContentPane().html(users_html);
+										$('.popup-proj-cont .c-box-content ul').unbind();
+										api.reinitialise();
+									}
+								}else{
+									$('.popup-proj-cont .c-box-content ul').html(users_html);
+								}
     						}else{
     							$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");	
     						}
