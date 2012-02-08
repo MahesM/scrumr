@@ -149,11 +149,8 @@
             	});
         	}
 			function populateUnassignedStories(name){
-				 $('#storyList ul').css({'height': (($(window).height()) - 350) + 'px'});
-				 if(storyListScroll){
-					 var api = $('#storyList ul').data('jsp');
-					 api.destroy();
-				 }
+				 $('#storyList ul').css({'height': (($(window).height()) - 320) + 'px'});
+				 $('#storyList').css({'height': (($(window).height()) - 300) + 'px'});
 	        	 $.ajax({
 	        		url: '/scrumr/api/v1/stories/backlog/<%= projectId%>',
 	        		type: 'GET',
@@ -184,10 +181,18 @@
         	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
         	        			};
         	        			//$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
-        	        			storyListScroll = $('#storyList ul').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        	        			if(storyListScroll){
+        	   					 var api = $('#storyList').data('jsp');
+        	   					 if(api)api.destroy();
+        	   				 	}
+        	        			storyListScroll = $('#storyList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
         	        		}
         	    		}).disableSelection();
-        				storyListScroll = $('#storyList ul').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        				if(storyListScroll){
+	       					 var api = $('#storyList').data('jsp');
+	       					 if(api)api.destroy();
+       					 }
+        				storyListScroll = $('#storyList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 	        		},
 	        		error: function(data) { },
 	        		complete: function(data) { }
@@ -414,7 +419,7 @@
 			function showAddUserPopup(elOffset){
 				users_arr = [];
 				$('ul#proj-user-list li').each(function(){
-					$(this).css('border','none');
+					$(this).css('opacity','1');
 					$(this).removeClass('selected');
 				});
 				if($('.popup-story-cont').find('div#pointerEl').hasClass('pointer-rgt')){
@@ -601,7 +606,7 @@
 			        		   					//alert(creatorObj.userName);
 			        		   					refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
 			        		   				}
-			        		   				if(!($(ui.item[0]).closest('ul').attr('id') == 'notstarted') && !($(ui.item[0]).closest('ul').attr('id') == 'finished')&& !($(ui.item[0]).closest('section').hasClass('left'))){
+			        		   				if((ui.sender != null) && !($(ui.item[0]).closest('ul').attr('id') == 'notstarted') && !($(ui.item[0]).closest('ul').attr('id') == 'finished')&& !($(ui.item[0]).closest('section').hasClass('left'))){
 			        		   					showAddUserPopup(elOffset);
 			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   					var existing_user_arr = [];
@@ -631,7 +636,7 @@
 			        		   				}
 			        		   				  if(success == false){
 			        		   					$(this).sortable('cancel');
-			        		   				}
+			        		   				}  
 			        		   				 var clss = ui.item.attr("class");
 				        	   				 if(clss == "unassigned"){
 				        	   					ui.item.removeClass("unassigned");
@@ -640,13 +645,18 @@
 				        	   	        		if($(this).attr("id") == "finished"){
 				        	   	        			var f = parseInt($("#sprint_finished").html());
 				        	   	    	        	$("#sprint_finished").html(f + 1);
-				        	   	        		}
-				        	   				 }
+			        		   				}
+										}
+			        		   				sprintStageScroll =$('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
 			        		   			}
 			        	    		}).disableSelection();
 				        			$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
-				        			//$('.stages div.sprintCont').css({'height': (($(window).height()) - 450) + 'px'});
-				        			//$( ".stages div.sprintCont" ).jScrollPane({});
+				        			$('.sprintCont').css({'height': (($(window).height()) - 160) + 'px'});
+				        			if(sprintStageScroll) {
+	        		   					var api = $('.sprintCont').data('jsp');
+	        		   					if(api)api.destroy();
+	        		   				}
+									sprintStageScroll =$('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
 			        		},
 			        		error: function(data) { },
 			        		complete: function(data) { }
@@ -769,7 +779,7 @@
 			function addUser(userDetails){
 				var stat = false;
 				var post_data = 'userid='+userDetails.username+'&projectId=<%= projectId%>';
-				//console.log(userDetails);
+				console.log(userDetails);
 				$.ajax({
 					url: '/scrumr/api/v1/users/create',
 					type: 'POST',
@@ -921,7 +931,6 @@
 	        					$('.stAddmore').hide();
 	        				}
 	        				var people = '';
-	        				//console.log(users);
 	        				if(users && users.length > 0){
 	        					var user;
 	        					for(var i=0;i < users.length; i++){
@@ -943,11 +952,11 @@
 			$('ul#proj-user-list li').live("click",function(){
 				if($(this).hasClass("selected")){
 					$(this).removeClass("selected");
-					$(this).css('border','none');
+					$(this).css('opacity','1');
 					users_arr.splice($(this).attr('id').indexOf(),1);
 				}else{
 					$(this).addClass("selected");
-					$(this).css('border','1px solid blue');
+					$(this).css('opacity','0.2');
 					users_arr.push($(this).attr('id'));
 				}
 			});
@@ -956,11 +965,11 @@
 				if(!isAppend){
 					$('.popup-proj-cont').show();
 					$('.popup-proj-cont .c-box-content .user-loading').show();
-					if(addUserScroll){
-						var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
-						api.destroy();
-					}
 					$('.popup-proj-cont .c-box-content ul').hide();
+					$('.popup-proj-cont .c-box-head').html("Add people to the project");
+					$('.popup-proj-cont .c-box-content input').attr('id',"searchUser");
+					$('#searchUser').val("");
+					$('#searchUser').next().removeClass().addClass('search-input').css('background','url("themes/images/search.jpg") no-repeat');;
 				}
 				var post_data = "source=DATABASE&index="+startIndex+"&count=40";
 				setTimeout(function(){
@@ -983,7 +992,6 @@
 								}
 							//	var users_html = "<ul>";
 								var users_html="";
-								//console.log(records);
 								var apiVersion = records.success.headers["api-version"];
 								for(var i=0;i<total_users.length;i++){
 									if(!total_users[i].avatar){
@@ -992,15 +1000,25 @@
 									users_html += '<li><img url="'+total_users[i].avatar+'" src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
 								}
 								$('.popup-proj-cont .c-box-content .user-loading').hide();
-								if (isAppend){
-									$('.popup-proj-cont .c-box-content .more-load').hide();
-									$('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);	
-								}else{
+								//if (isAppend){
+									
+								//}else{
+									
 									$('.popup-proj-cont .c-box-content ul').show();
-									$('.popup-proj-cont .c-box-content ul').html(users_html);
-								}
+									
+								//}
+								if(isAppend) {
+									  $('.popup-proj-cont .c-box-content .more-load').hide();
+									  $('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);	
+								  }else if(addUserScroll == null){
+									  $('.popup-proj-cont .c-box-content ul').html(users_html);
+								  }
 								var atBottom = false;
-								addUserScroll = $('.popup-proj-cont .c-box-content ul').bind('jsp-scroll-y',function(event, scrollPositionY, isAtTop, isAtBottom){
+							 	if(addUserScroll && !isAppend){
+									var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
+									if(api){
+										api.getContentPane().html(users_html);	
+										$('.popup-proj-cont .c-box-content ul').bind('jsp-scroll-y',function(event, scrollPositionY, isAtTop, isAtBottom){
 											if(isAtBottom & !atBottom){
 												$('.popup-proj-cont .c-box-content .more-load').show();
 												atBottom = true;
@@ -1008,7 +1026,21 @@
 												var startIndex = (userIndex * 40) + 1;
 												populateUserDetails(startIndex,true);
 											}
-										}).jScrollPane({'maintainPosition':true}).data().jsp;
+										});
+										api.reinitialise();
+									}
+								  }  else   {
+									  
+									  addUserScroll = $('.popup-proj-cont .c-box-content ul').bind('jsp-scroll-y',function(event, scrollPositionY, isAtTop, isAtBottom){
+										if(isAtBottom & !atBottom){
+											$('.popup-proj-cont .c-box-content .more-load').show();
+											atBottom = true;
+											userIndex += 1;
+											var startIndex = (userIndex * 40) + 1;
+											populateUserDetails(startIndex,true);
+										}
+									}).jScrollPane({'maintainPosition':true}).data().jsp;
+								  }
         				}else{
         					if (isAppend){
 								$('.popup-proj-cont .c-box-content .more-load').hide();
@@ -1083,20 +1115,25 @@
             }); 
 			
 			$("#removePeople").live('click', function(){
+					 if(addUserScroll){
+						var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
+						if(api)api.destroy();
+					} 
 					var records = users;
-					//var users_html = "<ul>";
+					$('.popup-proj-cont').hide();
 					var users_html="";
 					for(var i=0;i<records.length;i++){
 						if(records[i].username != creator){
 							users_html += '<li><img src="'+qontextHostUrl+records[i].avatarurl+'"/></div><div class="details"><label class="name">'+records[i].fullname+'</label><a class="email">'+records[i].emailid+'</a></div><div style="float:left;" class="removeUser float-rgt disable" id="'+records[i].username+'"></div></li>';
 						}
 					}
-					//users_html += "</ul>";
 					$('.popup-proj-cont .c-box-head').html("Remove people from the project");
+					$('.popup-proj-cont .c-box-content input').attr('id',"searchRmvUser");
+					$('#searchRmvUser').val("");
+					$('#searchRmvUser').next().removeClass().addClass('search-input').css('background','url("themes/images/search.jpg") no-repeat');;
 					$('.popup-proj-cont .c-box-content ul').html(users_html);
 					$('.popup-proj-cont').show();
-					$('.popup-proj-cont .c-box-content ul').jScrollPane();
-					//$("#userList-cont").html(users_html);
+					addUserScroll = $('.popup-proj-cont .c-box-content ul').jScrollPane();
 				
 					$(".removeUser").live('click',function(){
 						$(this).css('background', 'url("themes/images/ajax-loader.gif") no-repeat');
@@ -1297,26 +1334,50 @@
     			var selector = $('#storyList').find('ul.story');
     			//query = query.replace(/ /gi, '|'); //add OR for regex query  
 
-    			$(selector).children('li').each(
+    			$(selector).find('li').each(
     					function() {
     						($(this).find('p').text()
     								.search(new RegExp(query, "i")) < 0) ? $(this)
     								.hide() : $(this).show();
     					});
     		});
+        	
+        	$("#searchRmvUser").live('keyup',function(event) {
+    			if (event.which == 13) {
+    				event.preventDefault();
+    			}
+    			var el = $(this);
+    			el.next().css('background','url("themes/images/ajax-loader.gif") no-repeat');
+    			var query=$('#searchRmvUser').val();
+    			var selector = $('.popup-proj-cont .c-box .c-box-content').find('ul');
+    			//query = query.replace(/ /gi, '|'); //add OR for regex query  
+
+    			$(selector).find('li').each(
+    					function() {
+    						($(this).find('label').text()
+    								.search(new RegExp(query, "i")) < 0) ? $(this)
+    								.hide() : $(this).show();
+    					});
+    			el.next().addClass('close-Rmvsearch').css('background','url("themes/images/close.png") no-repeat');
+				$('.close-Rmvsearch').live('click',function(){
+					el.val("");
+	        		el.next().removeClass('close-Rmvsearch').css('background','url("themes/images/search.jpg") no-repeat');
+	        		 $(selector).find('li').each(function(){
+	        			$(this).show();
+	        		}); 
+    			});
+        	});
     		
     		$("#searchUser").live("keyup",function(event) {
     			if (event.which == 13 ||event.which == 8) {
     				event.preventDefault();
     			}
-    			//$(this).closest('.popup-proj-cont').find('.user-loading').show();
-    			//$(this).closest('.popup-proj-cont').find('#total-user-list').hide();
-    			var query=$('#searchUser').val();
-    			//var selector = $('.popup-proj-cont .c-box .c-box-content').find('ul');
-    			var post_data = "sortType="+query+"&showTotalCount=false&startIndex=1&count=20";
+    			
     			var el = $(this);
     			el.next().css('background','url("themes/images/ajax-loader.gif") no-repeat');
     			setTimeout(function(){
+    				var query=$('#searchUser').val();
+        			var post_data = "sortType="+query+"&showTotalCount=false&startIndex=0&count=20";
     				$.ajax({
 						url : '/scrumr/api/v1/users/searchqontext/',
 						type : 'POST',
@@ -1333,7 +1394,7 @@
     								users_html += '<li></li>';
     								$('.popup-proj-cont .c-box-content ul').html(users_html);
     							}
-    							for(var i=0;i<total_users.length&&i<10;i++){
+    							for(var i=0;i<total_users.length;i++){
     								
     								//alert(total_users[i].basicInfo.displayName);
     								if(!total_users[i].basicInfo.avatarUrl){
@@ -1441,13 +1502,13 @@
 		       	$(this).parent().css('background-color',"#F6EEE1");
 				$(".sprintview").css('color',"gray");
 				$(".sprintview").parent().css('background-color',"#FFFFFF");
-		       	populateSprints();
 				$("#sprint-view").hide();
 				$("#project-view").show();
 				$(".sprintHead").hide();
 				$(".duration-hd").find('label').show();
 				$(".duration-hd").find('#pageCtrls').show();
 				$(".duration-hd").find('ul').hide();
+				populateSprints();
 				viewStoryFancyBox();
 			});
 			
@@ -1458,12 +1519,12 @@
 				$(this).parent().css('background-color',"#F6EEE1");
 		       	$(".projectview").css('color',"gray");
 		       	$(".projectview").parent().css('background-color',"#FFFFFF");
-				populateSprintStories(current_sprint);
 				$("#sprint-view").show();
 				$("#project-view").hide();
 				$(".sprintHead").show();
 				$(".duration-hd").find('#pageCtrls').hide();
 				$(".duration-hd").find('ul').show();
+				populateSprintStories(current_sprint);
 				viewStoryFancyBox();
 			});
 			

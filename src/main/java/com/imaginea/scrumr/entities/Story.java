@@ -164,6 +164,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY,  mappedBy= "story")
+	@JsonIgnore
 	//	@JoinColumn (name="stid", nullable = false)
 	public List<Comment> getComments() {
 		return comments;
