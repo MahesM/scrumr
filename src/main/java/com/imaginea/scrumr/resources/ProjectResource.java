@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.Sprint;
+import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.SprintManager;
@@ -87,6 +88,18 @@ public class ProjectResource {
 		return "{\"result\":\"success\"}";
 	}
 	
+	@RequestMapping(value="/storycount/{id}", method = RequestMethod.GET)
+	public @ResponseBody String projectCounts(@PathVariable("id") String id) {
+		Integer pid = Integer.parseInt(id);
+		Project project = projectManager.readProject(pid);
+		Set<Story> stories = (Set<Story>)project.getStories();
+		if(stories != null){
+			return "{\"result\":"+stories.size()+"}";
+		}
+		return "{\"result\":\"failure\"}";
+		
+	}
+	
 	@RequestMapping(value="/create", method = RequestMethod.POST)	
     public @ResponseBody List<Project> createProject(
     		@RequestParam String pTitle,
@@ -108,34 +121,25 @@ public class ProjectResource {
 			Date date1 = null;
 			int sprint_count =0;
 			int duration = Integer.parseInt(pSprintDuration);
-			if(pStartDate != "" && pEndDate != ""){
-				try {
-					SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+			try {
+				SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+				if(pStartDate != "" && pEndDate != ""){
 					date = format.parse(pStartDate);
+					date1 = format.parse(pEndDate);
 					project.setStart_date(date);
-					project.setCurrent_sprint(0);
-					project.setStatus("Not Started");
-					SimpleDateFormat format1 = new SimpleDateFormat("MM/dd/yyyy");
-					date1 = format1.parse(pEndDate);
 					project.setEnd_date(date1);
 					sprint_count  = getSprintCount(date, date1,Integer.parseInt(pSprintDuration));
 					project.setNo_of_sprints(sprint_count);
-				} catch (ParseException e1) {
-					e1.printStackTrace();
-				}
-			}else{
-				try {
-					SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+				}else{
 					date = format.parse(pStartDate);
 					project.setStart_date(date);
 					project.setCurrent_sprint(0);
-					project.setStatus("Not Started");
 					project.setEnd_date(null);
 					sprint_count  = getSprintCount(date, null,Integer.parseInt(pSprintDuration));
 					project.setNo_of_sprints(sprint_count);
-				} catch (ParseException e1) {
-					e1.printStackTrace();
 				}
+			} catch (ParseException e1) {
+				e1.printStackTrace();
 			}
 			String userStr = assignees;
 			String[] users = userStr.split(",");
@@ -145,6 +149,15 @@ public class ProjectResource {
 				User user = userServiceManager.readUser(s);
 				userList.add(user);
 			}
+
+			if(date.after(new Date())){
+				project.setCurrent_sprint(0);
+				project.setStatus("Not Started");
+			}else{
+				project.setCurrent_sprint(getCurrentSprint(date,date1,duration));
+				project.setStatus("In Progress");
+			}
+			
 			project.setAssignees(userList);
 			project.setSprint_duration(duration);
 			project.setCreatedby(current_user);
@@ -159,7 +172,10 @@ public class ProjectResource {
 				Sprint sprint = new Sprint();
 				sprint.setId(i+1);
 				sprint.setStartdate(new java.sql.Date(currentdate.getTime()));
-				Date enddate = new Date(currentdate.getTime() + ((7*duration)*24*60*60*1000));
+				Date enddate = new Date(currentdate.getTime() + ((7*duration)*86400000) - 86400000);
+				if(date1 !=  null && i == (sprint_count-1)){
+					enddate = new Date(currentdate.getTime() + ((7*duration)*86400000));
+				}
 				if(date1 != null){
 					if(enddate.before(date1)){
 						sprint.setEnddate(new java.sql.Date(enddate.getTime()));
@@ -184,7 +200,7 @@ public class ProjectResource {
         		}
 				sprint.setProject(project);
 				sprintManager.createSprint(sprint);
-				currentdate = new Date(currentdate.getTime() + ((7*duration)*24*60*60*1000));;
+				currentdate = new Date(enddate.getTime() + 86400000);
 			}
 			
         } catch (Exception e) {
@@ -265,8 +281,17 @@ public class ProjectResource {
 		}
 	}
 	
-	int getCurrentSprint(Date start, int duration){
-		return (int) Math.ceil((( System.currentTimeMillis() - start.getTime())/ (1000 * 60 * 60 * 24))/(7*duration)) + 1;
+	int getCurrentSprint(Date start, Date end, int duration){
+		if(end != null){
+			int count = (int)(((System.currentTimeMillis()- start.getTime()) / (1000 * 60 * 60 * 24))/(7*duration));
+			int rem = (int)(((System.currentTimeMillis() - start.getTime()) / (1000 * 60 * 60 * 24))%(7*duration));
+			if(rem > 0){
+				return count + 1;
+			}
+			return count;
+		}else{
+			return 1;
+		}
 	}
 }
 

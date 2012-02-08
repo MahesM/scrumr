@@ -1,7 +1,5 @@
 package com.imaginea.scrumr.utils;
 
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -60,9 +58,9 @@ public class QontextHelperUtil {
 				JSONObject headers = (JSONObject) jsonObject.get("headers");
 				String api_version = headers.getString("api-version");
 				String baseUrl = mySettings.getQontextHostUrl();
-				avatarUrl=""+baseUrl+"/portal/st/"+api_version+"/profile/defaultUser.gif";
+				avatarUrl="/portal/st/"+api_version+"/profile/defaultUser.gif";
 				if(basicInfo.has("avatarUrl")){
-					avatarUrl= baseUrl+""+basicInfo.getString("avatarUrl");
+					avatarUrl= basicInfo.getString("avatarUrl");
 				}
 				user = new User();
 				user.setDisplayname(displayName);
