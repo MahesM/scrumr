@@ -62,8 +62,8 @@
         	var project_view = 1;
         	var firstVisit = false;
         	var storyListScroll = null;
-        	var sprintStageScroll = null;
-        	var projStageScroll = null;
+        	var sprintStageScroll = new Object();
+        	var projStageScroll = new Object();
         	var addUserScroll = null;
         	<% if(visit != null && visit.equals("1")){ %>
         		firstVisit = true;
@@ -187,6 +187,17 @@
         	   					 if(api)api.destroy();
         	   				 	}
         	        			storyListScroll = $('#storyList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        	        		},
+        	        		over : function(event,ui){
+        	        			if(sprintStageScroll[$(ui.sender).attr('id')]) {
+	        		   				sprintStageScroll[$(ui.sender).attr('id')].destroy();
+        		   					sprintStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        		   				} 
+        	        			if(projStageScroll[$(ui.sender).attr('id')]) {
+        	        				projStageScroll[$(ui.sender).attr('id')].destroy();
+        	        				projStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        		   				} 
+	        		   			
         	        		}
         	    		}).disableSelection();
         				if(storyListScroll){
@@ -229,7 +240,7 @@
 				        		var sprint_html = '<ul id="holderforpage" class="col">';
 			        			$("ul.col li").css("width",100/sprints.length+'%');
 			        			for(var k=0; k<sprints.length;k++ ){
-			        				sprint_html += '<li class="stages"><div class="header "><span></span>Sprint '+(k+1)+'</div><ul id="sp'+sprints[k].id+'"class="story">';
+			        				sprint_html += '<li class="stages"><div class="header "><span></span>Sprint '+(k+1)+'</div><div class="projectCont"><ul id="sp'+sprints[k].id+'"class="story">';
 			        				var post_data2 = 'sprintId='+sprints[k].pkey+'&projectId=<%= projectId%>';
 						        	$.ajax({
 						        		url: '/scrumr/api/v1/stories/sprint/'+sprints[k].pkey,
@@ -275,7 +286,7 @@
 						        		error: function(data) { },
 						        		complete: function(data) { }
 						        	});
-			        				sprint_html += '</ul>';
+			        				sprint_html += '</ul></div>';
 			        				sprint_html +='</li>';
 			        				
 			        			}
@@ -309,14 +320,31 @@
 			        		   				if(success == false){
 			        		   					$(this).sortable('cancel');
 			        		   				}
+			        		   				$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
+		        		   					if(projStageScroll[$(ui.sender).attr('id')]) {
+		        		   						projStageScroll[$(ui.sender).attr('id')].destroy();
+		        		   						projStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+			        		   				}  
 		        	        			}
 		        	        			
+		        		   			},
+		        		   			
+		        		   			receive :function(event,ui){
+		        		   				if(projStageScroll[$(ui.item[0]).closest('ul').attr('id')]) {
+		        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')].destroy();
+		        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+		        		   				} 
 		        		   			}
 		        	    		}).disableSelection();
-			        			
-				        		$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
-				        		/* $("#storyList").jScrollPane({
-		        				}); */
+			        			$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
+			        			$( ".stages ul:visible").each(function(){
+									if($(this).find('li').length > 0){
+										$(this).css({'height': (($(window).height()) - 195) + 'px'});
+										projStageScroll[$(this).attr('id')] = $(this).parent().jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
+									}else {
+										$(this).css({'height': (($(window).height()) - 180) + 'px'});
+									}
+								});
 		        			}
 		        			
 		        			
@@ -408,6 +436,7 @@
 					$(this).css('opacity','1');
 					$(this).removeClass('selected');
 				});
+				var origPointerTop = parseInt($('.popup-story-cont').find('div#pointerEl').css('top'));
 				if($('.popup-story-cont').find('div#pointerEl').hasClass('pointer-rgt')){
 					$('.popup-story-cont').find('div#pointerEl').removeClass('pointer-rgt').addClass('pointer');
 				}
@@ -416,6 +445,8 @@
 				var new_left = elLeft+210;
 				var popupWidth =parseInt($('.popup-story-cont').css('width'));
 				var sectionWidth = parseInt($('section.right').css('width'))+parseInt($('section.right').css('padding-left'));
+				var popupHeight =parseInt($('.popup-story-cont').css('height'));
+				var sectionHeight = parseInt($('section.right').css('height'));
 				if(new_left+popupWidth > sectionWidth){
 					var current_left = elLeft-240;
 					$('.popup-story-cont').find('div#pointerEl').removeClass('pointer').addClass('pointer-rgt');
@@ -428,6 +459,16 @@
 				}else{
 					$('.popup-story-cont').css('top',elTop);
 					$('.popup-story-cont').css('left',new_left);
+				}
+				if(elTop+popupHeight > sectionHeight){
+					var new_top = elTop-popupHeight+40;
+					$('.popup-story-cont').css('top',new_top);
+					$('.popup-story-cont').css('left',new_left);
+					$('.popup-story-cont').find('div#pointerEl').css('top',origPointerTop+170);
+				}else {
+					$('.popup-story-cont').css('top',elTop);
+					$('.popup-story-cont').css('left',new_left);
+					$('.popup-story-cont').find('div#pointerEl').css('top','30px');
 				}
 				
 				$('.popup-story-cont').show();
@@ -618,20 +659,40 @@
 			        		   				  if(success == false){
 			        		   					$(this).sortable('cancel');
 			        		   				}  
-			        		   				if(sprintStageScroll) {
-			        		   					var api = $('.sprintCont').data('jsp');
-			        		   					if(api)api.destroy();
-			        		   				}
-			        		   				sprintStageScroll =$('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
+			        		   				//if($(ui.item[0]).closest('.sprintCont').length > 0){
+			        		   					$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
+			        		   					if(sprintStageScroll[$(ui.sender).attr('id')]) {
+					        		   				sprintStageScroll[$(ui.sender).attr('id')].destroy();
+				        		   					sprintStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+				        		   				}  
+			        		   					
+			        		   				//}
+			        		   					
+			        		   			},
+			        		   			
+			        		   			receive :function(event,ui){
+			        		   				if(sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')]) {
+				        		   				sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')].destroy();
+			        		   					sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+			        		   				} 
 			        		   			}
 			        	    		}).disableSelection();
-				        			$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
-				        			$('.sprintCont').css({'height': (($(window).height()) - 160) + 'px'});
-				        			if(sprintStageScroll) {
+				        			
+				        		//	$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
+				        			$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
+				        			$( ".stages ul:visible").each(function(){
+										if($(this).find('li').length > 0){
+											$(this).css({'height': (($(window).height()) - 195) + 'px'});
+											sprintStageScroll[$(this).attr('id')] = $(this).parent().jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
+										}else {
+											$(this).css({'height': (($(window).height()) - 180) + 'px'});
+										}
+									});
+				        			/* if(sprintStageScroll) {
 	        		   					var api = $('.sprintCont').data('jsp');
 	        		   					if(api)api.destroy();
 	        		   				}
-									sprintStageScroll =$('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
+									sprintStageScroll =$('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	 */
 			        		},
 			        		error: function(data) { },
 			        		complete: function(data) { }
@@ -703,7 +764,7 @@
 	        				$(".blue").html(story_review);
 	        				$(".pink").html(story_finished);
 	        			}
-	        			$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
+	        			//$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
 	        		},
 	        		error: function(data) { },
 	        		complete: function(data) { }
@@ -1129,6 +1190,11 @@
             $(window).resize(function() {
                 $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
             });
+            
+            $('.right').css({'height': (($(window).height()) - 40) + 'px'});
+            $(window).resize(function() {
+                $('.right').css({'height': (($(window).height()) - 40) + 'px'});
+            });
 
             $('.right').css({'width': (($(window).width()) - 300) + 'px'});
             $(window).resize(function() {
@@ -1497,10 +1563,10 @@
 				viewStoryFancyBox();
 			});
 			
-			$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
-            $(window).resize(function() {
-                $('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
-            });
+			//$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
+           // $(window).resize(function() {
+           //     $('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
+            //});
             
           
 //code for highcharts

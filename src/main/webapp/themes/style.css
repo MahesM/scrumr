@@ -439,6 +439,11 @@ div.sprintCont {
 	overflow:hidden;    
 }
 
+div.projectCont {
+	margin-top: 5px;
+    width: 100%;
+	overflow:hidden; 
+}
 ul.story {
     list-style-type: none;
     margin-top: 5px;
