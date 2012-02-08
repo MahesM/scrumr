@@ -937,6 +937,10 @@
 					$('.popup-proj-cont').show();
 					$('.popup-proj-cont .c-box-content .user-loading').show();
 					$('.popup-proj-cont .c-box-content ul').hide();
+					$('.popup-proj-cont .c-box-head').html("Add people to the project");
+					$('.popup-proj-cont .c-box-content input').attr('id',"searchUser");
+					$('#searchUser').val("");
+					$('#searchUser').next().removeClass().addClass('search-input').css('background','url("themes/images/search.jpg") no-repeat');;
 				}
 				var post_data = "source=DATABASE&index="+startIndex+"&count=40";
 				setTimeout(function(){
@@ -970,10 +974,7 @@
 								//if (isAppend){
 									
 								//}else{
-									$('.popup-proj-cont .c-box-head').html("Add people to the project");
-									$('.popup-proj-cont .c-box-content input').attr('id',"searchUser");
-									$('#searchUser').val("");
-									$('#searchUser').next().removeClass().addClass('search-input').css('background','url("themes/images/search.jpg") no-repeat');;
+									
 									$('.popup-proj-cont .c-box-content ul').show();
 									
 								//}
