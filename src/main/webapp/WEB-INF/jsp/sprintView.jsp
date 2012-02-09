@@ -149,7 +149,7 @@
             	});
         	}
 			function populateUnassignedStories(name){
-				 $('#storyList ul').css({'height': (($(window).height()) - 320) + 'px'});
+				// $('#storyList ul').css({'height': (($(window).height()) - 320) + 'px'});
 				 $('#storyList').css({'height': (($(window).height()) - 300) + 'px'});
 	        	 $.ajax({
 	        		url: '/scrumr/api/v1/stories/backlog/<%= projectId%>',
@@ -170,6 +170,12 @@
 	        				//$('#storyList ul').css({'height': (($(window).height()) - 250) + 'px'});
 	        			}
         				$("#storyList ul").html(story_unassigned);
+        				if($('#storyList ul').find('li').length > 0){
+        					var ulHeight = ($('#storyList ul').find('li').outerHeight() * $('#storyList ul').find('li').length) + 150;
+        					$('#storyList ul').css({'height': ulHeight + 'px'});
+        				}else {
+        					$('#storyList ul').css({'height': '150px'});
+        				}
         				$( "#storyList ul" ).sortable({
         	        		connectWith: ".story",
         	        		items:'li',
@@ -181,6 +187,12 @@
         	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
         	        			};
         	        			//$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
+        	        			if($('#storyList ul').find('li').length > 0){
+        	    					var ulHeight = ($('#storyList ul').find('li').outerHeight() * $('#storyList ul').find('li').length) + 150;
+        	    					$('#storyList ul').css({'height': ulHeight + 'px'});
+        	    				}else {
+        	    					$('#storyList ul').css({'height': '150px'});
+        	    				}
         	        			if(storyListScroll){
         	   					 var api = $('#storyList').data('jsp');
         	   					 if(api)api.destroy();
@@ -188,6 +200,12 @@
         	        			storyListScroll = $('#storyList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
         	        		},
         	        		over : function(event,ui){
+        	        			if($(ui.sender).find('li').length > 0){
+        	    					var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
+        	    					$(ui.sender).css({'height': ulHeight + 'px'});
+        	    				}else {
+        	    					$(ui.sender).css({'height': '150px'});
+        	    				}
         	        			if(sprintStageScroll[$(ui.sender).attr('id')]) {
 	        		   				sprintStageScroll[$(ui.sender).attr('id')].destroy();
         		   					sprintStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
@@ -334,7 +352,10 @@
 			        		   				if(success == false){
 			        		   					$(this).sortable('cancel');
 			        		   				}
-			        		   				$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
+			        		   				//$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
+			        		   				var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
+			        		   				$(ui.sender).css({'height': ulHeight + 'px'});
+			        		   					
 		        		   					if(projStageScroll[$(ui.sender).attr('id')]) {
 		        		   						projStageScroll[$(ui.sender).attr('id')].destroy();
 		        		   						projStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
@@ -344,6 +365,8 @@
 		        		   			},
 		        		   			
 		        		   			receive :function(event,ui){
+		        		   				var ulHeight = ($(ui.item[0]).outerHeight() * $(ui.item[0]).closest('ul').find('li').length) + 150;
+		        		   				$(ui.item[0]).closest('ul').css({'height': ulHeight + 'px'});
 		        		   				if(projStageScroll[$(ui.item[0]).closest('ul').attr('id')]) {
 		        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')].destroy();
 		        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
@@ -355,10 +378,13 @@
 			        			$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
 			        			$( ".stages ul:visible").each(function(){
 									if($(this).find('li').length > 0){
-										$(this).css({'height': (($(window).height()) - 195) + 'px'});
+										//$(this).css({'height': (($(window).height()) - 195) + 'px'});
+										var ulHeight = ($(this).find('li').outerHeight() * $(this).find('li').length) + 150;
+										$(this).css({'height': ulHeight + 'px'});
 										projStageScroll[$(this).attr('id')] = $(this).parent().jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
 									}else {
-										$(this).css({'height': (($(window).height()) - 180) + 'px'});
+										//$(this).css({'height': (($(window).height()) - 180) + 'px'});
+										$(this).css({'height': '150px'});
 									}
 								});
 		        			}
@@ -692,7 +718,10 @@
 				        	   				 }
 										
 			        		   				//if($(ui.item[0]).closest('.sprintCont').length > 0){
-			        		   					$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
+			        		   					//$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
+			        		   					var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
+			        		   					$(ui.sender).css({'height': ulHeight + 'px'});
+			        		   					
 			        		   					if(sprintStageScroll[$(ui.sender).attr('id')]) {
 					        		   				sprintStageScroll[$(ui.sender).attr('id')].destroy();
 				        		   					sprintStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
@@ -703,6 +732,8 @@
 			        		   			},
 			        		   			
 			        		   			receive :function(event,ui){
+			        		   				var ulHeight = ($(ui.item[0]).outerHeight() * $(ui.item[0]).closest('ul').find('li').length) + 150;
+			        		   				$(ui.item[0]).closest('ul').css({'height': ulHeight + 'px'});
 			        		   				if(sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')]) {
 				        		   				sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')].destroy();
 			        		   					sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
@@ -716,10 +747,13 @@
 				        			$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
 				        			$( ".stages ul:visible").each(function(){
 										if($(this).find('li').length > 0){
-											$(this).css({'height': (($(window).height()) - 195) + 'px'});
+											var ulHeight = ($(this).find('li').outerHeight() * $(this).find('li').length) + 150;
+											$(this).css({'height': ulHeight + 'px'});
+											//$(this).css({'height': (($(window).height()) - 195) + 'px'});
 											sprintStageScroll[$(this).attr('id')] = $(this).parent().jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
 										}else {
-											$(this).css({'height': (($(window).height()) - 180) + 'px'});
+											//$(this).css({'height': (($(window).height()) - 180) + 'px'});
+											$(this).css({'height': '150px'});
 										}
 									});
 				        			/* if(sprintStageScroll) {
@@ -1361,6 +1395,7 @@
         		 var id = $(this).parent().attr("id");
         		id = id.replace("st","");
         		addtoCurrentSprint(id,0);
+        		var ulElement = $(this).parent().closest('ul');
         		$(this).parent().hide("fade","slow");
         		var c = parseInt($("#sprint_total").html());
         		if(c > 0){
@@ -1373,6 +1408,20 @@
             		}
         		}
         		setTimeout(function(){ //execute with a delay inorder to show the fade effect
+        			if(ulElement.find('li:visible').length > 0){
+    					var ulHeight = (ulElement.find('li').outerHeight() * ulElement.find('li:visible').length) + 150;
+    					ulElement.css({'height': ulHeight + 'px'});
+    				}else {
+    					ulElement.css({'height': '150px'});
+    				}
+        			if(sprintStageScroll[ulElement.attr('id')]) {
+		   				sprintStageScroll[ulElement.attr('id')].destroy();
+	   					sprintStageScroll[ulElement.attr('id')] =ulElement.closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+	   				} 
+        			if(projStageScroll[ulElement.attr('id')]) {
+        				projStageScroll[ulElement.attr('id')].destroy();
+        				projStageScroll[ulElement.attr('id')] =ulElement.closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+	   				} 
         			populateUnassignedStories('');
         			//commented this out as i feel it is unnecessary to populate content. On refresh, it will populate anyways.
             		/* if(project_view ==1){
@@ -1510,7 +1559,7 @@
 						}
 					});    			
     			},1000);
-    					    		
+    			//$('#searchUser').die();		    		
     		});
         	
         	/* $("#addPeople").fancybox({
