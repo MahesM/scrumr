@@ -1491,6 +1491,15 @@
 	        		}); 
     			});
         	});
+        	
+        	//execute the ajax call after user has stopped typing for a specified amt of time, here i take 2s
+        	var delay = (function(){
+        		  var timer = 0;
+        		  return function(callback, ms){
+        		    clearTimeout (timer);
+        		    timer = setTimeout(callback, ms);
+        		  };
+        		})();
     		
     		$("#searchUser").live("keyup",function(event) {
     			if (event.which == 13 ||event.which == 8) {
@@ -1499,7 +1508,7 @@
     			
     			var el = $(this);
     			el.next().css('background','url("themes/images/ajax-loader.gif") no-repeat');
-    			setTimeout(function(){
+    			delay(function(){
     				var query=$('#searchUser').val();
         			var post_data = "sortType="+query+"&showTotalCount=false&startIndex=0&count=20";
     				$.ajax({
@@ -1554,11 +1563,12 @@
 							$('.close-search').live('click',function(){
 								el.val("");
 				        		populateUserDetails(userIndex,false);
+				        		$('.close-search').die();
 				        		el.next().removeClass('close-search').css('background','url("themes/images/search.jpg") no-repeat');
 				        	});
 						}
 					});    			
-    			},1000);
+    			},2000);
     			//$('#searchUser').die();		    		
     		});
         	
