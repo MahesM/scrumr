@@ -347,7 +347,9 @@
 		        		   				if(projStageScroll[$(ui.item[0]).closest('ul').attr('id')]) {
 		        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')].destroy();
 		        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-		        		   				} 
+		        		   				} else {
+		        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp; 
+		        		   				}
 		        		   			}
 		        	    		}).disableSelection();
 			        			$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
@@ -704,7 +706,9 @@
 			        		   				if(sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')]) {
 				        		   				sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')].destroy();
 			        		   					sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-			        		   				} 
+			        		   				}else {
+			        		   					sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp; 
+			        		   				}
 			        		   			}
 			        	    		}).disableSelection();
 				        			
@@ -1065,13 +1069,7 @@
 									users_html += '<li><img url="'+total_users[i].avatar+'" src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
 								}
 								$('.popup-proj-cont .c-box-content .user-loading').hide();
-								//if (isAppend){
-									
-								//}else{
-									
-									$('.popup-proj-cont .c-box-content ul').show();
-									
-								//}
+								$('.popup-proj-cont .c-box-content ul').show();
 								if(isAppend) {
 									  $('.popup-proj-cont .c-box-content .more-load').hide();
 									  $('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);	
@@ -1111,11 +1109,18 @@
 								$('.popup-proj-cont .c-box-content .more-load').hide();
 								//$('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);	
 							}else{
-								$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");	
+								if(addUserScroll){
+									var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
+									if(api){
+										api.getContentPane().html("No users found for the query..");	
+										api.reinitialise();
+									}
+								}else {
+    								$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");
+								}
 							}
-							
-						}
         				}
+        			 }
 					},
 					failure :function(){
 						},					
@@ -1485,7 +1490,16 @@
 									$('.popup-proj-cont .c-box-content ul').html(users_html);
 								}
     						}else{
-    							$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");	
+    							//if(addUserScroll)addUserScroll.destroy();
+    							if(addUserScroll){
+									var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
+									if(api){
+										api.getContentPane().html("No users found for the query..");	
+										api.reinitialise();
+									}
+								}else {
+    								$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");
+								}
     						}
 							el.next().addClass('close-search').css('background','url("themes/images/close.png") no-repeat');
 							$('.close-search').live('click',function(){
