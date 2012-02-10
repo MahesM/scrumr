@@ -467,6 +467,7 @@
 	                		//alert($(this).attr('orig').context['offsetParent']['id']);	                		
 	                	}
 	                	refreshStoryPortlet(storyId, stageId, creatorObj);
+	                	$(".stAddmore").html("+Add People");
 	                   })
 
 	        	}); 
