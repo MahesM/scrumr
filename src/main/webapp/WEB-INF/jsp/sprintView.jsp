@@ -2,13 +2,7 @@
     pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="auth" uri="http://www.springframework.org/security/tags" %>
-<%@ page import="java.io.*" %>
-<%@ page import="org.codehaus.jettison.json.JSONObject" %>
-<%@ page import="net.oauth.*" %>
-<%@ page import="org.codehaus.jettison.json.*" %>
-<%@ page import="org.apache.commons.httpclient.protocol.Protocol" %>
-<%@ page import="org.apache.commons.httpclient.protocol.ProtocolSocketFactory" %>
-<%@ page import="com.imaginea.scrumr.qontextclient.*" %>
+
 
 <!DOCTYPE HTML>
 <html>
@@ -64,6 +58,7 @@
         	var sprintStageScroll = new Object();
         	var projStageScroll = new Object();
         	var addUserScroll = null;
+        	var storyDetailScroll = new Object();
         	<% if(visit != null && visit.equals("1")){ %>
         		firstVisit = true;
         	<%}%>
@@ -646,6 +641,7 @@
 				        				
 				        				$("#notstarted").html('<label id="noStories" style="margin:5px;float:left">No Stories assigned to this sprint.</label>');
 				        			}
+			        				
 				        			$( ".stages ul" ).sortable({
 			        	        		connectWith: ".story",
 			        	        		items:'li',
@@ -696,6 +692,7 @@
 			        		   						}
 			        		   					});
 			        		   				}
+			        		   				
 											if(($(ui.item[0]).closest('section').hasClass('left'))) {
 			        		   					var new_id = id.replace("st","");
 			        		   					$(ui.item[0]).find('a.remove').removeClass('sptRmv').addClass('strRmv');
@@ -743,6 +740,12 @@
 			        		   					sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp; 
 			        		   				}
 			        		   			}
+			        		   			
+			        		   			/* start : function(event,ui){
+			        		   				if($(ui.item[0]).closest('ul').attr('id') == "finished"){
+			        		   					$(ui.item[0]).closest('ul').sortable("cancel");
+			        		   				}
+			        		   			} */
 			        	    		}).disableSelection();
 				        			
 				        		//	$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
@@ -1868,7 +1871,7 @@
 							}
 						
 						$(".comment-display ul").html(commentsHtml);
-						$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;																
+						//$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;																
 					},
 					error : function(data){},
 					complete : function(data){}					
@@ -2175,22 +2178,16 @@
 	            						<div class="down"></div>
 	        						</div>
 	        						<div id="story_details_section" class="acc-content">
-	            						<p id="st-title">Hong Kong Phooey, number one super guy. Hong Kong Phooey. The stories begin at the police headquarters,
-							                where Hong Kong Phooey's alter ego, Penry, works as a mild-mannered janitor under the glare of Sergeant
-							                Flint.</p>
-							                <p id="st-description">Hong Kong Phooey, number one super guy. Hong Kong Phooey. The stories begin at the police headquarters,
-							                where Hong Kong Phooey's alter ego, Penry, works as a mild-mannered janitor under the glare of Sergeant
-							                Flint.</p>
+	            						<p id="st-title"></p>
+							                <p id="st-description"></p>
 	            						<div class="div">
 	            							<label>Created by</label>
-	            							<div id="st-creator" style="clear:both;" class="user"><img src="themes/images/1.jpg"/></div>
+	            							<div id="st-creator" style="clear:both;" class="user"></div>
 	           							</div>
 	            						<div class="div">
 	            							<label>Owned by</label>
 	            							<div id="st-assignees" style="clear:both;">
-					                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/1.jpg"/><span class="remvUser" >Remove</span></div>
-					                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/2.jpg"/><span class="remvUser" >Remove</span></div>
-					                       		<div class="user"><img class="remove-user"  title="aomkaram" src="themes/3.jpg"/><span class="remvUser" >Remove</span></div>
+					                       		
 					                       </div>
 					                       <span class="stAddmore" style="font-size:12px;cursor:pointer;">+Add People</span>
 	            						</div>
@@ -2230,16 +2227,7 @@
 							                 	</form>
 							                 	<div class="todo-display">
 							                 		<ul>
-							                	 		<li>
-							                	 			<a href="javascript:void(0);" class="cmtRmvTodo remove"></a>
-							                	 			<img src="themes/images/1.jpg"/>
-							                	 			<div>
-								                	 			<span class="name">Arun Krishna Omkaram: </span>
-								                	 			<span>This is my comment to test the total size of the text spans in how many lines</span>
-								                	 			<div class="actions">January 26, 2012 9:09 am</div>
-								                	 			<span></span>
-							                	 			</div>
-							                	 		</li>
+							                	 		
 							                 		</ul>
 												</div>
 					<!--  		                 	<textarea class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>

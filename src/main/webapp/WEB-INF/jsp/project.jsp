@@ -1,14 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="auth" uri="http://www.springframework.org/security/tags" %>
-<%@ page import="java.io.*" %>
-<%@ page import="java.util.*" %>
-<%@ page import="org.codehaus.jettison.json.JSONObject" %>
-<%@ page import="net.oauth.*" %>
-<%@ page import="org.codehaus.jettison.json.*" %>
-<%@ page import="org.apache.commons.httpclient.protocol.Protocol" %>
-<%@ page import="org.apache.commons.httpclient.protocol.ProtocolSocketFactory" %>
-<%@ page import="com.imaginea.scrumr.qontextclient.*" %> 
+
 <!DOCTYPE html>
 <html>
 <head>
