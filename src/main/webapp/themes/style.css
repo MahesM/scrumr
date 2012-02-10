@@ -792,7 +792,7 @@ span.p3 {
 }
 
 .view-cont{
-	width:98%;
+	width:99%;
 	color:#7F7F7F;
 	background-image: linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);
 	background-image: -o-linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);
@@ -1929,7 +1929,7 @@ border-top-right-radius: 4px;
 }
 
 .col-cont {
-	width:98%;
+	width:100%;
 }
 
 .col-cont .story li {
@@ -1946,7 +1946,7 @@ ul.col {
 
 ul.col li.stages {
 	width:24%;
-	margin-right:5px;
+	margin-right:7px;
 	border: 1px solid #E6E6E6;
 	float:left;
 }
