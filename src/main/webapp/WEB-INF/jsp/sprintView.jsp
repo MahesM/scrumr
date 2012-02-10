@@ -70,6 +70,11 @@
 		       	$(".projectview").css('color',"gray");
 		       	$(".projectview").parent().css('background-color',"#FFFFFF");
     		<% } %>
+    		
+    		$(document).ajaxError(function(e, jqxhr, settings, exception) {
+					window.location.href="/scrumr/auth.action";    			
+    		});
+    		
         	function days_between(date1, date2) {
 
         	    var ONE_DAY = 1000 * 60 * 60 * 24;
