@@ -34,7 +34,6 @@ $(document).ready(function(){
 	var avatarurl = '<s:property value="loggedInUser.avatarurl"/>';
 	var emailid = '<s:property value="loggedInUser.emailid"/>';
 	var source = '<s:property value="source"/>';
-	alert(source);
 	
      if(username != null && username != ''){
      	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatarurl+'"/><label class="float-lft loginLabel">Hi!, '+fullname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
@@ -119,6 +118,7 @@ $(document).ready(function(){
 					}
 					project_html += "</ul>";
 					$(".feed-cont").html(project_html);
+					
 				}
 			}else {
 				project_html += '<h2 style="margin:20px;display: inline-block;">Currently no projects available.</h2>';

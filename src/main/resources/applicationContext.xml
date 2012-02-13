@@ -102,7 +102,7 @@
 	<bean id="sprintAction" class="com.imaginea.scrumr.controllers.SprintAction" scope="prototype" >
 		<property name="userServiceManager" ref="userServiceManager" />
 		<property name="qontextHostUrl" value="${qontext.host}" />
-	
+		<property name="storyDescLimit" value="${story.descLimit}" />
 	</bean>
 	
 	<bean id="projectAction" class="com.imaginea.scrumr.controllers.ProjectAction" scope="prototype" >
