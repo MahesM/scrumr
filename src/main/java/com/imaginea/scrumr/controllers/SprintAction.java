@@ -12,6 +12,7 @@ public class SprintAction extends GenericActionSupport {
 	public static final Logger LOGGER = Logger.getLogger(SprintAction.class);
 	public JSONObject successResponse = null;
 	private String qontextHostUrl;
+	private String storyDescLimit;
 	
 	@Override
 	public void prepare() throws Exception {
@@ -35,5 +36,15 @@ public class SprintAction extends GenericActionSupport {
 	public void setQontextHostUrl(String qontextHostUrl) {
 		this.qontextHostUrl = qontextHostUrl;
 	}
+
+	public String getStoryDescLimit() {
+		return storyDescLimit;
+	}
+
+	public void setStoryDescLimit(String storyDescLimit) {
+		this.storyDescLimit = storyDescLimit;
+	}
+	
+	
 
 }

@@ -34,6 +34,7 @@ $(document).ready(function(){
 	var emailid = '<s:property value="loggedInUser.emailid"/>';
 	var source = '<s:property value="source"/>';
 	var qontextHostUrl = '<s:property value="qontextHostUrl"/>';
+	var projListScroll = null;
      if(username != null && username != ''){
      	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+qontextHostUrl+avatarurl+'"/><label class="float-lft loginLabel">Hi!, '+fullname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
      }
@@ -49,7 +50,7 @@ $(document).ready(function(){
 	var projAssignees = new Array();
 		projAssignees.push(username);
 	
-	var dates = $( "#datepickerFrom, #datepickerTo" ).datepicker({
+	 var dates = $( "#datepickerFrom, #datepickerTo" ).datepicker({
 		defaultDate: "+1w",
 		changeMonth: true,
 		numberOfMonths: 1,
@@ -62,7 +63,7 @@ $(document).ready(function(){
 		selectedDate, instance.settings );
 		dates.not( this ).datepicker( "option", option, date );
 		}
-	});
+	}); 
 	
 	$(".feed-item").live('click',function(){
 		window.location.href = '/scrumr/sprint.action?&view=sprint&projectId='+$(this).attr("id");
@@ -119,7 +120,7 @@ $(document).ready(function(){
 		$('#datepickerFrom').attr("disabled",false);
 		$('#datepickerTo').attr("disabled",false);
 		duration.attr("disabled",false);
-		$('#datepickerFrom').datepicker("setDate", new Date() );
+	//	$('#datepickerFrom').datepicker("setDate", new Date() );
 		duration.val("");
 	});
 	
@@ -139,12 +140,14 @@ $(document).ready(function(){
 	});
 
 	function populateProjects(){
+		var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+		               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
 		$.ajax({
 			url: '/scrumr/api/v1/projects/user/'+username,
 			type: 'GET',
 			async:false,
 			success: function( obj ) {
-				var project_html = '<ul class="feed">';
+				var project_html = '';
 				if(obj){
 					if(obj.length > 0){
 						for(var i=0;i < obj.length;i++){
@@ -152,16 +155,26 @@ $(document).ready(function(){
 							var title = project.title;
 							var duration = '';
 							if(project.start_date != null){
+								var startdateString = "";
 								var startdate = new Date(project.start_date);
-								startdate = startdate.format("mm/dd/yyyy");
-								duration += startdate;
+								if(startdate.getYear() == new Date().getYear()){
+									startdateString = months[startdate.getMonth()]+" "+ startdate.getDate();
+								}else{
+									startdateString = months[startdate.getMonth()]+" "+ startdate.getDate()+", "+startdate.getYear();
+								}
+								duration += startdateString;
 							}else{
 								duration += 'No Start Date';
 							}
 							if(project.end_date != null){
+								var enddateString = "";
 								var enddate = new Date(project.end_date);
-								enddate = enddate.format("mm/dd/yyyy");
-								duration += ' - '+ enddate;
+								if(enddate.getYear() == new Date().getYear()){
+									enddateString = months[enddate.getMonth()]+" "+ enddate.getDate();
+								}else{
+									enddateString = months[enddate.getMonth()]+" "+ enddate.getDate()+", "+enddate.getYear();
+								}
+								duration += ' - '+ enddateString;
 							}else{
 								duration += ' - No End Date';
 							}
@@ -170,7 +183,7 @@ $(document).ready(function(){
 								if(project.status == "Finished"){
 									status = '<label>Finished</label>';
 								}else{
-									status = '<label><span>Sprint '+project.current_sprint+'</span> '+project.status+'</label>';
+									status = '<a href="/scrumr/sprint.action?&view=sprint&projectId='+project.pkey+'"><span>Sprint '+project.current_sprint+'</span> '+project.status+'</a>';
 								}
 							}else{
 								status = '<label>Not Started</label>';
@@ -188,11 +201,12 @@ $(document).ready(function(){
 							if(((i+1)%2) == 0){
 								even = "even";
 							}
-							project_html += '<tr class="'+even+'"><td class="pno" id="'+project.pkey+'"><a href="/scrumr/sprint.action?&view=sprint&visit=0&projectId='+project.pkey+'">'+project.pkey+'</a></td><td class="ptitle"><a href="/scrumr/sprint.action?&view=sprint&visit=0&projectId='+project.pkey+'">'+title+'</a></td><td class="pdesc">'+project.description+'</td><td class="pstart">'+duration+'</td><td class="status">'+status+'</td><td class="users">'+people+'</td><td class="actions"><a id="edit-proj" href="#create-project"><img title="edit" style="width:16px;height:16px;margin-right:5px;cursor:pointer;" src="/scrumr/themes/images/edit.gif"/></a><img id="delete-proj" style="width:16px;height:16px;cursor:pointer;" title="delete" src="/scrumr/themes/images/delete.gif"/></td></tr>';
+							project_html += '<tr class="'+even+'"><td class="pno" id="'+project.pkey+'"><label>'+project.pkey+'</label></td><td class="ptitle"><a href="/scrumr/sprint.action?&view=project&visit=0&projectId='+project.pkey+'">'+title+'</a></td><td class="pdesc">'+project.description+'</td><td class="pstart">'+duration+'</td><td class="status">'+status+'</td><td class="users">'+people+'</td><td class="actions"><a id="edit-proj" href="#create-project"><img title="edit" style="width:16px;height:16px;margin-right:5px;cursor:pointer;" src="/scrumr/themes/images/edit.gif"/></a><img id="delete-proj" style="width:16px;height:16px;cursor:pointer;" title="delete" src="/scrumr/themes/images/delete.gif"/></td></tr>';
 							
 						}
-						project_html += "</ul>";
 						$("#project-list tbody.content").html(project_html);
+						projListScroll = $('#projectList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+						
 					}else{
 						project_html = '<p style="margin:10px 0px 10px 0px;display: inline-block;">Currently no projects available.</p>';
 						$("#project-list tbody.content").html(project_html);
@@ -315,8 +329,10 @@ $(document).ready(function(){
    <section class="bg-pat">
    <div class="left-cont scroll">
 	   	<div class="caption-cont">
-	   		<h2>Projects</h2>
+	   		<h2>All Projects</h2>
 	   		<a id="newproj" href="#create-project"><input style="float:right;margin: 30px 0px 10px 20px;border-radius:3px;" type="submit" class="status submit" value="Create Project"/></a>
+	   	</div>
+	   	<div id="projectList">
 	   		<table id="project-list" class="project-list">
              	 <thead>
 	             	 <tr class="header">
@@ -332,7 +348,8 @@ $(document).ready(function(){
              	 <tbody class="content">
               	</tbody>
              </table> 
-	   </div>
+         </div>
+   
 	   <div style="display:none;overflow:hidden !important;height:400px !important;width:500px !important;">
           	<div id="create-project" class="bg-pat">
 	       <div class="bg-pat form-cont">
