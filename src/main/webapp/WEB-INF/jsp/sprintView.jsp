@@ -545,15 +545,15 @@
 			        			result=result[0];
 			        			if(result != null){
 				        			var duration = '<span></span>';
-		    						if(result.startdate != null){
-		    							var startdate = new Date(result.startdate);
+		    						if(result.start_date != null){
+		    							var startdate = new Date(result.start_date);
 		    							startdate = startdate.format("dd mmm yyyy");
 		    							duration += startdate;
 		    						}else{
 		    							duration += 'No Start Date';
 		    						}
-		    						if(result.enddate != null){
-		    							var enddate = new Date(result.enddate);
+		    						if(result.end_date != null){
+		    							var enddate = new Date(result.end_date);
 		    							enddate = enddate.format("dd mmm yyyy");
 		    							duration += '&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<span></span>'+ enddate;
 		    						}else{
