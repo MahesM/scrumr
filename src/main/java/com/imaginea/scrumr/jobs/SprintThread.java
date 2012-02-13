@@ -83,7 +83,7 @@ class SprintThread extends TimerTask {
 						current = new Sprint();
 						current.setId(p.getCurrent_sprint()+1);
 						current.setStartdate(new Date(old_sprint.getEnddate().getTime()+3600000));
-						current.setEnddate(new Date(old_sprint.getEnddate().getTime()+ 3600000 + ((7*p.getSprint_duration())*86400000) - 3600000));
+						current.setEnddate(new Date(old_sprint.getEnddate().getTime()+ 3600000 + ((7*p.getSprint_duration())*86400000L) - 3600000L));
 						current.setStatus(statusSetter(current.getStartdate(), current.getEnddate()));
 						p.setCurrent_sprint(current.getId());
 						p.setStatus("In Progress");

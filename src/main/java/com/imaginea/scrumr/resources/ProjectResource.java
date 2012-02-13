@@ -136,6 +136,7 @@ public class ProjectResource {
 					project.setCurrent_sprint(0);
 					project.setEnd_date(null);
 					sprint_count  = getSprintCount(date, null,Integer.parseInt(pSprintDuration));
+					System.out.println("Test: SC: "+sprint_count);
 					project.setNo_of_sprints(sprint_count);
 				}
 			} catch (ParseException e1) {
@@ -172,15 +173,15 @@ public class ProjectResource {
 				Sprint sprint = new Sprint();
 				sprint.setId(i+1);
 				sprint.setStartdate(new java.sql.Date(currentdate.getTime()));
-				Date enddate = new Date(currentdate.getTime() + ((7*duration)*86400000) - 3600000);
+				Date enddate = new Date(currentdate.getTime() + ((7*duration)*86400000L) - 3600000L);
 				if(date1 !=  null && i == (sprint_count-1)){
-					enddate = new Date(currentdate.getTime() + ((7*duration)*86400000));
+					enddate = new Date(currentdate.getTime() + ((7*duration)*86400000L));
 				}
 				if(date1 != null){
 					if(enddate.before(date1)){
 						sprint.setEnddate(new java.sql.Date(enddate.getTime()));
 					}else{
-						sprint.setEnddate(new java.sql.Date(date1.getTime() + (86400000 - 3600000) ));
+						sprint.setEnddate(new java.sql.Date(date1.getTime() + (86400000L - 3600000L) ));
 					}
 				}else{
 					sprint.setEnddate(new java.sql.Date(enddate.getTime()));
@@ -201,7 +202,7 @@ public class ProjectResource {
         		}
 				sprint.setProject(project);
 				sprintManager.createSprint(sprint);
-				currentdate = new Date(currentdate.getTime() + ((7*duration)*86400000));
+				currentdate = new Date(currentdate.getTime() + ((7*duration)*86400000L));
 			}
 			
         } catch (Exception e) {
