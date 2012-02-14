@@ -41,6 +41,7 @@
         	var source = '<s:property value="source"/>';
         	var qontextHostUrl = '<s:property value="qontextHostUrl"/>';
         	var storyDescLimit =  '<s:property value="storyDescLimit"/>';
+        	var storyTitleLimit =  '<s:property value="storyTitleLimit"/>';
             if(userLogged != null && userLogged != ''){
     	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+qontextHostUrl+avatar+'"/><label class="float-lft loginLabel">Hi!, '+fullName+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
     	     } 
@@ -179,49 +180,47 @@
         				}else {
         					$('#storyList ul').css({'height': '150px'});
         				}
-        				if(projectStatus != "Not Started" && projectStatus != "Finished"){
-	        				$( "#storyList ul" ).sortable({
-	        	        		connectWith: ".story",
-	        	        		items:'li',
-	        	        		//appendTo: 'body',
-	        	        		forcePlaceholderSize: true,
-	        	        		placeholder: 'ui-state-highlight',
-	        	        		update: function( event, ui ) {
-	        	        			if(ui.item.closest('section').hasClass('right')){ //dropped to the stages section
-	        	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
-	        	        			};
-	        	        			//$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
-	        	        			if($('#storyList ul').find('li').length > 0){
-	        	    					var ulHeight = ($('#storyList ul').find('li').outerHeight() * $('#storyList ul').find('li').length) + 150;
-	        	    					$('#storyList ul').css({'height': ulHeight + 'px'});
-	        	    				}else {
-	        	    					$('#storyList ul').css({'height': '150px'});
-	        	    				}
-	        	        			if(storyListScroll){
-	        	   					 var api = $('#storyList').data('jsp');
-	        	   					 if(api)api.destroy();
-	        	   				 	}
-	        	        			storyListScroll = $('#storyList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-	        	        		},
-	        	        		over : function(event,ui){
-	        	        			if($(ui.sender).find('li').length > 0){
-	        	    					var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
-	        	    					$(ui.sender).css({'height': ulHeight + 'px'});
-	        	    				}else {
-	        	    					$(ui.sender).css({'height': '150px'});
-	        	    				}
-	        	        			if(sprintStageScroll[$(ui.sender).attr('id')]) {
-		        		   				sprintStageScroll[$(ui.sender).attr('id')].destroy();
-	        		   					sprintStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-	        		   				} 
-	        	        			if(projStageScroll[$(ui.sender).attr('id')]) {
-	        	        				projStageScroll[$(ui.sender).attr('id')].destroy();
-	        	        				projStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-	        		   				} 
-		        		   			
-	        	        		}
-	        	    		}).disableSelection();
-        				}
+        				$( "#storyList ul" ).sortable({
+        	        		connectWith: ".story",
+        	        		items:'li',
+        	        		//appendTo: 'body',
+        	        		forcePlaceholderSize: true,
+        	        		placeholder: 'ui-state-highlight',
+        	        		update: function( event, ui ) {
+        	        			if(ui.item.closest('section').hasClass('right')){ //dropped to the stages section
+        	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
+        	        			};
+        	        			//$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
+        	        			if($('#storyList ul').find('li').length > 0){
+        	    					var ulHeight = ($('#storyList ul').find('li').outerHeight() * $('#storyList ul').find('li').length) + 150;
+        	    					$('#storyList ul').css({'height': ulHeight + 'px'});
+        	    				}else {
+        	    					$('#storyList ul').css({'height': '150px'});
+        	    				}
+        	        			if(storyListScroll){
+        	   					 var api = $('#storyList').data('jsp');
+        	   					 if(api)api.destroy();
+        	   				 	}
+        	        			storyListScroll = $('#storyList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        	        		},
+        	        		over : function(event,ui){
+        	        			if($(ui.sender).find('li').length > 0){
+        	    					var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
+        	    					$(ui.sender).css({'height': ulHeight + 'px'});
+        	    				}else {
+        	    					$(ui.sender).css({'height': '150px'});
+        	    				}
+        	        			if(sprintStageScroll[$(ui.sender).attr('id')]) {
+	        		   				sprintStageScroll[$(ui.sender).attr('id')].destroy();
+        		   					sprintStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        		   				} 
+        	        			if(projStageScroll[$(ui.sender).attr('id')]) {
+        	        				projStageScroll[$(ui.sender).attr('id')].destroy();
+        	        				projStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        		   				} 
+	        		   			
+        	        		}
+        	    		}).disableSelection();
         				if(storyListScroll){
 	       					 var api = $('#storyList').data('jsp');
 	       					 if(api)api.destroy();
@@ -337,51 +336,49 @@
 			    					controls.appendTo('#pageCtrls'); 
 			        			},1);
 			        			//$( ".stages " ).jScrollPane({});
-			        			if(projectStatus != "Not Started" && projectStatus != "Finished"){
-				        			$( ".stages ul" ).sortable({
-			        	        		connectWith: ".story",
-			        	        		items:'li',
-			        	        		//appendTo: 'body',
-			        	        		forcePlaceholderSize: true,
-			        	        		placeholder: 'ui-state-highlight',
-			        	        		update: function( event, ui ) {
-			        	        			var id = ui.item.attr("id").split("st")[1];
-			        	        			if(ui.item.closest('section').hasClass('left')){ //dropped back to unassigned list
-			        	        				ui.item.find('a.remove').removeClass('sptRmv').addClass('strRmv');
-			        	        				addtoCurrentSprint(id,0);
-			        	        				populateUnassignedStories('');
-			        	        			}else {
-			        	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
-			        	        				var sprint = $(this).attr("id").split("sp")[1];
-				        		   				var success = addtoCurrentSprint(id,sprint);
-				        		   				//ui.item.find("a.currentSprint").removeClass().addClass('viewStory');
-				        		   				if(success == false){
-				        		   					$(this).sortable('cancel');
-				        		   				}
-				        		   				//$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
-				        		   				var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
-				        		   				$(ui.sender).css({'height': ulHeight + 'px'});
-				        		   					
-			        		   					if(projStageScroll[$(ui.sender).attr('id')]) {
-			        		   						projStageScroll[$(ui.sender).attr('id')].destroy();
-			        		   						projStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-				        		   				}  
-			        	        			}
-			        	        			
-			        		   			},
-			        		   			
-			        		   			receive :function(event,ui){
-			        		   				var ulHeight = ($(ui.item[0]).outerHeight() * $(ui.item[0]).closest('ul').find('li').length) + 150;
-			        		   				$(ui.item[0]).closest('ul').css({'height': ulHeight + 'px'});
-			        		   				if(projStageScroll[$(ui.item[0]).closest('ul').attr('id')]) {
-			        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')].destroy();
-			        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-			        		   				} else {
-			        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp; 
+			        			$( ".stages ul" ).sortable({
+		        	        		connectWith: ".story",
+		        	        		items:'li',
+		        	        		//appendTo: 'body',
+		        	        		forcePlaceholderSize: true,
+		        	        		placeholder: 'ui-state-highlight',
+		        	        		update: function( event, ui ) {
+		        	        			var id = ui.item.attr("id").split("st")[1];
+		        	        			if(ui.item.closest('section').hasClass('left')){ //dropped back to unassigned list
+		        	        				ui.item.find('a.remove').removeClass('sptRmv').addClass('strRmv');
+		        	        				addtoCurrentSprint(id,0);
+		        	        				populateUnassignedStories('');
+		        	        			}else {
+		        	        				ui.item.find('a.remove').removeClass('strRmv').addClass('sptRmv');
+		        	        				var sprint = $(this).attr("id").split("sp")[1];
+			        		   				var success = addtoCurrentSprint(id,sprint);
+			        		   				//ui.item.find("a.currentSprint").removeClass().addClass('viewStory');
+			        		   				if(success == false){
+			        		   					$(this).sortable('cancel');
 			        		   				}
-			        		   			}
-			        	    		}).disableSelection();
-			        			}
+			        		   				//$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
+			        		   				var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
+			        		   				$(ui.sender).css({'height': ulHeight + 'px'});
+			        		   					
+		        		   					if(projStageScroll[$(ui.sender).attr('id')]) {
+		        		   						projStageScroll[$(ui.sender).attr('id')].destroy();
+		        		   						projStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+			        		   				}  
+		        	        			}
+		        	        			
+		        		   			},
+		        		   			
+		        		   			receive :function(event,ui){
+		        		   				var ulHeight = ($(ui.item[0]).outerHeight() * $(ui.item[0]).closest('ul').find('li').length) + 150;
+		        		   				$(ui.item[0]).closest('ul').css({'height': ulHeight + 'px'});
+		        		   				if(projStageScroll[$(ui.item[0]).closest('ul').attr('id')]) {
+		        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')].destroy();
+		        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+		        		   				} else {
+		        		   					projStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp; 
+		        		   				}
+		        		   			}
+		        	    		}).disableSelection();
 			        			
 			        			$('.stages .projectCont ul').parent().css({'height': (($(window).height()) - 175) + 'px'});
 			        			$( ".stages .projectCont ul").each(function(){
@@ -653,113 +650,131 @@
 				        				
 				        				$("#notstarted").html('<label id="noStories" style="margin:5px;float:left">No Stories assigned to this sprint.</label>');
 				        			}
-			        				if(projectStatus != "Not Started" && projectStatus != "Finished"){
-					        			$( ".stages ul" ).sortable({
-				        	        		connectWith: ".story",
-				        	        		items:'li',
-				        	        		//appendTo: 'body',
-				        	        		forcePlaceholderSize: true,
-				        	        		placeholder: 'ui-state-highlight',
-				        	        		update: function( event, ui ) {
-				        	   				 	var id = ui.item.attr("id");
-				        	   				 	var status = "notstarted";
-				        		   				var stat = $(this).attr("id");
-				        		   				if(stat == "dev"){
-				        		       				status = "dev";
-				        		       			}else if(stat == "review"){
-				        		       				status = "review";
-				        		       			}else if(stat == "notstarted"){
-				        		       				status = "notstarted";
-				        		       				$(this).find("label#noStories").remove();
-				        		       			}else if(stat == "finished"){
-				        		       				status = "finished";
-				        		       			}
-				        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint); 
-				        		   				var elOffset = $(ui.item[0]).offset();
-				        		   				 if($(ui.item[0]).closest('ul').attr('id') == 'notstarted'){
-				        		   					$(ui.item[0]).find('.img-cont').html("<img src='"+qontextHostUrl+""+creatorObj.avatarurl+"' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.fullname+"</label>");
-				        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
-				        		   				}
-				        		   				if($(ui.item[0]).closest('ul').attr('id') == 'finished'){			        		   								        		   				
-				        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
-				        		   					//alert(creatorObj.userName);
-				        		   					refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
-				        		   				}
-				        		   				if((ui.sender != null) && !($(ui.item[0]).closest('ul').attr('id') == 'notstarted') && !($(ui.item[0]).closest('ul').attr('id') == 'finished')&& !($(ui.item[0]).closest('section').hasClass('left'))){
-				        		   					showAddUserPopup(elOffset);
-				        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
-				        		   					var existing_user_arr = [];
-				        		   					$("#"+id).find('img').each(function(){
-				        		   						existing_user_arr.push($(this).attr('id'));
-				        		   					});
-				      		   						addUserToStory(existing_user_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
-				        		   					//refreshStoryPortlet(id.split("st")[1]);
-				        		   					$('#popup_story_done').live("click",function(){
-				        		   						if(users_arr.length > 0){
-					        		   						removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
-						      		   						addUserToStory(users_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
-					        		   						refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
-					        		   						$(this).closest('.popup-story-cont').hide();
-					        		   						$('#popup_story_done').die();
-				        		   						}
-				        		   					});
-				        		   				}
-				        		   				
-												if(($(ui.item[0]).closest('section').hasClass('left'))) {
-				        		   					var new_id = id.replace("st","");
-				        		   					$(ui.item[0]).find('a.remove').removeClass('sptRmv').addClass('strRmv');
-				        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
-				        		   					addtoCurrentSprint(new_id, 0);
-				        		   					populateUnassignedStories('');
-				        		   				}else{
-				        		   					$(ui.item[0]).find('a.remove').removeClass('strRmv').addClass('sptRmv');
-				        		   				}
-				        		   				  if(success == false){
-				        		   					$(this).sortable('cancel');
-				        		   				}  
-											 	var clss = ui.item.attr("class");
-					        	   				 if(clss == "unassigned"){
-					        	   					ui.item.removeClass("unassigned");
-					        	   					var c = parseInt($("#sprint_total").html());
-					        	   		        	$("#sprint_total").html(c + 1);
-					        	   	        		if($(this).attr("id") == "finished"){
-					        	   	        			var f = parseInt($("#sprint_finished").html());
-					        	   	    	        	$("#sprint_finished").html(f + 1);
-					        	   	        		}
-					        	   				 }
-											
-				        		   				//if($(ui.item[0]).closest('.sprintCont').length > 0){
-				        		   					//$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
-				        		   					var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
-				        		   					$(ui.sender).css({'height': ulHeight + 'px'});
-				        		   					
-				        		   					if(sprintStageScroll[$(ui.sender).attr('id')]) {
-						        		   				sprintStageScroll[$(ui.sender).attr('id')].destroy();
-					        		   					sprintStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+				        			$( ".stages ul" ).sortable({
+			        	        		connectWith: ".story",
+			        	        		items:'li',
+			        	        		//appendTo: 'body',
+			        	        		forcePlaceholderSize: true,
+			        	        		placeholder: 'ui-state-highlight',
+			        	        		update: function( event, ui ) {
+			        	   				 	var id = ui.item.attr("id");
+			        	   				 	var status = "notstarted";
+			        		   				var stat = $(this).attr("id");
+			        		   				if(stat == "dev"){
+			        		       				status = "dev";
+			        		       			}else if(stat == "review"){
+			        		       				status = "review";
+			        		       			}else if(stat == "notstarted"){
+			        		       				status = "notstarted";
+			        		       				$(this).find("label#noStories").remove();
+			        		       			}else if(stat == "finished"){
+			        		       				status = "finished";
+			        		       			}
+			        		   				if($(ui.item[0]).closest('ul').attr('id') == 'notstarted'){
+			        		   					var success = updateStoryStatus(id.split("st")[1],"notstarted",sprint); 
+			        		   					$(ui.item[0]).find('.img-cont').html("<img src='"+qontextHostUrl+""+creatorObj.avatarurl+"' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.fullname+"</label>");
+			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+			        		   				}else if(($(ui.item[0]).closest('section').hasClass('left'))) {
+			        		   					var new_id = id.replace("st","");
+			        		   					$(ui.item[0]).find('a.remove').removeClass('sptRmv').addClass('strRmv');
+			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+			        		   					addtoCurrentSprint(new_id, 0);
+			        		   					populateUnassignedStories('');
+			        		   				}else{
+				        		   				if(projectStatus !="Not Started" && projectStatus !="Finished"){
+					        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint); 
+					        		   				var elOffset = $(ui.item[0]).offset();
+					        		   				if($(ui.item[0]).closest('ul').attr('id') == 'finished'){			        		   								        		   				
+					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+					        		   					refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
+					        		   				}
+					        		   				if((ui.sender != null) && !($(ui.item[0]).closest('ul').attr('id') == 'notstarted') && !($(ui.item[0]).closest('ul').attr('id') == 'finished')&& !($(ui.item[0]).closest('section').hasClass('left'))){
+					        		   					showAddUserPopup(elOffset);
+					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+					        		   					var existing_user_arr = [];
+					        		   					if($('#'+id).data("userlist")){
+					        		   						existing_user_arr = $('#'+id).data("userlist");
+					        		   					}
+					      		   						addUserToStory(existing_user_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
+					        		   					//refreshStoryPortlet(id.split("st")[1]);
+					        		   					$('#popup_story_done').live("click",function(){
+					        		   						if(users_arr.length > 0){
+						        		   						removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+						        		   						$('#'+id).data("userlist", users_arr);  
+							      		   						addUserToStory(users_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
+						        		   						refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
+						        		   						$(this).closest('.popup-story-cont').hide();
+						        		   						$('#popup_story_done').die();
+					        		   						}
+					        		   					});
+					        		   				}
+					        		   				
+													/* if(($(ui.item[0]).closest('section').hasClass('left'))) {
+					        		   					var new_id = id.replace("st","");
+					        		   					$(ui.item[0]).find('a.remove').removeClass('sptRmv').addClass('strRmv');
+					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+					        		   					addtoCurrentSprint(new_id, 0);
+					        		   					populateUnassignedStories('');
+					        		   				} else{*/
+					        		   					$(ui.item[0]).find('a.remove').removeClass('strRmv').addClass('sptRmv');
+					        		   				//}
+					        		   				if(success == false){
+					        		   					$(this).sortable('cancel');
 					        		   				}  
+												 	var clss = ui.item.attr("class");
+						        	   				 if(clss == "unassigned"){
+						        	   					ui.item.removeClass("unassigned");
+						        	   					var c = parseInt($("#sprint_total").html());
+						        	   		        	$("#sprint_total").html(c + 1);
+						        	   	        		if($(this).attr("id") == "finished"){
+						        	   	        			var f = parseInt($("#sprint_finished").html());
+						        	   	    	        	$("#sprint_finished").html(f + 1);
+						        	   	        		}
+						        	   				 }
+												
+					        		   				//if($(ui.item[0]).closest('.sprintCont').length > 0){
+					        		   					//$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
+					        		   					var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
+					        		   					$(ui.sender).css({'height': ulHeight + 'px'});
+					        		   					
+					        		   					if(sprintStageScroll[$(ui.sender).attr('id')]) {
+							        		   				sprintStageScroll[$(ui.sender).attr('id')].destroy();
+						        		   					sprintStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+						        		   				} 
+					        		   				}
+			        		   					
+			        		   					}
+			        		   					
+			        		   			},
+			        		   			
+			        		   			receive :function(event,ui){
+			        		   				var ulHeight = ($(ui.item[0]).outerHeight() * $(ui.item[0]).closest('ul').find('li').length) + 150;
+			        		   				$(ui.item[0]).closest('ul').css({'height': ulHeight + 'px'});
+			        		   				if(sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')]) {
+				        		   				sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')].destroy();
+			        		   					sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+			        		   				}else {
+			        		   					sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp; 
+			        		   				}
+			        		   				if($(ui.item[0]).closest('ul').attr('id') !="notstarted"){
+			        		   					if(projectStatus == "Finished" || projectStatus == "Not Started"){
+				        		   					$(ui.sender).sortable("cancel");
+				        		   					$('.error-hd').html("Stories cannot be moved when project is "+projectStatus);
+				        		   					$('.error-hd').slideDown("slow");
+				        		   					 setTimeout(function(){
+				        		   						$('.error-hd').slideUp("slow");
+				        		   					},3000); 
 				        		   					
-				        		   				//}
-				        		   					
-				        		   			},
-				        		   			
-				        		   			receive :function(event,ui){
-				        		   				var ulHeight = ($(ui.item[0]).outerHeight() * $(ui.item[0]).closest('ul').find('li').length) + 150;
-				        		   				$(ui.item[0]).closest('ul').css({'height': ulHeight + 'px'});
-				        		   				if(sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')]) {
-					        		   				sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')].destroy();
-				        		   					sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-				        		   				}else {
-				        		   					sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp; 
 				        		   				}
-				        		   			},
-				        		   			
-				        		   			 start : function(event,ui){
-				        		   				if(projectStatus == "Finished"){
-				        		   					$(ui.item[0]).closest('ul').sortable("cancel");
-				        		   				}
-				        		   			} 
-				        	    		}).disableSelection();
-			        				}
+			        		   				}
+			        		   			}
+			        		   			
+			        		   			 /* start : function(event,ui){
+			        		   				if(projectStatus == "Finished" || projectStatus == "Not Started"){
+			        		   					$(ui.item[0]).closest('ul').sortable("cancel");
+			        		   				}
+			        		   			}  */
+			        	    		}).disableSelection();
 			        				
 				        		//	$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
 				        			$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
@@ -1371,22 +1386,41 @@
         		
         		return false;
         	}); --%>
-        	
-        	$('textarea[name=storyDesc]').focus(function(){
+        	var storyFormValid = true;
+        	$('input[name=storyTitle],textarea[name=storyDesc]').focus(function(){
     			$(this).css('background-color','#FFFFFF !important');
-    			$('.story_error').html(" ");
+    			//$('.story_error').html(" ");
+    		});
+        	
+        	$('input[name=storyTitle]').blur(function(){
+    			if($(this).val().length > storyTitleLimit){
+    				$(this).css('background-color','#FFD3D3 !important');
+    				$('.story_error').html("Title can't exceed "+storyTitleLimit+" chars");
+        			storyFormValid = false;
+        		}else {
+        			$(this).css('background-color','#FFFFFF !important');
+        			$('.story_error').html(" ");
+        			storyFormValid = true;
+        		}
+    		});
+        	
+        	$('textarea[name=storyDesc]').blur(function(){
+    			if($(this).val().length > storyDescLimit){
+    				$(this).css('background-color','#FFD3D3 !important');
+    				$('.story_error').html("Desc can't exceed "+storyDescLimit+" chars");
+        			storyFormValid = false;
+        		}else {
+        			$(this).css('background-color','#FFFFFF !important');
+        			$('.story_error').html(" ");
+        			storyFormValid = true;
+        		}
     		});
         	
         	$('#addAnotherStory,#createStory').live("click",function(){
         		var title = $('input[name=storyTitle]');
         		var description = $('textarea[name=storyDesc]');
-        		if(description.val().length > 255){
-        			$('textarea[name=storyDesc]').css('background-color','#FFD3D3 !important');
-        			$('.story_error').html("Desc can't exceed "+storyDescLimit+" chars");
+        		if(!storyFormValid)
         			return;
-        		}
-        		
-        		
         		var priority = $('select[name=stPriority]');
         		if(title.val()==""){
         			return;
@@ -2183,6 +2217,7 @@
 	                	</ul> 
 	                	<div id="pageCtrls" style="display:none;float:right;width:auto;height:30px;"></div>
 	                </div>
+	                 <div class="error-hd" style="display:none;"></div>
 	            </div>
                 <div id="project-view" style="overflow:hidden;" class="float-lft clear col-cont" >
                 </div>
@@ -2355,7 +2390,7 @@
 						<div class="sTitle">
 							<input id="storyDesc" style="resize:none;" name="storyTitle" placeholder="Enter Story Title" size="100" required="required"></input>
 						</div>
-						<div class="sDesc">
+						<div class="sDesc" >
 							<textarea required="required" id="storyDesc" style="resize:none;" maxlength="500" name="storyDesc" rows="5" cols="1" placeholder="Enter Story Desc"></textarea>
 						</div>
 						<select name="stPriority" id="storyPriority">

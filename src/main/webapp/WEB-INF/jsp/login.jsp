@@ -23,6 +23,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	 $('.bg-pat').css({'height': ($(window).height()) + 'px'});
+	 $('#projectList').css({'height': ($(window).height() - 120) + 'px'});
      $(window).resize(function() {
          $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
      }); 
