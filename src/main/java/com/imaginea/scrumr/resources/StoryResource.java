@@ -95,7 +95,8 @@ public class StoryResource {
 			@RequestParam String stDescription,
 			@RequestParam String stPriority,
 			@RequestParam String user,
-			@RequestParam String projectId
+			@RequestParam String projectId,
+			@RequestParam String stSprint
 			) {
 
 		Story story = new Story();
@@ -103,6 +104,8 @@ public class StoryResource {
 		try {
 			story.setTitle(stTitle);
 			story.setDescription(stDescription);
+			Sprint sprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)),Integer.parseInt(stSprint));
+			story.setSprint_id(sprint);
 			story.setPriority(Integer.parseInt(stPriority));
 			story.setCreator(user);
 			story.setLast_updated(new java.sql.Date(System.currentTimeMillis()));

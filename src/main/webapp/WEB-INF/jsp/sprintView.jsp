@@ -1422,12 +1422,13 @@
         		if(!storyFormValid)
         			return;
         		var priority = $('select[name=stPriority]');
+        		var sprint = $('select[name=stSprint]');
         		if(title.val()==""){
         			return;
         		}
         		var user = userLogged;
         		var projectId= <%= projectId%>;
-        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority.val() + '&user=' +user;
+        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority.val() + '&user=' +user + '&stSprint=' + sprint.val();
         		$.ajax({
         			url: '/scrumr/api/v1/stories/create',
         			type: 'POST',
@@ -2118,7 +2119,19 @@
 					error : function(data){},
 					complete : function(data){}					
 					});	
-			}		
+			}	
+         
+         $('#addStory').live("click",function(){
+        	 $('.popup-proj-cont').hide();
+        	//populate story popup sprint select box
+				var optionsHtml = '<option selected="selected" value="0">No Sprint</option>';
+	        	 for(var i=1;i<=totalsprints;i++){
+	        		 optionsHtml +='<option value="'+i+'">Sprint '+i+'</option>';
+	        	 }
+	        	 $('.story-popup #storySprint').html(optionsHtml);
+	        	 
+        	 $('.story-popup').show();
+         });
 			
         });
     </script>
@@ -2393,12 +2406,19 @@
 						<div class="sDesc" >
 							<textarea required="required" id="storyDesc" style="resize:none;" maxlength="500" name="storyDesc" rows="5" cols="1" placeholder="Enter Story Desc"></textarea>
 						</div>
-						<select name="stPriority" id="storyPriority">
-							<option selected="selected" value="1">Priority 1</option>
-							<option value="2">Priority 2</option>
-							<option value="3">Priority 3</option>							
-						</select>
 						<label class="story_error"></label>
+						<div class="sPriority" >
+							<select name="stPriority" id="storyPriority">
+								<option selected="selected" value="1">Priority 1</option>
+								<option value="2">Priority 2</option>
+								<option value="3">Priority 3</option>							
+							</select>
+						</div>
+						<div class="stSprint">
+							<select name="stSprint" id="storySprint">
+							</select>
+						</div>
+						
 					</form>
                </div>
                  <div class="actions-cont">
@@ -2439,11 +2459,6 @@
                      
                      
                      
-                     
-                     $('#addStory').live("click",function(){
-                    	 $('.popup-proj-cont').hide();
-                    	 $('.story-popup').show();
-                     });
                      
                      //code to toggle chart container
                      $('.toggleChart').live("click",function(){
