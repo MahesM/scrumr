@@ -821,6 +821,18 @@ div#projectList {
     background-color: #FFFFFF;
 }
 
+.error-hd{
+	display: inline-block;
+    width: 98%;
+    background-color:#FFFFFF;
+    border:1px solid #E6E6E6;
+    height:auto;
+    min-height:15px;
+    padding:10px;
+    font-size:12px;
+    font-weight:bold;
+}
+
 .duration-hd span{
 	background: url("images/assets.png") repeat scroll -4px -35px transparent;
 	width:16px;
@@ -1022,6 +1034,11 @@ div#projectList {
 	width:700px;
 	height:auto;
 	overflow:hidden;
+}
+
+#sortableError{
+	width:100px;
+	height:100px;
 }
 
 #story-cont .storyTitle{
@@ -1892,8 +1909,6 @@ border-top-right-radius: 4px;
 }
 
 .story_error{
-	margin-left: 2px;
-    margin-top: 19px;
     font-size: 12px;
     color: red;
 }

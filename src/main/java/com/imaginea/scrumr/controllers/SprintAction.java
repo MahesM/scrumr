@@ -13,6 +13,7 @@ public class SprintAction extends GenericActionSupport {
 	public JSONObject successResponse = null;
 	private String qontextHostUrl;
 	private String storyDescLimit;
+	private String storyTitleLimit;
 	
 	@Override
 	public void prepare() throws Exception {
@@ -44,6 +45,16 @@ public class SprintAction extends GenericActionSupport {
 	public void setStoryDescLimit(String storyDescLimit) {
 		this.storyDescLimit = storyDescLimit;
 	}
+
+	public String getStoryTitleLimit() {
+		return storyTitleLimit;
+	}
+
+	public void setStoryTitleLimit(String storyTitleLimit) {
+		this.storyTitleLimit = storyTitleLimit;
+	}
+	
+	
 	
 	
 
