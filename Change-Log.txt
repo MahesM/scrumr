@@ -1,1 +1,5 @@
-Coming up!!
+Feb 10, 2012, Version beta_1.0.0 - Staging release
+    * Scrumr - Project, Product Backlog, Story Creation and swimlanes workflow 
+    * Task Creation 
+    * Integration with Qontext -SSO and People API
+        
