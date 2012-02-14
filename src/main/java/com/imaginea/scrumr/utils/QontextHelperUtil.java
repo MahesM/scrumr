@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.qontextclient.EasySSLProtocolSocketFactory;
@@ -22,7 +23,6 @@ public class QontextHelperUtil {
 	private HttpSession session;
 	
 	public User doQontextAuthentication(HttpServletRequest request, HttpServletResponse respose){
-		session = request.getSession();
 		
 		Protocol easyhttps = new Protocol("https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), 443);
 		Protocol.registerProtocol("https", easyhttps);
@@ -34,8 +34,9 @@ public class QontextHelperUtil {
 		String avatarUrl= null;
 		User user = null;
 		try{
-			user = (User)session.getAttribute("loggedInUser");
-			if(user == null){
+			if(SecurityContextHolder.getContext().getAuthentication() == null )
+			{
+				session = request.getSession(true);
 				Settings mySettings = Settings.getInstance(request, qontextHostUrl, consumerKey, consumerSecret);
 				mySettings.saveToSession(session);
 				boolean initialized = false;
@@ -72,6 +73,8 @@ public class QontextHelperUtil {
 				String accessToken = mySettings.getOAuthAccessToken(session);
 				mySettings.saveOAuthAccessToken(session, accessToken);
 				session.setAttribute("token", accessToken);
+			}else{
+				user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			}
 			return user;
 		}catch(Exception e){
