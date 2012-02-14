@@ -85,6 +85,10 @@
 		<url-pattern>/api/v1/*</url-pattern>
 	</servlet-mapping>
 	
+	<session-config>
+		<!-- 8hrs -->
+		<session-timeout>480</session-timeout>
+	</session-config>
 	<!-- Welcome file lists -->
 	
 	<welcome-file-list>
