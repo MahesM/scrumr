@@ -91,7 +91,8 @@
 		<property name="redirectUrl" value="${qontext.auth}" />
 	</bean>
 	
-	<bean id="qontextHelper" class="com.imaginea.scrumr.qontextclient.QontextRestApiInvocationUtil" >
+	<bean id="qontextHelper" class="com.imaginea.scrumr.qontextclient.QontextRestApiInvocationUtil" scope="session" >
+	<aop:scoped-proxy/>
 	</bean>
 	<bean id="qontextHelperUtil" class="com.imaginea.scrumr.utils.QontextHelperUtil" scope="prototype" >
 		<property name="consumerKey" value="${qontext.consumerkey}" />
