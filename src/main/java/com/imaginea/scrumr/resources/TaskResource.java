@@ -23,64 +23,63 @@ import com.imaginea.scrumr.interfaces.UserServiceManager;
 @RequestMapping("/todo")
 public class TaskResource {
 
-	@Autowired
-	StoryManager storyManager;
+    @Autowired
+    StoryManager storyManager;
 
-	@Autowired
-	UserServiceManager userServiceManager;
+    @Autowired
+    UserServiceManager userServiceManager;
 
-	@Autowired
-	TaskManager taskManager;
+    @Autowired
+    TaskManager taskManager;
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<Task> fetchTask(@PathVariable("id") String id) {
 
-	@RequestMapping(value="/{id}", method = RequestMethod.GET)
-	public @ResponseBody List<Task> fetchTask(@PathVariable("id") String id) {
+        Task task = taskManager.readTask(Integer.parseInt(id));
+        List<Task> tasks = new ArrayList<Task>();
+        tasks.add(task);
+        return tasks;
+    }
 
-		Task task = taskManager.readTask(Integer.parseInt(id));
-		List<Task> tasks = new ArrayList<Task>();
-		tasks.add(task);
-		return tasks;
-	}
-	
-	@RequestMapping(value="/story/{id}", method = RequestMethod.GET)
-	public @ResponseBody List<Task> fetchStoryTask(@PathVariable("id") String id) {
+    @RequestMapping(value = "/story/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<Task> fetchStoryTask(@PathVariable("id") String id) {
 
-		return taskManager.fetchTasksByStory(Integer.parseInt(id));
-	}
+        return taskManager.fetchTasksByStory(Integer.parseInt(id));
+    }
 
-	@RequestMapping(value="/create", method = RequestMethod.POST)
-	public @ResponseBody List<Task> createSprint(
-			@RequestParam String milestonePeriod,
-			@RequestParam String user,
-			@RequestParam String content,
-			@RequestParam String storyid
-			) {
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public @ResponseBody
+    List<Task> createTask(@RequestParam String milestonePeriod, @RequestParam String user,
+                                    @RequestParam String content, @RequestParam String storyid) {
 
-		Task task = new Task();
+        Task task = new Task();
 
-		try {
+        try {
 
-			task.setContent(content);
-			task.setMilestonePeriod(milestonePeriod);
-			task.setUser(userServiceManager.readUser(user));
-			task.setStory(storyManager.readStory(Integer.parseInt(storyid)));
-			taskManager.createTask(task);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+            task.setContent(content);
+            task.setMilestonePeriod(milestonePeriod);
+            task.setUser(userServiceManager.readUser(user));
+            task.setStory(storyManager.readStory(Integer.parseInt(storyid)));
+            taskManager.createTask(task);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
 
-		List<Task> result = new ArrayList<Task>();
-		result.add(task);
-		return result;
+        List<Task> result = new ArrayList<Task>();
+        result.add(task);
+        return result;
 
-	}
+    }
 
-	@RequestMapping(value="/delete/{id}", method = RequestMethod.GET)
-	public @ResponseBody String deleteTask(@PathVariable("id") String id) {
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    String deleteTask(@PathVariable("id") String id) {
 
-		Task task = taskManager.readTask(Integer.parseInt(id));
-		taskManager.deleteTask(task);
-		return "{\"result\":\"success\"}";
-	}
+        Task task = taskManager.readTask(Integer.parseInt(id));
+        taskManager.deleteTask(task);
+        return "{\"result\":\"success\"}";
+    }
 }
