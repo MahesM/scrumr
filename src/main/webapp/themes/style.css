@@ -205,24 +205,24 @@ header {
 	padding:10px;
 }
 
-.project-list .content{
+.project-list tbody.content{
 	height:100%;
 	width:100%;
 }
 
-.project-list .content tr.even{
+.project-list tbody.content tr.even{
 	background-color: #F9F9F9;
 }
 
-.project-list .content tr.odd{
+.project-list tbody.content tr.odd{
 	background-color: #FFFFFF;
 }
 
-.project-list .content td.users{
+.project-list tbody.content td.users{
 	text-align: left;
 }
 
-.project-list .content td{
+.project-list tbody.content td{
     height: auto;
     max-width: 14%;
     text-align: center;
@@ -230,7 +230,7 @@ header {
     width: auto;
 }
 
-.project-list .content td img{
+.project-list tbody.content td img{
 	width:24px;
 	height:24px;
 	margin:1px;
@@ -903,6 +903,16 @@ div#projectList {
     margin:5px 10px;
 }
 
+.pstat-view-hd  label{
+	display: inline-block;
+    float: left;
+    font-size: 14px;
+    font-weight: bold;
+    color:#00475C;
+    cursor: pointer;
+    margin:5px 10px;
+}
+
 .prj-view-hd {
 	float: left;
     height: 100%;
@@ -910,13 +920,22 @@ div#projectList {
     background-color:#F6EEE1;
     border-top-right-radius:5px;
     border-top-left-radius:5px;
-);
 }
+
 .sp-view-hd {
 	float: left;
     height: 100%;
     line-height: 27px;
     background-color: #FFFFFF;
+    border-top-right-radius:5px;
+    border-top-left-radius:5px;
+}
+
+.pstat-view-hd {
+	float: left;
+    height: 100%;
+    line-height: 27px;
+    background-color:#F6EEE1;
     border-top-right-radius:5px;
     border-top-left-radius:5px;
 }
@@ -1248,7 +1267,7 @@ a.remove:hover {
     background: url("images/close-hover.png") no-repeat;
 }
 
-.right .content {
+.right div.content {
     float: left;
     height: auto;
     width: 100%;
@@ -1320,8 +1339,13 @@ ul.sprints li a {
 .clear {
     clear: both;
 }
+
 .sprint-detail {
     width: 98%;
+}
+
+.pstat-view {
+	width:98%;
 }
 
 

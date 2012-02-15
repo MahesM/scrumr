@@ -7,19 +7,10 @@
 <head>
 <title>Scrumr</title>
 <!-- Default Includes .. -->	
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery-1.7.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery-ui-1.8.16.custom.min.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/mwheelIntent.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jscrollpane.min.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/mousewheel.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/common-functions.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery.fancybox-1.3.4.js"></script>
-	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/jquery.fancybox-1.3.4.css" />
-	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/jquery-ui-1.8.16.custom.css" />
-	<link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/jscrollpane.css" />
-	<link rel="shortcut icon" type="image/x-icon" href="http://www.qontext.com/wp-content/themes/qontext-v1.5/qontext.ico">
-   <link href="<%= request.getContextPath() %>/themes/style.css" rel="stylesheet"/>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+<jsp:include page="header.jsp" />
+
 <script type="text/javascript">
 $(document).ready(function(){
 	 $('.bg-pat').css({'height': ($(window).height()) + 'px'});
@@ -28,18 +19,8 @@ $(document).ready(function(){
          $('.bg-pat').css({'height': (($(window).height()) - 40) + 'px'});
      }); 
      
- 	var username = '<s:property value="loggedInUser.username"/>';
-	var fullname = '<s:property value="loggedInUser.fullname"/>';
-	var displayname = '<s:property value="loggedInUser.displayname"/>';
-	var avatarurl = '<s:property value="loggedInUser.avatarurl"/>';
-	var emailid = '<s:property value="loggedInUser.emailid"/>';
-	var source = '<s:property value="source"/>';
-	var qontextHostUrl = '<s:property value="qontextHostUrl"/>';
-	var projListScroll = null;
-     if(username != null && username != ''){
-     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+qontextHostUrl+avatarurl+'"/><label class="float-lft loginLabel">Hi!, '+fullname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-     }
-     
+	 var projListScroll = null;
+    
      function days_between(date1, date2) {
  	    var ONE_DAY = 1000 * 60 * 60 * 24;
  	    var date1_ms = date1.getTime();
@@ -49,7 +30,7 @@ $(document).ready(function(){
  	}
      
 	var projAssignees = new Array();
-		projAssignees.push(username);
+		projAssignees.push(userLogged);
 	
 	 var dates = $( "#datepickerFrom, #datepickerTo" ).datepicker({
 		defaultDate: "+1w",
@@ -144,7 +125,7 @@ $(document).ready(function(){
 		var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
 		               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
 		$.ajax({
-			url: '/scrumr/api/v1/projects/user/'+username,
+			url: '/scrumr/api/v1/projects/user/'+userLogged,
 			type: 'GET',
 			async:false,
 			success: function( obj ) {
@@ -238,10 +219,10 @@ $(document).ready(function(){
 					} 
 			}
 			
-			if(username == "" || username == null){
+			if(userLogged == "" || userLogged == null){
 				return false;
 			}else{
-				var post_data1 = {'username':username,'displayname':'<s:property value="loggedInUser.displayname"/>','fullname':'<s:property value="loggedInUser.fullname"/>','emailid':'<s:property value="loggedInUser.emailid"/>','avatarurl':'<s:property value="loggedInUser.avatarurl"/>'};
+				var post_data1 = {'username':userLogged,'displayname':'<s:property value="loggedInUser.displayname"/>','fullname':'<s:property value="loggedInUser.fullname"/>','emailid':'<s:property value="loggedInUser.emailid"/>','avatarurl':'<s:property value="loggedInUser.avatarurl"/>'};
 				$.ajax({
 					url: '/scrumr/api/v1/users/create',
 					type: 'POST',
@@ -249,9 +230,9 @@ $(document).ready(function(){
 					async:false,
 					success: function( records ) {
 						var assignees = new Array();
-						assignees.push(username);
+						assignees.push(userLogged);
 						if(update == false){
-							var post_data = 'pTitle=' + title.val() + '&current_user='+username + '&pDescription=' + description.val() + '&assignees='
+							var post_data = 'pTitle=' + title.val() + '&current_user='+userLogged + '&pDescription=' + description.val() + '&assignees='
 								+ assignees + '&pStartDate=' + start_date.val() + '&pEndDate=' + end_date.val() +'&pSprintDuration=' +duration.val();
 							$.ajax({
 								url: '/scrumr/api/v1/projects/create',
@@ -268,7 +249,7 @@ $(document).ready(function(){
 								complete: function(data) { }
 							});
 						}else{
-							var post_data = 'pNo='+id.val()+'&pTitle=' + title.val() + '&current_user='+username + '&pDescription=' + description.val() + '&assignees='
+							var post_data = 'pNo='+id.val()+'&pTitle=' + title.val() + '&current_user='+userLogged + '&pDescription=' + description.val() + '&assignees='
 							+ assignees + '&pStartDate=' + start_date.val() + '&pEndDate=' + end_date.val() +'&pSprintDuration=' +duration.val();
 							$.ajax({
 								url: '/scrumr/api/v1/projects/update',
