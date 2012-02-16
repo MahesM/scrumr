@@ -108,7 +108,7 @@ $(document).ready(function() {
 	        					var story = stories[i];
 	        					creatorObj = userObject[story.creator];
 							var userObj = userObject[story.creator];
-	        					story_unassigned += '<li class="unassigned" id="st'+story.pkey+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+qontextHostUrl+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        					story_unassigned += '<li class="unassigned p'+story.priority+'" id="st'+story.pkey+'"><p>'+story.title+'</p><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 
 	        				}
 	        			}else{
@@ -183,33 +183,33 @@ $(document).ready(function() {
 		        		async:false,
 		        		success: function( sprints ) {
 		        			if(sprints.length > 0){
-		        				var duration = '<span></span>';
+		        				var duration = '';
 								if(sprints[0].project.start_date != null){
 									var startdate = new Date(sprints[0].project.start_date);
-									startdate = startdate.format("dd mmm yyyy");
+									startdate = startdate.format("mmm dd");
 									duration += startdate;
 								}else{
 									duration += 'No Start Date';
 								}
 								if(sprints[0].project.end_date != null){
 									var enddate = new Date(sprints[0].project.end_date);
-									enddate = enddate.format("dd mmm yyyy");
-									duration += '&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<span></span>'+ enddate;
+									enddate = enddate.format("mmm dd");
+									duration += '&nbsp;&nbsp;-&nbsp;&nbsp;'+ enddate;
 								}else{
 									duration += ' - No End Date';
 								}
 
-								var status = '<div class="project_count">Completed:<span id="project_finished" class="finished">0</span> <h3>Total: </h3><span id="project_total" class="total">0</span></div>';
+								var status = 'Completed:<span id="project_finished" class="finished">0</span> Total: <span id="project_total" class="total">0</span>';
 								$.ajax({
 					        		url: '/scrumr/api/v1/projects/storycount/'+projectId,
 					        		type: 'GET',
 					        		async:false,
 					        		success: function( result ) {
 					        			result = $.parseJSON(result);
-										status = '<div class="project_count"><h3><b>Stories </b>Completed: </h3><span id="project_finished" class="finished">'+result.result+'</span><h3>Total: </h3><span id="project_total" class="total">'+result.result+'</span></div>';
+										status = 'Stories Completed: <span id="project_finished" class="finished">'+result.result+'</span>Total: <span id="project_total" class="total">'+result.result+'</span>';
 					        		}
 								});
-								$('.duration-hd label').html(duration+'&nbsp;&nbsp;&nbsp;'+sprints[0].project.status+'&nbsp;&nbsp;&nbsp;'+status);
+								$('.duration-hd label').html(duration+'&nbsp;&nbsp; | <b>Sprint'+current_sprint+"</b> &nbsp;&nbsp;"+sprints[0].project.status+'&nbsp;&nbsp;|&nbsp;&nbsp;'+status+'&nbsp;&nbsp;| <a href="javascript:void(0);" class="new_sprint" >Add New Sprint</a>');
 								var finished = 0;
 				        		var sprint_html = '<ul id="holderforpage" class="col">';
 			        			$("ul.col li").css("width",100/sprints.length+'%');
@@ -238,9 +238,9 @@ $(document).ready(function() {
 															}
 															imageHTML+="<img height='26' width='26' class='' src='"+qontextHostUrl+""+story.assignees[j].avatarurl+"' title='"+story.assignees[j].fullname+"'>";
 														}
-							        					sprint_html +=  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+							        					sprint_html +=  '<li id="st'+story.pkey+'" class="p'+story.priority+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					}else{
-						        						sprint_html += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+qontextHostUrl+''+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+						        						sprint_html += '<li id="st'+story.pkey+'" class="p'+story.priority+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					} 
 						        				}
 					        					$(".viewStory, .moreStory").fancybox({
@@ -365,7 +365,7 @@ $(document).ready(function() {
 								imageHTML+="<img height='26' width='26' class='' id = '"+users[i].user.username+"' src='"+qontextHostUrl+''+users[i].user.avatarurl+"' title='"+users[i].user.fullname+"'>";
 							}
 						}else{
-							imageHTML+="<img height='26' width='26' class='' src='"+qontextHostUrl+''+creatorObj.avatarurl+"' title='"+creatorObj.fullname+"'><label class=''>Created by "+creatorObj.fullname+"</label>";
+							//imageHTML+="<img height='26' width='26' class='' src='"+qontextHostUrl+''+creatorObj.avatarurl+"' title='"+creatorObj.fullname+"'><label class=''>Created by "+creatorObj.fullname+"</label>";
 						}
 						$('li#st'+storyId).find('.img-cont').html(imageHTML);
 						viewStoryFancyBox();
@@ -490,23 +490,23 @@ $(document).ready(function() {
 			        		success: function( result ) {
 			        			result=result[0];
 			        			if(result != null){
-				        			var duration = '<span></span>';
+				        			var duration = '';
 		    						if(result.startdate != null){
 		    							var startdate = new Date(result.startdate);
-		    							startdate = startdate.format("dd mmm yyyy");
+		    							startdate = startdate.format("mmm dd");
 		    							duration += startdate;
 		    						}else{
 		    							duration += 'No Start Date';
 		    						}
 		    						if(result.enddate != null){
 		    							var enddate = new Date(result.enddate);
-		    							enddate = enddate.format("dd mmm yyyy");
-		    							duration += '&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<span></span>'+ enddate;
+		    							enddate = enddate.format("mmm dd");
+		    							duration += '&nbsp;&nbsp;-&nbsp;&nbsp;'+ enddate;
 		    						}else{
 		    							duration += ' - No End Date';
 		    						}
-		    						var status = '<div class="project_count"><h3><b>Stories </b>Completed: </h3><span id="sprint_finished" class="finished">0</span> <h3>Total: </h3><span id="sprint_total" class="total">0</span></div>';
-		    						$('.duration-hd label').html(sprintTitle+'&nbsp;&nbsp;&nbsp;'+duration+'&nbsp;&nbsp;&nbsp;'+result.status+'&nbsp;&nbsp;&nbsp;'+status);
+		    						var status = 'Stories Completed: <span id="sprint_finished" class="finished">0</span> Total: <span id="sprint_total" class="total">0</span>';
+		    						$('.duration-hd label').html('&nbsp;&nbsp;'+duration+'&nbsp;&nbsp; |'+sprintTitle+" "+result.status+'&nbsp;&nbsp; |&nbsp;&nbsp;'+status);
 		    						$('.duration-hd label').show();
 			        			}
 			        		},
@@ -550,9 +550,9 @@ $(document).ready(function() {
 																}
 																imageHTML+="<img height='26' width='26' class='' src='"+qontextHostUrl+""+users[j].user.avatarurl+"' title='"+users[j].user.fullName+"'>";
 															}
-								        					str =  '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+								        					str =  '<li id="st'+story.pkey+'" class="p'+story.priority+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 							        					}else{
-						        							str = '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"><img src="'+qontextHostUrl+''+creatorObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+						        							str = '<li id="st'+story.pkey+'" class="p'+story.priority+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 							        					}
 				        						}
 				        					});
@@ -614,7 +614,7 @@ $(document).ready(function() {
 			        		       			}
 			        		   				if($(ui.item[0]).closest('ul').attr('id') == 'notstarted'){
 			        		   					var success = updateStoryStatus(id.split("st")[1],"notstarted",sprint); 
-			        		   					$(ui.item[0]).find('.img-cont').html("<img src='"+qontextHostUrl+""+creatorObj.avatarurl+"' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.fullname+"</label>");
+			        		   					//$(ui.item[0]).find('.img-cont').html("<img src='"+qontextHostUrl+""+creatorObj.avatarurl+"' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.fullname+"</label>");
 			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   				}else if(($(ui.item[0]).closest('section').hasClass('left'))) {
 			        		   					var new_id = id.replace("st","");
@@ -701,10 +701,10 @@ $(document).ready(function() {
 			        		   				if($(ui.item[0]).closest('ul').attr('id') !="notstarted"){
 			        		   					if(projectStatus == "Finished" || projectStatus == "Not Started"){
 				        		   					$(ui.sender).sortable("cancel");
-				        		   					$('.error-hd').html("Stories cannot be moved when project is "+projectStatus);
-				        		   					$('.error-hd').slideDown("slow");
+				        		   					$('.error-hd a').before("Stories cannot be moved when project has "+projectStatus.toLowerCase());
+				        		   					$('.error-hd').fadeIn("slow");
 				        		   					 setTimeout(function(){
-				        		   						$('.error-hd').slideUp("slow");
+				        		   						$('.error-hd').fadeOut("slow");
 				        		   					},3000); 
 				        		   					
 				        		   				}
@@ -741,6 +741,10 @@ $(document).ready(function() {
 			        		complete: function(data) { }
 			        	});
 			}
+			
+			$('#error_hd_close').live("click",function(){
+				$('.error-hd').fadeOut("slow");
+			});
 			
 			function addtoCurrentSprint(storyList,sprint){
     			var post_data = 'projectId='+projectId+'&stories='+storyList+'&status=notstarted&sprint='+sprint;
@@ -1180,6 +1184,11 @@ $(document).ready(function() {
 				if($(el).closest('.popup-story-cont').length === 0){
 					$('.popup-story-cont').hide();
 				}
+				if($(el).closest('.custom-select').length === 0){
+					if($(this).find('ul.option-list').is(':visible')){
+						$(this).find('ul.option-list').hide();
+					}
+				}
 			});
 			
 			
@@ -1265,6 +1274,12 @@ $(document).ready(function() {
      	       	populateSprints();
 				$("#sprint-view").hide();
 				$("#project-view").show();
+				$('.projectView').css('color',"#00475C");
+		       	$('.projectView').parent().css('background-color',"#F6EEE1");
+				$(".sprintview").css('color',"gray");
+				$(".sprintview").parent().css('background-color',"#FFFFFF");
+				$(".projectstatview").css('color',"gray");
+				$(".projectstatview").parent().css('background-color',"#FFFFFF");
 				$(".sprintHead").hide();
 				$(".duration-hd").find('label').show();
 				$(".duration-hd").find('#pageCtrls').show();
@@ -1273,6 +1288,12 @@ $(document).ready(function() {
      	       	populateSprintStories(current_sprint);
 				$("#sprint-view").show();
 				$("#project-view").hide();
+				$('.sprintview').css('color',"#00475C");
+		       	$('.sprintview').parent().css('background-color',"#F6EEE1");
+				$(".projectview").css('color',"gray");
+				$(".projectview").parent().css('background-color',"#FFFFFF");
+				$(".projectstatview").css('color',"gray");
+				$(".projectstatview").parent().css('background-color',"#FFFFFF");
 				$(".sprintHead").show();
 				//$(".duration-hd").find('label').hide();
 				$(".duration-hd").find('#pageCtrls').hide();
@@ -1363,13 +1384,13 @@ $(document).ready(function() {
         		var description = $('textarea[name=storyDesc]');
         		if(!storyFormValid)
         			return;
-        		var priority = $('select[name=stPriority]');
+        		var priority = $('.custom-select .option .label').attr('data-value');
         		var sprint = $('select[name=stSprint]');
         		if(title.val()==""){
         			return;
         		}
         		var user = userLogged;
-        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority.val() + '&user=' +user + '&stSprint=' + sprint.val();
+        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority + '&user=' +user + '&stSprint=' + sprint.val();
         		$.ajax({
         			url: '/scrumr/api/v1/stories/create',
         			type: 'POST',
@@ -2091,7 +2112,7 @@ $(document).ready(function() {
          $('#addStory').live("click",function(){
         	 $('.popup-proj-cont').hide();
         	//populate story popup sprint select box
-				var optionsHtml = '<option selected="selected" value="0">No Sprint</option>';
+				var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
 	        	 for(var i=1;i<=totalsprints;i++){
 	        		 optionsHtml +='<option value="'+i+'">Sprint '+i+'</option>';
 	        	 }
@@ -2105,6 +2126,10 @@ $(document).ready(function() {
          }); 
          
          $('#popup_story_cancel').live("click",function(){
+        	 $('.story-popup').hide();
+         }); 
+         
+         $('#storyClose').live("click",function(){
         	 $('.story-popup').hide();
          }); 
          
@@ -2165,7 +2190,8 @@ $(document).ready(function() {
         	 $('#storyList ul.story').find('li').each(function(){
         		 $(this).show();
         		 for(var i=0;i<priorityDisabledObj.length;i++){
-        			 if($(this).find('p').attr('class') == priorityDisabledObj[i]){
+        			 var priorityClass = $(this).attr('class').split(' ').slice(-1)[0]; //get last class since the element has multiple class
+        			 if(priorityClass == priorityDisabledObj[i]){
         				 $(this).hide();
         			 }
         		 }
@@ -2176,6 +2202,21 @@ $(document).ready(function() {
          function populateProjectStatistics(){
         	 
          }
+         
+         $('.custom-select').bind('click',function(){
+             if($(this).find('ul.option-list').is(':visible')){
+            	 $(this).find('ul.option-list').slideUp();
+             }else{
+            	 $(this).find('ul.option-list').slideDown();
+             }
+             
+
+         }).delegate('ul.option-list li','click',function(){
+             var c = $(this).parents('.custom-select');
+             c.find('>.option').replaceWith($(this).html());
+             c.find('>ul.option-list').slideUp();
+             return false;
+         });
        
 
 });

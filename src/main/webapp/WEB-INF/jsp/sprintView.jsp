@@ -128,15 +128,18 @@
 	                	<div class="prj-view-hd"><label class="projectview">Project View</label></div>
 		                <div class="sp-view-hd"><label class="sprintview">Sprint View</label></div>
 		                <div class="pstat-view-hd"><label class="projectstatview">Project Statistics</label></div>
-		                 <a href="" class="customize float-rgt">Customize</a>
+		                <!-- <a href="" class="customize float-rgt">Customize</a> -->
+		                <div class="error-hd" style="display:none;">
+		                	<a id="error_hd_close" href="javascript:void(0)"></a>
+		                </div>
 	                </div>
 	                <div class="duration-hd">
 	                	<label style="display:none;"></label>
 	                	<ul class="sprints float-lft">
 	                	</ul> 
-	                	<div id="pageCtrls" style="display:none;float:right;width:auto;height:30px;"></div>
+	                	<div id="pageCtrls" style="display:none;float:right;width:200px;height:30px;"></div>
 	                </div>
-	                 <div class="error-hd" style="display:none;"></div>
+	                 
 	            </div>
                 <div id="project-view" style="overflow:hidden;" class="float-lft clear col-cont" >
                 </div>
@@ -175,7 +178,7 @@
     						<div class="acc-cont">
         						<div class="acc">
 	        						<div class="acc-head">
-	            						<label>Story details</label>
+	            						<label>Story Details</label>
 	            						<div class="down"></div>
 	        						</div>
 	        						<div id="story_details_section" class="acc-content">
@@ -335,13 +338,40 @@
 							<textarea required="required" id="storyDesc" style="resize:none;" maxlength="500" name="storyDesc" rows="5" cols="1" placeholder="Enter Story Desc"></textarea>
 						</div>
 						<label class="story_error"></label>
-						<div class="sPriority" >
+						
+						<div class="custom-select">
+					        <div class="option">
+					            <div class="color p1"></div>
+					            <div class="label" data-value="1">Priority 1</div>
+					        </div>
+					        <ul class="option-list">
+					            <li>
+					                <div class="option">
+					                    <div class="color p1"></div>
+					                    <div class="label" data-value="1">Priority 1</div>
+					                </div>
+					            </li>
+					            <li>
+					                <div class="option">
+					                    <div class="color p2"></div>
+					                    <div class="label" data-value="2">Priority 2</div>
+					                </div>
+					            </li>
+					            <li>
+					                <div class="option">
+					                    <div class="color p3"></div>
+					                    <div class="label" data-value="3">Priority 3</div>
+					                </div>
+					            </li>
+					        </ul>
+					    </div>
+						<%-- <div class="sPriority" >
 							<select name="stPriority" id="storyPriority">
 								<option selected="selected" value="1">Priority 1</option>
 								<option value="2">Priority 2</option>
 								<option value="3">Priority 3</option>							
 							</select>
-						</div>
+						</div> --%>
 						<div class="stSprint">
 							<select name="stSprint" id="storySprint">
 							</select>
@@ -350,11 +380,13 @@
 					</form>
                </div>
                  <div class="actions-cont">
-					   <input id="addAnotherStory" type="button" class="submit" value="Done and add another"/>
-                       <input id="createStory" type="button" class="submit" value="Done"/>
-                       <a id="popup_story_cancel">or, Skip</a>
-                   </div>
-               <div id="pointerEl" class="pointer"></div> </div>
+                 	<a id="popup_story_cancel">later</a>
+                 	<input id="createStory" type="button" class="submit" value="Done"/>
+					<input id="addAnotherStory" type="button" class="submit" value="Add another story"/>
+                </div>
+               <div id="pointerEl" class="pointer"></div> 
+               <div id="storyClose" class="story_close"></div> 
+           </div>
        </div>
     </section>
 </div>
