@@ -4,10 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.EnumType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.imaginea.scrumr.interfaces.IEntity;
@@ -15,10 +17,16 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "tasks")
+// TODO: for dynamic queries- either use criteria api, or just get the raw query from NamedQuery and
+// add the appropriate orderby clause
+// this is a quick way for reports
 @NamedQueries({
         @NamedQuery(name = "tasks.fetchTasksByStory", query = "SELECT instance from Task instance where instance.story.id=:storyid"),
         @NamedQuery(name = "tasks.fetchTasksByAssignee", query = "SELECT instance from Task instance where instance.user.id=:userid"),
-        @NamedQuery(name = "tasks.fetchTeamStatusBySprint", query = "SELECT tsk.user.displayname as displayname, sum(tsk.timeInDays) as total_tasks from Task tsk where tsk.story.project.id=:projectId and tsk.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) group by tsk.user.id") })
+        @NamedQuery(name = "tasks.fetchTeamStatusSummaryBySprint", query = "SELECT tsk.user.displayname as displayname, count(tsk) as total_tasks, sum(tsk.timeInDays) as total_tasks, tsk.status as status from Task tsk where tsk.story.project.id=:projectId and tsk.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) group by tsk.user.id"),
+        @NamedQuery(name = "tasks.fetchTeamStatusSummaryByProject", query = "SELECT tsk.user.displayname as displayname, count(tsk) as total_tasks, sum(tsk.timeInDays) as total_tasks, tsk.status as status from Task tsk where tsk.story.project.id=:projectId group by tsk.user.id"),
+        @NamedQuery(name = "tasks.fetchTeamStatusDetailsBySprint", query = "SELECT tsk from Task tsk where tsk.story.project.id=:projectId and tsk.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) order by tsk.user.id"),
+        @NamedQuery(name = "tasks.fetchTeamStatusDetailsByUser", query = "SELECT tsk from Task tsk where tsk.story.project.id=:projectId and tsk.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) and tsk.user.id=:userId") })
 @XmlRootElement
 public class Task extends AbstractEntity implements IEntity, Serializable {
 
@@ -33,7 +41,16 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
 
     private Story story;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
+
+    public enum TaskStatus {
+        CREATED, IN_PROGRESS, COMPLETED;
+    }
+
+    public Task() {
+        this.status = TaskStatus.CREATED;
+    }
 
     @ManyToOne
     public User getUser() {
@@ -103,6 +120,14 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
 
     public void setTimeInDays(int timeInDays) {
         this.timeInDays = timeInDays;
+    }
+
+    public TaskStatus getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
     }
 
 }
