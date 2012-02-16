@@ -3,6 +3,8 @@ package com.imaginea.scrumr.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +41,8 @@ public class StoryResource {
 
     @Autowired
     StatusManager statusManager;
+
+    private static final Logger logger = LoggerFactory.getLogger(StoryResource.class);
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public @ResponseBody
@@ -86,7 +90,7 @@ public class StoryResource {
     @RequestMapping(value = "/backlog/{id}", method = RequestMethod.GET)
     public @ResponseBody
     List<Story> fetchUnAssignedStories(@PathVariable("id") String id) {
-        System.out.println("UnAssigned Stories");
+        logger.debug("UnAssigned Stories");
         return storyManager.fetchUnAssignedStories(Integer.parseInt(id));
 
     }
@@ -98,7 +102,7 @@ public class StoryResource {
                                     @RequestParam String projectId, @RequestParam String stSprint) {
 
         Story story = new Story();
-        System.out.println("User :" + user);
+        logger.debug("User :" + user);
         try {
             story.setTitle(stTitle);
             story.setDescription(stDescription);
@@ -128,7 +132,7 @@ public class StoryResource {
             Story story = storyManager.readStory(Integer.parseInt(stories));
             Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(sprint));
             story.setSprint_id(toSprint);
-            System.out.println(toSprint);
+            logger.debug(toSprint.toString());
             story.setStatus(status);
             storyManager.updateStory(story);
         } catch (Exception e) {
@@ -142,7 +146,7 @@ public class StoryResource {
     String deleteStory(@PathVariable("id") String id) {
 
         Story story = storyManager.readStory(Integer.parseInt(id));
-        System.out.println("Title: " + story.getTitle());
+        logger.debug("Title: " + story.getTitle());
         storyManager.deleteStory(story);
         return "{\"result\":\"success\"}";
     }
@@ -151,7 +155,7 @@ public class StoryResource {
     public @ResponseBody
     String addUserToStory(@PathVariable("id") String id, @PathVariable("uid") String uid) {
 
-        User user = userServiceManager.readUser(id);
+        User user = userServiceManager.readUser(uid);
         Story story = storyManager.readStory(Integer.parseInt(id));
         story.addAssignees(user);
         storyManager.updateStory(story);
@@ -162,7 +166,7 @@ public class StoryResource {
     public @ResponseBody
     String removeUserFromStory(@RequestParam("id") String id, @RequestParam("uid") String uid) {
 
-        User user = userServiceManager.readUser(id);
+        User user = userServiceManager.readUser(uid);
         Story story = storyManager.readStory(Integer.parseInt(id));
         story.removeAssignees(user);
         storyManager.updateStory(story);
@@ -217,7 +221,7 @@ public class StoryResource {
             story_status.setUser(userServiceManager.readUser(userid));
             story_status.setStory(storyManager.readStory(Integer.parseInt(storyId)));
             story_status.setStage(stage);
-            System.out.println("Stage :" + stage + ", User :" + userid + ", story" + storyId);
+            logger.debug("Stage :" + stage + ", User :" + userid + ", story" + storyId);
             statusManager.createStatus(story_status);
         } catch (Exception e) {
             throw new Exception(e.toString());
@@ -260,7 +264,7 @@ public class StoryResource {
     @RequestMapping(value = "/clearstoryassignees", method = RequestMethod.POST)
     public @ResponseBody
     String removeUsersWithStage(@RequestParam String storyId, @RequestParam String stage) {
-        System.out.println("In Story Resource clear:story id =" + storyId + ", stage =" + stage);
+        logger.debug("In Story Resource clear:story id =" + storyId + ", stage =" + stage);
         statusManager.clearUsersByStage(Integer.parseInt(storyId), stage);
         return "{\"result\":\"success\"}";
     }
