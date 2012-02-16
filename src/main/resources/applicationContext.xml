@@ -1,46 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+
 	<import resource="applicationContext-security.xml" />
-	
+	<import resource="oauthprops.xml" />
+
 	<!-- Properties file place holder -->
-	
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
-                <value>classpath*:scrumr.properties</value>
+				<value>classpath*:scrumr.properties</value>
 			</list>
 		</property>
-        <property name="ignoreResourceNotFound" value="true" />
-        <property name="searchSystemEnvironment" value="true" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="searchSystemEnvironment" value="true" />
 	</bean>
 
 
 	<!-- Database Details -->
-	
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="${jdbc.driverClassName}" />
 		<property name="url" value="${jdbc.url}" />
 		<property name="username" value="${jdbc.username}" />
 		<property name="password" value="${jdbc.password}" />
 	</bean>
 
-	
-	<!-- JPA Beans Processor -->
-	
-	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 
-	
+	<!-- JPA Beans Processor -->
+
+	<bean
+		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+
+
 	<!-- Entity Manager -->
-	
-	<bean id="entityManagerFactory"	class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
@@ -50,141 +59,169 @@
 			</bean>
 		</property>
 		<property name="jpaPropertyMap">
-      		<map>
-		        <entry key="hibernate.c3p0.min_size" value="5"/>
-		        <entry key="hibernate.c3p0.max_size" value="20"/>
-		        <entry key="hibernate.c3p0.timeout" value="1800"/>
-		        <entry key="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-      		</map>
-    	</property>
-		
-        <property name="jpaDialect">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
-        </property>
+			<map>
+				<entry key="hibernate.c3p0.min_size" value="5" />
+				<entry key="hibernate.c3p0.max_size" value="20" />
+				<entry key="hibernate.c3p0.timeout" value="1800" />
+				<entry key="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+			</map>
+		</property>
+
+		<property name="jpaDialect">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+		</property>
 	</bean>
 
 	<!-- Transaction manager -->
-	
+
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<!-- Dao Beans -->
-	
+
 	<bean id="genericDao" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target"  ref="genericDaoImpl" />
-    </bean>
-    
-	<bean id="genericDaoImpl" class="com.imaginea.scrumr.daos.GenericJpaDao"/>
+		<property name="target" ref="genericDaoImpl" />
+	</bean>
+
+	<bean id="genericDaoImpl" class="com.imaginea.scrumr.daos.GenericJpaDao" />
 
 	<!-- Action Beans -->
-	
-	<bean id="genericActionSupport" class="com.imaginea.scrumr.controllers.GenericActionSupport" scope="prototype">
+
+	<bean id="genericActionSupport" class="com.imaginea.scrumr.controllers.GenericActionSupport"
+		scope="prototype">
 		<property name="userServiceManager" ref="userServiceManager" />
-	
+
 	</bean>
-	
-	<bean id="homeAction" class="com.imaginea.scrumr.controllers.HomeAction" scope="prototype" >
+
+	<bean id="homeAction" class="com.imaginea.scrumr.controllers.HomeAction"
+		scope="prototype">
 		<property name="userServiceManager" ref="userServiceManager" />
 		<property name="qontextHostUrl" value="${qontext.host}" />
 		<property name="redirectUrl" value="${qontext.auth}" />
 	</bean>
-	
 	<bean id="qontextHelper" class="com.imaginea.scrumr.qontextclient.QontextRestApiInvocationUtil" scope="session" >
 	<aop:scoped-proxy/>
 	</bean>
-	<bean id="qontextHelperUtil" class="com.imaginea.scrumr.utils.QontextHelperUtil" scope="prototype" >
+	<bean id="qontextHelperUtil" class="com.imaginea.scrumr.utils.QontextHelperUtil"
+		scope="prototype">
 		<property name="consumerKey" value="${qontext.consumerkey}" />
 		<property name="consumerSecret" value="${qontext.consumersecret}" />
 		<property name="qontextHostUrl" value="${qontext.host}" />
-		<property name="helper" ref="qontextHelper"/>
+		<property name="helper" ref="qontextHelper" />
 	</bean>
-	<bean id="sprintAction" class="com.imaginea.scrumr.controllers.SprintAction" scope="prototype" >
+	<bean id="sprintAction" class="com.imaginea.scrumr.controllers.SprintAction"
+		scope="prototype">
 		<property name="userServiceManager" ref="userServiceManager" />
 		<property name="qontextHostUrl" value="${qontext.host}" />
 		<property name="storyDescLimit" value="${story.descLimit}" />
 		<property name="storyTitleLimit" value="${story.titleLimit}" />
 	</bean>
-	
-	<bean id="projectAction" class="com.imaginea.scrumr.controllers.ProjectAction" scope="prototype" >
+
+	<bean id="projectAction" class="com.imaginea.scrumr.controllers.ProjectAction"
+		scope="prototype">
 		<property name="userServiceManager" ref="userServiceManager" />
-	
+
 	</bean>
-	
+
 	<!-- Quartz Scheduling Begins -->
-	
-	<bean id="sprintThread" class="com.imaginea.scrumr.jobs.SprintThread" >
+
+	<bean id="sprintThread" class="com.imaginea.scrumr.jobs.SprintThread">
 		<property name="projectManager" ref="projectManager" />
 		<property name="sprintManager" ref="sprintManager" />
 		<property name="storyManager" ref="storyManager" />
-	
+
 	</bean>
- 
-   <bean name="sprintUpdateJob"
-	class="org.springframework.scheduling.quartz.JobDetailBean">
- 
+
+	<bean name="sprintUpdateJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+
 		<property name="jobClass" value="com.imaginea.scrumr.jobs.SprintUpdateJob" />
- 
+
 		<property name="jobDataAsMap">
 			<map>
 				<entry key="sprintThread" value-ref="sprintThread" />
 			</map>
 		</property>
- 
+
 	</bean>
- 
+
 	<!-- Cron Trigger -->
-	<bean id="cronTrigger"
-		class="org.springframework.scheduling.quartz.CronTriggerBean">
- 
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+
 		<property name="jobDetail" ref="sprintUpdateJob" />
 		<property name="cronExpression" value="0 0 0 * * ?" />
- 
+
 	</bean>
- 
+
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="jobDetails">
 			<list>
-			<ref bean="sprintUpdateJob" />
+				<ref bean="sprintUpdateJob" />
 			</list>
 		</property>
- 
+
 		<property name="triggers">
 			<list>
-			<ref bean="cronTrigger" />
+				<ref bean="cronTrigger" />
 			</list>
 		</property>
 	</bean>
- 
+
 	<!-- Quartz Scheduling Ends -->
-	
+
 	<!-- Service Beans -->
-	
+
 	<bean id="projectManager" class="com.imaginea.scrumr.services.ProjectManagerImpl">
 		<property name="genericDao" ref="genericDao" />
 	</bean>
-	
+
 	<bean id="sprintManager" class="com.imaginea.scrumr.services.SprintManagerImpl">
 		<property name="genericDao" ref="genericDao" />
 	</bean>
-	
+
 	<bean id="commentManager" class="com.imaginea.scrumr.services.CommentManagerImpl">
 		<property name="genericDao" ref="genericDao" />
 	</bean>
-	
+
 	<bean id="storyManager" class="com.imaginea.scrumr.services.StoryManagerImpl">
 		<property name="genericDao" ref="genericDao" />
 	</bean>
-	
+
 	<bean id="taskManager" class="com.imaginea.scrumr.services.TaskManagerImpl">
 		<property name="genericDao" ref="genericDao" />
 	</bean>
-	
+
 	<bean id="statusManager" class="com.imaginea.scrumr.services.StatusManagerImpl">
 		<property name="genericDao" ref="genericDao" />
 	</bean>
-	
+
 	<!-- Service Beans Ends -->
-	
+	<!-- Social Oauth Beans -->
+	<bean id="socialAuthConfig" class="org.brickred.socialauth.SocialAuthConfig">
+		<property name="applicationProperties">
+			<ref bean="socialAuthProperties" />
+		</property>
+	</bean>
+
+	<bean id="socialAuthManager" class="org.brickred.socialauth.SocialAuthManager"
+		scope="session">
+		<property name="socialAuthConfig">
+			<ref bean="socialAuthConfig" />
+		</property>
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="socialAuthTemplate" class="org.brickred.socialauth.spring.bean.SocialAuthTemplate"
+		scope="session">
+		<aop:scoped-proxy />
+	</bean>
+
+	<bean id="socialAuthWebController"
+		class="org.brickred.socialauth.spring.controller.SocialAuthWebController">
+		<constructor-arg
+			value="http://opensource.brickred.com/socialauth.do" />
+		<constructor-arg value="authSuccess.do" />
+		<constructor-arg value="jsp/accessDenied.jsp" />
+	</bean>	
 </beans>
