@@ -15,13 +15,19 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "tasks")
-@NamedQueries({ @NamedQuery(name = "tasks.fetchTasksByStory", query = "SELECT instance from Task instance where instance.story.id=:storyid") })
+@NamedQueries({
+        @NamedQuery(name = "tasks.fetchTasksByStory", query = "SELECT instance from Task instance where instance.story.id=:storyid"),
+        @NamedQuery(name = "tasks.fetchTasksByAssignee", query = "SELECT instance from Task instance where instance.user.id=:userid"),
+        @NamedQuery(name = "tasks.fetchTeamStatusBySprint", query = "SELECT tsk.user.displayname as displayname, sum(tsk.timeInDays) as total_tasks from Task tsk where tsk.story.project.id=:projectId and tsk.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) group by tsk.user.id") })
 @XmlRootElement
 public class Task extends AbstractEntity implements IEntity, Serializable {
 
     private String content;
 
+    // TODO - get rid of this
     private String milestonePeriod;
+
+    private int timeInDays;
 
     private User user;
 
@@ -88,6 +94,15 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
      */
     public void setStory(Story story) {
         this.story = story;
+    }
+
+    @Column(name = "tdays")
+    public int getTimeInDays() {
+        return timeInDays;
+    }
+
+    public void setTimeInDays(int timeInDays) {
+        this.timeInDays = timeInDays;
     }
 
 }

@@ -20,33 +20,25 @@ public class TaskManagerImpl implements TaskManager {
     @Transactional
     public void createTask(Task task) {
         if (task != null) {
-
             genericDao.save(task);
-
         }
     }
 
     public Task readTask(Integer pkey) {
-
         return genericDao.find(Task.class, pkey);
-
     }
 
     @Transactional
     public void updateTask(Task task) {
         if (task != null) {
-
             genericDao.update(task);
-
         }
     }
 
     @Transactional
     public void deleteTask(Task task) {
         if (task != null) {
-
             genericDao.delete(task);
-
         }
     }
 
@@ -70,6 +62,14 @@ public class TaskManagerImpl implements TaskManager {
         return genericDao.getEntities(Task.class, "tasks.fetchTasksByStatus", ht);
     }
 
+    public List<Object> fetchTeamStatusBySprint(Integer projectId, Integer sprintId) {
+        String queryName = "tasks.fetchTeamStatusBySprint";
+        Hashtable<String, Object> criteria = new Hashtable<String, Object>();
+        criteria.put("projectId", projectId);
+        criteria.put("sprintId", sprintId);
+        return genericDao.getResults(queryName, criteria);
+    }
+
     /* Getters and Setters */
 
     public IDao<IEntity, Integer> getGenericDao() {
@@ -79,5 +79,4 @@ public class TaskManagerImpl implements TaskManager {
     public void setGenericDao(IDao<IEntity, Integer> genericDao) {
         this.genericDao = genericDao;
     }
-
 }

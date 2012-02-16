@@ -3,8 +3,6 @@ package com.imaginea.scrumr.resources;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.Path;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.imaginea.scrumr.entities.Comment;
 import com.imaginea.scrumr.entities.Task;
 import com.imaginea.scrumr.interfaces.StoryManager;
 import com.imaginea.scrumr.interfaces.TaskManager;
@@ -47,6 +44,13 @@ public class TaskResource {
     List<Task> fetchStoryTask(@PathVariable("id") String id) {
 
         return taskManager.fetchTasksByStory(Integer.parseInt(id));
+    }
+
+    @RequestMapping(value = "/teamStatusBySprint", method = RequestMethod.GET)
+    public @ResponseBody
+    List<Object> fetchTasksBySprint(@RequestParam String projectId, @RequestParam String sprintId) {
+        System.out.println("ProjectId:" + projectId + "  SprintId:" + sprintId);
+        return taskManager.fetchTeamStatusBySprint(Integer.parseInt(projectId), Integer.parseInt(sprintId));
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
