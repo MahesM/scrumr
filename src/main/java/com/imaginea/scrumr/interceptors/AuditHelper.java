@@ -2,21 +2,20 @@ package com.imaginea.scrumr.interceptors;
 
 import java.lang.reflect.Constructor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.imaginea.scrumr.entities.IAuditTrail;
 import com.imaginea.scrumr.entities.IAuditable;
 import com.imaginea.scrumr.interfaces.IDao;
 import com.imaginea.scrumr.interfaces.IEntity;
 
-public class AuditHelper {
 
-	public static final Logger LOGGER = Logger.getLogger(AuditHelper.class);
+public class AuditHelper {
+	
 
 	protected static AuditHelper theHelper = null;
-	private static Log log = null;
+	private static Logger log = LoggerFactory.getLogger(AuditHelper.class);
 	private IDao<IEntity, Integer> auditDao;
 
 	public IDao<IEntity, Integer> getAuditDao() {
@@ -35,7 +34,7 @@ public class AuditHelper {
 	}
 
 	public void doAudit(Object obj) throws Exception {
-		log = LogFactory.getLog(getClass());
+		
 		if (obj instanceof IAuditable) {
 			String objClass = obj.getClass().getSimpleName();
 			log.info("Entering full audit for Class: " + objClass);

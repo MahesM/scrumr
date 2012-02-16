@@ -3,7 +3,8 @@ package com.imaginea.scrumr.services;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imaginea.scrumr.entities.Task;
@@ -13,7 +14,7 @@ import com.imaginea.scrumr.interfaces.TaskManager;
 
 public class TaskManagerImpl implements TaskManager {
 
-    public static final Logger LOGGER = Logger.getLogger(TaskManagerImpl.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(TaskManagerImpl.class);
 
     private IDao<IEntity, Integer> genericDao;
 
