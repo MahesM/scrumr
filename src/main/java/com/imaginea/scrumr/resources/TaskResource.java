@@ -55,8 +55,9 @@ public class TaskResource {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public @ResponseBody
-    List<Task> createTask(@RequestParam String milestonePeriod, @RequestParam String user,
-                                    @RequestParam String content, @RequestParam String storyid) {
+    List<Task> createTask(@RequestParam String milestonePeriod, @RequestParam String timeInDays,
+                                    @RequestParam String user, @RequestParam String content,
+                                    @RequestParam String storyid) {
 
         Task task = new Task();
 
@@ -64,6 +65,7 @@ public class TaskResource {
 
             task.setContent(content);
             task.setMilestonePeriod(milestonePeriod);
+            task.setTimeInDays(Integer.parseInt(timeInDays));
             task.setUser(userServiceManager.readUser(user));
             task.setStory(storyManager.readStory(Integer.parseInt(storyid)));
             taskManager.createTask(task);
