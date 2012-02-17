@@ -113,24 +113,31 @@ public class TaskResource {
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
     public @ResponseBody
-    String updateStatus(@RequestParam String id, @RequestParam String content,
-                                    @RequestParam String status, @RequestParam String assigneeId) {
+    List<Task> updateStatus(@RequestParam String id, @RequestParam String content,
+                                    @RequestParam String status, @RequestParam String assigneeId,@RequestParam String timeInDays) {
         // TODO: need to take care of task content changes , user assignees
         // TODO: maintain the history - or even if we go github way, backend needs to handle it
+    	Task task = new Task();
+    	List<Task> result = new ArrayList<Task>();
         try {
-            Task task = taskManager.readTask(Integer.parseInt(id));
+            task = taskManager.readTask(Integer.parseInt(id));
             if (content != null)
                 task.setContent(content);
             if (status != null)
                 task.setStatus(TaskStatus.valueOf(status));
             if (assigneeId != null)
                 task.setUser(userServiceManager.readUser(assigneeId));
+            if(timeInDays !=null){
+            	task.setMilestonePeriod(timeInDays);
+            	task.setTimeInDays(Integer.parseInt(timeInDays));
+            }
             taskManager.updateTask(task);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return "{\"result\":\"failure\"}";
+            return result;
         }
-        return "{\"result\":\"success\"}";
+        result.add(task);
+        return result;
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
