@@ -82,7 +82,7 @@ public class TaskResource {
     public @ResponseBody
     List<Task> createTask(@RequestParam String milestonePeriod, @RequestParam String timeInDays,
                                     @RequestParam String user, @RequestParam String content,
-                                    @RequestParam String storyid) {
+                                    @RequestParam String assigneeId, @RequestParam String storyid) {
 
         Task task = new Task();
 
@@ -92,9 +92,11 @@ public class TaskResource {
             task.setContent(content);
             task.setCreatedBy(createdBy);
             task.setMilestonePeriod(milestonePeriod);
-            // task.setTimeInDays(Integer.parseInt(timeInDays));
-            // TODO: assign support to be added here
-            task.setUser(createdBy);
+            task.setTimeInDays(Integer.parseInt(timeInDays));
+            if (assigneeId != null) {
+                User assigneeUser = userServiceManager.readUser(assigneeId);
+                task.setUser(assigneeUser);
+            }
             // independent task support is ok
             if (storyid != null)
                 task.setStory(storyManager.readStory(Integer.parseInt(storyid)));
@@ -112,12 +114,14 @@ public class TaskResource {
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
     public @ResponseBody
-    String updateStatus(@RequestParam String id, @RequestParam String status,
-                                    @RequestParam String assigneeId) {
+    String updateStatus(@RequestParam String id, @RequestParam String content,
+                                    @RequestParam String status, @RequestParam String assigneeId) {
         // TODO: need to take care of task content changes , user assignees
         // TODO: maintain the history - or even if we go github way, backend needs to handle it
         try {
             Task task = taskManager.readTask(Integer.parseInt(id));
+            if (content != null)
+                task.setContent(content);
             if (status != null)
                 task.setStatus(TaskStatus.valueOf(status));
             if (assigneeId != null)
