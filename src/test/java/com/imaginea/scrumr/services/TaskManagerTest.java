@@ -13,7 +13,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.imaginea.scrumr.entities.Task;
 import com.imaginea.scrumr.entities.Task.TaskStatus;
+import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.TaskManager;
+import com.imaginea.scrumr.interfaces.UserServiceManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +27,9 @@ public class TaskManagerTest {
     @Autowired
     private TaskManager taskManager;
 
+    @Autowired
+    private UserServiceManager userServiceManager;
+
     private static final Logger logger = LoggerFactory.getLogger(TaskManagerTest.class);
 
     @Test
@@ -33,10 +39,24 @@ public class TaskManagerTest {
         String status = "IN_PROGRESS";
         Task task = taskManager.readTask(taskId);
         task.setStatus(TaskStatus.valueOf(status));
+        User createdBy = userServiceManager.readUser(1);
+        task.setCreatedBy(createdBy);
         taskManager.updateTask(task);
 
         Task updatedTask = taskManager.readTask(taskId);
         assertEquals(TaskStatus.IN_PROGRESS, updatedTask.getStatus());
+    }
+
+    @Test
+    public void testTaskCreate() {
+
+        Task task = new Task();
+        task.setContent("Test");
+        // task.setStatus(TaskStatus.valueOf(status));
+        User createdBy = userServiceManager.readUser(1);
+        task.setCreatedBy(createdBy);
+        taskManager.createTask(task);
+
     }
 
     @Test

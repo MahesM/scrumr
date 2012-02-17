@@ -1095,15 +1095,28 @@ div#projectList {
 }
 
 .user{
+	position:relative;
 	width:36px;
 	float:left;
 	margin:3px;
 }
 
+.user .img{
+	float:left;
+}
+
 .remvUser{
-	font-size:10px;
-	cursor:pointer;
-	color: #00475C;
+	background:url("images/remove-user.png") no-repeat transparent;
+	height:12px;
+	width:12px;
+	position:absolute;
+	top:0;
+	left:24px;
+}
+
+.opaque_user {
+	opacity:0.5;
+	border:1px solid black;
 }
 
 #story-cont label{
@@ -1115,13 +1128,13 @@ div#projectList {
 	float:left;
 }
 
-#story-cont p{
+/* #story-cont p{
 	font-size:11px;
 	width:auto;
 	display:block;
 	line-height: 15px;
 	padding:3px;
-}
+} */
 
 #story-cont img{
 	width:36px;
@@ -1130,8 +1143,10 @@ div#projectList {
 }
 
 .comment-cont{
-	background-color: #EDEFF4;
-	border:1px solid #D2D9E7;
+	background-color: #eceff4;
+	border:1px solid #d6d9de;
+	border-left:none;
+	border-right:none;
 	margin-top:5px;
 }
 .comment-cont ul{
@@ -1181,15 +1196,89 @@ div#projectList {
     height: 16px;
     margin: 3px;
     padding: 5px;
-    width: 80%;
+    width: 95%;
 }
 
 .todo-text{
    font-size: 14px;
     height: 16px;
-    margin: 3px;
     padding: 5px;
-    width: 80%;
+    width: 83%;
+}
+
+.todo-select{
+	margin-left:10px;
+	
+}
+
+.todo-text{
+	margin-left:10px;
+	
+}
+
+.todo-list{
+	list-style-type:none;
+	margin:10px;
+	border-bottom:1px solid #D6D9DE;
+	float:left;
+	width:98%;
+}
+
+.todo-img{
+	float:left;	
+}
+
+.todo-content  {
+	display: inline-block;
+	padding: 10px;
+	padding-top:0;
+	font-size:13px;
+	width:auto;
+	float:left;
+	margin-left:30px;
+	max-width:460px;
+	word-wrap:break-word;
+}
+
+.todo-content div {
+	clear:both;
+	margin:5px;
+}
+
+.todo-content .todo-status{
+	width:100px;
+	float:left;
+	height:auto;
+}
+
+.todo-content .todo-status .todo-status-text {
+	font-size:13px;
+}
+
+.todo-content .todo-status a{
+	background:url("images/down_arrow.gif");
+	height:7px;
+	width:13px;
+	
+}
+
+.todo-action{
+	float:right;
+	padding:10px;
+}
+
+.todo-action .ctremove{
+	background:url("images/delete.gif");
+	width:16px;
+	height:16px;
+	float:left;
+}
+
+.todo-action .ctedit{
+	background:url("images/edit.gif");
+	width:16px;
+	height:16px;
+	float:left;
 }
 
 #people-cont{
@@ -1220,7 +1309,7 @@ div#projectList {
 
 #userList-cont ul li{
 	background-color: #F2F4F8;
-    border-bottom: 1px solid #DDDDDD;
+    border-bottom: 1px solid #DDDDDD	;
     clear: both;
     display: block;
     float: left;
@@ -1571,23 +1660,23 @@ left: -5px;
 	padding: 5px;
 	font-size: 13px;
 	width: 125px;
-	background:url("images/selectbox_arrow.png") no-repeat 115px 7px transparent; 
+	background:url("images/selectbox_arrow.png") no-repeat 116px 7px transparent; 
 }
-.custom-select .option {
+.option {
     height: 20px;
     cursor: pointer;
 }
-.custom-select .option .label {
+ .option .label {
     height: 20px;
     line-height: 20px;
 }
-.custom-select .option .color {
+ .option .color {
     width: 16px;
     height: 16px;
     margin: 2px;
     margin-right:5px;
 }
-.custom-select .option > div {
+.option > div {
     float: left;
 }
 
@@ -1994,6 +2083,7 @@ border-top-right-radius: 4px;
     border-radius: 2px 2px 2px 2px;
     box-shadow: 0 0 5px #E2E9E2 inset;
     margin-top: 10px;
+    margin-left:0px;
     padding: 5px 5px 8px;
     width: 300px;
 }
@@ -2158,7 +2248,7 @@ ul.col li.pink .header span {
 .acc-head {
     float: left;
     height: auto;
-    width:560px;
+    width:630px;
     margin: 10px 20px;
     border-bottom: 1px solid #b8ceeb;
     padding-bottom: 10px;
@@ -2174,15 +2264,136 @@ ul.col li.pink .header span {
 .acc-content {
     float: left;
     height: 250px;
-    width:560px;
+    width:630px;
     margin: 10px 20px;
     border-bottom: 1px solid #b8ceeb;
     padding-bottom: 10px;
     margin-bottom: 0;
 }
 
+.acc-content .story_section{
+	float:left;
+	width:360px;
+	border:1px solid #d6d9de;
+	border-radius:4px;
+	 -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    background-color:#eceff4;
+    position:relative;
+}
+
+.acc-content .story_section input#st-edit-title {
+	border: 1px solid #C7D9C7;
+	border-radius: 2px 2px 2px 2px;
+	font-size: 12px;
+	padding: 5px 5px 8px;
+	width: 338px;
+	margin:5px;
+}
+
+.acc-content .story_section .custom-select{
+	 border: 1px solid #C7D9C7;
+	margin : 5px;
+	padding: 5px;
+	font-size: 13px;
+	width: 125px;
+	background:url("images/selectbox_arrow.png") no-repeat 116px 7px transparent; 
+}
+
+.acc-content .story_section .custom-select ul.option-list {
+    list-style: none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 132px;
+	left: 5px;
+	display: none;
+	border: 1px solid #C7D9C7;
+	min-width: 135px;
+	background-color:#fff;
+	z-index:100;
+}
+
+.acc-content .story_section select {
+	margin:5px;
+}
+
+.acc-content .story_section textarea{
+	background-color: white !important;
+	border: 1px solid #C7D9C7;
+	border-radius: 2px 2px 2px 2px;
+	box-shadow: 0 0 5px #E2E9E2 inset;
+	margin: 5px;
+	padding: 5px 5px 8px;
+	width: 338px;
+}
+
+.acc-content .story_section .st-edit-action{
+	float:right;
+	margin-right:10px;
+}
+
+.acc-content .story_section .st-edit-action a{
+	float:left;
+	font-size:13px;
+	margin:20px;
+}
+
+.acc-content .story_section p {
+	font-size: 13px;
+	width: auto;
+	display: block;
+	line-height: 20px;
+	padding: 8px;
+	color:#888;
+}
+
+.acc-content .story_section p#st-description {
+	min-height:60px;
+}
+
+.acc-content .story_section p#st-edit {
+	float:right;
+}
+
+.acc-content .story_creator_section{
+	float:right;
+	width:250px;
+}
+
+.acc-content .todo{
+	float:left;
+	width:620px;
+	height:100%;
+	border:1px solid #d6d9de;
+	border-radius:4px;
+	 -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+}
+
+.acc-content .comments{
+	float:left;
+	width:620px;
+	height:100%;
+	border:1px solid #d6d9de;
+	border-radius:4px;
+	 -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+}
+
+.todo-display{
+	height:160px;
+	width:620px;
+}
+
+.comments-display{
+	height:210px;
+	width:620px;
+}
+
 .acc-content p {
     color: #666;
+    border-bottom:1px solid #d6d9de;
 }
 
 .acc-content .div label {
@@ -2191,14 +2402,13 @@ ul.col li.pink .header span {
     font-size: 12px;
     width: 560px;
     float: left;
-    margin-bottom: 5px;
 }
 
 .acc-content .div {
     float: left;
     height: auto;
     width: 100%;
-    margin: 10px 0 5px 0;
+    margin: 0 0 5px 0;
 }
 
 .down {

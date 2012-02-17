@@ -18,6 +18,7 @@
    	String projectId = request.getParameter("projectId");
     String visit = request.getParameter("visit");
  %>
+
  <script type="text/javascript">
 	var data = '<s:property value="successResponse"/>';
 	var storyDescLimit =  '<s:property value="storyDescLimit"/>';
@@ -182,68 +183,115 @@
 	            						<div class="down"></div>
 	        						</div>
 	        						<div id="story_details_section" class="acc-content">
-	            						<p id="st-title"></p>
-							                <p id="st-description"></p>
-	            						<div class="div">
-	            							<label>Created by</label>
-	            							<div id="st-creator" style="clear:both;" class="user"></div>
-	           							</div>
-	            						<div class="div">
-	            							<label>Owned by</label>
-	            							<div id="st-assignees" style="clear:both;">
-					                       		
-					                       </div>
-					                       <span class="stAddmore" style="font-size:12px;cursor:pointer;">+Add People</span>
-	            						</div>
-	            						<div style="display:none;clear:both;" id="stPeople">
-					                       <label>People available:</label>
-					                       <div id="st-users">
-						                      
-						                   </div>
-						                </div>
+	        							<div id="story-section" class="story_section">
+	        								<p id="st-title"></p>
+	        								<p id="st-description"></p>
+	        								<p id="st-priority"></p>
+	        								<p id="st-sprint"></p>
+	        								<p id="st-edit"><a href="javascrip:void(0);" class="st_edit_story">Edit Story</a></p>
+	        							</div>
+	        							<div id="story-edit-section" style="display:none;" class="story_section">
+	        								<input type="text" id="st-edit-title" /><!-- <p id="st-title"></p> -->
+	        								<textarea style="resize:none;" name="st-edit-description"></textarea><!-- <p id="st-description"></p> -->
+	        								<div id="st-edit-priority" class="custom-select">
+										        <div class="option">
+										            <div class="color p1"></div>
+										            <div class="label" data-value="1">Priority 1</div>
+										        </div>
+										        <ul class="option-list">
+										            <li>
+										                <div class="option">
+										                    <div class="color p1"></div>
+										                    <div class="label" data-value="1">Priority 1</div>
+										                </div>
+										            </li>
+										            <li>
+										                <div class="option">
+										                    <div class="color p2"></div>
+										                    <div class="label" data-value="2">Priority 2</div>
+										                </div>
+										            </li>
+										            <li>
+										                <div class="option">
+										                    <div class="color p3"></div>
+										                    <div class="label" data-value="3">Priority 3</div>
+										                </div>
+										            </li>
+										        </ul>
+										    </div><!-- <p id="st-priority"></p> -->
+	        								<div class="stSprint">
+												<select name="st-edit-sprint" id="st-edit-sprint">
+												</select>
+											</div><!-- <p id="st-sprint"></p> -->
+	        								<div class="st-edit-action">
+	        									<a href="javascrip:void(0);" class="st_edit_cancel">Cancel</a>
+	        									<input id="st-edit-done" type="button" class="float-rgt submit" value="Done"/>
+	        								</div>
+	        							</div>
+	        							<div id="story-creator-section" class="story_creator_section">
+	        								<div class="div">
+	            								<label>Created On</label>
+	            								<div id="st-createdOn" style="clear:both;font-size:13px;" class=""></div>
+	           								</div>
+	        								<div class="div">
+	            								<label>Created By</label>
+	            								<div id="st-creator" style="clear:both;" class="user"></div>
+	           								</div>
+	            							<div class="div">
+	            								<label>Assigned to</label>
+	            								<div id="st-assignees" style="clear:both;"></div>
+					                        	<a class="stAddmore" style="font-size:13px;" href="javascript:void(0);">Add Members</a>
+	            							</div>
+	            							<div class="div" style="display:none;" id="stPeople">
+					                       		<div id="st-users"></div>
+						                	</div>
+	        							</div>
 	        						</div>
             					</div>
           						<div class="acc">
         							<div class="acc-head">
-            							<label>Todos</label>
+            							<label>To-dos</label>
 							            <div class="open"></div>
 							            <input type="hidden" id="todos-count" />
 							        </div>
 							        <div id="todo_section" class="acc-content" style="display:none">
-							            <div class="todo" class="float-lft">
-						                    <label>Todo List:</label>
+							            <div class="todo float-lft">
+							            	<div class="todo-display">
+						                 		<ul>
+						                	 		
+						                 		</ul>
+											</div>
 					                       	<div id="todo-box" class="comment-cont">
-					                       		<div class="todo-box-user float-lft">
-													<img src="themes/images/1.jpg"/>
-												</div>
 					  							<form id="todo-form"> 
 							                 	<textarea style="resize:none;" class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
-							                 	<select id="todo-milestones">							                 		
-							                 		<option value="1 Day" selected="selected">1 Day</option>
-							                 		<option value="2 Days">2 Days</option>
-							                 		<option value="3 Days">3 Days</option>
-							                 		<option value="4 Days">4 Days</option>
-							                 		<option value="5 Days">5 Days</option>
-							                 		<option value="6 Days">6 Days</option>
-							                 		<option value="7 Days">7 Days</option>
+							                 	<select id="todo-milestones" class="todo-select">							                 		
+							                 		<option value="1" selected="selected">1 Day MileStone Period</option>
+							                 		<option value="2">2 Days MileStone Period</option>
+							                 		<option value="3">3 Days MileStone Period</option>
+							                 		<option value="4">4 Days MileStone Period</option>
+							                 		<option value="5">5 Days MileStone Period</option>
+							                 		<option value="6">6 Days MileStone Period</option>
+							                 		<option value="7">7 Days MileStone Period</option>
 							                 	</select>
-							                 	<input class="submit" type="button" value="Done" />
+							                 	<select id="todo-user" class="todo-select">							                 		
+							                 	</select>
+							                 	<input class="submit" style="margin-left:125px;" type="button" value="Add" />
 							                 	</form>
-							                 	<div class="todo-display">
-							                 		<ul>
-							                	 		
-							                 		</ul>
-												</div>
-					<!--  		                 	<textarea class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
-							                 	<input type="hidden" id="todo-milestone-picker" /> -->
 					                       </div>
 					                                              
 						                </div>
 						            </div>
             					</div>
+            					<div class="acc">
+        							<div class="acc-head">
+            							<label>Discussions</label>
+							            <div class="open"></div>
+							        </div>
+							        <div id="discussion_section" class="acc-content" style="display:none"></div>
+            					</div>
          						<div class="acc">
         							<div class="acc-head">
-            							<label>History</label>
+            							<label>Story History</label>
 							            <div class="open"></div>
 							            <div id="history_section" class="acc-content" style="display:none"></div>
         							</div>
@@ -256,20 +304,14 @@
 							            <div class="open"></div>
         							</div>
         							<div id="comments_section" class="acc-content" style="display:none">
-	        							<div class="storyComments" class="float-lft">
-							                 <label>Comments:</label>
-							                 <div class="comment-cont">
-												<div class="comment-display">
+	        							<div class="comments float-lft">
+	        								<div class="comments-display">
 								                 <ul>
-
+	
 								                 </ul>
-												</div>
-								                 <div class="comment-box">
-													<div class="comment-box-user float-lft">
-														<img src="themes/images/1.jpg"/>
-													</div>
-								                 	<textarea style="resize:none;" class="comment-text" placeholder="Write a comment..." name="commment"></textarea>
-								                 </div>
+											</div>
+							                 <div id="comments-box" class="comment-cont">
+							                 	<textarea style="resize:none;" class="comment-text" placeholder="Write a comment..." name="commment"></textarea>
 							                 </div>
 							                </div>
 							            </div>
