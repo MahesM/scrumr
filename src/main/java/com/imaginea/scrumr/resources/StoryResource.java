@@ -132,10 +132,11 @@ public class StoryResource {
             Story story = storyManager.readStory(Integer.parseInt(stories));
             Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(sprint));
             story.setSprint_id(toSprint);
-            logger.debug(toSprint.toString());
+            //logger.debug(toSprint.toString());
             story.setStatus(status);
             storyManager.updateStory(story);
         } catch (Exception e) {
+            e.printStackTrace();
             return "{\"result\":\"failure\"}";
         }
         return "{\"result\":\"success\"}";
