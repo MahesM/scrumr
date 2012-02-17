@@ -18,6 +18,7 @@
    	String projectId = request.getParameter("projectId");
     String visit = request.getParameter("visit");
  %>
+
  <script type="text/javascript">
 	var data = '<s:property value="successResponse"/>';
 	var storyDescLimit =  '<s:property value="storyDescLimit"/>';
@@ -264,13 +265,13 @@
 					  							<form id="todo-form"> 
 							                 	<textarea style="resize:none;" class="todo-text" placeholder="Write a Todo..." name="todo"></textarea>
 							                 	<select id="todo-milestones" class="todo-select">							                 		
-							                 		<option value="1 Day" selected="selected">1 Day MileStone Period</option>
-							                 		<option value="2 Days">2 Days MileStone Period</option>
-							                 		<option value="3 Days">3 Days MileStone Period</option>
-							                 		<option value="4 Days">4 Days MileStone Period</option>
-							                 		<option value="5 Days">5 Days MileStone Period</option>
-							                 		<option value="6 Days">6 Days MileStone Period</option>
-							                 		<option value="7 Days">7 Days MileStone Period</option>
+							                 		<option value="1" selected="selected">1 Day MileStone Period</option>
+							                 		<option value="2">2 Days MileStone Period</option>
+							                 		<option value="3">3 Days MileStone Period</option>
+							                 		<option value="4">4 Days MileStone Period</option>
+							                 		<option value="5">5 Days MileStone Period</option>
+							                 		<option value="6">6 Days MileStone Period</option>
+							                 		<option value="7">7 Days MileStone Period</option>
 							                 	</select>
 							                 	<select id="todo-user" class="todo-select">							                 		
 							                 	</select>

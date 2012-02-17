@@ -1211,6 +1211,11 @@ div#projectList {
 	
 }
 
+.todo-text{
+	margin-left:10px;
+	
+}
+
 .todo-list{
 	list-style-type:none;
 	margin:10px;
@@ -1238,6 +1243,23 @@ div#projectList {
 .todo-content div {
 	clear:both;
 	margin:5px;
+}
+
+.todo-content .todo-status{
+	width:100px;
+	float:left;
+	height:auto;
+}
+
+.todo-content .todo-status .todo-status-text {
+	font-size:13px;
+}
+
+.todo-content .todo-status a{
+	background:url("images/down_arrow.gif");
+	height:7px;
+	width:13px;
+	
 }
 
 .todo-action{
@@ -2368,11 +2390,6 @@ ul.col li.pink .header span {
 	height:210px;
 	width:620px;
 }
-
-.todo-box select,textarea{
-	margin-left:10px;
-}
-
 
 .acc-content p {
     color: #666;

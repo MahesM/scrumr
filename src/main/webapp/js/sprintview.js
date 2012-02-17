@@ -614,7 +614,7 @@ $(document).ready(function() {
 			        		       			}
 			        		   				if($(ui.item[0]).closest('ul').attr('id') == 'notstarted'){
 			        		   					var success = updateStoryStatus(id.split("st")[1],"notstarted",sprint); 
-			        		   					//$(ui.item[0]).find('.img-cont').html("<img src='"+qontextHostUrl+""+creatorObj.avatarurl+"' width='26' height='26' class=''/><label class=''>Created by "+creatorObj.fullname+"</label>");
+			        		   					$(ui.item[0]).find('.img-cont').html("");
 			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
 			        		   				}else if(($(ui.item[0]).closest('section').hasClass('left'))) {
 			        		   					var new_id = id.replace("st","");
@@ -994,7 +994,7 @@ $(document).ready(function() {
 	        				$(".st_edit_story").attr('id',id);
 	        				var userObj = userObject[stories.creator];
 	        				
-	        				var createdDate = new Date(stories.creation_date);
+	        				var createdDate = new Date(stories.creationDate);
 	        				var createdOn = createdDate.format("mmm dd");
 	        				createdOn +=", "+createdDate.getHours()+":"+createdDate.getMinutes();
 	        				$("#st-creator").html('<img title="'+userObj.fullname+'" src="'+qontextHostUrl+''+userObj.avatarurl+'"/>');
@@ -1295,6 +1295,12 @@ $(document).ready(function() {
             //populateUserDetails();
             if(firstVisit){
             	populateUserDetails(userIndex,false);
+            	//populate story popup sprint select box
+				var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
+	        	 for(var i=1;i<=totalsprints;i++){
+	        		 optionsHtml +='<option value="'+i+'">Sprint '+i+'</option>';
+	        	 }
+	        	 $('.story-popup #storySprint').html(optionsHtml);
             }
             
 			
@@ -1671,11 +1677,17 @@ $(document).ready(function() {
 				 if($(".stAddmore").html() == "Add Members"){
 					$(".stAddmore").html("Hide Members");
 					$("#stPeople").show();
+					
 				}else{
 					$("#stPeople").hide();
 					$(".stAddmore").html("Add Members");
 				} 
-				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+				 var id=$('#st_edit_story').attr('id');
+				 if(storyDetailScroll[id+"detail"]){
+ 					var api = $('#story_details_section').data('jsp');
+ 					if(api)api.destroy();
+ 				}
+ 				storyDetailScroll[id+"detail"] = $('#story_details_section').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 			});
 			
 			function setStoryId (storyId){
@@ -2086,9 +2098,10 @@ $(document).ready(function() {
         	 var story_id = $("#current_story_id").val();	
         	 var todoText = $(".todo-text").val();                       	  	 
 			 var milestonePeriod = $("#todo-milestones").val();		
-			 if(todoText == "") return;   
+			 var taskUser = $("#todo-user").val();
+			 if(todoText == "" || taskUser == 0) return;   
 			 todoText = parsedString(todoText);
-             var post_data = '&content='+ todoText+'&storyid='+story_id+'&milestonePeriod='+milestonePeriod+'&user='+user;                     
+             var post_data = 'content='+ todoText+'&storyid='+story_id+'&timeInDays='+milestonePeriod+'&assigneeId='+taskUser+'&milestonePeriod='+milestonePeriod+'&user='+user;                     
              $.ajax({
       			url: '/scrumr/api/v1/todo/create',
       			type: 'POST',
@@ -2101,10 +2114,9 @@ $(document).ready(function() {
       				$('#todos-count').val(count);
       				$('#todo_section').prev().find('label').html('Todos ('+count+')');
       				$('.todo-text').val('');
-      				$('#todo-milestones').val('1 Day');		
-      				var todoHtml = '<li class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone">'+todo.milestonePeriod+' Milestone Period</div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
-      				//$('.todo-display ul').prepend('<li class="todo-list" style="width:100%";><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period :'+todo.milestonePeriod+'</div></div></li>');
-      				//$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+      				$('#todo-milestones').val('1');	
+      				$('#todo-user').val('0');	
+      				var todoHtml = '<li class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone">'+todo.milestonePeriod+' Milestone Period |</div><div class="todo-status"><label style="color:#1e9ce8;" class="todo-status-text">CREATED</label><a href="javascript:void(0);" ><a></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
       				$('.todo-text').focus(); 
       				if(storyDetailScroll[story_id+"todos"]){
 						var api = $('.todo-display').data('jsp');
@@ -2145,7 +2157,14 @@ $(document).ready(function() {
          	});
 
          function populateStoryTodos(){				
-				var id = $("#current_story_id").val();				
+				var id = $("#current_story_id").val();		
+				//populate user assignees drop down
+				var taskUserHtml = '<option value="0">--Assign User--</option>';
+				for(var i=0;i<users.length;i++){
+					taskUserHtml +='<option value="'+users[i].username+'">'+users[i].fullname+'</option>';
+				}
+				$('#todo-user').html(taskUserHtml);
+				var taskStatusColors = {'CREATED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
 				var todosHtml = '';								
 				$.ajax({
 					url : '/scrumr/api/v1/todo/story/'+id,
@@ -2158,7 +2177,7 @@ $(document).ready(function() {
 	        				if(todos.length > 0){
 		        				for (var i=0;i<todos.length;i++){
 		        					todo = todos[i];			        								        				    						        							        																						        	
-		        					todosHtml += '<li class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone">'+todo.milestonePeriod+' Milestone Period</div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
+		        					todosHtml += '<li class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone">'+todo.milestonePeriod+' Milestone Period |</div><div class="todo-status"><label style="color:'+taskStatusColors(todo.status)+';" class="todo-status-text">'+todo.status+'</label><a href="javascript:void(0);" ><a></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
 			        				}
 		        			}			        				        			        			
 						}else{
@@ -2185,13 +2204,6 @@ $(document).ready(function() {
          
          $('#addStory').live("click",function(){
         	 $('.popup-proj-cont').hide();
-        	//populate story popup sprint select box
-				var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
-	        	 for(var i=1;i<=totalsprints;i++){
-	        		 optionsHtml +='<option value="'+i+'">Sprint '+i+'</option>';
-	        	 }
-	        	 $('.story-popup #storySprint').html(optionsHtml);
-	        	 
         	 $('.story-popup').show();
          });
          
@@ -2303,8 +2315,8 @@ $(document).ready(function() {
 							stories = stories[0];
 							console.log(stories);
 							$('#st-edit-title').val(stories.title);
-							$('#st-edit-description').val(stories.description);
-							$('#st-edit-priority option').html('<div class="color p'+stories.priority+'"></div><div class="label" data-value="1">Priority '+stories.priority+'</div></div>');
+							$('textarea[name=st-edit-description]').val(stories.description);
+							$('#st-edit-priority option').html('<div class="color p'+stories.priority+'"></div><div class="label" data-value="'+stories.priority+'">Priority '+stories.priority+'</div></div>');
 				        	var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
 				            for(var i=1;i<=totalsprints;i++){
 				              if(i==stories.sprint_id.id){
@@ -2326,7 +2338,37 @@ $(document).ready(function() {
         	 $('#story-edit-section').hide();
          });
          
-         $('.st_edit_done').live("click",function(){
+         $('#st-edit-done').live("click",function(){
+        	var title = $('input#st-edit-title');
+     		var description = $('textarea[name=st-edit-description]');
+     		var priority = $('#st-edit-priority .option .label').attr('data-value');
+     		console.log($('#st-edit-priority .option .label').attr('data-value'));
+     		var sprint = $('select[name=st-edit-sprint]');
+     		if(title.val()==""){
+     			return;
+     		}
+     		var user = userLogged;
+     		var storyId = $('.st_edit_story').attr('id');
+        	 //call update story api
+        	 var post_data = 'storyId='+storyId+'&stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority + '&user=' +user + '&stSprint=' + sprint.val();
+     		$.ajax({
+     			url: '/scrumr/api/v1/stories/update',
+     			type: 'POST',
+     			data: post_data,
+     			async:false,
+     			success: function( result ) {
+     				populateUnassignedStories('');
+     				if(project_view ==1){
+     					populateSprints();
+     				}else{
+	        		   	 	populateSprintStories(current_sprint);
+     				}
+     		   	 	title.val('');
+     			},
+     			error: function(data) { },
+     			complete: function(data) { }
+     		});
+     		populateStoryAssignees(storyId);
         	 $('#story-section').show();
         	 $('#story-edit-section').hide();
          });
