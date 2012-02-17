@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Task;
 import com.imaginea.scrumr.entities.Task.TaskStatus;
+import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.StoryManager;
 import com.imaginea.scrumr.interfaces.TaskManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
@@ -87,11 +88,16 @@ public class TaskResource {
 
         try {
 
+            User createdBy = userServiceManager.readUser(user);
             task.setContent(content);
+            task.setCreatedBy(createdBy);
             task.setMilestonePeriod(milestonePeriod);
             // task.setTimeInDays(Integer.parseInt(timeInDays));
-            task.setUser(userServiceManager.readUser(user));
-            task.setStory(storyManager.readStory(Integer.parseInt(storyid)));
+            // TODO: assign support to be added here
+            task.setUser(createdBy);
+            // independent task support is ok
+            if (storyid != null)
+                task.setStory(storyManager.readStory(Integer.parseInt(storyid)));
             taskManager.createTask(task);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
