@@ -37,6 +37,8 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
 
     private int timeInDays;
 
+    private User createdBy;
+
     private User user;
 
     private Story story;
@@ -128,6 +130,15 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
 
     public void setStatus(TaskStatus status) {
         this.status = status;
+    }
+
+    @ManyToOne
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
 }
