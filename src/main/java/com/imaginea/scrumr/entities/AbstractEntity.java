@@ -11,56 +11,43 @@ import javax.persistence.Version;
 
 import com.imaginea.scrumr.interfaces.IEntity;
 
-
 @SuppressWarnings("serial")
 @MappedSuperclass
 public class AbstractEntity implements IEntity, Serializable {
-	
-	private Integer pkey;
-	
-	private Date createdOn;
-	private String created_By;
-		
-	private Long version;
-	
-	@Id
-	@GeneratedValue
-	@Column(name = "pkey")
-	public Integer getPkey() {
-		return pkey;
-	}
 
-	public void setPkey(Integer pkey) {
-		this.pkey = pkey;
-	}
+    private Integer pkey;
 
-	@Column(name = "created_on")
-	public Date getCreatedOn() {
-		return createdOn;
-	}
+    private Date createdOn;    
 
-	public void setCreatedOn(Date createdOn) {
-		this.createdOn = createdOn;
-	}
+    private Long version;
 
-	@Column(name = "created_by")
-	public String getCreated_By() {
-		return created_By;
-	}
+    @Id
+    @GeneratedValue
+    @Column(name = "pkey")
+    public Integer getPkey() {
+        return pkey;
+    }
 
-	public void setCreated_By(String createdBy) {
-		this.created_By = createdBy;
-	}
+    public void setPkey(Integer pkey) {
+        this.pkey = pkey;
+    }
 
-	@Version
-	@Column(name = "version")
-	public Long getVersion() {
-		return version;
-	}
+    @Column(name = "created_on")
+    public Date getCreatedOn() {
+        return createdOn;
+    }
 
-	public void setVersion(Long version) {
-		this.version = version;
-	}
-	
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
+    
+    @Version
+    @Column(name = "version")
+    public Long getVersion() {
+        return version;
+    }
 
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 }

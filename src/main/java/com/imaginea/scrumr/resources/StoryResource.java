@@ -110,11 +110,11 @@ public class StoryResource {
             story.setSprint_id(sprint);
             story.setPriority(Integer.parseInt(stPriority));
             story.setCreator(user);
-            story.setLast_updated(new java.sql.Date(System.currentTimeMillis()));
-            story.setLast_updatedby(user);
-            story.setCreation_date(new java.sql.Date(System.currentTimeMillis()));
+            story.setCreationDate(new java.sql.Date(System.currentTimeMillis()));
+            story.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
+            story.setLastUpdatedby(user);
             story.setStatus("notstarted");
-            story.setView_count(0);
+            story.setViewCount(0);
             story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
             storyManager.createStory(story);
         } catch (Exception e) {

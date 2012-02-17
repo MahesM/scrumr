@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Task;
 import com.imaginea.scrumr.entities.Task.TaskStatus;
+import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.StoryManager;
 import com.imaginea.scrumr.interfaces.TaskManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
@@ -81,17 +82,24 @@ public class TaskResource {
     public @ResponseBody
     List<Task> createTask(@RequestParam String milestonePeriod, @RequestParam String timeInDays,
                                     @RequestParam String user, @RequestParam String content,
-                                    @RequestParam String storyid) {
+                                    @RequestParam String assigneeId, @RequestParam String storyid) {
 
         Task task = new Task();
 
         try {
 
+            User createdBy = userServiceManager.readUser(user);
             task.setContent(content);
+            task.setCreatedBy(createdBy);
             task.setMilestonePeriod(milestonePeriod);
-            // task.setTimeInDays(Integer.parseInt(timeInDays));
-            task.setUser(userServiceManager.readUser(user));
-            task.setStory(storyManager.readStory(Integer.parseInt(storyid)));
+            task.setTimeInDays(Integer.parseInt(timeInDays));
+            if (assigneeId != null) {
+                User assigneeUser = userServiceManager.readUser(assigneeId);
+                task.setUser(assigneeUser);
+            }
+            // independent task support is ok
+            if (storyid != null)
+                task.setStory(storyManager.readStory(Integer.parseInt(storyid)));
             taskManager.createTask(task);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -106,12 +114,14 @@ public class TaskResource {
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
     public @ResponseBody
-    String updateStatus(@RequestParam String id, @RequestParam String status,
-                                    @RequestParam String assigneeId) {
+    String updateStatus(@RequestParam String id, @RequestParam String content,
+                                    @RequestParam String status, @RequestParam String assigneeId) {
         // TODO: need to take care of task content changes , user assignees
         // TODO: maintain the history - or even if we go github way, backend needs to handle it
         try {
             Task task = taskManager.readTask(Integer.parseInt(id));
+            if (content != null)
+                task.setContent(content);
             if (status != null)
                 task.setStatus(TaskStatus.valueOf(status));
             if (assigneeId != null)
