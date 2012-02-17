@@ -85,12 +85,13 @@ public class TaskResource {
                                     @RequestParam String assigneeId, @RequestParam String storyid) {
 
         Task task = new Task();
-
+        List<Task> result = new ArrayList<Task>();
         try {
 
             User createdBy = userServiceManager.readUser(user);
             task.setContent(content);
-            task.setCreatedBy(createdBy);
+            if (createdBy != null)
+                task.setCreatedByUser(createdBy);
             task.setMilestonePeriod(milestonePeriod);
             task.setTimeInDays(Integer.parseInt(timeInDays));
             if (assigneeId != null) {
@@ -103,10 +104,8 @@ public class TaskResource {
             taskManager.createTask(task);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return null;
+            return result;
         }
-
-        List<Task> result = new ArrayList<Task>();
         result.add(task);
         return result;
 

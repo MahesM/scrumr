@@ -8,6 +8,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.EnumType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -37,7 +38,7 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
 
     private int timeInDays;
 
-    private User createdBy;
+    private User createdByUser;
 
     private User user;
 
@@ -132,13 +133,13 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
         this.status = status;
     }
 
-    @ManyToOne
-    public User getCreatedBy() {
-        return createdBy;
+    @OneToOne
+    public User getCreatedByUser() {
+        return createdByUser;
     }
 
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
+    public void setCreatedByUser(User createdByUser) {
+        this.createdByUser = createdByUser;
     }
 
 }
