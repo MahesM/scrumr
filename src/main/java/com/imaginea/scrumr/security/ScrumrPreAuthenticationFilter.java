@@ -2,43 +2,31 @@ package com.imaginea.scrumr.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.AuthenticationDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.utils.QontextHelperUtil;
 
 public class ScrumrPreAuthenticationFilter extends
 AbstractPreAuthenticatedProcessingFilter {
 
-	private static final Logger logger = Logger.getLogger(ScrumrPreAuthenticationFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ScrumrPreAuthenticationFilter.class);
 	private AuthenticationManager authenticationManager;
 	private AbstractAuthenticationFactory abstractAuthenticationFactory;
 	private AuthenticationSource authenticationSource;
@@ -102,7 +90,6 @@ AbstractPreAuthenticatedProcessingFilter {
 					User user = authenticationSource.doAuthentication((HttpServletRequest)request, (HttpServletResponse)response);
 					
 					if (user != null) {
-						
 						if(SecurityContextHolder.getContext().getAuthentication()!=null )
 							authResult = SecurityContextHolder.getContext().getAuthentication();
 						if (authResult == null)
