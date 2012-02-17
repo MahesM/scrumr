@@ -75,7 +75,11 @@ public class GoogleAuthenticationInstance implements AuthenticationSource{
 					user.setUsername(userDetails.getString("id"));
 					user.setFullname(userDetails.getString("name"));
 					user.setEmailid(userDetails.getString("email"));
-					user.setAvatarurl(userDetails.getString("picture"));
+					if(userDetails.has("picture")){
+						user.setAvatarurl(userDetails.getString("picture"));
+					}else{
+						user.setAvatarurl(request.getContextPath()+"/themes/images/default.png");
+					}
 					request.getSession().setAttribute("source", "google");
 					
 					// Refresh a token (SHOULD ONLY BE DONE WHEN ACCESS TOKEN EXPIRES)

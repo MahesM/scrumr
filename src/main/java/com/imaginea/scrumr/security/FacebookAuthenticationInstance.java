@@ -53,22 +53,26 @@ public class FacebookAuthenticationInstance implements AuthenticationSource{
 		try{
 			if(SecurityContextHolder.getContext().getAuthentication() == null )
 			{
-				if(request.getParameter("code") == null){
-					String url = hostUrl+"?client_id="+consumerKey+"&redirect_uri="+CALLBACK_URL+"&scope="+SCOPE;
-					respose.sendRedirect(url);
-					return null;
+				if(request.getParameter("error_reason") != null){
+					System.out.println("Error: "+request.getParameter("error_description"));
 				}else{
-					if(helper.hasRequiredParameters(request)){
-						helper.initialize(request, consumerKey, consumerSecret, graphUrl, CALLBACK_URL);
+					if(request.getParameter("code") == null){
+						String url = hostUrl+"?client_id="+consumerKey+"&redirect_uri="+CALLBACK_URL+"&scope="+SCOPE;
+						respose.sendRedirect(url);
+						return null;
+					}else{
+						if(helper.hasRequiredParameters(request)){
+							helper.initialize(request, consumerKey, consumerSecret, graphUrl, CALLBACK_URL);
+						}
+						JSONObject userDetails = helper.getBasicProfile();
+						user = new User();
+						user.setDisplayname(userDetails.getString("first_name"));
+						user.setUsername(userDetails.getString("id"));
+						user.setFullname(userDetails.getString("name"));
+						user.setEmailid(userDetails.getString("email"));
+						user.setAvatarurl("/"+userDetails.getString("id")+"/picture");
+						request.getSession().setAttribute("source", "facebook");
 					}
-					JSONObject userDetails = helper.getBasicProfile();
-					user = new User();
-					user.setDisplayname(userDetails.getString("first_name"));
-					user.setUsername(userDetails.getString("username"));
-					user.setFullname(userDetails.getString("name"));
-					user.setEmailid(userDetails.getString("email"));
-					user.setAvatarurl("/"+userDetails.getString("username")+"/picture");
-					request.getSession().setAttribute("source", "facebook");
 				}
 			}else{
 				user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
