@@ -1,5 +1,6 @@
 package com.imaginea.scrumr.services;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.imaginea.scrumr.entities.Task;
 import com.imaginea.scrumr.entities.Task.TaskStatus;
 import com.imaginea.scrumr.entities.User;
+import com.imaginea.scrumr.interfaces.StoryManager;
 import com.imaginea.scrumr.interfaces.TaskManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
 
@@ -29,6 +31,9 @@ public class TaskManagerTest {
 
     @Autowired
     private UserServiceManager userServiceManager;
+
+    @Autowired
+    private StoryManager storyManager;
 
     private static final Logger logger = LoggerFactory.getLogger(TaskManagerTest.class);
 
@@ -50,12 +55,37 @@ public class TaskManagerTest {
     @Test
     public void testTaskCreate() {
 
+        String storyId = "1";
+        String username = "201008025088";
+        String assignee = null;
+        String timeInDays = "1";
+        String milestonePeriod = "1";
+        // fetch the task count and compare in the end of it succeeds- no method currently to get
+        // the count or taskId
         Task task = new Task();
-        task.setContent("Test");
-        // task.setStatus(TaskStatus.valueOf(status));
-        User createdBy = userServiceManager.readUser(1);
-        task.setCreatedByUser(createdBy);
-        taskManager.createTask(task);
+        List<Task> result = new ArrayList<Task>();
+        try {
+
+            User createdBy = userServiceManager.readUser(username);
+            task.setContent("teste");
+            task.setCreatedByUser(createdBy);
+            // if(milestonePeriod != null)
+            task.setMilestonePeriod(milestonePeriod);
+            // if(timeInDays != null)
+            task.setTimeInDays(Integer.parseInt(timeInDays));
+
+            User assigneeUser = userServiceManager.readUser(assignee);
+            if (assigneeUser != null)
+                task.setUser(assigneeUser);
+
+            // independent task support is ok
+            if (storyId != null)
+                task.setStory(storyManager.readStory(Integer.parseInt(storyId)));
+            taskManager.createTask(task);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // return result;
+        }
 
     }
 

@@ -275,7 +275,7 @@
 							                 	</select>
 							                 	<select id="todo-user" class="todo-select">							                 		
 							                 	</select>
-							                 	<input class="submit" style="margin-left:125px;" type="button" value="Add" />
+							                 	<input id="tAdd" class="submit" style="margin-left:125px;" type="button" value="Add" />
 							                 	</form>
 					                       </div>
 					                                              
