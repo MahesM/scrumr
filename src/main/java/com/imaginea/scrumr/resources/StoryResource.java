@@ -123,6 +123,37 @@ public class StoryResource {
         return "{\"result\":\"success\"}";
     }
 
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public @ResponseBody
+    String updateStory(@RequestParam String id, @RequestParam String stTitle,
+                                    @RequestParam String stDescription,
+                                    @RequestParam String stPriority, @RequestParam String user,
+                                    @RequestParam String projectId, @RequestParam String stSprint) {
+
+        try {
+            Story story = storyManager.readStory(Integer.parseInt(id));
+            if (stTitle != null)
+                story.setTitle(stTitle);
+            if (stDescription != null)
+                story.setDescription(stDescription);
+
+            if (stPriority != null)
+                story.setPriority(Integer.parseInt(stPriority));
+
+            // story.setCreator(user);
+            // story.setCreationDate(new java.sql.Date(System.currentTimeMillis()));
+            story.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
+            story.setLastUpdatedby(user);
+            // story.setStatus("notstarted");
+            // story.setViewCount(0);
+            // story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
+            storyManager.updateStory(story);
+        } catch (Exception e) {
+            return "{\"result\":\"failure\"}";
+        }
+        return "{\"result\":\"success\"}";
+    }
+
     @RequestMapping(value = "/addtosprint", method = RequestMethod.POST)
     public @ResponseBody
     String addStoryToSprint(@RequestParam String sprint, @RequestParam String stories,
@@ -132,7 +163,7 @@ public class StoryResource {
             Story story = storyManager.readStory(Integer.parseInt(stories));
             Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(sprint));
             story.setSprint_id(toSprint);
-            //logger.debug(toSprint.toString());
+            // logger.debug(toSprint.toString());
             story.setStatus(status);
             storyManager.updateStory(story);
         } catch (Exception e) {
