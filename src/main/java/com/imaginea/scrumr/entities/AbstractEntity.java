@@ -17,9 +17,7 @@ public class AbstractEntity implements IEntity, Serializable {
 
     private Integer pkey;
 
-    private Date createdOn;
-
-    private User createdBy;
+    private Date createdOn;    
 
     private Long version;
 
@@ -42,16 +40,7 @@ public class AbstractEntity implements IEntity, Serializable {
     public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
     }
-
-    @Column(name = "created_by")
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
+    
     @Version
     @Column(name = "version")
     public Long getVersion() {
@@ -61,5 +50,4 @@ public class AbstractEntity implements IEntity, Serializable {
     public void setVersion(Long version) {
         this.version = version;
     }
-
 }
