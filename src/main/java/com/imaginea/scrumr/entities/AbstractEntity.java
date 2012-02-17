@@ -19,7 +19,7 @@ public class AbstractEntity implements IEntity, Serializable {
 
     private Date createdOn;
 
-    private String created_By;
+    private User createdBy;
 
     private Long version;
 
@@ -44,12 +44,12 @@ public class AbstractEntity implements IEntity, Serializable {
     }
 
     @Column(name = "created_by")
-    public String getCreated_By() {
-        return created_By;
+    public User getCreatedBy() {
+        return createdBy;
     }
 
-    public void setCreated_By(String createdBy) {
-        this.created_By = createdBy;
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
     @Version
