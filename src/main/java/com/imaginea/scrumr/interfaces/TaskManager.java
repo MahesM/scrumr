@@ -18,5 +18,24 @@ public interface TaskManager {
 
     List<Task> fetchTasksByStatus(String status);
 
-    List<Object> fetchTeamStatusBySprint(Integer projectId, Integer sprintId);
+    /**
+     * fetchTaskStatusSummary
+     * 
+     * @param projectId
+     * @param sprintId
+     * @return
+     */
+    List<Object> fetchTaskStatusSummary(Integer projectId, Integer sprintId);
+
+    /**
+     * fetchTaskStatusDetails, returns details of a task for a specific project if provided,
+     * specific sprint if provided, and specific user if provided. If one or more are provided, the
+     * appropriate tasks for those combinations are returned
+     * 
+     * @param projectId
+     * @param sprintId
+     * @param userId
+     * @return
+     */
+    List<Task> fetchTaskStatusDetails(Integer projectId, Integer sprintId, Integer userId);
 }

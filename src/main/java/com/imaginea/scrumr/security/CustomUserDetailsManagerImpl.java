@@ -3,7 +3,6 @@ package com.imaginea.scrumr.security;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,8 +15,6 @@ import com.imaginea.scrumr.interfaces.IEntity;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
 
 public class CustomUserDetailsManagerImpl implements UserServiceManager {
-	
-	public static final Logger LOGGER = Logger.getLogger(CustomUserDetailsManagerImpl.class);
 	
 	private IDao<IEntity, Integer> genericDao;
 	
