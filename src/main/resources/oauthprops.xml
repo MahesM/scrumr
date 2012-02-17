@@ -13,6 +13,8 @@
     	<!-- TODO -change this to scrumr domain keys -->
         <prop key="www.google.com.consumer_key">opensource.brickred.com</prop>
         <prop key="www.google.com.consumer_secret">YC06FqhmCLWvtBg/O4W/aJfj</prop>
+        <prop key="graph.facebook.com.consumer_key">152190004803645</prop>
+        <prop key="graph.facebook.com.consumer_secret">64c94bd02180b0ade85889b44b2ba7c4</prop>
         
     </util:properties>
 </beans>

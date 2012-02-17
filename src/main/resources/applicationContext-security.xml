@@ -35,7 +35,7 @@
 	</beans:bean>
 	
 	<beans:bean id="scrumrPreAuthenticationFilter" class="com.imaginea.scrumr.security.ScrumrPreAuthenticationFilter">
-		<beans:property name="qontextUtil" ref="qontextHelperUtil" />
+		<beans:property name="abstractAuthenticationFactory" ref="abstractAuthenticationFactory"/>
 	</beans:bean> 
 	
   	<!-- authentication manager -->

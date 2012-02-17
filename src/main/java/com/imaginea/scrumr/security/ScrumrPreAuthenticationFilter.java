@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
@@ -28,20 +30,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.utils.QontextHelperUtil;
 
 public class ScrumrPreAuthenticationFilter extends
-		AbstractPreAuthenticatedProcessingFilter {
+AbstractPreAuthenticatedProcessingFilter {
 
 	private static final Logger logger = Logger.getLogger(ScrumrPreAuthenticationFilter.class);
 	private AuthenticationManager authenticationManager;
-	private AuthenticationDetailsSource authenticationDetailsSource = new WebAuthenticationDetailsSource();
+	private AbstractAuthenticationFactory abstractAuthenticationFactory;
+	private AuthenticationSource authenticationSource;
 	private String exceptionUrlPattern;
-	private String adminTokenName = "auth_tkt";
-	private String adminUserName = "realuser";
-	private QontextHelperUtil qontextUtil;
 	public String getExceptionUrlPattern() {
 		return exceptionUrlPattern;
 	}
@@ -94,59 +95,45 @@ public class ScrumrPreAuthenticationFilter extends
 		if (!requiresAuthentication((HttpServletRequest) request)) {
 			chain.doFilter(request, response);
 		} else {
-			/*
-			 * if(SecurityContextHolder.getContext().getAuthentication() ==
-			 * null) {
-			 */HttpServletRequest servletRequest = (HttpServletRequest) request;
-			String adminToken = "admin";
-			User user = qontextUtil.doQontextAuthentication((HttpServletRequest)request, (HttpServletResponse)response);
-			/*Cookie[] c = servletRequest.getCookies();
-			if (c != null)
-				for (Cookie cookie : c) {
-					if (cookie.getName().equals(adminTokenName)) {
-						adminToken = cookie.getValue();
+			if(SecurityContextHolder.getContext().getAuthentication() == null ){
+				try {
+					HttpServletRequest servletRequest = (HttpServletRequest) request;
+					authenticationSource = abstractAuthenticationFactory.getInstance(servletRequest);
+					User user = authenticationSource.doAuthentication((HttpServletRequest)request, (HttpServletResponse)response);
+					
+					if (user != null) {
+						
+						if(SecurityContextHolder.getContext().getAuthentication()!=null )
+							authResult = SecurityContextHolder.getContext().getAuthentication();
+						if (authResult == null)
+							authResult = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<GrantedAuthority>());
+						successfulAuthentication((HttpServletRequest) request,
+								(HttpServletResponse) response, authResult);
+					} else if (user == null && SecurityContextHolder.getContext().getAuthentication() != null) {
+						chain.doFilter((HttpServletRequest)request, (HttpServletResponse)response);
 					}
-					if (cookie.getName().equals(adminUserName))
-						username = cookie.getValue();
-				}*/
-			if (adminToken != null && user != null) {
-
-				/*
-				 * if(SecurityContextHolder.getContext().getAuthentication()!=null
-				 * ) authResult =
-				 * (AuthToken)SecurityContextHolder.getContext().getAuthentication
-				 * ();
-				 */if (authResult == null)
-					authResult = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<GrantedAuthority>());
-				successfulAuthentication((HttpServletRequest) request,
-						(HttpServletResponse) response, authResult);
-			} else if (adminToken == null
-					&& SecurityContextHolder.getContext().getAuthentication() != null) {
-				chain.doFilter((HttpServletRequest)request, (HttpServletResponse)response);
-			}
-
-			
-			try {
-				chain.doFilter(request, response);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ServletException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+					
+					chain.doFilter(request, response);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ServletException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e){
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	private boolean requiresAuthentication(HttpServletRequest request) {
 
-		/*if (request.getRequestURI().contains(
-				exceptionUrlPattern.substring(exceptionUrlPattern.length() - 4,
-						exceptionUrlPattern.length()))) {
+		if(SecurityContextHolder.getContext().getAuthentication() == null) {
 			return true;
-		} else
-			return false;*/
-		return true;
+		}else{
+			return false;
+		}
 	}
 
 	public AuthenticationManager getAuthenticationManager() {
@@ -162,21 +149,13 @@ public class ScrumrPreAuthenticationFilter extends
 	public void afterPropertiesSet() {
 	}
 
-	public String getAdminTokenName() {
-		return adminTokenName;
+	public AbstractAuthenticationFactory getAbstractAuthenticationFactory() {
+		return abstractAuthenticationFactory;
 	}
 
-	public void setAdminTokenName(String adminTokenName) {
-		this.adminTokenName = adminTokenName;
+	public void setAbstractAuthenticationFactory(AbstractAuthenticationFactory abstractAuthenticationFactory) {
+		this.abstractAuthenticationFactory = abstractAuthenticationFactory;
 	}
 
-	public QontextHelperUtil getQontextUtil() {
-		return qontextUtil;
-	}
 
-	public void setQontextUtil(QontextHelperUtil qontextUtil) {
-		this.qontextUtil = qontextUtil;
-	}
-
-	
 }

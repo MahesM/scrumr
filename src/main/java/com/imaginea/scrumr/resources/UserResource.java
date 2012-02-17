@@ -3,8 +3,10 @@ package com.imaginea.scrumr.resources;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 
+import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,8 @@ import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.StoryManager;
 import com.imaginea.scrumr.interfaces.TaskManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
+import com.imaginea.scrumr.security.AbstractAuthenticationFactory;
+import com.imaginea.scrumr.security.AuthenticationSource;
 import com.imaginea.scrumr.utils.QontextHelperUtil;
 
 @Controller
@@ -40,7 +44,12 @@ public class UserResource {
 	TaskManager taskManager;
 	
 	@Autowired
-	QontextHelperUtil helperUtil;
+	AbstractAuthenticationFactory abstractAuthenticationFactory;
+	
+	AuthenticationSource authenticationSource;
+	
+	@Autowired
+	HttpServletRequest request;
 
 	@RequestMapping(value="/{id}", method = RequestMethod.GET)
 	public @ResponseBody User fetchUser(@PathVariable("id") String id) {
@@ -64,11 +73,8 @@ public class UserResource {
 	) {
 
 		List<User> users = null;
-		if(source.equalsIgnoreCase("QONTEXT")){
-			helperUtil.populateQontextUsers(Integer.parseInt(index), Integer.parseInt(count));
-		}else{
-			users = userServiceManager.fetchAllUsers();
-		}
+		authenticationSource = abstractAuthenticationFactory.getInstance(request);
+		authenticationSource.getFriends(Integer.parseInt(index), Integer.parseInt(count));
 		return users;
 	}
 	
@@ -78,15 +84,17 @@ public class UserResource {
 			@RequestParam String count		
 	) {
 
-		String str = helperUtil.populateQontextUsers(Integer.parseInt(index), Integer.parseInt(count));
+		authenticationSource = abstractAuthenticationFactory.getInstance(request);
+		String str = authenticationSource.getFriends(Integer.parseInt(index), Integer.parseInt(count));
 		System.out.println("Output: "+str);
 		return str;
 	}
 
 	@RequestMapping(value="/searchqontext", method = RequestMethod.POST)
 	public @ResponseBody String searchUsers (@RequestParam String sortType, @RequestParam boolean showTotalCount,@RequestParam int startIndex,@RequestParam int count){
-		String userList = null;		
-		userList = helperUtil.searchUser(sortType, showTotalCount, startIndex, count);
+		String userList = null;
+		authenticationSource = abstractAuthenticationFactory.getInstance(request);
+		userList = authenticationSource.searchFriends(sortType, showTotalCount, startIndex, count);
 		System.out.println("Users List Arun:"+userList);
 		return userList;
 		

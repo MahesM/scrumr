@@ -59,11 +59,15 @@
 		</action>
 
 		<action name="auth" class="homeAction" method="prepareAuthHome">
+			<result name="error">/WEB-INF/jsp/auth.jsp</result>
 			<result name="success">/WEB-INF/jsp/login.jsp</result>
-			<result name="error">/WEB-INF/jsp/userlogin.jsp</result>
 		</action>
 		
 		<action name="home" class="homeAction" method="prepareAuthHome">
+			<result name="success">/WEB-INF/jsp/login.jsp</result>
+		</action>
+		
+		<action name="auth_f" class="homeAction" method="prepareFaceBookHome">
 			<result name="success">/WEB-INF/jsp/login.jsp</result>
 		</action>
 		

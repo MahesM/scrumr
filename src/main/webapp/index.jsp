@@ -1,6 +1,7 @@
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 
+<% response.sendRedirect("login.action"); %>
 
 <!DOCTYPE HTML>
 <html>
@@ -20,7 +21,7 @@
           </a>
         </td>
         <td>
-          <a href="https://pramati.staging.qontext.com/portal/external/_CheenaiScrum1">
+          <a href="https://pramati.staging.qontext.com/portal/external/_local_scrum">
             <img src="images/qontext_icon.jpg" alt="Qontext" title="Qontext" border="0"/>
           </a>
         </td>

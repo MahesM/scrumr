@@ -101,16 +101,42 @@
 		<property name="qontextHostUrl" value="${qontext.host}" />
 		<property name="redirectUrl" value="${qontext.auth}" />
 	</bean>
+	
 	<bean id="qontextHelper" class="com.imaginea.scrumr.qontextclient.QontextRestApiInvocationUtil" scope="session" >
 	<aop:scoped-proxy/>
 	</bean>
-	<bean id="qontextHelperUtil" class="com.imaginea.scrumr.utils.QontextHelperUtil"
+	
+	<bean id="facebookHelper" class="com.imaginea.scrumr.security.FacebookInvocationHelper" scope="session" >
+	<aop:scoped-proxy/>
+	</bean>
+	
+	<bean id="abstractAuthenticationFactory" class="com.imaginea.scrumr.security.AbstractAuthenticationFactoryImpl" scope="session" >
+	<aop:scoped-proxy/>
+	</bean>
+	
+	<bean id="qontextAuthentication" name="qontext" class="com.imaginea.scrumr.security.QontextAuthenticationInstance"
 		scope="prototype">
 		<property name="consumerKey" value="${qontext.consumerkey}" />
 		<property name="consumerSecret" value="${qontext.consumersecret}" />
-		<property name="qontextHostUrl" value="${qontext.host}" />
+		<property name="hostUrl" value="${qontext.host}" />
 		<property name="helper" ref="qontextHelper" />
 	</bean>
+	
+	<bean id="facebookAuthentication" name="facebook" class="com.imaginea.scrumr.security.FacebookAuthenticationInstance"
+		scope="prototype">
+		<property name="consumerKey" value="${facebook.consumerkey}" />
+		<property name="consumerSecret" value="${facebook.consumersecret}" />
+		<property name="hostUrl" value="${facebook.host}" />
+		<property name="helper" ref="facebookHelper" />
+	</bean>
+	
+	<bean id="googleAuthentication" name="google" class="com.imaginea.scrumr.security.GoogleAuthenticationInstance"
+		scope="prototype">
+		<property name="consumerKey" value="${google.consumerkey}" />
+		<property name="consumerSecret" value="${google.consumersecret}" />
+		<property name="hostUrl" value="${google.host}" />
+	</bean>
+	
 	<bean id="sprintAction" class="com.imaginea.scrumr.controllers.SprintAction"
 		scope="prototype">
 		<property name="userServiceManager" ref="userServiceManager" />
@@ -197,6 +223,7 @@
 	</bean>
 
 	<!-- Service Beans Ends -->
+	
 	<!-- Social Oauth Beans -->
 	<bean id="socialAuthConfig" class="org.brickred.socialauth.SocialAuthConfig">
 		<property name="applicationProperties">
@@ -220,8 +247,8 @@
 	<bean id="socialAuthWebController"
 		class="org.brickred.socialauth.spring.controller.SocialAuthWebController">
 		<constructor-arg
-			value="http://opensource.brickred.com/socialauth.do" />
-		<constructor-arg value="authSuccess.do" />
-		<constructor-arg value="jsp/accessDenied.jsp" />
+			value="/socialauth.do" />
+		<constructor-arg value="auth_f.action" />
+		<constructor-arg value="/WEB-INF/jsp/error.jsp" />
 	</bean>	
 </beans>
