@@ -144,6 +144,8 @@ public class StoryResource {
             // story.setCreationDate(new java.sql.Date(System.currentTimeMillis()));
             story.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
             story.setLastUpdatedby(user);
+            Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(stSprint));
+            story.setSprint_id(toSprint);
             // story.setStatus("notstarted");
             // story.setViewCount(0);
             // story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
