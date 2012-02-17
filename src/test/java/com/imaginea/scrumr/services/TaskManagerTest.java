@@ -40,7 +40,7 @@ public class TaskManagerTest {
         Task task = taskManager.readTask(taskId);
         task.setStatus(TaskStatus.valueOf(status));
         User createdBy = userServiceManager.readUser(1);
-        task.setCreatedBy(createdBy);
+        task.setCreatedByUser(createdBy);
         taskManager.updateTask(task);
 
         Task updatedTask = taskManager.readTask(taskId);
@@ -54,7 +54,7 @@ public class TaskManagerTest {
         task.setContent("Test");
         // task.setStatus(TaskStatus.valueOf(status));
         User createdBy = userServiceManager.readUser(1);
-        task.setCreatedBy(createdBy);
+        task.setCreatedByUser(createdBy);
         taskManager.createTask(task);
 
     }
