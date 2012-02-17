@@ -413,7 +413,7 @@ $(document).ready(function() {
 	                		//alert($(this).attr('orig').context['offsetParent']['id']);	                		
 	                	}
 	                	refreshStoryPortlet(storyId, stageId, creatorObj);
-	                	$(".stAddmore").html("+Add People");
+	                	$(".stAddmore").html("Add Members");
 	                   })
 
 	        	}); 
@@ -981,10 +981,24 @@ $(document).ready(function() {
 	        			if(stories != null && stories.length > 0){
 							stories = stories[0];
 	        				$("#st-title").html(stories.title);
-	        				$("#st-title").css("font-weight","bold");
 	        				$("#st-description").html(stories.description);
+	        				var stpriority = "<div class='option'><div class='color p"+stories.priority+"'></div><div class=label data-value=1>Priority "+stories.priority+"</div></div>";
+	        				$("#st-priority").html(stpriority);
+	        				var stsprint = "";
+	        				if(stories.sprint_id == null){
+	        					stsprint = "Added to Project Backlog";
+	        				}else{
+	        					stsprint = "Sprint "+stories.sprint_id.id;
+	        				}
+	        				$("#st-sprint").html(stsprint);
+	        				$(".st_edit_story").attr('id',id);
 	        				var userObj = userObject[stories.creator];
+	        				
+	        				var createdDate = new Date(stories.creation_date);
+	        				var createdOn = createdDate.format("mmm dd");
+	        				createdOn +=", "+createdDate.getHours()+":"+createdDate.getMinutes();
 	        				$("#st-creator").html('<img title="'+userObj.fullname+'" src="'+qontextHostUrl+''+userObj.avatarurl+'"/>');
+	        				$("#st-createdOn").html(createdOn);
 	        				var assign = '';
 	        				var post_data="storyId="+id+"&stage="+stories.status;
 	        				$.ajax({
@@ -996,7 +1010,7 @@ $(document).ready(function() {
 	    	        				if(users.length > 0){
 	    	        					for(var i=0;i < users.length; i++){
 	    	        						userObj = userObject[users[i].user.username];
-	    	        						assign += '<div class="user"><img class="remove-user" alt="'+userObj.username+'" title="'+userObj.fullname+'" src="'+qontextHostUrl+''+userObj.avatarurl+'"/><span class="remvUser" >Remove</span></div>';
+	    	        						assign += '<div class="user"><img class="remove-user" alt="'+userObj.username+'" title="'+userObj.fullname+'" src="'+qontextHostUrl+''+userObj.avatarurl+'"/><span style="display:none;" class="remvUser" ></span></div>';
 	    	        					}
 	    	        				}else{
 	    	        					assign = "<label style=\"margin:5px;\">No user assgined</labal>";
@@ -1006,6 +1020,13 @@ $(document).ready(function() {
 
 	        				
 	        				$("#st-assignees").html(assign);
+	        				$("#st-assignees div.user").hover(function(){
+	        					$(this).find('img').addClass('opaque_user');
+	        					$(this).find('.remvUser').show();
+	        				},function(){
+	        					$(this).find('img').removeClass('opaque_user');
+	        					$(this).find('.remvUser').hide();
+	        				});
 	        				if(stories.status !== "notstarted" && stories.status !=="Not Started"){
 	        					$('.stAddmore').show();
 	        				}else{
@@ -1022,6 +1043,11 @@ $(document).ready(function() {
 	        					people = "<label style=\"margin:5px;\">No people in the project</labal>";
 	        				}
 	        				$("#st-users").html(people);
+	        				if(storyDetailScroll[id+"detail"]){
+	        					var api = $('#story_details_section').data('jsp');
+	        					if(api)api.destroy();
+	        				}
+	        				storyDetailScroll[id+"detail"] = $('#story_details_section').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 	        			}
 	        			
 	        		},
@@ -1029,6 +1055,14 @@ $(document).ready(function() {
 	        		complete: function(data) { }
 	        	});
 			}
+			
+			/*$('div.user').hover(function(){
+				$(this).addClass('opaque_user');
+				$(this).find('.remvUser').show();
+			},function(){
+				$(this).removeClass('opaque_user');
+				$(this).find('.remvUser').hide();
+			});*/
 			
 			$('ul#proj-user-list li').live("click",function(){
 				if($(this).hasClass("selected")){
@@ -1634,12 +1668,12 @@ $(document).ready(function() {
         	
         	
 			$(".stAddmore").live('click', function(){
-				 if($(".stAddmore").html() == "+Add People"){
-					$(".stAddmore").html("Hide");
+				 if($(".stAddmore").html() == "Add Members"){
+					$(".stAddmore").html("Hide Members");
 					$("#stPeople").show();
 				}else{
 					$("#stPeople").hide();
-					$(".stAddmore").html("+Add People");
+					$(".stAddmore").html("Add Members");
 				} 
 				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 			});
@@ -1728,7 +1762,7 @@ $(document).ready(function() {
 				$("#project-view").hide();
 				$("#pstat-view").show();
 				$(".sprintHead").css('display','none !important');
-				$(".duration-hd").find('label').show();
+				$(".duration-hd").find('label').hide();
 				$(".duration-hd").find('#pageCtrls').hide();
 				$(".duration-hd").find('ul').hide();
 				populateProjectStatistics();
@@ -1894,7 +1928,7 @@ $(document).ready(function() {
 			function populateStoryComments(){
 				var loggedDate='';
 				var id = $("#current_story_id").val();	
-				var commentsHtml = '<div>';								
+				var commentsHtml = '';								
 				$.ajax({
 					url : '/scrumr/api/v1/comments/story/'+id,
 					type : 'GET',
@@ -1910,15 +1944,26 @@ $(document).ready(function() {
 			        				var newDate = new Date(comment.logDate);
 			        				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();				        				    				
 			        				//alert($.datepicker.parseDate('MM d,yy',new Date(parseInt(comment.logDate))));			        																						        		
-			        				commentsHtml += '<li class="comment-list" style="width:100%;"><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+qontextHostUrl+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>';				        						        	
+			        				//commentsHtml += '<li class="comment-list" style="width:100%;"><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+qontextHostUrl+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>';
+			        				commentsHtml += '<li class="todo-list"><div class="todo-img"><img class="todo-user" title="'+comment.user.fullname+'" src="'+qontextHostUrl+comment.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+comment.content+'</div></div><div class="todo-action"><a id=cdelete'+comment.pkey+' class="cmtRmvComment ctremove" href="javascript:void(0)"></a></div></li>';
 			        				}
-		        				commentsHtml += '</div>';
 		        			}			        				        			        			
 						}else{
-								commentsHtml += '</div>';
+								commentsHtml += 'No Comments for this story';
 							}
 						
-						$(".comment-display ul").html(commentsHtml);
+						$(".comments-display").find("ul").html(commentsHtml);
+						var sectionVisible = false;
+						if($('#comments_section').is(':visible')){
+							sectionVisible = true;
+						}
+						if(!sectionVisible)$('#comments_section').show();
+						if(storyDetailScroll[id+"comments"]){
+							var api = $('.comments-display').data('jsp');
+							if(api)api.destroy();
+						}
+						storyDetailScroll[id+"comments"] = $('.comments-display').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+						if(!sectionVisible)$('#comments_section').hide();
 						//$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;																
 					},
 					error : function(data){},
@@ -1927,7 +1972,7 @@ $(document).ready(function() {
 			}					
         	
         	$(".cmtRmvComment").live('click',function(){        		
-            	var commentID = $(this).attr("id");
+            	var commentID = $(this).attr("id").split("cdelete")[1];
             	deleteStoryComment(commentID);
             	populateStoryComments();
             	});
@@ -2010,10 +2055,20 @@ $(document).ready(function() {
                   			
               				$('.comment-text').val('');							            				             			
               				var newDate = new Date(comment.logDate);
-              				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();              				         				              			
-              				$('.comment-display ul').append('<li class="comment-list" style="width:100%";><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+qontextHostUrl+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>');
-              				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-              				$('.comment-text').focus(); 				              				                 
+              				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();
+              				var commentHtml = '<li class="todo-list"><div class="todo-img"><img class="todo-user" title="'+comment.user.fullname+'" src="'+qontextHostUrl+comment.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+comment.content+'</div></div><div class="todo-action"><a id=cdelete'+comment.pkey+' class="cmtRmvComment ctremove" href="javascript:void(0)"></a></div></li>';
+              				$('.comment-text').focus(); 				
+              				if(storyDetailScroll[story_id+"comments"]){
+    							var api = $('.comments-display').data('jsp');
+    							if(api){
+    								api.getContentPane().find('ul').append(commentHtml);
+    								api.reinitialise();
+    							}
+    						}else{
+    							$('.comments-display ul').append(commentHtml);
+    							storyDetailScroll[id+"comments"] = $('.comments-display').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+    						}
+    						
               			},
               			error: function(data) { },
              			complete: function(data) { }            		
@@ -2046,10 +2101,21 @@ $(document).ready(function() {
       				$('#todos-count').val(count);
       				$('#todo_section').prev().find('label').html('Todos ('+count+')');
       				$('.todo-text').val('');
-      				$('#todo-milestones').val('1 Day');							            				             			      				              				         				              			
-      				$('.todo-display ul').prepend('<li class="todo-list" style="width:100%";><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period :'+todo.milestonePeriod+'</div></div></li>');
-      				$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-      				$('.todo-text').focus();         				              				                 
+      				$('#todo-milestones').val('1 Day');		
+      				var todoHtml = '<li class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone">'+todo.milestonePeriod+' Milestone Period</div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
+      				//$('.todo-display ul').prepend('<li class="todo-list" style="width:100%";><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period :'+todo.milestonePeriod+'</div></div></li>');
+      				//$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+      				$('.todo-text').focus(); 
+      				if(storyDetailScroll[story_id+"todos"]){
+						var api = $('.todo-display').data('jsp');
+						if(api){
+							api.getContentPane().find('ul').append(todoHtml);
+							api.reinitialise();
+						}
+					}else{
+						$('.todo-display ul').append(todoHtml);
+						storyDetailScroll[id+"todos"] = $('.todo-display').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+					}
       			},
       			error: function(data) { },
      			complete: function(data) { }            		
@@ -2073,14 +2139,14 @@ $(document).ready(function() {
          }
 
          $(".cmtRmvTodo").live('click',function(){        		
-         	var todoID = $(this).attr("id");
+         	var todoID = $(this).attr("id").split("tdelete")[1];
          	deleteStoryTodo(todoID);
          	populateStoryTodos();
          	});
 
          function populateStoryTodos(){				
 				var id = $("#current_story_id").val();				
-				var todosHtml = '<div>';								
+				var todosHtml = '';								
 				$.ajax({
 					url : '/scrumr/api/v1/todo/story/'+id,
 					type : 'GET',
@@ -2090,19 +2156,27 @@ $(document).ready(function() {
 							$('#todo_section').prev().find('label').html('Todos ('+todos.length+')');	
 							$('#todos-count').val(todos.length);
 	        				if(todos.length > 0){
-		        				todosHtml += '<ul style="list-style:none;">';
 		        				for (var i=0;i<todos.length;i++){
 		        					todo = todos[i];			        								        				    						        							        																						        	
-			        				todosHtml += '<li class="todo-list" style="width:100%;"><a id='+todo.pkey+' class="cmtRmvTodo remove" href="javascript:void(0);"></a><img title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"><div><span><pre style="float:right;">'+todo.content+'</pre></span><div style="clear:both;">Milestone Period: '+todo.milestonePeriod+'</div></div></li>';				        						        	
+		        					todosHtml += '<li class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone">'+todo.milestonePeriod+' Milestone Period</div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
 			        				}
-		        				todosHtml += '</ul></div>';
 		        			}			        				        			        			
 						}else{
-								todosHtml += '</div>';
+								todosHtml += 'No Todos for this story';
 							}
 						
 						$(".todo-display ul").html(todosHtml);
-						$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;																
+						var sectionVisible = false;
+						if($('#todo_section').is(':visible')){
+							sectionVisible = true;
+						}
+						if(!sectionVisible)$('#todo_section').show();
+						if(storyDetailScroll[id+"todos"]){
+							var api = $('.todo-display').data('jsp');
+							if(api)api.destroy();
+						}
+						storyDetailScroll[id+"todos"] = $('.todo-display').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+						if(!sectionVisible)$('#todo_section').hide();
 					},
 					error : function(data){},
 					complete : function(data){}					
@@ -2150,7 +2224,6 @@ $(document).ready(function() {
         		$(this).removeClass('down').addClass('open');
         		$(this).parent().next(".acc-content").slideUp("slow");
         	}
-        	 $("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
          });
          
          
@@ -2216,6 +2289,46 @@ $(document).ready(function() {
              c.find('>.option').replaceWith($(this).html());
              c.find('>ul.option-list').slideUp();
              return false;
+         });
+         
+         $('.st_edit_story').live("click",function(){
+        	 $('#story-section').hide();
+        	 var storyId = $(this).attr('id');
+        	 $.ajax({
+	        		url: '/scrumr/api/v1/stories/'+storyId,
+	        		type: 'GET',
+	        		async:false,
+	        		success: function( stories ) {
+	        			if(stories != null && stories.length > 0){
+							stories = stories[0];
+							console.log(stories);
+							$('#st-edit-title').val(stories.title);
+							$('#st-edit-description').val(stories.description);
+							$('#st-edit-priority option').html('<div class="color p'+stories.priority+'"></div><div class="label" data-value="1">Priority '+stories.priority+'</div></div>');
+				        	var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
+				            for(var i=1;i<=totalsprints;i++){
+				              if(i==stories.sprint_id.id){
+				            	  optionsHtml +='<option value="'+i+'" selected>Sprint '+i+'</option>';
+				              }else{
+				            	  optionsHtml +='<option value="'+i+'">Sprint '+i+'</option>';
+				              }
+				        	}
+				        	$('#story-edit-section #st-edit-sprint').html(optionsHtml);
+				        	$('#story-edit-section').show();
+	        			}
+	        		}
+        	 });
+        	 
+         });
+         
+         $('.st_edit_cancel').live("click",function(){
+        	 $('#story-section').show();
+        	 $('#story-edit-section').hide();
+         });
+         
+         $('.st_edit_done').live("click",function(){
+        	 $('#story-section').show();
+        	 $('#story-edit-section').hide();
          });
        
 
