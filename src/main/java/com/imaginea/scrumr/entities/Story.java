@@ -115,7 +115,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     }
 
     @Column(name = "stcreation", nullable = false)
-    public Date getCreationDdate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
