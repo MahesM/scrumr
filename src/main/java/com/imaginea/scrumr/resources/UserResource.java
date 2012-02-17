@@ -68,13 +68,10 @@ public class UserResource {
 	@RequestMapping(value="/fetchusers", method = RequestMethod.POST)
 	public @ResponseBody List<User> fetchUsers(
 			@RequestParam String index,
-			@RequestParam String source,
 			@RequestParam String count		
 	) {
 
-		List<User> users = null;
-		authenticationSource = abstractAuthenticationFactory.getInstance(request);
-		authenticationSource.getFriends(Integer.parseInt(index), Integer.parseInt(count));
+		List<User> users = userServiceManager.fetchAllUsers();
 		return users;
 	}
 	

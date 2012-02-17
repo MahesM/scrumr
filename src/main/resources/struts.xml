@@ -53,21 +53,21 @@
 			<result>/index.jsp</result>
 		</action>
 		
-		<action name="login" class="homeAction" method="prepareQontextHome">
+		<action name="login" class="homeAction" method="prepareHome">
 			<result name="success">/WEB-INF/jsp/login.jsp</result>
 			<result name="error">/WEB-INF/jsp/error.jsp</result>
 		</action>
 
-		<action name="auth" class="homeAction" method="prepareAuthHome">
+		<action name="auth" class="homeAction" method="prepareHome">
 			<result name="error">/WEB-INF/jsp/auth.jsp</result>
 			<result name="success">/WEB-INF/jsp/login.jsp</result>
 		</action>
 		
-		<action name="home" class="homeAction" method="prepareAuthHome">
+		<action name="home" class="homeAction" method="prepareHome">
 			<result name="success">/WEB-INF/jsp/login.jsp</result>
 		</action>
 		
-		<action name="auth_f" class="homeAction" method="prepareFaceBookHome">
+		<action name="auth_f" class="homeAction" method="prepareHome">
 			<result name="success">/WEB-INF/jsp/login.jsp</result>
 		</action>
 		

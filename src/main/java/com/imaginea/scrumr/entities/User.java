@@ -29,7 +29,6 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @Entity
 @Table(name = "users", uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"userid"}),
-		@UniqueConstraint(columnNames = {"emailid"})
 })
 @NamedQueries({
 	@NamedQuery(name="users.selectUserByUserName", query="SELECT instance from User instance where instance.username=:username" ),

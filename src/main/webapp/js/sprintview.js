@@ -15,7 +15,6 @@ $(document).ready(function() {
         	var projStageScroll = new Object();
         	var addUserScroll = null;
         	var storyDetailScroll = new Object();
-        	
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
 					window.location.href="/scrumr/auth.action";    			
     		});
@@ -1052,18 +1051,25 @@ $(document).ready(function() {
 					$('#searchUser').val("");
 					$('#searchUser').next().removeClass().addClass('search-input').css('background','url("themes/images/search.jpg") no-repeat');;
 				}
-				var post_data = "source=DATABASE&index="+startIndex+"&count=40";
+				var post_data = "index="+startIndex+"&count=40";
+				var _url = "/scrumr/api/v1/users/fetchusers";
+				if(source == "qontext"){
+					_url = "/scrumr/api/v1/users/fetchqontextusers";
+				}
 				setTimeout(function(){
 					$.ajax({
-        			url: '/scrumr/api/v1/users/fetchqontextusers',
+        			url: _url,
         			type: 'POST',
         			data: post_data,
         			async:false,
         			success: function( records ) {
         				if(records != null){
-							records = $.parseJSON(records);
-							if(records.success.body.totalObjects > 0){
-								var total_users = records.success.body.objects;
+							if(source == "qontext"){
+								records = $.parseJSON(records);
+								records = records.success.body.objects;
+							}
+							if( records.length > 0){
+								var total_users = records;
 								for(var j=0;j<records.length;j++){
 									for(var k=0;k<users.length;k++){
 										if(records[j].ownerAccountId == users[k].username ){
@@ -1071,15 +1077,21 @@ $(document).ready(function() {
 										}
 									}
 								}
-							//	var users_html = "<ul>";
 								var users_html="";
-								var apiVersion = records.success.headers["api-version"];
-								for(var i=0;i<total_users.length;i++){
-									if(!total_users[i].avatar){
-			        					total_users[i].avatar = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
-			        				}
-									users_html += '<li><img url="'+total_users[i].avatar+'" src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
+								if(source == "qontext"){
+									var apiVersion = records.success.headers["api-version"];
+									for(var i=0;i<total_users.length;i++){
+										if(!total_users[i].avatar){
+				        					total_users[i].avatar = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
+				        				}
+										users_html += '<li><img url="'+total_users[i].avatar+'" src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
+									}
+								}else{
+									for(var i=0;i<total_users.length;i++){
+										users_html += '<li><img url="'+total_users[i].avatarurl+'" src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].fullname+'</label><a class="email">'+total_users[i].emailid+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].username+'"></div></li>';
+									}
 								}
+								
 								$('.popup-proj-cont .c-box-content .user-loading').hide();
 								$('.popup-proj-cont .c-box-content ul').show();
 								if(isAppend) {

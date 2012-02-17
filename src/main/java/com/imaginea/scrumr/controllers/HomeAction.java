@@ -24,7 +24,7 @@ public class HomeAction extends GenericActionSupport {
 				qontextHostUrl = "http://graph.facebook.com";
 				System.out.println("Source:"+qontextHostUrl);
 			}else if(source.equalsIgnoreCase("google")){
-				qontextHostUrl = "http://graph.facebook.com";
+				qontextHostUrl = "";
 				System.out.println("Source:"+qontextHostUrl);
 			}
 			return SUCCESS;

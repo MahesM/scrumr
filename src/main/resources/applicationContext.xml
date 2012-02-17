@@ -110,6 +110,10 @@
 	<aop:scoped-proxy/>
 	</bean>
 	
+	<bean id="googleHelper" class="com.imaginea.scrumr.security.GoogleInvocationHelper" scope="session" >
+	<aop:scoped-proxy/>
+	</bean>
+	
 	<bean id="abstractAuthenticationFactory" class="com.imaginea.scrumr.security.AbstractAuthenticationFactoryImpl" scope="session" >
 	<aop:scoped-proxy/>
 	</bean>
@@ -127,6 +131,9 @@
 		<property name="consumerKey" value="${facebook.consumerkey}" />
 		<property name="consumerSecret" value="${facebook.consumersecret}" />
 		<property name="hostUrl" value="${facebook.host}" />
+		<property name="graphUrl" value="${facebook.graph}" />
+		<property name="SCOPE" value="${facebook.scope}" />
+		<property name="CALLBACK_URL" value="${facebook.callback}" />
 		<property name="helper" ref="facebookHelper" />
 	</bean>
 	
@@ -135,6 +142,9 @@
 		<property name="consumerKey" value="${google.consumerkey}" />
 		<property name="consumerSecret" value="${google.consumersecret}" />
 		<property name="hostUrl" value="${google.host}" />
+		<property name="SCOPE" value="${google.scope}" />
+		<property name="CALLBACK_URL" value="${google.callback}" />
+		<property name="helper" ref="googleHelper" />
 	</bean>
 	
 	<bean id="sprintAction" class="com.imaginea.scrumr.controllers.SprintAction"

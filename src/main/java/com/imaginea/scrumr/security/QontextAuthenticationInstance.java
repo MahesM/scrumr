@@ -74,6 +74,9 @@ public class QontextAuthenticationInstance implements AuthenticationSource {
 				String accessToken = mySettings.getOAuthAccessToken(session);
 				mySettings.saveOAuthAccessToken(session, accessToken);
 				session.setAttribute("token", accessToken);
+				
+				request.getSession().setAttribute("source", "qontext");
+				
 			}else{
 				user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			}

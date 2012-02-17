@@ -2216,3 +2216,33 @@ ul.col li.pink .header span {
     height: 16px;
     background: url("images/right.png") no-repeat;
 }
+
+.social-cont {
+	margin:0px auto;
+	width:500px;
+	height:300px;
+}
+
+.social-cont table{
+	margin:0px auto;
+	position: relative;
+}
+
+.social-cont table tr td h3{
+	font-family: Arial;
+    font-size: 40px;
+    line-height: 38px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.social-cont table tr td img{
+	width:64px;
+	height:64px;
+}
+
+.social-cont table tr td p{
+	font-family: Arial;
+    font-size: 17px;
+    line-height: 38px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+}

@@ -25,7 +25,7 @@ var source = '<s:property value="source"/>';
 var qontextHostUrl = '<s:property value="qontextHostUrl"/>';
 $(document).ready(function(){
 	if(userLogged != null && userLogged != ''){
-	 	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+qontextHostUrl+avatar+'"/><label class="float-lft loginLabel">Hi!, '+fullname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
+	 	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+qontextHostUrl+avatar+'"/><label class="float-lft loginLabel">Hi!, '+displayname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
 	}
 	
 });

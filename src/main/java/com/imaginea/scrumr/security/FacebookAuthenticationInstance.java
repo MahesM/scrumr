@@ -32,7 +32,10 @@ public class FacebookAuthenticationInstance implements AuthenticationSource{
 	private String consumerKey;
 	private String consumerSecret;
 	private String hostUrl;
+	private String graphUrl;
 	private FacebookInvocationHelper helper;
+	private String SCOPE;
+	private String CALLBACK_URL; 
 	private HttpSession session;
 	
     public User doAuthentication(HttpServletRequest request, HttpServletResponse respose){
@@ -51,12 +54,12 @@ public class FacebookAuthenticationInstance implements AuthenticationSource{
 			if(SecurityContextHolder.getContext().getAuthentication() == null )
 			{
 				if(request.getParameter("code") == null){
-					String url = "https://www.facebook.com/dialog/oauth?client_id="+consumerKey+"&redirect_uri=http://127.0.0.1:8181/scrumr/login.action?id=facebook&scope=email";
+					String url = hostUrl+"?client_id="+consumerKey+"&redirect_uri="+CALLBACK_URL+"&scope="+SCOPE;
 					respose.sendRedirect(url);
 					return null;
 				}else{
 					if(helper.hasRequiredParameters(request)){
-						helper.initialize(request, consumerKey, consumerSecret, hostUrl);
+						helper.initialize(request, consumerKey, consumerSecret, graphUrl, CALLBACK_URL);
 					}
 					JSONObject userDetails = helper.getBasicProfile();
 					user = new User();
@@ -65,6 +68,7 @@ public class FacebookAuthenticationInstance implements AuthenticationSource{
 					user.setFullname(userDetails.getString("name"));
 					user.setEmailid(userDetails.getString("email"));
 					user.setAvatarurl("/"+userDetails.getString("username")+"/picture");
+					request.getSession().setAttribute("source", "facebook");
 				}
 			}else{
 				user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -130,5 +134,31 @@ public class FacebookAuthenticationInstance implements AuthenticationSource{
 	public void setHelper(Object helper) {
 		this.helper = (FacebookInvocationHelper) helper;
 	}
+
+	public String getSCOPE() {
+		return SCOPE;
+	}
+
+	public void setSCOPE(String sCOPE) {
+		SCOPE = sCOPE;
+	}
+
+	public String getCALLBACK_URL() {
+		return CALLBACK_URL;
+	}
+
+	public void setCALLBACK_URL(String cALLBACK_URL) {
+		CALLBACK_URL = cALLBACK_URL;
+	}
+
+	public String getGraphUrl() {
+		return graphUrl;
+	}
+
+	public void setGraphUrl(String graphUrl) {
+		this.graphUrl = graphUrl;
+	}
+	
+	
 
 }

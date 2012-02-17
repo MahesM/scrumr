@@ -19,7 +19,6 @@ public class GenericActionSupport extends ActionSupport implements Preparable, S
 	protected HttpServletResponse response;
 	protected UserServiceManager userServiceManager;
 	protected User loggedInUser = null;
-	public String source = "DATABASE";
 
 	// Default action method
 	public String execute() {

@@ -13,6 +13,7 @@ public class SprintAction extends GenericActionSupport {
 	private String qontextHostUrl;
 	private String storyDescLimit;
 	private String storyTitleLimit;
+	public String source;
 	
 	@Override
 	public void prepare() throws Exception {
@@ -20,8 +21,20 @@ public class SprintAction extends GenericActionSupport {
 	}
 
 	public String prepareSprintHome() throws Exception {
-		super.prepare();
-		return SUCCESS;
+		if(loggedInUser != null){
+			source = (String) request.getSession().getAttribute("source");
+			System.out.println("Source:"+source);
+			if(source.equalsIgnoreCase("facebook")){
+				qontextHostUrl = "http://graph.facebook.com";
+				System.out.println("Source:"+qontextHostUrl);
+			}else if(source.equalsIgnoreCase("google")){
+				qontextHostUrl = "http://graph.facebook.com";
+				System.out.println("Source:"+qontextHostUrl);
+			}
+			return SUCCESS;
+		}else{
+			return ERROR;
+		}
 	}
 
 	public String prepareSprintStaticPage() {

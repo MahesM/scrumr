@@ -17,14 +17,13 @@ public class FacebookInvocationHelper {
 	private String access_token;
 	private RestTemplate restTemplate = new RestTemplate();
 
-	public void initialize(HttpServletRequest request, String consumerKey,String consumerSecret, String hostUrl){
+	public void initialize(HttpServletRequest request, String consumerKey,String consumerSecret, String hostUrl, String callback){
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 		this.hostUrl = hostUrl;
 
 		System.out.println("Code: "+request.getParameter("code"));
-		//String url = hostUrl+"?client_id="+consumerKey+"&redirect_uri="+Utils.getAbsoluteURI(request)+"?id=facebook&client_secret="+consumerSecret+"&code="+request.getParameter("code");
-		String url = "https://graph.facebook.com/oauth/access_token?client_id="+consumerKey+"&client_secret="+consumerSecret+"&code="+request.getParameter("code")+"&redirect_uri=http://127.0.0.1:8181/scrumr/login.action?id=facebook";
+		String url = hostUrl+"/oauth/access_token?client_id="+consumerKey+"&client_secret="+consumerSecret+"&code="+request.getParameter("code")+"&redirect_uri="+callback;
 		String obj = restTemplate.getForObject(url, String.class);
 		this.access_token = obj.split("&")[0].split("=")[1];
 	}
@@ -38,7 +37,7 @@ public class FacebookInvocationHelper {
 
 	public JSONObject getBasicProfile() throws JSONException{
 		try {
-			String my_url = "https://graph.facebook.com/me?access_token=" + access_token;
+			String my_url = hostUrl+"/me?access_token=" + access_token;
 			String res = restTemplate.getForObject(my_url, String.class);
 			JSONObject resp = new JSONObject(res);
 			System.out.println("My Details: "+resp.toString());
@@ -49,14 +48,14 @@ public class FacebookInvocationHelper {
 	}
 
 	public String searchPeople(Integer startIndex, Integer count){
-		String my_url = "https://graph.facebook.com/me?access_token=" + access_token;
+		String my_url = hostUrl+"/me?access_token=" + access_token;
 		String res = restTemplate.getForObject(my_url, String.class);
 		System.out.println("My Details: "+res);
 		return res;
 	}
 
 	public String searchBasicProfile(String sortType, Integer startIndex, Integer count){
-		String my_url = "https://graph.facebook.com/me?access_token=" + access_token;
+		String my_url = hostUrl+"/me?access_token=" + access_token;
 		String res = restTemplate.getForObject(my_url, String.class);
 		return res;
 	}
