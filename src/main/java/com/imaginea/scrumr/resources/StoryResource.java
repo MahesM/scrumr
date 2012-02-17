@@ -125,13 +125,13 @@ public class StoryResource {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
-    String updateStory(@RequestParam String id, @RequestParam String stTitle,
+    String updateStory(@RequestParam String storyId, @RequestParam String stTitle,
                                     @RequestParam String stDescription,
                                     @RequestParam String stPriority, @RequestParam String user,
                                     @RequestParam String projectId, @RequestParam String stSprint) {
 
         try {
-            Story story = storyManager.readStory(Integer.parseInt(id));
+            Story story = storyManager.readStory(Integer.parseInt(storyId));
             if (stTitle != null)
                 story.setTitle(stTitle);
             if (stDescription != null)
