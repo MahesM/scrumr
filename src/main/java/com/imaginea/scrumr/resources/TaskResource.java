@@ -55,36 +55,37 @@ public class TaskResource {
     @RequestMapping(value = "/summary", method = RequestMethod.GET)
     public @ResponseBody
     List<Object> fetchTaskStatusSummary(@RequestParam String projectId,
-                                    @RequestParam String sprintId) {
+                                    @RequestParam(required = false) String sprintId) {
 
         Integer projId = Integer.parseInt(projectId);
         Integer sprId = Integer.parseInt(sprintId);
-
-        return taskManager.fetchTaskStatusSummary(projId, sprId);
+        List<Object> results = taskManager.fetchTaskStatusSummary(projId, sprId);
+        // HashMap map = new HashMap();
+        // map.put( , results);
+        return results;
     }
 
     @RequestMapping(value = "/details", method = RequestMethod.GET)
     public @ResponseBody
     List<Task> fetchTaskStatusDetails(@RequestParam String projectId,
                                     @RequestParam String sprintId, @RequestParam String userId,
-                                    @RequestParam String orderBy, @RequestParam String pageNumber,
-                                    @RequestParam String maxCount) {
+                                    @RequestParam(required = false) String orderBy,
+                                    @RequestParam String pageNumber, @RequestParam String maxCount) {
 
         Integer projId = Integer.parseInt(projectId);
         Integer sprId = Integer.parseInt(sprintId);
         Integer usrId = Integer.parseInt(userId);
         Integer pagenum = Integer.parseInt(pageNumber);
         Integer pageSize = Integer.parseInt(maxCount);
-        // TODO : orderBy, startIndex and maxCount params specific queries
-        // A version of NamedQuery to raw query method can be added to GenericJpaDao
-        return taskManager.fetchTaskStatusDetails(projId, sprId, usrId, pagenum, pageSize);
+        return taskManager.fetchTaskStatusDetails(projId, sprId, usrId, orderBy, pagenum, pageSize);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public @ResponseBody
     List<Task> createTask(@RequestParam String milestonePeriod, @RequestParam String timeInDays,
                                     @RequestParam String user, @RequestParam String content,
-                                    @RequestParam String assigneeId, @RequestParam String storyid) {
+                                    @RequestParam String assigneeId,
+                                    @RequestParam(required = false) String storyid) {
 
         Task task = new Task();
         List<Task> result = new ArrayList<Task>();

@@ -10,8 +10,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 
 import com.imaginea.scrumr.interfaces.IDao;
@@ -21,7 +23,7 @@ public class GenericJpaDao<E extends IEntity, K extends Serializable> implements
 
     protected EntityManager entityManager;
 
-    public static final Logger LOGGER = Logger.getLogger(GenericJpaDao.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(GenericJpaDao.class);
 
     /* Getters and Setters */
 
@@ -193,7 +195,38 @@ public class GenericJpaDao<E extends IEntity, K extends Serializable> implements
         }
         return result;
     }
-    
+
+    public List getResults(String queryString, Hashtable<String, Object> criteria, String orderBy,
+                                    Integer pageNumber, Integer pageSize)
+                                    throws DataAccessException {
+
+        // orderBy by appending to the query string
+        if (orderBy == null) {
+            queryString = queryString + " order by instance.createdOn ASC";
+        } else {
+            queryString = queryString + " order by instance." + orderBy;
+        }
+
+        Query qry = entityManager.createQuery(queryString);
+        Enumeration<String> keys = criteria.keys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            qry.setParameter(key, criteria.get(key));
+        }
+        List result;
+        try {
+            if (pageNumber != -1 && pageSize != -1) {
+                qry = qry.setFirstResult(pageSize * (pageNumber - 1));
+                qry.setMaxResults(pageSize);
+            }
+
+            result = qry.getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+        return result;
+    }
+
     public <E extends IEntity, obj> E getEntity(Class<E> inElementClass, String queryName,
                                     Hashtable<String, obj> criteria) throws DataAccessException {
         Query qry = entityManager.createNamedQuery(queryName);

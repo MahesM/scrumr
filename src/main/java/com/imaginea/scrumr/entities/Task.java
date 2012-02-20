@@ -24,10 +24,8 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @NamedQueries({
         @NamedQuery(name = "tasks.fetchTasksByStory", query = "SELECT instance from Task instance where instance.story.id=:storyid"),
         @NamedQuery(name = "tasks.fetchTasksByAssignee", query = "SELECT instance from Task instance where instance.user.id=:userid"),
-        @NamedQuery(name = "tasks.fetchTeamStatusSummaryBySprint", query = "SELECT tsk.user.displayname as displayname, count(tsk) as total_tasks, sum(tsk.timeInDays) as total_tasks, tsk.status as status from Task tsk where tsk.story.project.id=:projectId and tsk.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) group by tsk.user.id"),
-        @NamedQuery(name = "tasks.fetchTeamStatusSummaryByProject", query = "SELECT tsk.user.displayname as displayname, count(tsk) as total_tasks, sum(tsk.timeInDays) as total_tasks, tsk.status as status from Task tsk where tsk.story.project.id=:projectId group by tsk.user.id"),
-        @NamedQuery(name = "tasks.fetchTeamStatusDetailsBySprint", query = "SELECT tsk from Task tsk where tsk.story.project.id=:projectId and tsk.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) order by tsk.user.id"),
-        @NamedQuery(name = "tasks.fetchTeamStatusDetailsByUser", query = "SELECT tsk from Task tsk where tsk.story.project.id=:projectId and tsk.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) and tsk.user.id=:userId") })
+        @NamedQuery(name = "tasks.fetchTeamStatusSummaryBySprint", query = "SELECT instance.user.displayname as displayname, count(instance) as total_tasks, sum(instance.timeInDays) as total_tasks, instance.status as status from Task instance where instance.story.project.id=:projectId and instance.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) group by instance.user.id"),
+        @NamedQuery(name = "tasks.fetchTeamStatusSummaryByProject", query = "SELECT instance.user.displayname as displayname, count(instance) as total_tasks, sum(instance.timeInDays) as total_tasks, instance.status as status from Task instance where instance.story.project.id=:projectId group by instance.user.id") })
 @XmlRootElement
 public class Task extends AbstractEntity implements IEntity, Serializable {
 
@@ -46,6 +44,10 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
 
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
+
+    public static final String FETCH_TEAM_STATUS_DETAILS_BY_SPRINT = "SELECT instance from Task instance where instance.story.project.id=:projectId and instance.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) ";
+
+    public static final String FETCH_TEAM_STATUS_DETAILS_BY_USER = "SELECT instance from Task instance where instance.story.project.id=:projectId and instance.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) and instance.user.id=:userId";
 
     public enum TaskStatus {
         CREATED, IN_PROGRESS, COMPLETED;

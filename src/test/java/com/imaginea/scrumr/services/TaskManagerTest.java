@@ -111,20 +111,23 @@ public class TaskManagerTest {
         Integer projectId = 1;
         Integer sprintId = 1;
         Integer userId = null;
+        Integer pageNum = 1;
+        Integer pageSize = 10;
+        String orderBy = "user.id";
         // by project Id and sprintId
-        List<Task> tasks = taskManager.fetchTaskStatusDetails(projectId, sprintId, userId);
+        List<Task> tasks = taskManager.fetchTaskStatusDetails(projectId, sprintId, userId, orderBy, pageNum, pageSize);
         assertNotNull(tasks);
         debug(tasks);
 
         // by user
         userId = 1;
-        tasks = taskManager.fetchTaskStatusDetails(projectId, sprintId, userId);
+        tasks = taskManager.fetchTaskStatusDetails(projectId, sprintId, userId, orderBy, pageNum, pageSize);
         assertNotNull(tasks);
         debug(tasks);
     }
 
     private void debug(List tasks) {
-        logger.debug("tasks", tasks);
+        logger.info("tasks size:", tasks.size());
         for (Iterator iterator = tasks.iterator(); iterator.hasNext();) {
             // Object[] object = (Object[]) iterator.next();
             Object object = (Object) iterator.next();
@@ -135,11 +138,14 @@ public class TaskManagerTest {
             // Long sum = (Long) object[1];
 
             // System.out.println(object.getClass().getSimpleName());
-
-            logger.debug(task.getUser().getDisplayname() + "createdBy:" + " Days: "
-                                            + task.getTimeInDays() + " Primary Key"
-                                            + task.getPkey() + "content" + task.getContent()
-                                            + "status:" + task.getStatus());
+            if (task != null) {
+                User user = task.getUser();
+                if (user != null)
+                    logger.info("createdBy to : " + user.getDisplayname());
+                logger.info("createdBy:" + user + " Days: " + task.getTimeInDays() + " Primary Key"
+                                                + task.getPkey() + "content" + task.getContent()
+                                                + "status:" + task.getStatus());
+            }
 
             // System.out.println("Sum:" + sum);
             // System.out.println("Status" + (TaskStatus) object[3]);

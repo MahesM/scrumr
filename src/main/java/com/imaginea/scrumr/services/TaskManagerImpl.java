@@ -75,20 +75,21 @@ public class TaskManagerImpl implements TaskManager {
         return genericDao.getResults(queryName, criteria);
     }
 
-    public List<Task> fetchTaskStatusDetails(Integer projectId, Integer sprintId, Integer userId, Integer pageNumber, Integer maxCount) {
-        String queryName = "tasks.fetchTeamStatusDetailsBySprint";
+    public List<Task> fetchTaskStatusDetails(Integer projectId, Integer sprintId, Integer userId,
+                                    String orderBy, Integer pageNumber, Integer maxCount) {
+        String queryName = Task.FETCH_TEAM_STATUS_DETAILS_BY_SPRINT;
         Hashtable<String, Object> criteria = new Hashtable<String, Object>();
         // projectId is mandatory
         criteria.put("projectId", projectId);
         if (sprintId != null) {
             criteria.put("sprintId", sprintId);
-            queryName = "tasks.fetchTeamStatusDetailsBySprint";
+            // queryName = "tasks.fetchTeamStatusDetailsBySprint";
         }
         if (userId != null) {
             criteria.put("userId", userId);
-            queryName = "tasks.fetchTeamStatusDetailsByUser";
+            queryName = Task.FETCH_TEAM_STATUS_DETAILS_BY_USER;
         }
-        return genericDao.getResults(queryName, criteria, pageNumber, maxCount);
+        return genericDao.getResults(queryName, criteria, orderBy, pageNumber, maxCount);
     }
 
     /* Getters and Setters */
