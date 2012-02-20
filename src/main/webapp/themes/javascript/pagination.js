@@ -7,6 +7,7 @@ $.fn.sweetPages = function(opts){
 	if(!opts) opts = {};
 	var resultsPerPage = opts.perPage || 3;
 	var scrollPerClick = opts.scrollPerClick || 1;
+	var curPage = opts.curPage || 0;
 	// The plugin works best for unordered lists, althugh ols would do just as well:
 	var ul = this;
 	var li = ul.find('li.stages');
@@ -84,7 +85,8 @@ $.fn.sweetPages = function(opts){
 	});
 	
 	// Mark the first link as active the first time this code runs:
-	hyperLinks.eq(0).addClass('active');
+	//hyperLinks.eq(0).addClass('active');
+	hyperLinks.eq(curPage).trigger('click');
 	
 	// Center the control div:
 	/*swControls.css({

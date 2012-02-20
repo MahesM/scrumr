@@ -1121,7 +1121,6 @@ div#projectList {
 
 #story-cont label{
 	font-size:12px;
-	font-weight: bold;
 	width:auto;
 	display:block;
 	line-height: 20px;
@@ -1230,7 +1229,6 @@ div#projectList {
 
 .todo-content  {
 	display: inline-block;
-	padding: 10px;
 	padding-top:0;
 	font-size:13px;
 	width:auto;
@@ -1249,6 +1247,8 @@ div#projectList {
 	width:100px;
 	float:left;
 	height:auto;
+	margin:0 0 0 5px;
+	clear:none;
 }
 
 .todo-content .todo-status .todo-status-text {
@@ -1259,7 +1259,40 @@ div#projectList {
 	background:url("images/down_arrow.gif");
 	height:7px;
 	width:13px;
+	float:left;
+	margin-top:7px;
+	margin-left:5px;
 	
+}
+
+.todo-content label{
+	font-size:13px;
+	font-weight:none !important;
+}
+
+ul.todo-status-list {
+    list-style: none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 40px;
+	left: 195px;
+	display: none;
+	border: 1px solid #C7D9C7;
+	min-width: 85px;
+	background-color:#fff;
+	z-index:100;
+}
+
+.todo-status-list li {
+    padding: 0;
+    margin: 2px 0;
+    height:20px;
+}
+
+.todo-status-list li:hover{
+	background-color:#EDEDED;
+	cursor:pointer;
 }
 
 .todo-action{

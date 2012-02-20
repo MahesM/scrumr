@@ -254,10 +254,10 @@
 							            <div class="open"></div>
 							            <input type="hidden" id="todos-count" />
 							        </div>
-							        <div id="todo_section" class="acc-content" style="display:none">
+							        <div id="todo_section" class="acc-content" style="display:none;position:relative;">
 							            <div class="todo float-lft">
 							            	<div class="todo-display">
-						                 		<ul>
+						                 		<ul class="todo-total-display">
 						                	 		
 						                 		</ul>
 											</div>
@@ -318,8 +318,6 @@
 					            </div>
    							 </div>
 						</div>
-                       
-                       
 	                </div>
             	</div>
             </div>

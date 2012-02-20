@@ -15,6 +15,7 @@ $(document).ready(function() {
         	var projStageScroll = new Object();
         	var addUserScroll = null;
         	var storyDetailScroll = new Object();
+        	var taskStatusColors = {'CREATED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
         	
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
 					window.location.href="/scrumr/auth.action";    			
@@ -272,8 +273,9 @@ $(document).ready(function() {
 			        			sprint_html +='</ul>';
 			        			$("#project-view").html(sprint_html);
 			        			$('#pageCtrls').html("");
+			        			var current_page = current_sprint - 1;
 			        			setTimeout(function(){
-			        				$('#holderforpage').sweetPages({perPage:4});
+			        				$('#holderforpage').sweetPages({perPage:4,curPage:current_page});
 				    				var controls = $('.swControls').detach();
 			    					controls.appendTo('#pageCtrls'); 
 			        			},1);
@@ -2116,6 +2118,7 @@ $(document).ready(function() {
 			 var taskUser = $("#todo-user").val();
 			 if(todoText == "" || taskUser == 0) return;   
 			 todoText = parsedString(todoText);
+  	       	 var todoHtml = '';
              var post_data = 'content='+ todoText+'&storyid='+story_id+'&timeInDays='+milestonePeriod+'&assigneeId='+taskUser+'&milestonePeriod='+milestonePeriod+'&user='+user;                     
              $.ajax({
       			url: '/scrumr/api/v1/todo/create',
@@ -2131,16 +2134,16 @@ $(document).ready(function() {
       				$('.todo-text').val('');
       				$('#todo-milestones').val('1');	
       				$('#todo-user').val('0');	
-      				var todoHtml = '<li id="todo'+todo.pkey+'" class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone">'+todo.milestonePeriod+' Milestone Period | <div class="todo-status"><label style="color:#1e9ce8;" class="todo-status-text">CREATED</label><a href="javascript:void(0);" ><a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
+      				todoHtml = '<li id="todo'+todo.pkey+'" class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone"><label style="font-weight:none;">'+todo.milestonePeriod+' Milestone Period | </label><div class="todo-status"><label style="color:#1e9ce8;" class="todo-status-text">CREATED</label><a href="javascript:void(0);" ></a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
       				$('.todo-text').focus(); 
       				if(storyDetailScroll[story_id+"todos"]){
 						var api = $('.todo-display').data('jsp');
 						if(api){
-							api.getContentPane().find('ul').append(todoHtml);
+							api.getContentPane().find('ul.todo-total-display').append(todoHtml);
 							api.reinitialise();
 						}
 					}else{
-						$('.todo-display ul').append(todoHtml);
+						$('.todo-display ul.todo-total-display').append(todoHtml);
 						storyDetailScroll[id+"todos"] = $('.todo-display').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 					}
       			},
@@ -2168,6 +2171,10 @@ $(document).ready(function() {
          $(".cmtRmvTodo").live('click',function(){        		
          	var todoID = $(this).attr("id").split("tdelete")[1];
          	deleteStoryTodo(todoID);
+         	//if edit was clicked and nothing was done.
+         	$('#todo-form').find('input.submit').attr("value","Add");
+   			$('#todo-form').find('input.submit').css("margin-left","125px");
+   			$('#todo-form').find('input.submit').attr("id","tAdd").attr('data-task',todoID);
          	populateStoryTodos();
          	});
 
@@ -2179,7 +2186,13 @@ $(document).ready(function() {
 					taskUserHtml +='<option value="'+users[i].username+'">'+users[i].fullname+'</option>';
 				}
 				$('#todo-user').html(taskUserHtml);
-				var taskStatusColors = {'CREATED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
+				//populate task status drop down
+    	       	var status_dropdown = '<ul class="todo-status-list">';
+    	       	for(var i in taskStatusColors){
+    	       		status_dropdown +='<li><label style="color:'+taskStatusColors[i]+'">'+i+'</label></li>';
+    	       	}
+    	       	status_dropdown +="</ul>";
+    	       	$('#todo_section').prepend(status_dropdown);
 				var todosHtml = '';								
 				$.ajax({
 					url : '/scrumr/api/v1/todo/story/'+id,
@@ -2192,14 +2205,14 @@ $(document).ready(function() {
 	        				if(todos.length > 0){
 		        				for (var i=0;i<todos.length;i++){
 		        					todo = todos[i];			        								        				    						        							        																						        	
-		        					todosHtml += '<li id="todo'+todo.pkey+'" class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone">'+todo.milestonePeriod+' Milestone Period | <div class="todo-status"><label style="color:'+taskStatusColors[todo.status]+';" class="todo-status-text">'+todo.status+'</label><a href="javascript:void(0);" ><a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
+		        					todosHtml += '<li id="todo'+todo.pkey+'" class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone"><label style="font-weight:none;">'+todo.milestonePeriod+' Milestone Period | </label><div class="todo-status" ><label style="color:'+taskStatusColors[todo.status]+';" class="todo-status-text">'+todo.status+'</label><a href="javascript:void(0);" ></a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
 			        				}
 		        			}			        				        			        			
 						}else{
 								todosHtml += 'No Todos for this story';
 							}
 						
-						$(".todo-display ul").html(todosHtml);
+						$(".todo-display ul.todo-total-display").html(todosHtml);
 						var sectionVisible = false;
 						if($('#todo_section').is(':visible')){
 							sectionVisible = true;
@@ -2433,13 +2446,49 @@ $(document).ready(function() {
       				$('#todo-form').find('input.submit').attr("value","Add");
            			$('#todo-form').find('input.submit').css("margin-left","125px");
            			$('#todo-form').find('input.submit').attr("id","tAdd").attr('data-task',task_id).attr('data-status',todo.status);
-      				var todoHtml = '<div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone">'+todo.milestonePeriod+' Milestone Period | <div class="todo-status"><label style="color:#1e9ce8;" class="todo-status-text">CREATED</label><a href="javascript:void(0);" ><a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div>';
-      				$('.todo-display').find('ul').find('li#todo'+task_id).html(todoHtml);
+      				var todoUpdateHtml = '<div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone"><label style="font-weight:none;">'+todo.milestonePeriod+' Milestone Period | </label><div class="todo-status"><label style="color:'+taskStatusColors[todo.status]+';" class="todo-status-text">'+todo.status+'</label><a href="javascript:void(0);" ></a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div>';
+      				$('.todo-display').find('ul.todo-total-display').find('li#todo'+task_id).html(todoUpdateHtml);
       				$('.todo-text').focus(); 
       			},
       			error: function(data) { },
      			complete: function(data) { }            		
               	});
+         });
+         
+         $('.todo-status a').live('click',function(event){
+        	 var id = $(this).closest('li.todo-list').attr('id');
+        	 $(this).closest('#todo_section').find('ul.todo-status-list').attr('id','status-'+id);
+             if($(this).closest('#todo_section').find('ul.todo-status-list').is(':visible')){
+            	 $(this).closest('#todo_section').find('ul.todo-status-list').slideUp();
+             }else{
+            	 $(this).closest('#todo_section').find('ul.todo-status-list').css('left',($(this).position().left - 50)+'px');
+            	 $(this).closest('#todo_section').find('ul.todo-status-list').css('top',($(this).position().top + 20 + $(this).closest('.jspPane').position().top)+'px');
+            	 $(this).closest('#todo_section').find('ul.todo-status-list').slideDown();
+             }
+             
+
+         });
+         $('ul.todo-status-list li').live('click',function(event){
+        	 var user = userLogged;
+             var task_id = $(this).closest('ul').attr('id').split("status-todo")[1];
+             var c = $('#todo'+task_id).find('.todo-status');
+             var status = $(this).find('label').html();
+             var post_data = 'id='+task_id+'&status='+status+'&user='+user;
+             var el = $(this);
+             $.ajax({
+       			url: '/scrumr/api/v1/todo/update/'+task_id,
+       			type: 'POST',
+       			data: post_data,
+       			async:false,
+       			success: function( todo ) {  
+       				c.find('label').replaceWith($(el).html());
+                    $(el).closest('ul.todo-status-list').hide();
+       			},
+       			error: function(data) { },
+      			complete: function(data) { }            		
+               	});
+             
+             return false;
          });
        
 
