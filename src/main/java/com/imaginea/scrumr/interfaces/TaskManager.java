@@ -35,7 +35,9 @@ public interface TaskManager {
      * @param projectId
      * @param sprintId
      * @param userId
+     * @param pageNumber
+     * @param maxCount
      * @return
      */
-    List<Task> fetchTaskStatusDetails(Integer projectId, Integer sprintId, Integer userId);
+    List<Task> fetchTaskStatusDetails(Integer projectId, Integer sprintId, Integer userId, Integer pageNumber, Integer maxCount);
 }

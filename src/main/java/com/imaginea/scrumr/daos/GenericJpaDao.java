@@ -171,6 +171,29 @@ public class GenericJpaDao<E extends IEntity, K extends Serializable> implements
         return result;
     }
 
+    public List getResults(String queryName, Hashtable<String, Object> criteria,
+                                    Integer pageNumber, Integer pageSize)
+                                    throws DataAccessException {
+
+        Query qry = entityManager.createNamedQuery(queryName);
+        Enumeration<String> keys = criteria.keys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            qry.setParameter(key, criteria.get(key));
+        }
+        List result;
+        try {
+            if (pageNumber != -1 && pageSize != -1) {
+                qry = qry.setFirstResult(pageSize * (pageNumber - 1));
+                qry.setMaxResults(pageSize);
+            }
+            result = qry.getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+        return result;
+    }
+    
     public <E extends IEntity, obj> E getEntity(Class<E> inElementClass, String queryName,
                                     Hashtable<String, obj> criteria) throws DataAccessException {
         Query qry = entityManager.createNamedQuery(queryName);

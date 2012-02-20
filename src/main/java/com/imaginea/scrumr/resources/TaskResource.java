@@ -67,15 +67,17 @@ public class TaskResource {
     public @ResponseBody
     List<Task> fetchTaskStatusDetails(@RequestParam String projectId,
                                     @RequestParam String sprintId, @RequestParam String userId,
-                                    @RequestParam String orderBy, @RequestParam String startIndex,
+                                    @RequestParam String orderBy, @RequestParam String pageNumber,
                                     @RequestParam String maxCount) {
 
         Integer projId = Integer.parseInt(projectId);
         Integer sprId = Integer.parseInt(sprintId);
         Integer usrId = Integer.parseInt(userId);
+        Integer pagenum = Integer.parseInt(pageNumber);
+        Integer pageSize = Integer.parseInt(maxCount);
         // TODO : orderBy, startIndex and maxCount params specific queries
         // A version of NamedQuery to raw query method can be added to GenericJpaDao
-        return taskManager.fetchTaskStatusDetails(projId, sprId, usrId);
+        return taskManager.fetchTaskStatusDetails(projId, sprId, usrId, pagenum, pageSize);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -113,25 +115,32 @@ public class TaskResource {
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
     public @ResponseBody
-    List<Task> updateStatus(@RequestParam String id, @RequestParam String content,
-                                    @RequestParam String status, @RequestParam String assigneeId,@RequestParam String timeInDays) {
+    List<Task> updateStatus(@RequestParam String id,
+                                    @RequestParam(required = false) String content,
+                                    @RequestParam(required = false) String status,
+                                    @RequestParam(required = false) String assigneeId,
+                                    @RequestParam(required = false) String timeInDays) {
         // TODO: need to take care of task content changes , user assignees
         // TODO: maintain the history - or even if we go github way, backend needs to handle it
-    	Task task = new Task();
-    	List<Task> result = new ArrayList<Task>();
+        Task task = new Task();
+        List<Task> result = new ArrayList<Task>();
         try {
             task = taskManager.readTask(Integer.parseInt(id));
             if (content != null)
                 task.setContent(content);
+
             if (status != null)
                 task.setStatus(TaskStatus.valueOf(status));
+
             if (assigneeId != null)
                 task.setUser(userServiceManager.readUser(assigneeId));
-            if(timeInDays !=null){
-            	task.setMilestonePeriod(timeInDays);
-            	task.setTimeInDays(Integer.parseInt(timeInDays));
+            if (timeInDays != null) {
+                task.setMilestonePeriod(timeInDays);
+                task.setTimeInDays(Integer.parseInt(timeInDays));
             }
-            taskManager.updateTask(task);
+            // if none of these was changed, do not update
+            if (content != null || status != null || assigneeId != null || timeInDays != null)
+                taskManager.updateTask(task);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return result;

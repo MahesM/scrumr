@@ -37,6 +37,9 @@ public interface IDao<E extends IEntity, K extends Serializable> {
     List getResults(String queryName, Hashtable<String, Object> criteria)
                                     throws DataAccessException;
 
+    List getResults(String queryName, Hashtable<String, Object> criteria, Integer pageNumber,
+                                    Integer pageSize) throws DataAccessException;
+
     <E extends IEntity, obj extends Object> E getEntity(Class<E> inElementClass, String queryName,
                                     Hashtable<String, obj> criteria) throws DataAccessException;
 

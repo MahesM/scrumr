@@ -75,7 +75,7 @@ public class TaskManagerImpl implements TaskManager {
         return genericDao.getResults(queryName, criteria);
     }
 
-    public List<Task> fetchTaskStatusDetails(Integer projectId, Integer sprintId, Integer userId) {
+    public List<Task> fetchTaskStatusDetails(Integer projectId, Integer sprintId, Integer userId, Integer pageNumber, Integer maxCount) {
         String queryName = "tasks.fetchTeamStatusDetailsBySprint";
         Hashtable<String, Object> criteria = new Hashtable<String, Object>();
         // projectId is mandatory
@@ -88,7 +88,7 @@ public class TaskManagerImpl implements TaskManager {
             criteria.put("userId", userId);
             queryName = "tasks.fetchTeamStatusDetailsByUser";
         }
-        return genericDao.getResults(queryName, criteria);
+        return genericDao.getResults(queryName, criteria, pageNumber, maxCount);
     }
 
     /* Getters and Setters */
