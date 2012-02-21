@@ -15,7 +15,6 @@ $(document).ready(function() {
         	var projStageScroll = new Object();
         	var addUserScroll = null;
         	var storyDetailScroll = new Object();
-        	var taskStatusColors = {'CREATED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
         	
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
 					window.location.href="/scrumr/auth.action";    			
@@ -216,7 +215,7 @@ $(document).ready(function() {
 										status = 'Stories Completed: <span id="project_finished" class="finished">'+result.result+'</span>Total: <span id="project_total" class="total">'+result.result+'</span>';
 					        		}
 								});
-								$('.duration-hd label').html(duration+'&nbsp;&nbsp; | <b>Sprint'+current_sprint+"</b> &nbsp;&nbsp;"+sprints[0].project.status+'&nbsp;&nbsp;|&nbsp;&nbsp;'+status+'&nbsp;&nbsp;| <a href="javascript:void(0);" class="new_sprint" >Add New Sprint</a>');
+								$('.duration-hd label.duration').html(duration+'&nbsp;&nbsp; | <b>Sprint'+current_sprint+"</b> &nbsp;&nbsp;"+sprints[0].project.status+'&nbsp;&nbsp;|&nbsp;&nbsp;'+status+'&nbsp;&nbsp;| <a href="javascript:void(0);" class="new_sprint" >Add New Sprint</a>');
 								var finished = 0;
 				        		var sprint_html = '<ul id="holderforpage" class="col">';
 			        			$("ul.col li").css("width",100/sprints.length+'%');
@@ -524,8 +523,8 @@ $(document).ready(function() {
 		    							duration += ' - No End Date';
 		    						}
 		    						var status = 'Stories Completed: <span id="sprint_finished" class="finished">0</span> Total: <span id="sprint_total" class="total">0</span>';
-		    						$('.duration-hd label').html('&nbsp;&nbsp;'+duration+'&nbsp;&nbsp; |'+sprintTitle+" "+result.status+'&nbsp;&nbsp; |&nbsp;&nbsp;'+status);
-		    						$('.duration-hd label').show();
+		    						$('.duration-hd label.duration').html('&nbsp;&nbsp;'+duration+'&nbsp;&nbsp; |'+sprintTitle+" "+result.status+'&nbsp;&nbsp; |&nbsp;&nbsp;'+status);
+		    						$('.duration-hd label.duration').show();
 			        			}
 			        		},
 			        		error: function(data) { },
@@ -808,7 +807,7 @@ $(document).ready(function() {
 	    							duration += ' - No End Date';
 	    						}
 	    						var status = '<span class="total">12</span><span class="finished">13</span>';
-	    						$('.duration-hd label').html(duration+'&nbsp;&nbsp;&nbsp;'+status);
+	    						$('.duration-hd label.duration').html(duration+'&nbsp;&nbsp;&nbsp;'+status);
 	        					var userObj = userObject[story.creator];
 	        					if(story.status == "notstarted"){
 	        						story_unassigned += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+qontextHostUrl+''+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
@@ -1352,9 +1351,10 @@ $(document).ready(function() {
 				$(".projectstatview").css('color',"gray");
 				$(".projectstatview").parent().css('background-color',"#FFFFFF");
 				$(".sprintHead").hide();
-				$(".duration-hd").find('label').show();
+				$(".duration-hd").find('label.duration').show();
 				$(".duration-hd").find('#pageCtrls').show();
-				$(".duration-hd").find('ul').hide();
+				//$(".duration-hd").find('ul').hide();
+				$(".duration-hd").find("#task_report").hide();
 			}else{
      	       	populateSprintStories(current_sprint);
 				$("#sprint-view").show();
@@ -1369,7 +1369,8 @@ $(document).ready(function() {
 				$(".sprintHead").show();
 				//$(".duration-hd").find('label').hide();
 				$(".duration-hd").find('#pageCtrls').hide();
-				$(".duration-hd").find('ul').show();
+				//$(".duration-hd").find('ul').show();
+				$(".duration-hd").find("#task_report").hide();
 			}
             
         	$(".currentSprint").live('click', function(){
@@ -1767,9 +1768,10 @@ $(document).ready(function() {
 				$("#pstat-view").hide();
 				$("#project-view").show();
 				$(".sprintHead").hide();
-				$(".duration-hd").find('label').show();
+				$(".duration-hd").find('label.duration').show();
 				$(".duration-hd").find('#pageCtrls').show();
-				$(".duration-hd").find('ul').hide();
+				//$(".duration-hd").find('ul').hide();
+				$(".duration-hd").find("#task_report").hide();
 				populateSprints();
 				viewStoryFancyBox();
 			});
@@ -1788,7 +1790,8 @@ $(document).ready(function() {
 				$("#pstat-view").hide();
 				$(".sprintHead").show();
 				$(".duration-hd").find('#pageCtrls').hide();
-				$(".duration-hd").find('ul').show();
+				//$(".duration-hd").find('ul').show();
+				$(".duration-hd").find("#task_report").hide();
 				populateSprintStories(current_sprint);
 				viewStoryFancyBox();
 			});
@@ -1806,9 +1809,10 @@ $(document).ready(function() {
 				$("#project-view").hide();
 				$("#pstat-view").show();
 				$(".sprintHead").css('display','none !important');
-				$(".duration-hd").find('label').hide();
+				$(".duration-hd").find('label.duration').hide();
 				$(".duration-hd").find('#pageCtrls').hide();
-				$(".duration-hd").find('ul').hide();
+				//$(".duration-hd").find('ul').hide();
+			//	$(".duration-hd").find("#task_report").show(); todo:enable it when the functionality is complete.
 				populateProjectStatistics();
 				viewStoryFancyBox();
 			});
@@ -2327,10 +2331,6 @@ $(document).ready(function() {
              }); 
          }
          
-         function populateProjectStatistics(){
-        	 
-         }
-         
          $('.custom-select').bind('click',function(){
              if($(this).find('ul.option-list').is(':visible')){
             	 $(this).find('ul.option-list').slideUp();
@@ -2470,7 +2470,7 @@ $(document).ready(function() {
               	});
          });
          
-         $('.todo-status a').live('click',function(event){
+         $('#todo_section .todo-status a').live('click',function(event){
         	 var id = $(this).closest('li.todo-list').attr('id');
         	 $(this).closest('#todo_section').find('ul.todo-status-list').attr('id','status-'+id);
              if($(this).closest('#todo_section').find('ul.todo-status-list').is(':visible')){
@@ -2483,7 +2483,8 @@ $(document).ready(function() {
              
 
          });
-         $('ul.todo-status-list li').live('click',function(event){
+         
+         $('#todo_section ul.todo-status-list li').live('click',function(event){
         	 var user = userLogged;
              var task_id = $(this).closest('ul').attr('id').split("status-todo")[1];
              var c = $('#todo'+task_id).find('.todo-status');

@@ -40,8 +40,11 @@
 	   	$(".projectview").css('color',"gray");
 	   	$(".projectview").parent().css('background-color',"#FFFFFF");
 	<% } %>
+	var taskStatusColors = {'CREATED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
  </script>
+  <script type="text/javascript" src="<%= request.getContextPath() %>/js/taskview.js"></script>
   <script type="text/javascript" src="<%= request.getContextPath() %>/js/sprintview.js"></script>
+ 
  
 </head>
 <body>
@@ -128,17 +131,32 @@
 	                <div class="view-hd">
 	                	<div class="prj-view-hd"><label class="projectview">Project View</label></div>
 		                <div class="sp-view-hd"><label class="sprintview">Sprint View</label></div>
-		                <div class="pstat-view-hd"><label class="projectstatview">Project Statistics</label></div>
+		                <div class="pstat-view-hd"><label class="projectstatview">Task View</label></div>
 		                <!-- <a href="" class="customize float-rgt">Customize</a> -->
 		                <div class="error-hd" style="display:none;">
 		                	<a id="error_hd_close" href="javascript:void(0)"></a>
 		                </div>
 	                </div>
 	                <div class="duration-hd">
-	                	<label style="display:none;"></label>
+	                	<label class="duration" style="display:none;"></label>
 	                	<ul class="sprints float-lft">
 	                	</ul> 
 	                	<div id="pageCtrls" style="display:none;float:right;width:200px;height:30px;"></div>
+	                	<div id="task_report" style="display:none;float:left;width:100%">
+	                		<input type="text" value="" placeholder="Search todos"></input>
+	                		<label style="float:left;margin-top:5px;">&nbsp;&nbsp;| Sort By :</label>
+	                		<div class="task_sort">
+	                			<label>Created on</label>
+	                			<a href="javascript:void(0);"></a>
+	                			<ul id="sort-list" style="display:none;">
+		                			 <li>Created on</li>
+		                			 <li>Modified on</li>
+		                			 <li>Content</li>
+		                			 <li>Milestone Period</li>
+		                			 <li>Status</li>
+	                			</ul>
+	                		</div>
+	                	</div>
 	                </div>
 	                 
 	            </div>
@@ -153,22 +171,15 @@
                 <table id="pstat-view" class="project-list">
              	 <thead>
 	             	 <tr class="header">
-	             	 	<td>Users</td>
-	             	 	<td>No.of tasks</td>
-	             	 	<td>Total Working hours</td>
+	             	 	<td>To do</td>
+	             	 	<td>Milestone</td>
+	             	 	<td>Status</td>
+	             	 	<td>Member</td>
+	             	 	<td>Actions</td>
 	             	 </tr>
 	             </thead>
              	 <tbody class="content">
-             	 	<tr class="odd">
-             	 		<td>Sangeetha</td>
-	             	 	<td>10</td>
-	             	 	<td>12</td>
-             	 	</tr>
-             	 	<tr class="even">
-             	 		<td>Chander Pechetty</td>
-	             	 	<td>38</td>
-	             	 	<td>78</td>
-             	 	</tr>
+             	 	
               	 </tbody>
               </table> 
             </div>
@@ -429,7 +440,7 @@
            </div>
        </div>
        
-           <div class="sprint-popup" style="display:none;">
+       <div class="sprint-popup" style="display:none;">
            <div class="c-box">
                <div class="c-box-head">Add New Sprint </div>
                <div class="c-box-content">
@@ -444,6 +455,7 @@
                <div id="sprintClose" class="sprint_close"></div> 
            </div>
        </div>
+       
     </section>
 </div>
 </body>
