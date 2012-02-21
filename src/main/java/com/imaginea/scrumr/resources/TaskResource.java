@@ -74,8 +74,12 @@ public class TaskResource {
                                     @RequestParam String pageNumber, @RequestParam String maxCount) {
 
         Integer projId = Integer.parseInt(projectId);
-        Integer sprId = Integer.parseInt(sprintId);
-        Integer usrId = Integer.parseInt(userId);
+        Integer sprId = null;
+        Integer usrId = null;
+        if (sprintId != null)
+            sprId = Integer.parseInt(sprintId);
+        if (userId != null)
+            usrId = Integer.parseInt(userId);
         Integer pagenum = Integer.parseInt(pageNumber);
         Integer pageSize = Integer.parseInt(maxCount);
         return taskManager.fetchTaskStatusDetails(projId, sprId, usrId, orderBy, pagenum, pageSize);
