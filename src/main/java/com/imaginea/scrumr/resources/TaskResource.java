@@ -1,6 +1,7 @@
 package com.imaginea.scrumr.resources;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.imaginea.scrumr.entities.ProjectSummaryReport;
 import com.imaginea.scrumr.entities.Task;
 import com.imaginea.scrumr.entities.Task.TaskStatus;
 import com.imaginea.scrumr.entities.User;
@@ -54,15 +56,26 @@ public class TaskResource {
 
     @RequestMapping(value = "/summary", method = RequestMethod.GET)
     public @ResponseBody
-    List<Object> fetchTaskStatusSummary(@RequestParam String projectId,
+    List<ProjectSummaryReport> fetchTaskStatusSummary(@RequestParam String projectId,
                                     @RequestParam(required = false) String sprintId) {
 
         Integer projId = Integer.parseInt(projectId);
         Integer sprId = Integer.parseInt(sprintId);
         List<Object> results = taskManager.fetchTaskStatusSummary(projId, sprId);
+        List< ProjectSummaryReport> reportList = new ArrayList<ProjectSummaryReport>();
+        for (Iterator iterator = results.iterator(); iterator.hasNext();) {
+            Object[] object = (Object[]) iterator.next();
+            Task task = (Task) object[0];
+            ProjectSummaryReport report =new ProjectSummaryReport();
+            report.setTask(task);
+            //report.setTimeWorked(timeWorked);
+            report.setTotalTasks(((Long)object[1]).intValue());
+            report.setTotalTime(((Long)object[2]).intValue());
+            reportList.add(report);
+        }
         // HashMap map = new HashMap();
         // map.put( , results);
-        return results;
+        return reportList;
     }
 
     @RequestMapping(value = "/details", method = RequestMethod.GET)
