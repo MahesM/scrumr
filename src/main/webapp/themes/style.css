@@ -2151,6 +2151,92 @@ border-top-right-radius: 4px;
 }
 
 
+/*Adding new sprint*/
+
+.sprint-popup {
+    position: absolute;
+    top:130px;
+    left:290px;
+}
+
+.sprint-popup .c-box {
+    position: relative;
+    float: left;
+       box-shadow: 0 0 3px 2px #999;
+     -moz-box-shadow:0 0 3px 2px #999;
+    -webkit-box-shadow:0 0 3px 2px #999;
+      -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.sprint-popup .pointer {
+    position: absolute;
+    left:-12px;
+    top:30px;
+    background: url("images/pointer.png") no-repeat;
+    width: 12px;
+    height: 12px;
+}
+
+.sprint-popup .pointer-rgt {
+    position: absolute;
+    left:293px;
+    top:30px;
+    background: url("images/pointer-rgt.png") no-repeat;
+    width: 12px;
+    height: 12px;
+}
+
+
+.sprint-popup .sprint_close {
+    position: absolute;
+    left:280px;
+    top:-10px;
+    background: url("images/popup-close.png") no-repeat;
+    width: 24px;
+    height: 24px;
+    cursor:pointer;
+}
+
+.sprint-popup .c-box-head {
+    padding:8px;
+   -webkit-border-top-left-radius: 4px;
+-webkit-border-top-right-radius: 4px;
+-moz-border-radius-topleft: 4px;
+-moz-border-radius-topright: 4px;
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+    color:#666;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.sprint-popup .c-box-head span {
+    font-weight: normal !important;
+}
+
+.sprint-popup .c-box-content {
+    border-bottom:  1px solid #e4e4e4;
+    padding: 10px;
+}
+
+.sprint-popup .actions-cont {
+    margin: 0 10px 10px 0;
+    float:right;
+}
+
+.sprint-popup .actions-cont a {
+    margin-right: 10px;
+    margin-top: 20px;
+    font-size: 13px;
+    cursor:pointer;
+    float:left;
+}
+
+
+
 /*CHARTS*/
 .chart-container{
 	float:left;
@@ -2218,9 +2304,26 @@ ul.col li.stages {
 ul.col li .header {
 	background: none repeat scroll 0 0 #EDEDED;
     color: #7F7F7F;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 12px;
     padding: 8px 10px;
+}
+
+ul.col li .header a{
+	background: url("images/edit.png") no-repeat;
+    float:right;
+    height:16px;
+    width:16px;
+}
+
+ul.col li .header a:hover{
+	background: url("images/edit_hover.png") no-repeat;
+    height:16px;
+    width:16px;
+}
+
+ul.col li .header label {
+	font-weight:bold;
+	font-size:14px;
 }
 
 ul.col li.yellow .header span {

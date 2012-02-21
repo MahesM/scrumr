@@ -70,6 +70,12 @@ $(document).ready(function() {
             				$('#projectName').html(title);
             				users = project.assignees;
             				totalsprints = project.no_of_sprints;
+            				//populate story popup sprint select box
+            				var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
+            	        	 for(var i=1;i<=totalsprints;i++){
+            	        		 optionsHtml +='<option value="'+i+'">Sprint '+i+'</option>';
+            	        	 }
+            	        	 $('.story-popup #storySprint').html(optionsHtml);
             				$("#people").html('');
             				if(users != null && users.length > 0){
             					for(var i=0;i< users.length;i++){
@@ -215,7 +221,12 @@ $(document).ready(function() {
 				        		var sprint_html = '<ul id="holderforpage" class="col">';
 			        			$("ul.col li").css("width",100/sprints.length+'%');
 			        			for(var k=0; k<sprints.length;k++ ){
-			        				sprint_html += '<li class="stages"><div class="header "><span></span>Sprint '+(k+1)+'</div><div class="projectCont"><ul id="sp'+sprints[k].id+'"class="story">';
+			        				//sprint_html += '<li class="stages"><div class="header "><span></span>Sprint '+(k+1)+'</div><div class="projectCont"><ul id="sp'+sprints[k].id+'"class="story">';
+			        				var sprint_startdate = new Date(sprints[k].startdate);
+			        				sprint_startdate = sprint_startdate.format("mmm dd");
+			        				var sprint_enddate = new Date(sprints[k].enddate);
+			        				sprint_enddate = sprint_enddate.format("mmm dd");
+			        				sprint_html += '<li class="stages"><div class="header "><label>Sprint '+(k+1)+' </label> |&nbsp;&nbsp;'+sprint_startdate+' - '+sprint_enddate+'<a class="editSprint" style="display:none;" href="javascript:void(0);"></a></div><div class="projectCont"><ul id="sp'+sprints[k].id+'"class="story">';
 			        				var post_data2 = 'sprintId='+sprints[k].pkey+'&projectId='+projectId;
 						        	$.ajax({
 						        		url: '/scrumr/api/v1/stories/sprint/'+sprints[k].pkey,
@@ -272,6 +283,11 @@ $(document).ready(function() {
 
 			        			sprint_html +='</ul>';
 			        			$("#project-view").html(sprint_html);
+			        	        $('ul.col li.stages .header').hover(function(){
+			        	        	$(this).find('a.editSprint').show(); 
+			        	         },function(){
+			        	        	 $(this).find('a.editSprint').hide();
+			        	         });
 			        			$('#pageCtrls').html("");
 			        			var current_page = current_sprint - 1;
 			        			setTimeout(function(){
@@ -1233,11 +1249,16 @@ $(document).ready(function() {
 				if($(el).closest('.popup-story-cont').length === 0){
 					$('.popup-story-cont').hide();
 				}
+				//if custom select of priority is open, close it on click anywhere outside the popup
 				if($(el).closest('.custom-select').length === 0){
 					if($(this).find('ul.option-list').is(':visible')){
 						$(this).find('ul.option-list').hide();
 					}
 				}
+				/*console.log($(el));
+				if($(el).closest('.sprint-popup').length === 0 && !($(el).hasClass('editSprint')) && !($(el).hasClass('new_sprint'))){
+					$('.sprint-popup').hide();
+				}*/
 			});
 			
 			
@@ -1307,12 +1328,6 @@ $(document).ready(function() {
             
             populateProjectDetails();
             populateUnassignedStories('');
-          //populate story popup sprint select box
-			var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
-        	 for(var i=1;i<=totalsprints;i++){
-        		 optionsHtml +='<option value="'+i+'">Sprint '+i+'</option>';
-        	 }
-        	 $('.story-popup #storySprint').html(optionsHtml);
             //populateUserDetails();
             if(firstVisit){
             	populateUserDetails(userIndex,false);
@@ -2490,6 +2505,109 @@ $(document).ready(function() {
              
              return false;
          });
-       
+         
+         var dates = $( "#sprint_start, #sprint_end" ).datepicker({
+     		defaultDate: "+1w",
+     		changeMonth: true,
+     		numberOfMonths: 1,
+     		onSelect: function( selectedDate ) {
+     		var option = this.id == "sprint_start" ? "minDate" : "maxDate",
+     		instance = $( this ).data( "datepicker" ),
+     		date = $.datepicker.parseDate(
+     		instance.settings.dateFormat ||
+     		$.datepicker._defaults.dateFormat,
+     		selectedDate, instance.settings );
+     		dates.not( this ).datepicker( "option", option, date );
+     		}
+     	}); 
+         
+         $('ul.col li.stages .header a.editSprint').live("click",function(){
+    		 var sprint_id = $(this).closest('li.stages').find('ul.story').attr('id').split('sp')[1];
+    		 $('.sprint-popup .c-box .c-box-head').html("Sprint"+sprint_id+" Details");
+    		 var top = $(this).position().top + 50;
+    		 var left = $(this).position().left + 30;
+    		 var contentWidth = parseInt($('div.content').css('width'));
+    		 var popupWidth = parseInt($('.sprint-popup').css('width'));
+    		 if(left + popupWidth > contentWidth){
+    			 $('.sprint-popup').find('div#pointerEl').removeClass('pointer').addClass('pointer-rgt');
+    			 var current_left = left - popupWidth - 50;
+				 $('.sprint-popup').css('top',top);
+				 $('.sprint-popup').css('left',current_left);
+    		 }else {
+    			 $('.sprint-popup').find('div#pointerEl').removeClass('pointer-rgt').addClass('pointer');
+    			 $('.sprint-popup').css({'top':top,'left':left});
+    		 }
+    		 $('.sprint-popup').find('#createSprint').addClass("edit");
+    		 $('.sprint-popup').find('#createSprint').attr('data-id',sprint_id);
+    		 $.ajax({
+	        		url: '/scrumr/api/v1/sprints/'+sprint_id+'/project/'+projectId,
+	        		type: 'GET',
+	        		async:false,
+	        		success: function( result ) {
+	        			var sprint_startdate = new Date(result[0].startdate);
+	        			var sprintStart = sprint_startdate.format("mm/dd/yyyy");
+	        			$('.sprint-popup').find('#sprint_start').datepicker("setDate", sprintStart );
+	        			var sprint_enddate = new Date(result[0].enddate);
+	        			var sprintEnd = sprint_enddate.format("mm/dd/yyyy");
+	        			$('.sprint-popup').find('#sprint_end').datepicker("setDate", sprintEnd );
+	        		}
+    		 });
+    		 $('.sprint-popup').show();
+         });
+         
+         $('.new_sprint').live("click",function(){
+    		 $('.sprint-popup .c-box .c-box-head').html("Add New Sprint");
+    		 var top = $(this).position().top + 15;
+    		 var left = $(this).position().left + 100;
+    		 $('.sprint-popup').css({'top':top,'left':left});
+    		 $('.sprint-popup').find('#createSprint').removeClass("edit");
+    		 $('.sprint-popup').show();
+         });
+         
+         $('#createSprint').live("click",function(){
+        	 if($(this).hasClass('edit')){
+        		 //edit sprint 
+        		 var sprint_id = $(this).attr('data-id');
+        		 var start_date = $('.sprint-popup').find('input[name=sprintStart]');
+        		 var end_date =  $('.sprint-popup').find('input[name=sprintEnd]');
+        		 var post_data = 'sprintId='+sprint_id+'&start_date='+start_date.val()+'&end_date='+end_date.val()+'&projectId='+projectId;
+        		 $.ajax({
+        			url: '/scrumr/api/v1/sprints/update',
+        			type: 'POST',
+        			data: post_data,
+        			async:false,
+        			success: function() { 
+        				populateProjectDetails();
+        				populateSprints();
+        				populateSprintStories(sprint_id);
+        				$('.sprint-popup').hide();
+        			},
+        			error: function(data) { },
+       			    complete: function(data) { }            		
+                });
+        	 }else{
+        		 //create sprint
+        		 var start_date = $('.sprint-popup').find('input[name=sprintStart]');
+        		 var end_date =  $('.sprint-popup').find('input[name=sprintEnd]');
+        		 var post_data = 'start_date='+start_date.val()+'&end_date='+end_date.val()+'&projectId='+projectId;
+        		 $.ajax({
+        			url: '/scrumr/api/v1/sprints/create',
+        			type: 'POST',
+        			data: post_data,
+        			async:false,
+        			success: function() { 
+        				populateProjectDetails();
+        				populateSprints();
+        				$('.sprint-popup').hide();
+        			},
+        			error: function(data) { },
+       			    complete: function(data) { }            		
+                });
+        	 }
+         });
+         
+         $('#popup_sprint_cancel, .sprint_close').live("click",function(){
+        	 $('.sprint-popup').hide();
+         });
 
 });

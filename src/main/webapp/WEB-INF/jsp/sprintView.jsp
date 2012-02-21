@@ -428,6 +428,22 @@
                <div id="storyClose" class="story_close"></div> 
            </div>
        </div>
+       
+           <div class="sprint-popup" style="display:none;">
+           <div class="c-box">
+               <div class="c-box-head">Add New Sprint </div>
+               <div class="c-box-content">
+                   <input type="date" id="sprint_start" name="sprintStart" class="cal inp-box" placeholder="Start date" required="required"/>
+	           	   <input type="date" id="sprint_end" name="sprintEnd" class="cal inp-box margin-left" placeholder="End date"/>
+               </div>
+                 <div class="actions-cont">
+                 	<a id="popup_sprint_cancel">later</a>
+                 	<input id="createSprint" type="button" class="submit" value="Done"/>
+                </div>
+               <div id="pointerEl" class="pointer"></div> 
+               <div id="sprintClose" class="sprint_close"></div> 
+           </div>
+       </div>
     </section>
 </div>
 </body>
