@@ -57,6 +57,14 @@ public class SprintManagerImpl implements SprintManager {
         return genericDao.getEntity(Sprint.class, "sprints.selectSprintByProject", ht);
     }
 
+    public Integer getSprintCountForProject(Project project) {
+
+        Hashtable<String, Object> ht = new Hashtable<String, Object>();
+        ht.put("project", project);       
+        Long totalSprints = (Long)genericDao.getResult("sprints.selectSprintCountForProject", ht);
+        return totalSprints.intValue();
+    }
+
     public List<Sprint> selectSprintsByProject(Project project) {
 
         Hashtable<String, Object> ht = new Hashtable<String, Object>();

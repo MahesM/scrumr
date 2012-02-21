@@ -3,7 +3,6 @@ package com.imaginea.scrumr.entities;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -21,6 +20,7 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @Table(name = "sprints")
 @NamedQueries({
 	@NamedQuery(name="sprints.selectSprintsByProject", query="SELECT instance from Sprint instance where instance.project=:project" ),
+	@NamedQuery(name="sprints.selectSprintCountForProject", query="SELECT count(instance) from Sprint instance where instance.project=:project" ),
 	@NamedQuery(name="sprints.selectSprintByProject", query="SELECT instance from Sprint instance where instance.project=:project and instance.id=:sprint_num" ),
 	@NamedQuery(name="sprints.selectFinishedSprints", query="SELECT instance from Sprint instance where instance.enddate<:enddate" )
 })

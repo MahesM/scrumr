@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +33,8 @@ public class SprintResource {
 
     @Autowired
     UserServiceManager userServiceManager;
+
+    private static final Logger logger = LoggerFactory.getLogger(SprintResource.class);
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public @ResponseBody
@@ -68,12 +72,15 @@ public class SprintResource {
     String createSprint(@RequestParam String start_date, @RequestParam String end_date,
                                     @RequestParam String projectId) {
 
+        Project project = projectManager.readProject(Integer.parseInt(projectId));
         Sprint sprint = new Sprint();
+        int totalSprints = sprintManager.getSprintCountForProject(project);
+        sprint.setId(totalSprints + 1);
         try {
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
             Date startdate = format.parse(start_date);
             sprint.setStartdate(startdate);
-            Date enddate = format.parse(start_date);
+            Date enddate = format.parse(end_date);
             sprint.setEnddate(enddate);
             if (startdate.after(new Date())) {
                 sprint.setStatus("Not Started");
@@ -84,10 +91,12 @@ public class SprintResource {
                     sprint.setStatus("In Progress");
                 }
             }
-            Project project = projectManager.readProject(Integer.parseInt(projectId));
+            // TODO: get rid of this
+            project.setNo_of_sprints(totalSprints + 1);
             sprint.setProject(project);
             sprintManager.createSprint(sprint);
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return "{\"result\":\"failure\"}";
         }
         return "{\"result\":\"success\"}";
