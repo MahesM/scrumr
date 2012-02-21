@@ -149,11 +149,10 @@
 	                			<label>Created on</label>
 	                			<a href="javascript:void(0);"></a>
 	                			<ul id="sort-list" style="display:none;">
-		                			 <li>Created on</li>
-		                			 <li>Modified on</li>
-		                			 <li>Content</li>
-		                			 <li>Milestone Period</li>
-		                			 <li>Status</li>
+		                			 <li data-order="createdOn">Created on</li>
+		                			 <li data-order="content">Content</li>
+		                			 <li data-order="timeInDays">Milestone Period</li>
+		                			 <li data-order="status">Status</li>
 	                			</ul>
 	                		</div>
 	                	</div>
@@ -199,7 +198,7 @@
 	        								<p id="st-description"></p>
 	        								<p id="st-priority"></p>
 	        								<p id="st-sprint"></p>
-	        								<p id="st-edit"><a href="javascrip:void(0);" class="st_edit_story">Edit Story</a></p>
+	        								<p id="st-edit"><a href="javascript:void(0);" class="st_edit_story">Edit Story</a></p>
 	        							</div>
 	        							<div id="story-edit-section" style="display:none;" class="story_section">
 	        								<input type="text" id="st-edit-title" /><!-- <p id="st-title"></p> -->
@@ -235,7 +234,7 @@
 												</select>
 											</div><!-- <p id="st-sprint"></p> -->
 	        								<div class="st-edit-action">
-	        									<a href="javascrip:void(0);" class="st_edit_cancel">Cancel</a>
+	        									<a href="javascript:void(0);" class="st_edit_cancel">Cancel</a>
 	        									<input id="st-edit-done" type="button" class="float-rgt submit" value="Done"/>
 	        								</div>
 	        							</div>
