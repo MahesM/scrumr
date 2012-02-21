@@ -112,7 +112,7 @@ public class SprintResource {
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
             Date startdate = format.parse(start_date);
             sprint.setStartdate(startdate);
-            Date enddate = format.parse(start_date);
+            Date enddate = format.parse(end_date);
             sprint.setEnddate(enddate);
             if (startdate.after(new Date())) {
                 sprint.setStatus("Not Started");
