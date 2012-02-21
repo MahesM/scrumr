@@ -105,9 +105,10 @@ public class SprintResource {
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
     List<Sprint> updateSprint(@RequestParam String start_date, @RequestParam String end_date,
-                                    @RequestParam String sprintId) {
+                                    @RequestParam String sprintId, @RequestParam String projectId) {
         List<Sprint> result = new ArrayList<Sprint>();
-        Sprint sprint = sprintManager.readSprint(Integer.parseInt(sprintId));
+        Project project = projectManager.readProject(Integer.parseInt(projectId));
+        Sprint sprint = sprintManager.selectSprintByProject(project, Integer.parseInt(sprintId));
         try {
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
             Date startdate = format.parse(start_date);
@@ -123,8 +124,10 @@ public class SprintResource {
                     sprint.setStatus("In Progress");
                 }
             }
+            sprintManager.updateSprint(sprint);
             result.add(sprint);
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return result;
         }
         return result;

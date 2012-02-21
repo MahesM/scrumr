@@ -60,8 +60,8 @@ public class SprintManagerImpl implements SprintManager {
     public Integer getSprintCountForProject(Project project) {
 
         Hashtable<String, Object> ht = new Hashtable<String, Object>();
-        ht.put("project", project);       
-        Long totalSprints = (Long)genericDao.getResult("sprints.selectSprintCountForProject", ht);
+        ht.put("project", project);
+        Long totalSprints = (Long) genericDao.getResult("sprints.selectSprintCountForProject", ht);
         return totalSprints.intValue();
     }
 

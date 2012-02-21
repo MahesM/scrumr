@@ -118,6 +118,7 @@ public class StoryResource {
             story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
             storyManager.createStory(story);
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return "{\"result\":\"failure\"}";
         }
         return "{\"result\":\"success\"}";
@@ -151,6 +152,7 @@ public class StoryResource {
             // story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
             storyManager.updateStory(story);
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return "{\"result\":\"failure\"}";
         }
         return "{\"result\":\"success\"}";
@@ -169,7 +171,7 @@ public class StoryResource {
             story.setStatus(status);
             storyManager.updateStory(story);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return "{\"result\":\"failure\"}";
         }
         return "{\"result\":\"success\"}";
@@ -258,6 +260,7 @@ public class StoryResource {
             logger.debug("Stage :" + stage + ", User :" + userid + ", story" + storyId);
             statusManager.createStatus(story_status);
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             throw new Exception(e.toString());
         }
         return "{\"result\":\"success\"}";

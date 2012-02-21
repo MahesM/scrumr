@@ -9,7 +9,8 @@ public interface SprintManager {
 
     void createSprint(Sprint sprint);
 
-    Sprint readSprint(Integer pkey);
+    // TODO: get rid of this selectSprintByProject should be used
+    Sprint readSprint(Integer sprintId);
 
     void updateSprint(Sprint sprint);
 
