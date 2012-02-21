@@ -49,6 +49,8 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
 
     public static final String FETCH_TEAM_STATUS_DETAILS_BY_USER = "SELECT instance from Task instance where instance.story.project.id=:projectId and instance.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) and instance.user.id=:userId";
 
+    public static final String FETCH_TEAM_STATUS_DETAILS_BY_PROJECT = "SELECT instance from Task instance where instance.story.project.id=:projectId ";
+
     public enum TaskStatus {
         CREATED, IN_PROGRESS, COMPLETED;
     }

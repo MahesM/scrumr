@@ -68,7 +68,8 @@ public class TaskResource {
     @RequestMapping(value = "/details", method = RequestMethod.GET)
     public @ResponseBody
     List<Task> fetchTaskStatusDetails(@RequestParam String projectId,
-                                    @RequestParam String sprintId, @RequestParam String userId,
+                                    @RequestParam(required = false) String sprintId,
+                                    @RequestParam(required = false) String userId,
                                     @RequestParam(required = false) String orderBy,
                                     @RequestParam String pageNumber, @RequestParam String maxCount) {
 

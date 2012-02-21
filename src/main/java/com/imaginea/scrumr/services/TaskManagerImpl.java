@@ -77,13 +77,13 @@ public class TaskManagerImpl implements TaskManager {
 
     public List<Task> fetchTaskStatusDetails(Integer projectId, Integer sprintId, Integer userId,
                                     String orderBy, Integer pageNumber, Integer maxCount) {
-        String queryName = Task.FETCH_TEAM_STATUS_DETAILS_BY_SPRINT;
+        String queryName = Task.FETCH_TEAM_STATUS_DETAILS_BY_PROJECT;
         Hashtable<String, Object> criteria = new Hashtable<String, Object>();
         // projectId is mandatory
         criteria.put("projectId", projectId);
         if (sprintId != null) {
             criteria.put("sprintId", sprintId);
-            // queryName = "tasks.fetchTeamStatusDetailsBySprint";
+            queryName = Task.FETCH_TEAM_STATUS_DETAILS_BY_SPRINT;
         }
         if (userId != null) {
             criteria.put("userId", userId);
