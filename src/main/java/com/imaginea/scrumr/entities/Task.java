@@ -24,8 +24,8 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @NamedQueries({
         @NamedQuery(name = "tasks.fetchTasksByStory", query = "SELECT instance from Task instance where instance.story.id=:storyid"),
         @NamedQuery(name = "tasks.fetchTasksByAssignee", query = "SELECT instance from Task instance where instance.user.id=:userid"),
-        @NamedQuery(name = "tasks.fetchTeamStatusSummaryBySprint", query = "SELECT instance.user.displayname as displayname, count(instance) as total_tasks, sum(instance.timeInDays) as total_tasks, instance.status as status from Task instance where instance.story.project.id=:projectId and instance.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) group by instance.user.id"),
-        @NamedQuery(name = "tasks.fetchTeamStatusSummaryByProject", query = "SELECT instance.user.displayname as displayname, count(instance) as total_tasks, sum(instance.timeInDays) as total_tasks, instance.status as status from Task instance where instance.story.project.id=:projectId group by instance.user.id") })
+        @NamedQuery(name = "tasks.fetchTeamStatusSummaryBySprint", query = "SELECT instance,  count(instance) as total_tasks, sum(instance.timeInDays) as time_in_days from Task instance where instance.story.project.id=:projectId and instance.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) group by instance.user.id"),
+        @NamedQuery(name = "tasks.fetchTeamStatusSummaryByProject", query = "SELECT instance, count(instance) as total_tasks, sum(instance.timeInDays) as time_in_days from Task instance where instance.story.project.id=:projectId group by instance.user.id") })
 @XmlRootElement
 public class Task extends AbstractEntity implements IEntity, Serializable {
 
