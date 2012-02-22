@@ -43,11 +43,11 @@
 		            <img src="<%= request.getContextPath() %>/themes/images/facebook.png" alt="Facebook" title="Facebook" border="0"/>
 		          </a>
 		        </td>
-		        <td>
+		        <!--td>
 		          <a href="https://pramati.staging.qontext.com/portal/external/_local_scrum">
 		            <img src="<%= request.getContextPath() %>/themes/images/qontext.jpg"" alt="Qontext" title="Qontext" border="0"/>
 		          </a>
-		        </td>
+		        </td-->
 		       
 		      </tr>
 		      </table>

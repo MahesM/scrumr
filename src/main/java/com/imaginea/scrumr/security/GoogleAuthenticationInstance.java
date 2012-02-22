@@ -2,19 +2,15 @@ package com.imaginea.scrumr.security;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.codehaus.jettison.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.client.RestTemplate;
 
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAuthorizationRequestUrl;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.qontextclient.EasySSLProtocolSocketFactory;
 
@@ -28,17 +24,11 @@ public class GoogleAuthenticationInstance implements AuthenticationSource {
 
     private GoogleInvocationHelper helper;
 
-    private HttpSession session;
-
     private String SCOPE;
 
     private String CALLBACK_URL;
 
-    private static final HttpTransport TRANSPORT = new NetHttpTransport();
-
-    private static final JsonFactory JSON_FACTORY = new JacksonFactory();
-
-    private RestTemplate restTemplate = new RestTemplate();
+    public static final Logger logger = LoggerFactory.getLogger(GoogleAuthenticationInstance.class);
 
     public User doAuthentication(HttpServletRequest request, HttpServletResponse respose) {
 
@@ -54,7 +44,14 @@ public class GoogleAuthenticationInstance implements AuthenticationSource {
         try {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 if (request.getParameter("code") == null) {
-                    String authorizeUrl = new GoogleAuthorizationRequestUrl(consumerKey, CALLBACK_URL, SCOPE).build();
+                    int port = request.getServerPort();
+                    StringBuilder callbackUrl = new StringBuilder(request.getScheme()).append("://").append(request.getServerName());
+                    if (port != 80) {
+                        callbackUrl.append(":").append(port);
+                    }
+                    callbackUrl.append(request.getContextPath()).append(CALLBACK_URL);
+                    logger.info("callback url:" + callbackUrl);
+                    String authorizeUrl = new GoogleAuthorizationRequestUrl(consumerKey, callbackUrl.toString(), SCOPE).build();
                     respose.sendRedirect(authorizeUrl);
                     return null;
                 } else {
@@ -85,6 +82,7 @@ public class GoogleAuthenticationInstance implements AuthenticationSource {
             }
             return user;
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return null;
         }
 
@@ -96,7 +94,7 @@ public class GoogleAuthenticationInstance implements AuthenticationSource {
             String users = helper.searchPeople(startIndex, count).toString();
             return users;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return null;
     }
@@ -106,8 +104,7 @@ public class GoogleAuthenticationInstance implements AuthenticationSource {
             String users = helper.searchBasicProfile(sortType, startIndex, count).toString();
             return users;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return null;
     }
