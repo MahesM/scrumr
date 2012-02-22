@@ -114,7 +114,7 @@ $(document).ready(function() {
 	        					var story = stories[i];
 	        					creatorObj = userObject[story.creator];
 							var userObj = userObject[story.creator];
-	        					story_unassigned += '<li class="unassigned p'+story.priority+'" id="st'+story.pkey+'"><p>'+story.title+'</p><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
+	        					story_unassigned += '<li class="unassigned p'+story.priority+'" id="st'+story.pkey+'"><p>'+story.title+'</p><div class="meta"><div class="img-cont"></div></div><a href="javascript:void(0);" class="strRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 
 	        				}
 	        			}else{
@@ -431,6 +431,18 @@ $(document).ready(function() {
 	                	}
 	                	refreshStoryPortlet(storyId, stageId, creatorObj);
 	                	$(".stAddmore").html("Add Members");
+	                	//close all accordion except story details
+	                	$('div.down').each(function(){
+	                		if($(this).parent().next('#story_details_section').length == 0){
+	                			$(this).removeClass('down').addClass('open');
+	                			$(this).parent().next(".acc-content").hide();
+	                		}
+	                	});
+	                	$('div.open').each(function(){
+	                		if($(this).parent().next('#story_details_section').length != 0){
+	                			$(this).removeClass('open').addClass('down');
+	                		}
+	                	});
 	                   })
 
 	        	}); 
@@ -1116,9 +1128,10 @@ $(document).ready(function() {
         			async:false,
         			success: function( records ) {
         				if(records != null){
+        					var total_record='';
 							if(source == "qontext"){
-								records = $.parseJSON(records);
-								records = records.success.body.objects;
+								total_record = $.parseJSON(records);
+								records = total_record.success.body.objects;
 							}
 							if( records.length > 0){
 								var total_users = records;
@@ -1131,7 +1144,7 @@ $(document).ready(function() {
 								}
 								var users_html="";
 								if(source == "qontext"){
-									var apiVersion = records.success.headers["api-version"];
+									var apiVersion = total_record.success.headers["api-version"];
 									for(var i=0;i<total_users.length;i++){
 										if(!total_users[i].avatar){
 				        					total_users[i].avatar = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
@@ -1592,15 +1605,6 @@ $(document).ready(function() {
     			});
         	});
         	
-        	//execute the ajax call after user has stopped typing for a specified amt of time, here i take 2s
-        	var delay = (function(){
-        		  var timer = 0;
-        		  return function(callback, ms){
-        		    clearTimeout (timer);
-        		    timer = setTimeout(callback, ms);
-        		  };
-        		})();
-    		
     		$("#searchUser").live("keyup",function(event) {
     			if (event.which == 13 ||event.which == 8) {
     				event.preventDefault();
@@ -1633,7 +1637,7 @@ $(document).ready(function() {
     								if(!total_users[i].basicInfo.avatarUrl){
     			    					total_users[i].basicInfo.avatarUrl = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
     			    				}
-    								users_html += '<li><img src="'+qontextHostUrl+total_users[i].basicInfo.avatarUrl+'"/></div><div class="details"><label class="name">'+total_users[i].basicInfo.displayName+'</label><a class="email">'+total_users[i].basicInfo.primaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].accountId+'"></div></li>';
+    								users_html += '<li><img url="'+total_users[i].basicInfo.avatarUrl+'" src="'+qontextHostUrl+total_users[i].basicInfo.avatarUrl+'"/></div><div class="details"><label class="name">'+total_users[i].basicInfo.displayName+'</label><a class="email">'+total_users[i].basicInfo.primaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].accountId+'"></div></li>';
     								
     							}
     								
@@ -1812,7 +1816,8 @@ $(document).ready(function() {
 				$(".duration-hd").find('label.duration').hide();
 				$(".duration-hd").find('#pageCtrls').hide();
 				//$(".duration-hd").find('ul').hide();
-			//	$(".duration-hd").find("#task_report").show(); todo:enable it when the functionality is complete.
+				//todo:enable it when the functionality is complete.
+				$(".duration-hd").find("#task_report").show(); 
 				populateProjectStatistics();
 				viewStoryFancyBox();
 			});
@@ -2192,7 +2197,6 @@ $(document).ready(function() {
          	deleteStoryTodo(todoID);
          	//if edit was clicked and nothing was done.
          	$('#todo-form').find('input.submit').attr("value","Add");
-   			$('#todo-form').find('input.submit').css("margin-left","125px");
    			$('#todo-form').find('input.submit').attr("id","tAdd").attr('data-task',todoID);
          	populateStoryTodos();
          	});
@@ -2428,7 +2432,7 @@ $(document).ready(function() {
            			$('#todo-milestones').val(todo.milestonePeriod);
            			$('#todo-user').val(todo.user.username);
            			$('#todo-form').find('input.submit').attr("value","Update");
-           			$('#todo-form').find('input.submit').css("margin-left","115px");
+           			$('#todo-form').find('input.submit').css("margin-left","100px");
            			$('#todo-form').find('input.submit').attr("id","tupdate").attr('data-task',taskId).attr('data-status',todo.status);
        			},
        			error: function(data) { },
@@ -2459,7 +2463,6 @@ $(document).ready(function() {
       				$('#todo-milestones').val('1');	
       				$('#todo-user').val('0');	
       				$('#todo-form').find('input.submit').attr("value","Add");
-           			$('#todo-form').find('input.submit').css("margin-left","125px");
            			$('#todo-form').find('input.submit').attr("id","tAdd").attr('data-task',task_id).attr('data-status',todo.status);
       				var todoUpdateHtml = '<div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone"><label style="font-weight:none;">'+todo.milestonePeriod+' Milestone Period | </label><div class="todo-status"><label style="color:'+taskStatusColors[todo.status]+';" class="todo-status-text">'+todo.status+'</label><a href="javascript:void(0);" ></a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div>';
       				$('.todo-display').find('ul.todo-total-display').find('li#todo'+task_id).html(todoUpdateHtml);
@@ -2498,7 +2501,7 @@ $(document).ready(function() {
        			async:false,
        			success: function( todo ) {  
        				c.find('label').replaceWith($(el).html());
-                    $(el).closest('ul.todo-status-list').hide();
+                    $(el).closest('#todo_section').find('ul.todo-status-list').hide();
        			},
        			error: function(data) { },
       			complete: function(data) { }            		

@@ -42,6 +42,7 @@
 	<% } %>
 	var taskStatusColors = {'CREATED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
  </script>
+ <script type="text/javascript" src="<%= request.getContextPath() %>/js/commons.js"></script>
   <script type="text/javascript" src="<%= request.getContextPath() %>/js/taskview.js"></script>
   <script type="text/javascript" src="<%= request.getContextPath() %>/js/sprintview.js"></script>
  
@@ -143,7 +144,7 @@
 	                	</ul> 
 	                	<div id="pageCtrls" style="display:none;float:right;width:200px;height:30px;"></div>
 	                	<div id="task_report" style="display:none;float:left;width:100%">
-	                		<input type="text" value="" placeholder="Search todos"></input>
+	                		<input type="text" value="" id="searchTodos" placeholder="Search todos..."></input>
 	                		<label style="float:left;margin-top:5px;">&nbsp;&nbsp;| Sort By :</label>
 	                		<div class="task_sort">
 	                			<label>Created on</label>
@@ -285,7 +286,7 @@
 							                 	</select>
 							                 	<select id="todo-user" class="todo-select">							                 		
 							                 	</select>
-							                 	<input id="tAdd" class="submit" style="margin-left:125px;" type="button" value="Add" />
+							                 	<input id="tAdd" class="submit" style="margin-left:100px;" type="button" value="Add" />
 							                 	</form>
 					                       </div>
 					                                              
