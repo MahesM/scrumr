@@ -1153,7 +1153,7 @@ $(document).ready(function() {
 									}
 								}else{
 									for(var i=0;i<total_users.length;i++){
-										users_html += '<li><img url="'+total_users[i].avatarurl+'" src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].fullname+'</label><a class="email">'+total_users[i].emailid+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].username+'"></div></li>';
+										users_html += '<li><img url="'+total_users[i].avatarurl+'" src="'+qontextHostUrl+total_users[i].avatarurl+'"/></div><div class="details"><label class="name">'+total_users[i].fullname+'</label><a class="email">'+total_users[i].emailid+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].username+'"></div></li>';
 									}
 								}
 								
