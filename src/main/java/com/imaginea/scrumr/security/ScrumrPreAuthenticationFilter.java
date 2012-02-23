@@ -9,140 +9,137 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import com.imaginea.scrumr.entities.User;
-import com.imaginea.scrumr.utils.QontextHelperUtil;
 
-public class ScrumrPreAuthenticationFilter extends
-AbstractPreAuthenticatedProcessingFilter {
+import com.imaginea.scrumr.entities.User;
+
+public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProcessingFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(ScrumrPreAuthenticationFilter.class);
-	private AuthenticationManager authenticationManager;
-	private AbstractAuthenticationFactory abstractAuthenticationFactory;
-	private AuthenticationSource authenticationSource;
-	private String exceptionUrlPattern;
-	public String getExceptionUrlPattern() {
-		return exceptionUrlPattern;
-	}
 
-	public void setExceptionUrlPattern(String exceptionUrlPattern) {
-		this.exceptionUrlPattern = exceptionUrlPattern;
-	}
+    private AuthenticationManager authenticationManager;
 
-	public ScrumrPreAuthenticationFilter() {
-		super();
-	}
+    transient private AbstractAuthenticationFactory abstractAuthenticationFactory;
 
-	@Override
-	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
-		String userId = extractUsername(request);
-		logger.info("Obtained principal for authentication " + userId);
-		return userId;
-	}
+    private AuthenticationSource authenticationSource;
 
-	@Override
-	protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
-		String password = extractPassword(request);
-		return password;
-	}
+    private String exceptionUrlPattern;
 
-	private String extractPassword(HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return request.getParameter("j_password");
-	}
+    public String getExceptionUrlPattern() {
+        return exceptionUrlPattern;
+    }
 
-	/**
-	 * Locates the user name in the request.
-	 * 
-	 * @param request
-	 *            the submitted request which is to be authenticated
-	 * @return the username value (if present), null otherwise.
-	 */
-	private String extractUsername(HttpServletRequest request) {
-		return request.getParameter("j_username");
-	}
+    public void setExceptionUrlPattern(String exceptionUrlPattern) {
+        this.exceptionUrlPattern = exceptionUrlPattern;
+    }
 
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-		Authentication authResult = null;
-		if (logger.isDebugEnabled()) {
-			logger.debug("Checking secure context token: "
-					+ SecurityContextHolder.getContext().getAuthentication());
-		}
+    public ScrumrPreAuthenticationFilter() {
+        super();
+    }
 
-		if (!requiresAuthentication((HttpServletRequest) request)) {
-			chain.doFilter(request, response);
-		} else {
-			if(SecurityContextHolder.getContext().getAuthentication() == null ){
-				try {
-					HttpServletRequest servletRequest = (HttpServletRequest) request;
-					authenticationSource = abstractAuthenticationFactory.getInstance(servletRequest);
-					User user = authenticationSource.doAuthentication((HttpServletRequest)request, (HttpServletResponse)response);
-					
-					if (user != null) {
-						if(SecurityContextHolder.getContext().getAuthentication()!=null )
-							authResult = SecurityContextHolder.getContext().getAuthentication();
-						if (authResult == null)
-							authResult = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<GrantedAuthority>());
-						successfulAuthentication((HttpServletRequest) request,
-								(HttpServletResponse) response, authResult);
-					} else if (user == null && SecurityContextHolder.getContext().getAuthentication() != null) {
-						chain.doFilter((HttpServletRequest)request, (HttpServletResponse)response);
-					}
-					
-					chain.doFilter(request, response);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ServletException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e){
-					e.printStackTrace();
-				}
-			}
-		}
-	}
+    @Override
+    protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
+        String userId = extractUsername(request);
+        logger.info("Obtained principal for authentication " + userId);
+        return userId;
+    }
 
-	private boolean requiresAuthentication(HttpServletRequest request) {
+    @Override
+    protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
+        String password = extractPassword(request);
+        return password;
+    }
 
-		if(SecurityContextHolder.getContext().getAuthentication() == null) {
-			return true;
-		}else{
-			return false;
-		}
-	}
+    private String extractPassword(HttpServletRequest request) {
+        return request.getParameter("j_password");
+    }
 
-	public AuthenticationManager getAuthenticationManager() {
-		return authenticationManager;
-	}
+    /**
+     * Locates the user name in the request.
+     * 
+     * @param request
+     *            the submitted request which is to be authenticated
+     * @return the username value (if present), null otherwise.
+     */
+    private String extractUsername(HttpServletRequest request) {
+        return request.getParameter("j_username");
+    }
 
-	public void setAuthenticationManager(
-			AuthenticationManager authenticationManager) {
-		this.authenticationManager = authenticationManager;
-	}
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+                                    throws IOException, ServletException {
+        Authentication authResult = null;
+        if (logger.isDebugEnabled()) {
+            logger.info("Checking secure context token: "
+                                            + SecurityContextHolder.getContext().getAuthentication());
+        }
 
-	@Override
-	public void afterPropertiesSet() {
-	}
+        if (!requiresAuthentication((HttpServletRequest) request)) {
+            chain.doFilter(request, response);
+        } else {
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                try {
+                    HttpServletRequest servletRequest = (HttpServletRequest) request;
+                    authenticationSource = abstractAuthenticationFactory.getInstance(servletRequest);
+                    User user = authenticationSource.doAuthentication((HttpServletRequest) request, (HttpServletResponse) response);
 
-	public AbstractAuthenticationFactory getAbstractAuthenticationFactory() {
-		return abstractAuthenticationFactory;
-	}
+                    if (user != null) {
+                        if (SecurityContextHolder.getContext().getAuthentication() != null)
+                            authResult = SecurityContextHolder.getContext().getAuthentication();
+                        if (authResult == null)
+                            authResult = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<GrantedAuthority>());
+                        successfulAuthentication((HttpServletRequest) request, (HttpServletResponse) response, authResult);
+                    } else if (user == null
+                                                    && SecurityContextHolder.getContext().getAuthentication() != null) {
+                        chain.doFilter((HttpServletRequest) request, (HttpServletResponse) response);
+                    }
+                    if(user!=null)
+                    chain.doFilter(request, response);
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (ServletException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+    }
 
-	public void setAbstractAuthenticationFactory(AbstractAuthenticationFactory abstractAuthenticationFactory) {
-		this.abstractAuthenticationFactory = abstractAuthenticationFactory;
-	}
+    private boolean requiresAuthentication(HttpServletRequest request) {
 
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
+    public AuthenticationManager getAuthenticationManager() {
+        return authenticationManager;
+    }
+
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+    }
+
+    public AbstractAuthenticationFactory getAbstractAuthenticationFactory() {
+        return abstractAuthenticationFactory;
+    }
+
+    public void setAbstractAuthenticationFactory(
+                                    AbstractAuthenticationFactory abstractAuthenticationFactory) {
+        this.abstractAuthenticationFactory = abstractAuthenticationFactory;
+    }
 }
