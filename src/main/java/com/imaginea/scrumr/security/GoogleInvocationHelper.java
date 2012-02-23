@@ -1,11 +1,15 @@
 package com.imaginea.scrumr.security;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,6 +21,12 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
+import com.imaginea.scrumr.entities.User;
+import com.imaginea.scrumr.interfaces.UserServiceManager;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 public class GoogleInvocationHelper {
 
@@ -26,13 +36,17 @@ public class GoogleInvocationHelper {
 
     private String hostUrl;
 
-    private String access_token;   
+    private String access_token;
+
+    private UserServiceManager userServiceManager;
 
     private static final HttpTransport TRANSPORT = new NetHttpTransport();
 
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
     private RestTemplate restTemplate = new RestTemplate();
+
+    public static final Logger logger = LoggerFactory.getLogger(GoogleInvocationHelper.class);
 
     public void initialize(HttpServletRequest request, String consumerKey, String consumerSecret,
                                     String hostUrl, String callback) {
@@ -42,21 +56,19 @@ public class GoogleInvocationHelper {
 
         try {
             String authorizationCode = request.getParameter("code");
-            GoogleAuthorizationCodeGrant authRequest = new GoogleAuthorizationCodeGrant(TRANSPORT, JSON_FACTORY, consumerKey, consumerSecret, authorizationCode, callback);
+            GoogleAuthorizationCodeGrant authRequest = new GoogleAuthorizationCodeGrant(TRANSPORT, JSON_FACTORY, URLEncoder.encode(consumerKey), URLEncoder.encode(consumerSecret), authorizationCode, callback);
             authRequest.useBasicAuthorization = false;
             AccessTokenResponse authResponse = authRequest.execute();
             String accessToken = authResponse.accessToken;
-            GoogleAccessProtectedResource access = new GoogleAccessProtectedResource(accessToken, TRANSPORT, JSON_FACTORY, consumerKey, consumerSecret, authResponse.refreshToken);
+            GoogleAccessProtectedResource access = new GoogleAccessProtectedResource(accessToken, TRANSPORT, JSON_FACTORY, URLEncoder.encode(consumerKey), URLEncoder.encode(consumerSecret), authResponse.refreshToken);
             HttpRequestFactory rf = TRANSPORT.createRequestFactory(access);
             System.out.println("Access token: " + authResponse.accessToken);
 
             this.access_token = authResponse.accessToken;
         } catch (RestClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -76,21 +88,47 @@ public class GoogleInvocationHelper {
             System.out.println("My Details: " + resp.toString());
             return resp;
         } catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
             return null;
         }
     }
 
     public String searchPeople(Integer startIndex, Integer count) {
-        String my_url = "https://www.googleapis.com/oauth2/v1/userinfo=" + access_token;
-        String res = restTemplate.getForObject(my_url, String.class);
-        System.out.println("My Details: " + res);
+        /*
+         * String my_url = "https://www.googleapis.com/oauth2/v1/userinfo=" + access_token; String
+         * res = restTemplate.getForObject(my_url, String.class); System.out.println("My Details: "
+         * + res);
+         */
+        List<User> userList = userServiceManager.fetchAllUsers(startIndex, count);
+        ObjectMapper mapper = new ObjectMapper();
+        String res = null;
+        try {
+            res = mapper.writeValueAsString(userList);
+            logger.info(res);
+        } catch (JsonGenerationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (JsonMappingException e) {
+            logger.error(e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
         return res;
     }
 
     public String searchBasicProfile(String sortType, Integer startIndex, Integer count) {
+
         String my_url = "https://www.googleapis.com/oauth2/v1/userinfo=" + access_token;
         String res = restTemplate.getForObject(my_url, String.class);
+
         return res;
+    }
+
+    public UserServiceManager getUserServiceManager() {
+        return userServiceManager;
+    }
+
+    public void setUserServiceManager(UserServiceManager userServiceManager) {
+        this.userServiceManager = userServiceManager;
     }
 
 }
