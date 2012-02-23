@@ -42,28 +42,28 @@ public class FacebookAuthenticationInstance implements AuthenticationSource {
         String emailId = null;
         String avatarUrl = null;
         User user = null;
+        int port = request.getServerPort();
 
+        StringBuilder callbackUrl = new StringBuilder(request.getScheme()).append("://").append(request.getServerName());
+        if (port != 80) {
+            callbackUrl.append(":").append(port);
+        }
+        callbackUrl.append(request.getContextPath()).append(CALLBACK_URL);
+        logger.info("callback url:" + callbackUrl);
         try {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 if (request.getParameter("error_reason") != null) {
                     logger.error("Error: " + request.getParameter("error_description"));
                 } else {
                     if (request.getParameter("code") == null) {
-                        int port = request.getServerPort();
 
-                        StringBuilder callbackUrl = new StringBuilder(request.getScheme()).append("://").append(request.getServerName());
-                        if (port != 80) {
-                            callbackUrl.append(":").append(port);
-                        }
-                        callbackUrl.append(request.getContextPath()).append(CALLBACK_URL);
-                        logger.info("callback url:" + callbackUrl);
                         String url = hostUrl + "?client_id=" + consumerKey + "&redirect_uri="
                                                         + callbackUrl + "&scope=" + SCOPE;
                         respose.sendRedirect(url);
                         return null;
                     } else {
                         if (helper.hasRequiredParameters(request)) {
-                            helper.initialize(request, consumerKey, consumerSecret, graphUrl, CALLBACK_URL);
+                            helper.initialize(request, consumerKey, consumerSecret, graphUrl, callbackUrl.toString());
                         }
                         JSONObject userDetails = helper.getBasicProfile();
                         user = new User();

@@ -1,5 +1,7 @@
 package com.imaginea.scrumr.security;
 
+import java.net.URLEncoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -41,22 +43,28 @@ public class GoogleAuthenticationInstance implements AuthenticationSource {
         String emailId = null;
         String avatarUrl = null;
         User user = null;
+        int port = request.getServerPort();
+        StringBuilder callbackUrl = new StringBuilder(request.getScheme()).append("://").append(request.getServerName());
+        if (port != 80) {
+            callbackUrl.append(":").append(port);
+        }
+        callbackUrl.append(request.getContextPath()).append(CALLBACK_URL);
+        logger.info("callback url:" + callbackUrl);
+        //String urlEncode = URLEncoder.encode(callbackUrl.toString());
+        String urlEncode = callbackUrl.toString();
         try {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 if (request.getParameter("code") == null) {
-                    int port = request.getServerPort();
-                    StringBuilder callbackUrl = new StringBuilder(request.getScheme()).append("://").append(request.getServerName());
-                    if (port != 80) {
-                        callbackUrl.append(":").append(port);
-                    }
-                    callbackUrl.append(request.getContextPath()).append(CALLBACK_URL);
-                    logger.info("callback url:" + callbackUrl);
-                    String authorizeUrl = new GoogleAuthorizationRequestUrl(consumerKey, callbackUrl.toString(), SCOPE).build();
+                   
+                    //logger.info(" encoded callback url:" + urlEncode);
+                    String authorizeUrl = new GoogleAuthorizationRequestUrl(consumerKey, urlEncode, SCOPE).build();
+                    logger.info("authorizeUrl url:" + authorizeUrl);
+                    //String urlEncode = URLEncoder.encode(authorizeUrl);
                     respose.sendRedirect(authorizeUrl);
                     return null;
                 } else {
                     if (helper.hasRequiredParameters(request)) {
-                        helper.initialize(request, consumerKey, consumerSecret, hostUrl, CALLBACK_URL);
+                        helper.initialize(request, consumerKey, consumerSecret, hostUrl, callbackUrl.toString());
                     }
                     JSONObject userDetails = helper.getBasicProfile();
                     user = new User();
