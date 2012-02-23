@@ -2291,24 +2291,23 @@ $(document).ready(function() {
          }); 
          
 		 //code for story details accordion
-         
-         $('div.down,div.open').live("click",function(){
-        	 if($(this).hasClass('open')){
-        		var current_div = $(this);
+                
+         $('div.acc-head').live("click",function(){
+        	 if($(this).find('div').hasClass('open')){
+        		var current_div = $(this).find('div');
         		$('div.down').each(function(){
         			if($(this) != current_div){
         				$(this).removeClass('down').addClass('open');
         				$(this).parent().next('.acc-content').slideUp("slow");
         			}
         		}); 
-        		$(this).removeClass('open').addClass('down');
-        		$(this).parent().next(".acc-content").slideDown("slow");
+        		$(this).find('div').removeClass('open').addClass('down');
+        		$(this).next(".acc-content").slideDown("slow");
         	}else{
-        		$(this).removeClass('down').addClass('open');
-        		$(this).parent().next(".acc-content").slideUp("slow");
+        		$(this).find('div').removeClass('down').addClass('open');
+        		$(this).next(".acc-content").slideUp("slow");
         	}
          });
-         
          
          
          

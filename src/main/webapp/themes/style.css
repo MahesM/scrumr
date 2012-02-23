@@ -2445,6 +2445,7 @@ ul.col li.pink .header span {
     border-bottom: 1px solid #b8ceeb;
     padding-bottom: 10px;
     margin-bottom: 5px;
+    cursor:pointer;
 }
 
 .acc-head label {
