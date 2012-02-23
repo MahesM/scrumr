@@ -935,6 +935,7 @@ div#projectList {
     margin-right: 5px;
     padding: 3px;
     text-align: center;
+    height:auto;
 }
 
 .duration-hd span.finished{
@@ -947,6 +948,7 @@ div#projectList {
     margin-right: 5px;
     padding: 3px;
     text-align: center;
+    height:auto;
 }
 
 .prj-view-hd label{
@@ -1778,7 +1780,7 @@ div.p3{
 }
 
 .custom-select ul.option-list li{
-    padding: 0;
+    padding-left: 5px;
     margin: 2px 0;
 }
 .custom-select ul.option-list li:hover{

@@ -1267,10 +1267,30 @@ $(document).ready(function() {
 						$(this).find('ul.option-list').hide();
 					}
 				}
-				/*console.log($(el));
-				if($(el).closest('.sprint-popup').length === 0 && !($(el).hasClass('editSprint')) && !($(el).hasClass('new_sprint'))){
+				//add user popup close on clicking anywhere outside popup.
+				if($(el).closest('.popup-proj-cont').length == 0 && $(el).closest('#addPeople').length == 0 && $(el).closest('#removePeople').length == 0){
+					$('.popup-proj-cont').hide();
+				}
+				
+				//add story popup close on clicking anywhere outside popup.
+				if($(el).closest('.story-popup').length == 0 && $(el).closest('#addStory').length == 0 ){
+					$('.story-popup').hide();
+				}
+				
+				//edit/create sprint popup close on clicking anywhere outside popup
+				if($(el).closest('.sprint-popup').length == 0 && !($(el).hasClass('editSprint')) && !($(el).hasClass('new_sprint'))){
 					$('.sprint-popup').hide();
-				}*/
+				}
+				
+				//task status popup close on clicking anywhere outside popup
+				if($(el).closest('.todo-status-list').length == 0 && $(el).closest('.todo-status a').length == 0){
+					$('.todo-status-list').hide();
+				}
+				
+				//task sort popup close on clicking anywhere outside popup
+				if($(el).closest('#sort-list').length == 0 && $(el).closest('.task_sort a').length == 0){
+					$('#sort-list').hide();
+				}
 			});
 			
 			

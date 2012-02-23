@@ -106,7 +106,7 @@ $("#searchTodos").live("keyup",function(event) {
 	}
 	
 	var el = $(this);
-	el.next().css('background','url("themes/images/ajax-loader.gif") no-repeat');
+	el.css('background-image',"themes/images/ajax-loader.gif");
 	delay(function(){
 		var query=$('#searchTodos').val();
 		var post_data = "sortType="+query+"&showTotalCount=false&startIndex=0&count=20";

@@ -53,12 +53,12 @@ a.swShowPage{
 
 	/* The links that initiate the page slide */
 
-	background-color:#7f7f7f;
+	background-color:#ffffff;
 	float:left;
-	height:15px;
+	height:10px;
 	margin:4px 3px;
 	text-indent:-9999px;
-	width:15px;
+	width:10px;
 	/*border:1px solid #ccc;*/
 	
 	/* CSS3 rounded corners */
@@ -66,11 +66,12 @@ a.swShowPage{
 	-moz-border-radius:7px;
 	-webkit-border-radius:7px;
 	border-radius:7px;
+	border:1px solid black;
 }
 
 a.swShowPage:hover,
 a.swShowPage.active{
-	background-color:#F6EEE1;
+	background-color:#EDEDED;
 	
 	/*	CSS3 inner shadow */
 	
