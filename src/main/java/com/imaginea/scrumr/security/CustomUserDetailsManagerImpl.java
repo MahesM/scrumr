@@ -15,85 +15,92 @@ import com.imaginea.scrumr.interfaces.IEntity;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
 
 public class CustomUserDetailsManagerImpl implements UserServiceManager {
-	
-	private IDao<IEntity, Integer> genericDao;
-	
-	@Transactional
-	public void createUser(User user) {
-		if(user != null) {
-			genericDao.save(user);
-			String encPassword = user.getPassword(); 
-			user.setPassword(encPassword);  
-			genericDao.update(user);
-		}
-	}
-	
-	public User readUser(Integer pkey) {
-		return genericDao.find(User.class, pkey);
-	}
-	
-	public User readUser(String username) {
-		
-		Hashtable<String, String> ht = new Hashtable<String, String>();
-		ht.put("username", username);
-		return genericDao.getEntity(User.class, "users.selectUserByUserName", ht);
-		
-	}
 
-	@Transactional
-	public void updateUser(User user) {
-		if(user != null) {
-			genericDao.save(user);
-		}
-	}
-	
-	@Transactional
-	public void deleteUser(User user) {
-		if(user != null) {
-			genericDao.delete(user);
-		}
-	}
+    private IDao<IEntity, Integer> genericDao;
 
-	@Transactional
-	public void deleteUser(String username) {
-		
-		User user = readUser(username);
-		deleteUser(user);
-		
-	}
+    @Transactional
+    public void createUser(User user) {
+        if (user != null) {
+            genericDao.save(user);
+            String encPassword = user.getPassword();
+            user.setPassword(encPassword);
+            genericDao.update(user);
+        }
+    }
 
-	public boolean userExists(String username) {
-		User user = readUser(username);
-		
-		if (user == null) {
-			return false;
-		} else {
-			return true;
-		}
-		
-	}
-	
-	public List<User> fetchAllUsers(){
-		
-		Hashtable<String, Object> ht = new Hashtable<String, Object>();
-		return genericDao.getEntities(User.class, "users.fetchAllUsers",ht);
-	}
-	
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
+    public User readUser(Integer pkey) {
+        return genericDao.find(User.class, pkey);
+    }
 
-		User user = this.readUser(username);
-		return user;
-	}
+    public User readUser(String username) {
 
-	/* Getters and Setters */
-	
-	public IDao<IEntity, Integer> getGenericDao() {
-		return genericDao;
-	}
+        Hashtable<String, String> ht = new Hashtable<String, String>();
+        ht.put("username", username);
+        return genericDao.getEntity(User.class, "users.selectUserByUserName", ht);
 
-	public void setGenericDao(IDao<IEntity, Integer> genericDao) {
-		this.genericDao = genericDao;
-	}
+    }
 
-	
+    @Transactional
+    public void updateUser(User user) {
+        if (user != null) {
+            genericDao.save(user);
+        }
+    }
+
+    @Transactional
+    public void deleteUser(User user) {
+        if (user != null) {
+            genericDao.delete(user);
+        }
+    }
+
+    @Transactional
+    public void deleteUser(String username) {
+
+        User user = readUser(username);
+        deleteUser(user);
+
+    }
+
+    public boolean userExists(String username) {
+        User user = readUser(username);
+
+        if (user == null) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
+    public List<User> fetchAllUsers() {
+
+        Hashtable<String, Object> ht = new Hashtable<String, Object>();
+        return genericDao.getEntities(User.class, "users.fetchAllUsers", ht);
+    }
+
+    public List<User> fetchAllUsers(Integer startIndex, Integer count) {
+        // quick hack - need to standardize so only pageNum or startIndex is sent everywhere
+        int pageNum = startIndex / count + 1;
+        Hashtable<String, Object> ht = new Hashtable<String, Object>();
+        return genericDao.getResults("users.fetchAllUsers", ht, null, pageNum, count);
+    }
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException,
+                                    DataAccessException {
+
+        User user = this.readUser(username);
+        return user;
+    }
+
+    /* Getters and Setters */
+
+    public IDao<IEntity, Integer> getGenericDao() {
+        return genericDao;
+    }
+
+    public void setGenericDao(IDao<IEntity, Integer> genericDao) {
+        this.genericDao = genericDao;
+    }
+
 }

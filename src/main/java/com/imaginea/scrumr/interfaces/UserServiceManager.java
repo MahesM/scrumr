@@ -7,20 +7,22 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import com.imaginea.scrumr.entities.User;
 
 public interface UserServiceManager extends UserDetailsService {
-	
-	void createUser(User user);
-	
-	User readUser(Integer pkey);
-	
-	User readUser(String username);
 
-	void updateUser(User user);
-	
-	void deleteUser(User user);
+    void createUser(User user);
 
-	void deleteUser(String username);
+    User readUser(Integer pkey);
 
-	boolean userExists(String username);
-	
-	List<User> fetchAllUsers();
+    User readUser(String username);
+
+    void updateUser(User user);
+
+    void deleteUser(User user);
+
+    void deleteUser(String username);
+
+    boolean userExists(String username);
+
+    List<User> fetchAllUsers();
+
+    List<User> fetchAllUsers(Integer startIndex, Integer maxCount);
 }
