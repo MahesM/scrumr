@@ -107,10 +107,12 @@
 	</bean>
 	
 	<bean id="facebookHelper" class="com.imaginea.scrumr.security.FacebookInvocationHelper" scope="session" >
+		<property name="userServiceManager" ref="userServiceManager" />
 	<aop:scoped-proxy/>
 	</bean>
 	
 	<bean id="googleHelper" class="com.imaginea.scrumr.security.GoogleInvocationHelper" scope="session" >
+		<property name="userServiceManager" ref="userServiceManager" />
 	<aop:scoped-proxy/>
 	</bean>
 	
