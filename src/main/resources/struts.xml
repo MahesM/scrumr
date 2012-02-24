@@ -57,6 +57,11 @@
 			<result name="success">/WEB-INF/jsp/login.jsp</result>
 			<result name="error">/WEB-INF/jsp/error.jsp</result>
 		</action>
+		
+		<action name="socialauth" class="homeAction" method="prepareHome">
+			<result name="success">/WEB-INF/jsp/login.jsp</result>
+			<result name="error">/WEB-INF/jsp/error.jsp</result>
+		</action>
 
 		<action name="auth" class="homeAction" method="prepareHome">
 			<result name="error">/WEB-INF/jsp/auth.jsp</result>

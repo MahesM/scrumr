@@ -34,12 +34,12 @@
 		      <tr>
 		       
 		        <td>
-		          <a href="socialauth.do?id=google">
+		          <a href="socialauth.action?id=google">
 		            <img src="<%= request.getContextPath() %>/themes/images/google.png"" alt="Gmail" title="Gmail" border="0"/>
 		          </a>
 		        </td>
 		        <td>
-		          <a href="socialauth.do?id=facebook">
+		          <a href="socialauth.action?id=facebook">
 		            <img src="<%= request.getContextPath() %>/themes/images/facebook.png" alt="Facebook" title="Facebook" border="0"/>
 		          </a>
 		        </td>
