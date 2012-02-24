@@ -17,7 +17,7 @@ $(document).ready(function() {
         	var storyDetailScroll = new Object();
         	
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
-					window.location.href="/scrumr/auth.action";    			
+					window.location.href="auth.action";    			
     		});
     		    		
         	function days_between(date1, date2) {
@@ -38,7 +38,7 @@ $(document).ready(function() {
         	
         	function populateProjectDetails(){
         		$.ajax({
-            		url: '/scrumr/api/v1/projects/'+projectId,
+            		url: 'api/v1/projects/'+projectId,
             		type: 'GET',
             		async:false,
             		success: function( project ) {
@@ -104,7 +104,7 @@ $(document).ready(function() {
 				// $('#storyList ul').css({'height': (($(window).height()) - 320) + 'px'});
 				 $('#storyList').css({'height': (($(window).height()) - 300) + 'px'});
 	        	 $.ajax({
-	        		url: '/scrumr/api/v1/stories/backlog/'+projectId,
+	        		url: 'api/v1/stories/backlog/'+projectId,
 	        		type: 'GET',
 	        		async:false,
 	        		success: function( stories ) {
@@ -184,7 +184,7 @@ $(document).ready(function() {
 			function populateSprints(){
        		 var post_data2 = 'projectId='+projectId;
 		        	$.ajax({
-		        		url: '/scrumr/api/v1/sprints/project/'+projectId,
+		        		url: 'api/v1/sprints/project/'+projectId,
 		        		type: 'GET',
 		        		async:false,
 		        		success: function( sprints ) {
@@ -207,7 +207,7 @@ $(document).ready(function() {
 
 								var status = 'Completed:<span id="project_finished" class="finished">0</span> Total: <span id="project_total" class="total">0</span>';
 								$.ajax({
-					        		url: '/scrumr/api/v1/projects/storycount/'+projectId,
+					        		url: 'api/v1/projects/storycount/'+projectId,
 					        		type: 'GET',
 					        		async:false,
 					        		success: function( result ) {
@@ -228,7 +228,7 @@ $(document).ready(function() {
 			        				sprint_html += '<li class="stages"><div class="header "><label>Sprint '+(k+1)+' </label> |&nbsp;&nbsp;'+sprint_startdate+' - '+sprint_enddate+'<a class="editSprint" style="display:none;" href="javascript:void(0);"></a></div><div class="projectCont"><ul id="sp'+sprints[k].id+'"class="story">';
 			        				var post_data2 = 'sprintId='+sprints[k].pkey+'&projectId='+projectId;
 						        	$.ajax({
-						        		url: '/scrumr/api/v1/stories/sprint/'+sprints[k].pkey,
+						        		url: 'api/v1/stories/sprint/'+sprints[k].pkey,
 						        		type: 'GET',
 						        		async:false,
 						        		success: function( stories ) {
@@ -365,8 +365,8 @@ $(document).ready(function() {
 			function refreshStoryPortlet(storyId,stageId,creatorObj){
 				var post_data="storyId="+storyId+"&stage="+stageId;
 				$.ajax({
-					//url : '/scrumr/restapi/stories/getusers?storyid='+storyId+'&stage='+stageId+'', 
-					url : '/scrumr/api/v1/stories/getusers',
+					//url : 'restapi/stories/getusers?storyid='+storyId+'&stage='+stageId+'', 
+					url : 'api/v1/stories/getusers',
 					type : 'POST',
 					data : post_data,
 					async : false,
@@ -513,7 +513,7 @@ $(document).ready(function() {
 	        		 
 	        		 var post_data2 = 'sprintId='+sprint+'&projectId='+projectId;
 			        	$.ajax({
-			        		url: '/scrumr/api/v1/sprints/'+sprint+'/project/'+projectId,
+			        		url: 'api/v1/sprints/'+sprint+'/project/'+projectId,
 			        		type: 'GET',
 			        		async:false,
 			        		success: function( result ) {
@@ -545,7 +545,7 @@ $(document).ready(function() {
 					
 	        		 var post_data2 = 'sprintId='+sprint+'&projectId='+projectId;
 			        	$.ajax({
-			        		url: '/scrumr/api/v1/stories/'+sprint+'/project/'+projectId,
+			        		url: 'api/v1/stories/'+sprint+'/project/'+projectId,
 			        		type: 'GET',
 			        		async:false,
 			        		success: function( stories ) {
@@ -564,7 +564,7 @@ $(document).ready(function() {
 				        					creatorObj = userObject[story.creator];
 				        					var post_data="storyId="+story.pkey+"&stage="+story.status;
 				        					$.ajax({
-				        						url : '/scrumr/api/v1/stories/getusers',
+				        						url : 'api/v1/stories/getusers',
 				        						type : 'POST',
 				        						async : false,
 				        						data: post_data,
@@ -779,7 +779,7 @@ $(document).ready(function() {
     			var post_data = 'projectId='+projectId+'&stories='+storyList+'&status=notstarted&sprint='+sprint;
     			
     			$.ajax({
-    				url: '/scrumr/api/v1/stories/addtosprint',
+    				url: 'api/v1/stories/addtosprint',
     				type: 'POST',
     				data: post_data,
     				async:false,
@@ -792,7 +792,7 @@ $(document).ready(function() {
 			
 			function populateCurrentSprintStatus(){
 				$.ajax({
-	        		url: '/scrumr/api/v1/stories/'+sprint+'/project/'+projectId,
+	        		url: 'api/v1/stories/'+sprint+'/project/'+projectId,
 	        		type: 'GET',
 	        		async:false,
 	        		success: function( stories ) {
@@ -850,7 +850,7 @@ $(document).ready(function() {
 				var stat = false;
 				var post_data = 'stories=' + id + '&status='+status+ '&sprint='+sprint +'&projectId='+projectId;
 					$.ajax({
-						url: '/scrumr/api/v1/stories/addtosprint',
+						url: 'api/v1/stories/addtosprint',
 						type: 'POST',
 						data: post_data,
 						async:false,
@@ -871,7 +871,7 @@ $(document).ready(function() {
 				var stat = false;
 			//	var post_data = 'storyid=' + id;
 					$.ajax({
-						url: '/scrumr/api/v1/stories/delete/'+id,
+						url: 'api/v1/stories/delete/'+id,
 						type: 'GET',
 						async:false,
 						success: function( rec ) {
@@ -891,7 +891,7 @@ $(document).ready(function() {
 				var stat = false;
 				var post_data = 'userid='+userDetails.username+'&projectId='+projectId;
 				$.ajax({
-					url: '/scrumr/api/v1/users/create',
+					url: 'api/v1/users/create',
 					type: 'POST',
 					data: userDetails,
 					async:false,
@@ -901,7 +901,7 @@ $(document).ready(function() {
 							stat = true;
 						}
 						$.ajax({
-							url: '/scrumr/api/v1/projects/adduser',
+							url: 'api/v1/projects/adduser',
 							type: 'POST',
 							data: post_data,
 							async:false,
@@ -927,7 +927,7 @@ $(document).ready(function() {
 				var stat = false;
 				 var post_data = 'userid='+id+'&projectId='+projectId;
 				$.ajax({
-					url: '/scrumr/api/v1/projects/removeuser',
+					url: 'api/v1/projects/removeuser',
 					type: 'POST',
 					data: post_data,
 					async:false,
@@ -948,7 +948,7 @@ $(document).ready(function() {
 				var stat = false;
 				 var post_data = 'userids='+user_arr+'&storyId='+storyid+'&stage='+stageId;
 				$.ajax({
-					url: '/scrumr/api/v1/stories/adduserswithstage',
+					url: 'api/v1/stories/adduserswithstage',
 					type: 'POST',
 					data: post_data,
 					async:false,
@@ -968,7 +968,7 @@ $(document).ready(function() {
 			function removeUserFromStoryInStage(storyid,stageid){
 				var post_data = 'storyId='+storyid+"&stage="+stageid;				
 				$.ajax({
-					url: '/scrumr/api/v1/stories/clearstoryassignees',
+					url: 'api/v1/stories/clearstoryassignees',
 					type: 'POST',
 					data: post_data,
 					async:false,
@@ -984,7 +984,7 @@ $(document).ready(function() {
 				var stat = false;
 				 var post_data = 'userid='+id+'&storyId='+storyid+'&stageId='+stageId;
 				$.ajax({
-					url: '/scrumr/api/v1/stories/removeuser',
+					url: 'api/v1/stories/removeuser',
 					type: 'POST',
 					data: post_data,
 					async:false,
@@ -1003,7 +1003,7 @@ $(document).ready(function() {
 			
 			function populateStoryAssignees(id){
 				$.ajax({
-	        		url: '/scrumr/api/v1/stories/'+id,
+	        		url: 'api/v1/stories/'+id,
 	        		type: 'GET',
 	        		async:false,
 	        		success: function( stories ) {
@@ -1031,7 +1031,7 @@ $(document).ready(function() {
 	        				var assign = '';
 	        				var post_data="storyId="+id+"&stage="+stories.status;
 	        				$.ajax({
-	        					url : '/scrumr/api/v1/stories/getusers',
+	        					url : 'api/v1/stories/getusers',
 	        					type : 'POST',
 	        					data : post_data,
 	        					async : false,
@@ -1116,9 +1116,9 @@ $(document).ready(function() {
 					$('#searchUser').next().removeClass().addClass('search-input').css('background','url("themes/images/search.jpg") no-repeat');;
 				}
 				var post_data = "index="+startIndex+"&count=40";
-				var _url = "/scrumr/api/v1/users/fetchusers";
+				var _url = "api/v1/users/fetchusers";
 				if(source == "qontext"){
-					_url = "/scrumr/api/v1/users/fetchqontextusers";
+					_url = "api/v1/users/fetchqontextusers";
 				}
 				setTimeout(function(){
 					$.ajax({
@@ -1436,7 +1436,7 @@ $(document).ready(function() {
         		var projectId= <%= projectId%>;
         		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description + '&stPriority=' + priority.val() + '&user=' +user;
         		$.ajax({
-        			url: '/scrumr/restapi/stories/create',
+        			url: 'restapi/stories/create',
         			type: 'POST',
         			data: post_data,
         			async:false,
@@ -1498,7 +1498,7 @@ $(document).ready(function() {
         		var user = userLogged;
         		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority + '&user=' +user + '&stSprint=' + sprint.val();
         		$.ajax({
-        			url: '/scrumr/api/v1/stories/create',
+        			url: 'api/v1/stories/create',
         			type: 'POST',
         			data: post_data,
         			async:false,
@@ -1636,7 +1636,7 @@ $(document).ready(function() {
     				var query=$('#searchUser').val();
         			var post_data = "sortType="+query+"&showTotalCount=false&startIndex=0&count=20";
     				$.ajax({
-						url : '/scrumr/api/v1/users/searchqontext/',
+						url : 'api/v1/users/searchqontext/',
 						type : 'POST',
 						data : post_data,
 						async :false,
@@ -2003,7 +2003,7 @@ $(document).ready(function() {
 				var id = $("#current_story_id").val();	
 				var commentsHtml = '';								
 				$.ajax({
-					url : '/scrumr/api/v1/comments/story/'+id,
+					url : 'api/v1/comments/story/'+id,
 					type : 'GET',
 					async : false,					
 					success :function(comments){
@@ -2054,7 +2054,7 @@ $(document).ready(function() {
 
         		var post_data = 'commentID='+commentID;
         		$.ajax({
-          			url: '/scrumr/api/v1/comments/delete/'+commentID+'',
+          			url: 'api/v1/comments/delete/'+commentID+'',
           			type: 'GET',
           			//data: post_data,
           			async:false,
@@ -2112,7 +2112,7 @@ $(document).ready(function() {
 					 commentText = parsedString(commentText);		                    	 			                   	               	        	          	                 	      
                      var post_data = '&content='+ commentText+'&storyid='+story_id+'&logdate='+$.datepicker.formatDate('yy-mm-dd', new Date())+'&user='+user;                     
                      $.ajax({
-              			url: '/scrumr/api/v1/comments/create',
+              			url: 'api/v1/comments/create',
               			type: 'POST',
               			data: post_data,
               			async:false,
@@ -2165,7 +2165,7 @@ $(document).ready(function() {
   	       	 var todoHtml = '';
              var post_data = 'content='+ todoText+'&storyid='+story_id+'&timeInDays='+milestonePeriod+'&assigneeId='+taskUser+'&milestonePeriod='+milestonePeriod+'&user='+user;                     
              $.ajax({
-      			url: '/scrumr/api/v1/todo/create',
+      			url: 'api/v1/todo/create',
       			type: 'POST',
       			data: post_data,
       			async:false,
@@ -2201,7 +2201,7 @@ $(document).ready(function() {
          function deleteStoryTodo(todoID){
 
      		$.ajax({
-       			url: '/scrumr/api/v1/todo/delete/'+todoID,
+       			url: 'api/v1/todo/delete/'+todoID,
        			type: 'GET',
        			async:false,
        			success: function( result ) {
@@ -2238,7 +2238,7 @@ $(document).ready(function() {
     	       	$('#todo_section').prepend(status_dropdown);
 				var todosHtml = '';								
 				$.ajax({
-					url : '/scrumr/api/v1/todo/story/'+id,
+					url : 'api/v1/todo/story/'+id,
 					type : 'GET',
 					async : false,					
 					success :function(todos){
@@ -2373,7 +2373,7 @@ $(document).ready(function() {
         	 $('#story-section').hide();
         	 var storyId = $(this).attr('id');
         	 $.ajax({
-	        		url: '/scrumr/api/v1/stories/'+storyId,
+	        		url: 'api/v1/stories/'+storyId,
 	        		type: 'GET',
 	        		async:false,
 	        		success: function( stories ) {
@@ -2417,7 +2417,7 @@ $(document).ready(function() {
         	 //call update story api
         	 var post_data = 'storyId='+storyId+'&stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority + '&user=' +user + '&stSprint=' + sprint.val();
      		$.ajax({
-     			url: '/scrumr/api/v1/stories/update',
+     			url: 'api/v1/stories/update',
      			type: 'POST',
      			data: post_data,
      			async:false,
@@ -2442,7 +2442,7 @@ $(document).ready(function() {
          $('.ctedit').live("click",function(){
         	 var taskId = $(this).attr('id').split("tedit")[1];
         	 $.ajax({
-       			url: '/scrumr/api/v1/todo/'+taskId,
+       			url: 'api/v1/todo/'+taskId,
        			type: 'GET',
        			async:false,
        			success: function( todo ) {
@@ -2472,7 +2472,7 @@ $(document).ready(function() {
 			 var task_id = $(this).attr("data-task");
              var post_data = 'id='+task_id+'&content='+ todoText+'&timeInDays='+milestonePeriod+'&assigneeId='+taskUser+'&status='+status+'&user='+user;                     
              $.ajax({
-      			url: '/scrumr/api/v1/todo/update/'+task_id,
+      			url: 'api/v1/todo/update/'+task_id,
       			type: 'POST',
       			data: post_data,
       			async:false,
@@ -2514,7 +2514,7 @@ $(document).ready(function() {
              var post_data = 'id='+task_id+'&status='+status+'&user='+user;
              var el = $(this);
              $.ajax({
-       			url: '/scrumr/api/v1/todo/update/'+task_id,
+       			url: 'api/v1/todo/update/'+task_id,
        			type: 'POST',
        			data: post_data,
        			async:false,
@@ -2563,7 +2563,7 @@ $(document).ready(function() {
     		 $('.sprint-popup').find('#createSprint').addClass("edit");
     		 $('.sprint-popup').find('#createSprint').attr('data-id',sprint_id);
     		 $.ajax({
-	        		url: '/scrumr/api/v1/sprints/'+sprint_id+'/project/'+projectId,
+	        		url: 'api/v1/sprints/'+sprint_id+'/project/'+projectId,
 	        		type: 'GET',
 	        		async:false,
 	        		success: function( result ) {
@@ -2595,7 +2595,7 @@ $(document).ready(function() {
         		 var end_date =  $('.sprint-popup').find('input[name=sprintEnd]');
         		 var post_data = 'sprintId='+sprint_id+'&start_date='+start_date.val()+'&end_date='+end_date.val()+'&projectId='+projectId;
         		 $.ajax({
-        			url: '/scrumr/api/v1/sprints/update',
+        			url: 'api/v1/sprints/update',
         			type: 'POST',
         			data: post_data,
         			async:false,
@@ -2614,7 +2614,7 @@ $(document).ready(function() {
         		 var end_date =  $('.sprint-popup').find('input[name=sprintEnd]');
         		 var post_data = 'start_date='+start_date.val()+'&end_date='+end_date.val()+'&projectId='+projectId;
         		 $.ajax({
-        			url: '/scrumr/api/v1/sprints/create',
+        			url: 'api/v1/sprints/create',
         			type: 'POST',
         			data: post_data,
         			async:false,

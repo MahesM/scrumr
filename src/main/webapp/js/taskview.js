@@ -7,7 +7,7 @@ function populateProjectStatistics(){
 	//populate task status drop down
 	 var post_data = 'projectId='+projectId+'&pageNumber=1&maxCount=10';
 	 $.ajax({
- 		url: '/scrumr/api/v1/todo/details',
+ 		url: 'api/v1/todo/details',
  		type: 'GET',
  		data : post_data,
  		async:false,
@@ -49,7 +49,7 @@ $('ul.todo-status-list li').live('click',function(event){
     var post_data = 'id='+task_id+'&status='+status+'&user='+user;
     var el = $(this);
     $.ajax({
-			url: '/scrumr/api/v1/todo/update/'+task_id,
+			url: 'api/v1/todo/update/'+task_id,
 			type: 'POST',
 			data: post_data,
 			async:false,
@@ -79,7 +79,7 @@ $('ul#sort-list li').live('click',function(event){
 	var orderBy = $(this).attr('data-order');
 	var post_data = 'projectId='+projectId+'&orderBy='+orderBy+'&pageNumber=1&maxCount=10';
 	 $.ajax({
-		url: '/scrumr/api/v1/todo/details',
+		url: 'api/v1/todo/details',
 		type: 'GET',
 		data : post_data,
 		async:false,
@@ -111,7 +111,7 @@ $("#searchTodos").live("keyup",function(event) {
 		var query=$('#searchTodos').val();
 		var post_data = "sortType="+query+"&showTotalCount=false&startIndex=0&count=20";
 		$.ajax({
-			url : '/scrumr/api/v1/users/searchqontext/',
+			url : 'api/v1/users/searchqontext/',
 			type : 'POST',
 			data : post_data,
 			async :false,
