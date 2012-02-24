@@ -43,7 +43,7 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	}
 
 	@Embedded
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn (name="sppid", nullable = false)
 	public Project getProject() {
 		return project;

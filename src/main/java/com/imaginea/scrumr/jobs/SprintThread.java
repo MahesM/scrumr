@@ -29,9 +29,39 @@ class SprintThread extends TimerTask {
 		if(projects != null){
 			for(Project p: projects){
 				Date end = p.getEnd_date();
-				if(end.before(new Date())){
-					p.setStatus("Finished");
-				}else if(end.after(new Date())){
+				if (end !=null){
+					if(end.before(new Date())){
+						p.setStatus("Finished");
+					}else if(end.after(new Date())){
+						Sprint old_sprint = null;
+						Sprint current = null;
+						List<Story> stories = null;
+						if(p.getCurrent_sprint() != 0){
+							old_sprint = sprintManager.selectSprintByProject(p, p.getCurrent_sprint());
+							Date spend = old_sprint.getEnddate();
+							if(spend.before(new Date())){
+								current = sprintManager.selectSprintByProject(p, p.getCurrent_sprint()+1);
+								stories = storyManager.fetchStoriesBySprint(old_sprint.getPkey());
+							}
+						}
+
+						if(stories != null && stories.size() > 0){
+							for(Story us: stories){
+								if(!us.getStatus().equalsIgnoreCase("finished")){
+									if(current != null){
+										us.setSprint_id(current);
+									}else{
+										us.setSprint_id(null);
+									}
+									us.setStatus("notstarted");
+									storyManager.updateStory(us);
+								}
+							}
+							p.setCurrent_sprint(current.getId());
+						}
+						p.setStatus("In Progress");
+					}
+				}else{
 					Sprint old_sprint = null;
 					Sprint current = null;
 					List<Story> stories = null;
@@ -39,12 +69,21 @@ class SprintThread extends TimerTask {
 						old_sprint = sprintManager.selectSprintByProject(p, p.getCurrent_sprint());
 						Date spend = old_sprint.getEnddate();
 						if(spend.before(new Date())){
-							current = sprintManager.selectSprintByProject(p, p.getCurrent_sprint()+1);
-							stories = storyManager.fetchStoriesBySprint(old_sprint.getPkey());
+							stories = storyManager.fetchUnfinishedStories(old_sprint.getPkey());
 						}
 					}
-					
+					System.out.println("Unifinished: "+stories.size());
 					if(stories != null && stories.size() > 0){
+						current = new Sprint();
+						current.setId(p.getCurrent_sprint()+1);
+						current.setStartdate(new Date(old_sprint.getEnddate().getTime()+ (1*24*60*60*1000)));
+						current.setEnddate(new Date(old_sprint.getEnddate().getTime()+ (1*24*60*60*1000) + ((7*p.getSprint_duration())*24*60*60*1000)));
+						current.setStatus("In Progress");
+						p.setCurrent_sprint(current.getId());
+						p.setStatus("In Progress");
+						projectManager.updateProject(p);
+						current.setProject(p);
+						sprintManager.createSprint(current);
 						for(Story us: stories){
 							if(!us.getStatus().equalsIgnoreCase("finished")){
 								if(current != null){
@@ -56,11 +95,8 @@ class SprintThread extends TimerTask {
 								storyManager.updateStory(us);
 							}
 						}
-						p.setCurrent_sprint(current.getId());
 					}
-					p.setStatus("In Progress");
 				}
-				projectManager.updateProject(p);
 			}
 		}
 	}

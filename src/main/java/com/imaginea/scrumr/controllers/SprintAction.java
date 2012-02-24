@@ -11,6 +11,7 @@ public class SprintAction extends GenericActionSupport {
 
 	public static final Logger LOGGER = Logger.getLogger(SprintAction.class);
 	public JSONObject successResponse = null;
+	private String qontextHostUrl;
 	
 	@Override
 	public void prepare() throws Exception {
@@ -25,6 +26,14 @@ public class SprintAction extends GenericActionSupport {
 	public String prepareSprintStaticPage() {
 
 		return SUCCESS;
+	}
+
+	public String getQontextHostUrl() {
+		return qontextHostUrl;
+	}
+
+	public void setQontextHostUrl(String qontextHostUrl) {
+		this.qontextHostUrl = qontextHostUrl;
 	}
 
 }

@@ -123,6 +123,19 @@ public class ProjectResource {
 				} catch (ParseException e1) {
 					e1.printStackTrace();
 				}
+			}else{
+				try {
+					SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+					date = format.parse(pStartDate);
+					project.setStart_date(date);
+					project.setCurrent_sprint(0);
+					project.setStatus("Not Started");
+					project.setEnd_date(null);
+					sprint_count  = getSprintCount(date, null,Integer.parseInt(pSprintDuration));
+					project.setNo_of_sprints(sprint_count);
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
 			}
 			String userStr = assignees;
 			String[] users = userStr.split(",");
@@ -147,10 +160,14 @@ public class ProjectResource {
 				sprint.setId(i+1);
 				sprint.setStartdate(new java.sql.Date(currentdate.getTime()));
 				Date enddate = new Date(currentdate.getTime() + ((7*duration)*24*60*60*1000));
-				if(enddate.before(date1)){
-					sprint.setEnddate(new java.sql.Date(enddate.getTime()));
+				if(date1 != null){
+					if(enddate.before(date1)){
+						sprint.setEnddate(new java.sql.Date(enddate.getTime()));
+					}else{
+						sprint.setEnddate(new java.sql.Date(date1.getTime()));
+					}
 				}else{
-					sprint.setEnddate(new java.sql.Date(date1.getTime()));
+					sprint.setEnddate(new java.sql.Date(enddate.getTime()));
 				}
 				if(currentdate.after(new Date())){
         			sprint.setStatus("Not Started");
@@ -158,6 +175,7 @@ public class ProjectResource {
         			if(enddate.before(new Date())){
             			sprint.setStatus("Finished");
             		}else{
+            			System.out.println("Past sprint");
             			sprint.setStatus("In Progress");
             			project.setCurrent_sprint(sprint.getId());
             			project.setStatus("In Progress");
@@ -235,12 +253,16 @@ public class ProjectResource {
 	}
 	
 	int getSprintCount(Date start, Date end, int duration){
-		int count = (int)(((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))/(7*duration));
-		int rem = (int)(((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))%(7*duration));
-		if(rem > 0){
-			return count + 1;
+		if(end != null){
+			int count = (int)(((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))/(7*duration));
+			int rem = (int)(((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))%(7*duration));
+			if(rem > 0){
+				return count + 1;
+			}
+			return count;
+		}else{
+			return 1;
 		}
-		return count;
 	}
 	
 	int getCurrentSprint(Date start, int duration){

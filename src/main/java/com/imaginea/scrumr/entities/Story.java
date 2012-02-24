@@ -31,6 +31,7 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @NamedQueries({
 	@NamedQuery(name="stories.fetchStoriesByProject", query="SELECT instance from Story instance where instance.project=:project" ),
 	@NamedQuery(name="stories.fetchStoriesByStatus", query="SELECT instance from Story instance where instance.sprint_id=:sprint and instance.status=:status" ),
+	@NamedQuery(name="stories.fetchUnfinishedStories", query="SELECT instance from Story instance where instance.sprint_id=:sprint and instance.status !=:status" ),
 	@NamedQuery(name="stories.fetchStoriesBySprint", query="SELECT instance from Story instance where instance.sprint_id=:sprint" ),
 	@NamedQuery(name="stories.fetchStoriesBySprintProject", query="SELECT instance from Story instance where instance.project=:project and instance.sprint_id=:sprint" ),
 	@NamedQuery(name="stories.fetchUnAssignedStories", query="SELECT instance from Story instance where instance.project=:project and instance.sprint_id is null" )
@@ -49,6 +50,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 	private String status;
 	private Set<User> assignees;
 	private List<Comment> comments;
+	private List<Task> todos;
 	private int view_count;
 	
 	private List<Status> statusList; 
@@ -79,7 +81,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 		this.priority = priority;
 	}
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn (name="stsprint", nullable = true)
 	public Sprint getSprint_id() {
 		return sprint_id;
@@ -153,7 +155,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 		this.assignees.remove(assignee);
 	}
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY,  mappedBy= "story")
 	//	@JoinColumn (name="stid", nullable = false)
 	public List<Comment> getComments() {
 		return comments;
@@ -172,6 +174,15 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 	}
 	public void setStatusList(List<Status> statusList) {
 		this.statusList = statusList;
+	}
+	
+	@OneToMany(cascade =CascadeType.ALL, fetch=FetchType.LAZY,  mappedBy= "story")
+	@JsonIgnore
+	public List<Task> getTodos() {
+		return todos;
+	}
+	public void setTodos(List<Task> todos) {
+		this.todos = todos;
 	}
 	
 

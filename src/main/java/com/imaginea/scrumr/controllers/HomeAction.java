@@ -8,7 +8,8 @@ import com.imaginea.scrumr.qontextclient.QontextRestApiInvocationUtil;
 public class HomeAction extends GenericActionSupport {
 
 	public static final Logger LOGGER = Logger.getLogger(HomeAction.class);
-
+	private String qontextHostUrl;
+	
 	public String prepareAuthHome() throws Exception{
 		super.prepare();
 		if(loggedInUser != null){
@@ -24,6 +25,14 @@ public class HomeAction extends GenericActionSupport {
 		super.prepare();
 		super.source = "QONTEXT";
 		return SUCCESS;
+	}
+
+	public String getQontextHostUrl() {
+		return qontextHostUrl;
+	}
+
+	public void setQontextHostUrl(String qontextHostUrl) {
+		this.qontextHostUrl = qontextHostUrl;
 	}
 
 }

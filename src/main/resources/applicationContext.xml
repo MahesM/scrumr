@@ -87,6 +87,7 @@
 	
 	<bean id="homeAction" class="com.imaginea.scrumr.controllers.HomeAction" scope="prototype" >
 		<property name="userServiceManager" ref="userServiceManager" />
+		<property name="qontextHostUrl" value="${qontext.host}" />
 	</bean>
 	
 	<bean id="qontextHelper" class="com.imaginea.scrumr.qontextclient.QontextRestApiInvocationUtil" >
@@ -99,6 +100,7 @@
 	</bean>
 	<bean id="sprintAction" class="com.imaginea.scrumr.controllers.SprintAction" scope="prototype" >
 		<property name="userServiceManager" ref="userServiceManager" />
+		<property name="qontextHostUrl" value="${qontext.host}" />
 	
 	</bean>
 	

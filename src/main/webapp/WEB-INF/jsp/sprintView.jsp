@@ -49,7 +49,7 @@
             if(userLogged != null && userLogged != ''){
     	     	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+avatar+'"/><label class="float-lft loginLabel">Hi!, '+fullName+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
     	     } 
-            var qontextHostUrl = "https://pramati.staging.qontext.com";
+            var qontextHostUrl = '<s:property value="qontextHostUrl"/>';
         	var current_sprint = 0;
         	var users_arr = [];
         	var sprintinview = 0;
@@ -234,7 +234,7 @@
 					        				if(stories != null && stories.length > 0){
 					        					for(var i=0;i<stories.length;i++){
 						        					var story = stories[i];
-						        					var userObj = userObject[story.creator];
+						        					var creatorObj = userObject[story.creator];
 						        					 if(story.assignees.length > 0){
 							        					var imageHTML = " ";
 							        					for(var j=0;j<story.assignees.length;j++){

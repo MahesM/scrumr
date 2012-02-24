@@ -91,6 +91,14 @@ public class StoryManagerImpl implements StoryManager {
 		return genericDao.getEntities(Story.class, "stories.fetchUnAssignedStories",ht);
 	}
 
+	public List<Story> fetchUnfinishedStories(Integer pkey){
+
+		Sprint sprint = genericDao.find(Sprint.class, pkey);
+		Hashtable<String, Object> ht = new Hashtable<String, Object>();
+		ht.put("sprint", sprint);
+		ht.put("status", "finished");
+		return genericDao.getEntities(Story.class, "stories.fetchUnfinishedStories",ht);
+	}
 
 	/* Getters and Setters */
 

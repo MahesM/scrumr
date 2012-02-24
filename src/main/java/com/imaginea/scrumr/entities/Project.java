@@ -43,6 +43,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 	private String status;
 	private String last_updatedby;
 	private Set<Sprint> sprints;
+	private Set<Story> stories;
 	
 	
 
@@ -168,6 +169,15 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 	}
 	public void setSprints(Set<Sprint> sprints) {
 		this.sprints = sprints;
+	}
+	
+	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="project")
+	public Set<Story> getStories() {
+		return stories;
+	}
+	public void setStories(Set<Story> stories) {
+		this.stories = stories;
 	}
 
 	
