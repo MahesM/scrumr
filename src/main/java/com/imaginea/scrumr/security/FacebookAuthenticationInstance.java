@@ -2,6 +2,7 @@ package com.imaginea.scrumr.security;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
@@ -72,7 +73,10 @@ public class FacebookAuthenticationInstance implements AuthenticationSource {
                         user.setFullname(userDetails.getString("name"));
                         user.setEmailid(userDetails.getString("email"));
                         user.setAvatarurl("/" + userDetails.getString("id") + "/picture");
-                        request.getSession().setAttribute("source", "facebook");
+                        
+                        HttpSession session = request.getSession();
+                        session.setAttribute("source", "facebook");
+                        session.setAttribute("loggedInUser", user);                        
                     }
                 }
             } else {

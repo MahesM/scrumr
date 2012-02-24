@@ -4,6 +4,7 @@ import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
@@ -77,8 +78,9 @@ public class GoogleAuthenticationInstance implements AuthenticationSource {
                     } else {
                         user.setAvatarurl(request.getContextPath() + "/themes/images/default.png");
                     }
-                    request.getSession().setAttribute("source", "google");
-
+                    HttpSession session = request.getSession();
+                    session.setAttribute("source", "google");
+                    session.setAttribute("loggedInUser", user);
                     // Refresh a token (SHOULD ONLY BE DONE WHEN ACCESS TOKEN EXPIRES)
                     /*
                      * access.refreshToken(); System.out.println("Original Token: " + accessToken +

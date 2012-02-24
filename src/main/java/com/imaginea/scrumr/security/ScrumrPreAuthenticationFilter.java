@@ -27,7 +27,7 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
 
     private AuthenticationManager authenticationManager;
 
-    transient private AbstractAuthenticationFactory abstractAuthenticationFactory;
+    private AbstractAuthenticationFactory abstractAuthenticationFactory;
 
     private AuthenticationSource authenticationSource;
 
@@ -43,6 +43,7 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
 
     public ScrumrPreAuthenticationFilter() {
         super();
+        setCheckForPrincipalChanges(true);
     }
 
     @Override
@@ -70,7 +71,8 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
      * @return the username value (if present), null otherwise.
      */
     private String extractUsername(HttpServletRequest request) {
-        return request.getParameter("j_username");
+        User user = (User)request.getSession().getAttribute("loggedInUser");
+        return user.getUsername();
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -82,34 +84,37 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
         }
 
         if (!requiresAuthentication((HttpServletRequest) request)) {
-            chain.doFilter(request, response);
+            // doesn't require any authentication as token for Authenticated principal is available
+            
+            super.doFilter(request, response, chain);
+            //chain.doFilter(request, response);
         } else {
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                try {
-                    HttpServletRequest servletRequest = (HttpServletRequest) request;
-                    authenticationSource = abstractAuthenticationFactory.getInstance(servletRequest);
-                    User user = authenticationSource.doAuthentication((HttpServletRequest) request, (HttpServletResponse) response);
 
-                    if (user != null) {
-                        if (SecurityContextHolder.getContext().getAuthentication() != null)
-                            authResult = SecurityContextHolder.getContext().getAuthentication();
-                        if (authResult == null)
-                            authResult = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<GrantedAuthority>());
-                        successfulAuthentication((HttpServletRequest) request, (HttpServletResponse) response, authResult);
-                    } else if (user == null
-                                                    && SecurityContextHolder.getContext().getAuthentication() != null) {
-                        chain.doFilter((HttpServletRequest) request, (HttpServletResponse) response);
-                    }
-                    if(user!=null)
-                    chain.doFilter(request, response);
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (ServletException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+            try {
+                HttpServletRequest servletRequest = (HttpServletRequest) request;
+                authenticationSource = abstractAuthenticationFactory.getInstance(servletRequest);
+                User user = authenticationSource.doAuthentication((HttpServletRequest) request, (HttpServletResponse) response);
+                authResult = SecurityContextHolder.getContext().getAuthentication();
+                if (user != null) {
+                    if (authResult == null)
+                        authResult = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<GrantedAuthority>());
+                    // set the Authentication instance into secure Context
+                    successfulAuthentication((HttpServletRequest) request, (HttpServletResponse) response, authResult);
+                } else if (user == null && authResult != null) {
+                    chain.doFilter((HttpServletRequest) request, (HttpServletResponse) response);
                 }
+                if (user != null)
+                    chain.doFilter(request, response);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+                throw e;
+            } catch (ServletException e) {
+                logger.error(e.getMessage(), e);
+                throw e;
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
             }
+
         }
     }
 

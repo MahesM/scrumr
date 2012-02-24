@@ -14,11 +14,10 @@
 		<intercept-url pattern="/" filters="none" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/auth.action" filters="none" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/login.action" access="IS_AUTHENTICATED_FULLY" />
-
+		<intercept-url pattern="/socialauth.action" access="IS_AUTHENTICATED_FULLY"/>
 		<custom-filter position="PRE_AUTH_FILTER" ref="scrumrPreAuthenticationFilter"/>
 		<intercept-url pattern="/api/v1/**" access="IS_AUTHENTICATED_FULLY" />		
-		<intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
-		
+		<intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />		
 		<!-- form login -->
 		<form-login login-page="/auth.action" login-processing-url="/j_spring_security_check" 
 					default-target-url="/home.action" always-use-default-target="true" />
