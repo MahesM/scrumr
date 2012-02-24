@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +39,8 @@ public class ProjectResource {
     @Autowired
     UserServiceManager userServiceManager;
 
+    private static final Logger logger = LoggerFactory.getLogger(ProjectResource.class);
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public @ResponseBody
     List<Project> fetchProject(@PathVariable("id") String id) {
@@ -62,10 +66,10 @@ public class ProjectResource {
     public @ResponseBody
     String addUser(@RequestParam String userid, @RequestParam String projectId) {
         String uid = userid;
-        System.out.println("User Id :" + uid);
+        logger.debug("User Id :" + uid);
         Integer pid = Integer.parseInt(projectId);
         Project project = projectManager.readProject(pid);
-        System.out.println("User Object :" + userServiceManager.readUser(uid));
+        logger.debug("User Object :" + userServiceManager.readUser(uid));
         project.addAssignees(userServiceManager.readUser(uid));
         projectManager.updateProject(project);
         return "{\"result\":\"success\"}";
@@ -128,17 +132,17 @@ public class ProjectResource {
                     project.setCurrent_sprint(0);
                     project.setEnd_date(null);
                     sprint_count = getSprintCount(date, null, Integer.parseInt(pSprintDuration));
-                    System.out.println("Test: SC: " + sprint_count);
+                    logger.debug("Test: SC: " + sprint_count);
                     project.setNo_of_sprints(sprint_count);
                 }
             } catch (ParseException e1) {
-                e1.printStackTrace();
+                logger.error(e1.getMessage(), e1);
             }
             String userStr = assignees;
             String[] users = userStr.split(",");
             Set<User> userList = new HashSet<User>();
             for (String s : users) {
-                System.out.println("user: " + s);
+                logger.debug("user: " + s);
                 User user = userServiceManager.readUser(s);
                 userList.add(user);
             }
@@ -154,8 +158,9 @@ public class ProjectResource {
             project.setAssignees(userList);
             project.setSprint_duration(duration);
             project.setCreatedby(current_user);
+            logger.info("CurrentUser:" + current_user + " " + current_user.length());
             project.setLast_updated(new java.sql.Date(System.currentTimeMillis()));
-            project.setLast_updatedby(current_user);
+            project.setLast_updatedby("'" + current_user+"'");
             project.setCreation_date(new java.sql.Date(System.currentTimeMillis()));
 
             projectManager.createProject(project);
@@ -184,10 +189,10 @@ public class ProjectResource {
                     sprint.setStatus("Not Started");
                 } else {
                     if (enddate.before(new Date())) {
-                        System.out.println(enddate.toString());
+                        logger.debug(enddate.toString());
                         sprint.setStatus("Finished");
                     } else {
-                        System.out.println("Past sprint");
+                        logger.debug("Past sprint");
                         sprint.setStatus("In Progress");
                         project.setCurrent_sprint(sprint.getId());
                         project.setStatus("In Progress");
@@ -200,8 +205,7 @@ public class ProjectResource {
             }
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return null;
         }
 
@@ -234,17 +238,13 @@ public class ProjectResource {
                 project.setLast_updatedby(current_user);
 
                 projectManager.updateProject(project);
-
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
                 return null;
             }
             result.add(project);
         }
-
         return result;
-
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
@@ -253,14 +253,15 @@ public class ProjectResource {
         Project project = projectManager.readProject(Integer.parseInt(id));
         if (project != null) {
             projectManager.deleteProject(project);
-            System.out.println("SUCCESS");
+            logger.debug("SUCCESS");
             return "{\"result\":\"success\"}";
         } else {
-            System.out.println("FAILURE");
+            logger.debug("FAILURE");
             return "{\"result\":\"failure\"}";
         }
     }
 
+    // TODO - fix this crap
     int getSprintCount(Date start, Date end, int duration) {
         if (end != null) {
             int count = (int) (((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) / (7 * duration));
@@ -274,6 +275,7 @@ public class ProjectResource {
         }
     }
 
+    // TODO - fix this crap
     int getCurrentSprint(Date start, Date end, int duration) {
         if (end != null) {
             int count = (int) (((System.currentTimeMillis() - start.getTime()) / (1000 * 60 * 60 * 24)) / (7 * duration));
