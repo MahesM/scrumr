@@ -66,11 +66,11 @@ $(document).ready(function(){
 	});
 	
 	$(".feed-item").live('click',function(){
-		window.location.href = '/scrumr/sprint.action?&view=sprint&projectId='+$(this).attr("id");
+		window.location.href = 'sprint.action?&view=sprint&projectId='+$(this).attr("id");
 	});
 	
 	$.ajax({
-		url: '/scrumr/api/v1/projects/user/'+username,
+		url: 'api/v1/projects/user/'+username,
 		type: 'GET',
 		async:false,
 		success: function( obj ) {
@@ -129,7 +129,7 @@ $(document).ready(function(){
 	});
 	
 	/* $.ajax({
-		url: '/scrumr/api/v1/users/all',
+		url: 'api/v1/users/all',
 		type: 'GET',
 		async:false,
 		success: function( records ) {
@@ -169,7 +169,7 @@ $(document).ready(function(){
 			}
 			var post_data1 = {'username':user,'displayname':displayname,'fullname':fullname,'emailid':emailid,'avatarurl':avatarurl};
 			$.ajax({
-				url: '/scrumr/api/v1/users/create',
+				url: 'api/v1/users/create',
 				type: 'POST',
 				data: post_data1,
 				async:false,
@@ -179,14 +179,14 @@ $(document).ready(function(){
 					var post_data = 'pTitle=' + title.val() + '&current_user='+user + '&pDescription=' + description.val() + '&assignees='
 						+ assignees + '&pStartDate=' + start_date.val() + '&pEndDate=' + end_date.val() +'&pSprintDuration=' +duration.val();
 					$.ajax({
-						url: '/scrumr/api/v1/projects/create',
+						url: 'api/v1/projects/create',
 						type: 'POST',
 						data: post_data,
 						async:false,
 						success: function( records ) {
 							if(records[0].pkey){
 								parent.$.fancybox.close();
-								window.location.href = '/scrumr/sprint.action?&visit=1&projectId='+records[0].pkey;
+								window.location.href = 'sprint.action?&visit=1&projectId='+records[0].pkey;
 							}
 						},
 						error: function(data) { },

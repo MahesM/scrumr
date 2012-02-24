@@ -48,7 +48,7 @@ $(document).ready(function(){
 	}); 
 	
 	$(".feed-item").live('click',function(){
-		window.location.href = '/scrumr/sprint.action?&view=sprint&projectId='+$(this).attr("id");
+		window.location.href = 'sprint.action?&view=sprint&projectId='+$(this).attr("id");
 	});
 	
 	$("#edit-proj").live('click',function(){
@@ -63,7 +63,7 @@ $(document).ready(function(){
 		var pno = $('input[name=pNo]');
 		var id = $(this).parent().parent().find('.pno').attr("id");
 		$.ajax({
-    		url: '/scrumr/api/v1/projects/'+id,
+    		url: 'api/v1/projects/'+id,
     		type: 'GET',
     		async:false,
     		success: function( project ) {
@@ -109,7 +109,7 @@ $(document).ready(function(){
 	$("#delete-proj").live('click',function(){
 		var id = $(this).parent().parent().find('.pno').attr("id");
 		$.ajax({
-			url: '/scrumr/api/v1/projects/delete/'+id,
+			url: 'api/v1/projects/delete/'+id,
 			type: 'GET',
 			async:false,
 			success: function( obj ) {
@@ -125,7 +125,7 @@ $(document).ready(function(){
 		var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
 		               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
 		$.ajax({
-			url: '/scrumr/api/v1/projects/user/'+userLogged,
+			url: 'api/v1/projects/user/'+userLogged,
 			type: 'GET',
 			async:false,
 			success: function( obj ) {
@@ -165,7 +165,7 @@ $(document).ready(function(){
 								if(project.status == "Finished"){
 									status = '<label>Finished</label>';
 								}else{
-									status = '<a href="/scrumr/sprint.action?&view=sprint&projectId='+project.pkey+'"><span>Sprint '+project.current_sprint+'</span> '+project.status+'</a>';
+									status = '<a href="sprint.action?&view=sprint&projectId='+project.pkey+'&sprintId='+project.current_sprint+'"><span>Sprint '+project.current_sprint+'</span> '+project.status+'</a>';
 								}
 							}else{
 								status = '<label>Not Started</label>';
@@ -183,7 +183,7 @@ $(document).ready(function(){
 							if(((i+1)%2) == 0){
 								even = "even";
 							}
-							project_html += '<tr class="'+even+'"><td class="pno" id="'+project.pkey+'"><label>'+project.pkey+'</label></td><td class="ptitle"><a href="/scrumr/sprint.action?&view=project&visit=0&projectId='+project.pkey+'">'+title+'</a></td><td class="pdesc">'+project.description+'</td><td class="pstart">'+duration+'</td><td class="status">'+status+'</td><td class="users">'+people+'</td><td class="actions"><a id="edit-proj" href="#create-project"><img title="edit" style="width:16px;height:16px;margin-right:5px;cursor:pointer;" src="/scrumr/themes/images/edit.gif"/></a><img id="delete-proj" style="width:16px;height:16px;cursor:pointer;" title="delete" src="/scrumr/themes/images/delete.gif"/></td></tr>';
+							project_html += '<tr class="'+even+'"><td class="pno" id="'+project.pkey+'"><label>'+project.pkey+'</label></td><td class="ptitle"><a href="sprint.action?view=project&visit=0&projectId='+project.pkey+'">'+title+'</a></td><td class="pdesc">'+project.description+'</td><td class="pstart">'+duration+'</td><td class="status">'+status+'</td><td class="users">'+people+'</td><td class="actions"><a id="edit-proj" href="#create-project"><img title="edit" style="width:16px;height:16px;margin-right:5px;cursor:pointer;" src="/scrumr/themes/images/edit.gif"/></a><img id="delete-proj" style="width:16px;height:16px;cursor:pointer;" title="delete" src="/scrumr/themes/images/delete.gif"/></td></tr>';
 							
 						}
 						$("#project-list tbody.content").html(project_html);
@@ -224,7 +224,7 @@ $(document).ready(function(){
 			}else{
 				var post_data1 = {'username':userLogged,'displayname':'<s:property value="loggedInUser.displayname"/>','fullname':'<s:property value="loggedInUser.fullname"/>','emailid':'<s:property value="loggedInUser.emailid"/>','avatarurl':'<s:property value="loggedInUser.avatarurl"/>'};
 				$.ajax({
-					url: '/scrumr/api/v1/users/create',
+					url: 'api/v1/users/create',
 					type: 'POST',
 					data: post_data1,
 					async:false,
@@ -235,14 +235,14 @@ $(document).ready(function(){
 							var post_data = 'pTitle=' + title.val() + '&current_user='+userLogged + '&pDescription=' + description.val() + '&assignees='
 								+ assignees + '&pStartDate=' + start_date.val() + '&pEndDate=' + end_date.val() +'&pSprintDuration=' +duration.val();
 							$.ajax({
-								url: '/scrumr/api/v1/projects/create',
+								url: 'api/v1/projects/create',
 								type: 'POST',
 								data: post_data,
 								async:false,
 								success: function( records ) {
 									if(records[0].pkey){
 										parent.$.fancybox.close();
-										window.location.href = '/scrumr/sprint.action?&visit=1&projectId='+records[0].pkey;
+										window.location.href = 'sprint.action?&visit=1&projectId='+records[0].pkey;
 									}
 								},
 								error: function(data) { },
@@ -252,14 +252,14 @@ $(document).ready(function(){
 							var post_data = 'pNo='+id.val()+'&pTitle=' + title.val() + '&current_user='+userLogged + '&pDescription=' + description.val() + '&assignees='
 							+ assignees + '&pStartDate=' + start_date.val() + '&pEndDate=' + end_date.val() +'&pSprintDuration=' +duration.val();
 							$.ajax({
-								url: '/scrumr/api/v1/projects/update',
+								url: 'api/v1/projects/update',
 								type: 'POST',
 								data: post_data,
 								async:false,
 								success: function( records ) {
 									if(records[0].pkey){
 										parent.$.fancybox.close();
-										window.location.href = '/scrumr/sprint.action?&visit=1&projectId='+records[0].pkey;
+										window.location.href = 'sprint.action?&visit=1&projectId='+records[0].pkey;
 									}
 								},
 								error: function(data) { },
