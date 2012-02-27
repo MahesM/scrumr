@@ -15,6 +15,8 @@
 		<spring.security.version>3.0.2.RELEASE</spring.security.version>
 		<org.hibernate.version>3.5.6-Final</org.hibernate.version>
 		<struts.version>2.2.3.1</struts.version>
+		<slf4j.version>1.6.1</slf4j.version>
+		<logback.version>0.9.27</logback.version>
 	</properties>
 
 	<dependencies>
@@ -334,13 +336,13 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.1</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>			
+			<version>${slf4j.version}</version>			
 		</dependency>
 
 		<!-- Jersy and Jackson -->
@@ -448,17 +450,17 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>0.9.27</version>
+			<version>${logback.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
-			<version>0.9.27</version>
+			<version>${logback.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.6.1</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 	</dependencies>
 
