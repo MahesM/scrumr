@@ -33,7 +33,7 @@ $(document).ready(function(){
 		projAssignees.push(userLogged);
 	
 	 var dates = $( "#datepickerFrom, #datepickerTo" ).datepicker({
-		defaultDate: "+1w",
+		defaultDate: null,
 		changeMonth: true,
 		numberOfMonths: 1,
 		onSelect: function( selectedDate ) {
@@ -165,7 +165,7 @@ $(document).ready(function(){
 								if(project.status == "Finished"){
 									status = '<label>Finished</label>';
 								}else{
-									status = '<a href="sprint.action?&view=sprint&projectId='+project.pkey+'&sprintId='+project.current_sprint+'"><span>Sprint '+project.current_sprint+'</span> '+project.status+'</a>';
+									status = '<a href="sprint.action?&view=sprint&projectId='+project.pkey+'"><span>Sprint '+project.current_sprint+'</span> '+project.status+'</a>';
 								}
 							}else{
 								status = '<label>Not Started</label>';

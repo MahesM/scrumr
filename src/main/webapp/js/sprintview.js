@@ -1278,7 +1278,7 @@ $(document).ready(function() {
 				}
 				
 				//edit/create sprint popup close on clicking anywhere outside popup
-				if($(el).closest('.sprint-popup').length == 0 && !($(el).hasClass('editSprint')) && !($(el).hasClass('new_sprint'))){
+				if($(el).closest('.sprint-popup').length == 0 && !($(el).hasClass('editSprint')) &&  $(el).closest('.ui-datepicker-calendar').length == 0 && !($(el).hasClass('new_sprint'))){
 					$('.sprint-popup').hide();
 				}
 				
@@ -1490,7 +1490,7 @@ $(document).ready(function() {
         		var description = $('textarea[name=storyDesc]');
         		if(!storyFormValid)
         			return;
-        		var priority = $('.custom-select .option .label').attr('data-value');
+        		var priority = $('.story-popup .custom-select .option .label').attr('data-value');
         		var sprint = $('select[name=stSprint]');
         		if(title.val()==""){
         			return;
