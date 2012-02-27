@@ -62,15 +62,15 @@ public class TaskResource {
         Integer projId = Integer.parseInt(projectId);
         Integer sprId = Integer.parseInt(sprintId);
         List<Object> results = taskManager.fetchTaskStatusSummary(projId, sprId);
-        List< ProjectSummaryReport> reportList = new ArrayList<ProjectSummaryReport>();
+        List<ProjectSummaryReport> reportList = new ArrayList<ProjectSummaryReport>();
         for (Iterator iterator = results.iterator(); iterator.hasNext();) {
             Object[] object = (Object[]) iterator.next();
             Task task = (Task) object[0];
-            ProjectSummaryReport report =new ProjectSummaryReport();
+            ProjectSummaryReport report = new ProjectSummaryReport();
             report.setTask(task);
-            //report.setTimeWorked(timeWorked);
-            report.setTotalTasks(((Long)object[1]).intValue());
-            report.setTotalTime(((Long)object[2]).intValue());
+            // report.setTimeWorked(timeWorked);
+            report.setTotalTasks(((Long) object[1]).intValue());
+            report.setTotalTime(((Long) object[2]).intValue());
             reportList.add(report);
         }
         // HashMap map = new HashMap();
