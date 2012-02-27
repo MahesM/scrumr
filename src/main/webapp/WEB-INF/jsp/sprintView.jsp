@@ -43,8 +43,8 @@
 	var taskStatusColors = {'CREATED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
  </script>
  <script type="text/javascript" src="<%= request.getContextPath() %>/js/commons.js"></script>
-  <script type="text/javascript" src="<%= request.getContextPath() %>/js/taskview.js"></script>
-  <script type="text/javascript" src="<%= request.getContextPath() %>/js/sprintview.js"></script>
+  <script type="text/javascript" src="<%= request.getContextPath() %>/js/taskview.js?version=1"></script>
+  <script type="text/javascript" src="<%= request.getContextPath() %>/js/sprintview.js?version=1"></script>
  
  
 </head>
