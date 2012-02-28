@@ -1,0 +1,8 @@
+<li class="p<%= story.priority %>" id="st<%= story.pkey %>">
+	<p><%= story.title %></p>
+	<div class="meta">
+		<div class="img-cont"><%  if(image) %> <%= image %>  </div>
+	</div>
+	<a href="javascript:void(0);" <% if(backlog){ %> class="strRmv remove" <% } else  %> class = "sptRmv remove"  ></a>
+	<a href="#story-cont" class="viewStory"></a>
+</li>
