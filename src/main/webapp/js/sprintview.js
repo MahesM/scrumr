@@ -117,7 +117,8 @@ $(document).ready(function() {
         				$( "#storyList ul" ).sortable({
         	        		connectWith: ".story",
         	        		items:'li',
-        	        		//appendTo: 'body',
+        	        		helper:'clone',
+        	        		appendTo: 'body',
         	        		forcePlaceholderSize: true,
         	        		placeholder: 'ui-state-highlight',
         	        		update: function( event, ui ) {
@@ -136,6 +137,9 @@ $(document).ready(function() {
         	   					 if(api)api.destroy();
         	   				 	}
         	        			storyListScroll = $('#storyList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+        	        		},
+        	        		start:function(event,ui){
+        	        			ui.helper.attr('id','backlog');
         	        		},
         	        		over : function(event,ui){
         	        			if($(ui.sender).find('li').length > 0){
@@ -285,7 +289,8 @@ $(document).ready(function() {
 			        			$( ".stages ul" ).sortable({
 		        	        		connectWith: ".story",
 		        	        		items:'li',
-		        	        		//appendTo: 'body',
+		        	        		helper:'clone',
+		        	        		appendTo: 'body',
 		        	        		forcePlaceholderSize: true,
 		        	        		placeholder: 'ui-state-highlight',
 		        	        		update: function( event, ui ) {
@@ -313,6 +318,9 @@ $(document).ready(function() {
 		        	        			}
 		        	        			
 		        		   			},
+		        		   			start:function(event,ui){
+		        	        			ui.helper.attr('id','backlog');
+		        	        		},
 		        		   			
 		        		   			receive :function(event,ui){
 		        		   				var ulHeight = ($(ui.item[0]).outerHeight() * $(ui.item[0]).closest('ul').find('li').length) + 150;
@@ -614,7 +622,8 @@ $(document).ready(function() {
 				        			$( ".stages ul" ).sortable({
 			        	        		connectWith: ".story",
 			        	        		items:'li',
-			        	        		//appendTo: 'body',
+			        	        		helper:'clone',
+			        	        		appendTo: 'body',
 			        	        		forcePlaceholderSize: true,
 			        	        		placeholder: 'ui-state-highlight',
 			        	        		update: function( event, ui ) {
@@ -707,6 +716,9 @@ $(document).ready(function() {
 			        		   					}
 			        		   					
 			        		   			},
+			        		   			start:function(event,ui){
+			        	        			ui.helper.attr('id','backlog');
+			        	        		},
 			        		   			
 			        		   			receive :function(event,ui){
 			        		   				var ulHeight = ($(ui.item[0]).outerHeight() * $(ui.item[0]).closest('ul').find('li').length) + 150;

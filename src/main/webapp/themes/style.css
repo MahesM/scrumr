@@ -448,7 +448,8 @@ ul.story {
     width: 100%;
 }
 
-ul.story li {
+ul.story li, #backlog {
+	list-style-type: none;
     background: none repeat scroll 0 0 #FFFFFF;
     box-shadow: 0 0 3px 1px #CCCCCC;
      -moz-box-shadow:0 0 3px 2px #222222;
@@ -466,7 +467,7 @@ ul.story li {
 	display:inline-block;
 }
 
-ul.story li p {
+ul.story li p, #backlog p {
     color:#333333;
     font-size: 13px;
     margin-bottom: 5px;
