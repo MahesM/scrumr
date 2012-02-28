@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
+import com.imaginea.scrumr.entities.ProjectLane;
 import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.User;
+import com.imaginea.scrumr.interfaces.ProjectLaneManager;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.SprintManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
@@ -35,6 +37,9 @@ public class ProjectResource {
 
     @Autowired
     SprintManager sprintManager;
+    
+    @Autowired
+    ProjectLaneManager projectLaneManager;
 
     @Autowired
     UserServiceManager userServiceManager;
@@ -202,6 +207,11 @@ public class ProjectResource {
                 sprint.setProject(project);
                 sprintManager.createSprint(sprint);
                 currentdate = new Date(currentdate.getTime() + ((7 * duration) * 86400000L));
+                
+                
+                createDefaultLanes(project);
+                
+                
             }
 
         } catch (Exception e) {
@@ -216,7 +226,39 @@ public class ProjectResource {
 
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    private void createDefaultLanes(Project project) {
+    	ProjectLane projectLane = new ProjectLane();
+    	projectLane.setColor(123);
+    	projectLane.setProject(project);
+    	projectLane.setDescription("BackLog");
+    	projectLane.setRank(0);
+    	projectLane.setType("BACKLOG");
+    	projectLaneManager.createProjectLane(projectLane);
+    	
+    	projectLane = new ProjectLane();
+    	projectLane.setColor(123);
+    	projectLane.setProject(project);
+    	projectLane.setDescription("Development");
+    	projectLane.setRank(1);
+    	projectLaneManager.createProjectLane(projectLane);
+    	
+    	projectLane = new ProjectLane();
+    	projectLane.setColor(123);
+    	projectLane.setProject(project);
+    	projectLane.setDescription("QA");
+    	projectLane.setRank(2);
+    	projectLaneManager.createProjectLane(projectLane);
+    	
+    	projectLane = new ProjectLane();
+    	projectLane.setColor(123);
+    	projectLane.setProject(project);
+    	projectLane.setDescription("Completed");
+    	projectLane.setRank(3);
+    	projectLane.setType("FINISHED");
+    	projectLaneManager.createProjectLane(projectLane);
+	}
+
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
     List<Project> updateProject(@RequestParam String pNo, @RequestParam String pTitle,
                                     @RequestParam String pDescription,

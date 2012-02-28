@@ -35,6 +35,7 @@ public class ProjectLane extends AbstractEntity implements IEntity, Serializable
 	private String description;
     private Project project;
     private int rank;
+    private String type;
 
     @Column(name = "color", nullable = false)
     public int getColor() {
@@ -43,6 +44,15 @@ public class ProjectLane extends AbstractEntity implements IEntity, Serializable
 
     public void setColor(int color) {
         this.color = color;
+    }
+    
+    @Column(name = "type")
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     
