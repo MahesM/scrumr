@@ -10,5 +10,8 @@
 	<root level="debug">
 		<appender-ref ref="STDOUT" />
 	</root>
-	<logger name="org.springframework" level="OFF"/>
+	<!-- change this in development to DEBUG -->
+	<logger name="org.springframework" level="INFO"/>
+	<logger name="org.hibernate" level="INFO"/>
+	<logger name="com.imaginea.scrumr" level="ON"/>
 </configuration>
