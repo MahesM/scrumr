@@ -206,14 +206,9 @@ public class ProjectResource {
                 }
                 sprint.setProject(project);
                 sprintManager.createSprint(sprint);
-                currentdate = new Date(currentdate.getTime() + ((7 * duration) * 86400000L));
-                
-                
-                createDefaultLanes(project);
-                
-                
+                currentdate = new Date(currentdate.getTime() + ((7 * duration) * 86400000L));                
             }
-
+            createDefaultLanes(project);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
