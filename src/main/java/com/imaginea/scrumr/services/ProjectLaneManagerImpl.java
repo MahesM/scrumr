@@ -5,13 +5,10 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectLane;
-import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.IDao;
 import com.imaginea.scrumr.interfaces.IEntity;
 import com.imaginea.scrumr.interfaces.ProjectLaneManager;
-import com.imaginea.scrumr.interfaces.ProjectManager;
 
 public class ProjectLaneManagerImpl implements ProjectLaneManager {
 

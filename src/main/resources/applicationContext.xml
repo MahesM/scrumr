@@ -226,6 +226,10 @@
 	<bean id="projectLaneManager" class="com.imaginea.scrumr.services.ProjectLaneManagerImpl">
 		<property name="genericDao" ref="genericDao" />
 	</bean>
+	
+	<bean id="projectPriorityManager" class="com.imaginea.scrumr.services.ProjectPriorityManagerImpl">
+		<property name="genericDao" ref="genericDao" />
+	</bean>
 
 	<bean id="sprintManager" class="com.imaginea.scrumr.services.SprintManagerImpl">
 		<property name="genericDao" ref="genericDao" />

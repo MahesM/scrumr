@@ -1,12 +1,7 @@
 package com.imaginea.scrumr.resources;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,13 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectLane;
 import com.imaginea.scrumr.entities.ProjectLaneSummary;
-import com.imaginea.scrumr.entities.Sprint;
-import com.imaginea.scrumr.entities.Story;
-import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.ProjectLaneManager;
 import com.imaginea.scrumr.interfaces.ProjectManager;
-import com.imaginea.scrumr.interfaces.SprintManager;
-import com.imaginea.scrumr.interfaces.UserServiceManager;
 
 @Controller
 @RequestMapping("/projectlane")
