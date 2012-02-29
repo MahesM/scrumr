@@ -20,11 +20,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectLane;
+import com.imaginea.scrumr.entities.ProjectPriority;
 import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.ProjectLaneManager;
 import com.imaginea.scrumr.interfaces.ProjectManager;
+import com.imaginea.scrumr.interfaces.ProjectPriorityManager;
 import com.imaginea.scrumr.interfaces.SprintManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
 
@@ -40,7 +42,10 @@ public class ProjectResource {
     
     @Autowired
     ProjectLaneManager projectLaneManager;
-
+    
+    @Autowired
+    ProjectPriorityManager projectPriorityManager;
+    
     @Autowired
     UserServiceManager userServiceManager;
 
@@ -209,6 +214,7 @@ public class ProjectResource {
                 currentdate = new Date(currentdate.getTime() + ((7 * duration) * 86400000L));                
             }
             createDefaultLanes(project);
+            createDefaultPriorities(project);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
@@ -221,39 +227,40 @@ public class ProjectResource {
 
     }
 
-    private void createDefaultLanes(Project project) {
-    	ProjectLane projectLane = new ProjectLane();
-    	projectLane.setColor(123);
-    	projectLane.setProject(project);
-    	projectLane.setDescription("BackLog");
-    	projectLane.setRank(0);
-    	projectLane.setType("BACKLOG");
-    	projectLaneManager.createProjectLane(projectLane);
-    	
-    	projectLane = new ProjectLane();
-    	projectLane.setColor(123);
-    	projectLane.setProject(project);
-    	projectLane.setDescription("Development");
-    	projectLane.setRank(1);
-    	projectLaneManager.createProjectLane(projectLane);
-    	
-    	projectLane = new ProjectLane();
-    	projectLane.setColor(123);
-    	projectLane.setProject(project);
-    	projectLane.setDescription("QA");
-    	projectLane.setRank(2);
-    	projectLaneManager.createProjectLane(projectLane);
-    	
-    	projectLane = new ProjectLane();
-    	projectLane.setColor(123);
-    	projectLane.setProject(project);
-    	projectLane.setDescription("Completed");
-    	projectLane.setRank(3);
-    	projectLane.setType("FINISHED");
-    	projectLaneManager.createProjectLane(projectLane);
-	}
+    private void createDefaultPriorities(Project project) {
+        ProjectPriority.DefaultPriority[] priorities = ProjectPriority.DefaultPriority.values();
+        for(ProjectPriority.DefaultPriority priority: priorities){
+            createProjectPriority(project,priority.getDescription(),priority.getColor());
+        }        
+    }
 
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
+    private void createProjectPriority(Project project, String description, String color) {
+        ProjectPriority projectPriority = new ProjectPriority();
+        projectPriority.setColor(color);
+        projectPriority.setProject(project);
+        projectPriority.setDescription(description);
+        projectPriorityManager.createProjectPriority(projectPriority);
+        
+    }
+
+    private void createDefaultLanes(Project project) {
+        ProjectLane.DefaultProjectLanes[] projectLanes = ProjectLane.DefaultProjectLanes.values();
+        for(ProjectLane.DefaultProjectLanes projectLane: projectLanes){
+            createProjectLane(project,projectLane.getDescription(),projectLane.getRank(),projectLane.getType());
+        }
+	}   
+
+	private void createProjectLane(Project project, String description, int rank, String type) {
+	    ProjectLane projectLane = new ProjectLane();
+        projectLane.setColor(123);
+        projectLane.setProject(project);
+        projectLane.setDescription(description);
+        projectLane.setRank(rank);
+        projectLane.setType(type);
+        projectLaneManager.createProjectLane(projectLane);        
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
     List<Project> updateProject(@RequestParam String pNo, @RequestParam String pTitle,
                                     @RequestParam String pDescription,
@@ -288,7 +295,8 @@ public class ProjectResource {
     public @ResponseBody
     String deleteProject(@PathVariable("id") String id) {
         Project project = projectManager.readProject(Integer.parseInt(id));
-        if (project != null) {
+        if (project != null) {           
+            deleteDependantEntities(project.getPkey());                        
             projectManager.deleteProject(project);
             logger.debug("SUCCESS");
             return "{\"result\":\"success\"}";
@@ -296,6 +304,25 @@ public class ProjectResource {
             logger.debug("FAILURE");
             return "{\"result\":\"failure\"}";
         }
+    }
+
+    private void deleteDependantEntities(int projectId) {
+        deleteProjectLanesByProject(projectId);
+        deleteProjectPrioritiesByProject(projectId);
+    }
+
+    private void deleteProjectPrioritiesByProject(int projectId) {
+       List<ProjectPriority> projectProrityList = projectPriorityManager.fetchAllProjectPrioritiesByProject(projectId);
+        
+        for(ProjectPriority projectPriority:projectProrityList)
+            projectPriorityManager.deleteProjectPriority(projectPriority);        
+    }
+
+    private void deleteProjectLanesByProject(int projectId) {
+        List<ProjectLane> projectLaneList = projectLaneManager.fetchAllProjectLaneByProject(projectId);
+        
+        for(ProjectLane projectLane:projectLaneList)
+           projectLaneManager.deleteProjectLane(projectLane);        
     }
 
     // TODO - fix this crap
