@@ -22,8 +22,9 @@ public class HomeAction extends GenericActionSupport {
                     qontextHostUrl = "";
                     System.out.println("Source:" + qontextHostUrl);
                 }
+                return SUCCESS;
             }
-            return SUCCESS;
+            return ERROR;
         } else {
             return ERROR;
         }
