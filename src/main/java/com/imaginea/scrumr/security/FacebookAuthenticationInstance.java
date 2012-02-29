@@ -52,36 +52,36 @@ public class FacebookAuthenticationInstance implements AuthenticationSource {
         callbackUrl.append(request.getContextPath()).append(CALLBACK_URL);
         logger.info("callback url:" + callbackUrl);
         try {
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                if (request.getParameter("error_reason") != null) {
-                    logger.error("Error: " + request.getParameter("error_description"));
-                } else {
-                    if (request.getParameter("code") == null) {
-
-                        String url = hostUrl + "?client_id=" + consumerKey + "&redirect_uri="
-                                                        + callbackUrl + "&scope=" + SCOPE;
-                        respose.sendRedirect(url);
-                        return null;
-                    } else {
-                        if (helper.hasRequiredParameters(request)) {
-                            helper.initialize(request, consumerKey, consumerSecret, graphUrl, callbackUrl.toString());
-                        }
-                        JSONObject userDetails = helper.getBasicProfile();
-                        user = new User();
-                        user.setDisplayname(userDetails.getString("first_name"));
-                        user.setUsername(userDetails.getString("id"));
-                        user.setFullname(userDetails.getString("name"));
-                        user.setEmailid(userDetails.getString("email"));
-                        user.setAvatarurl("/" + userDetails.getString("id") + "/picture");
-                        
-                        HttpSession session = request.getSession();
-                        session.setAttribute("source", "facebook");
-                        session.setAttribute("loggedInUser", user);                        
-                    }
-                }
+            // if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (request.getParameter("error_reason") != null) {
+                logger.error("Error: " + request.getParameter("error_description"));
             } else {
-                user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                if (request.getParameter("code") == null) {
+
+                    String url = hostUrl + "?client_id=" + consumerKey + "&redirect_uri="
+                                                    + callbackUrl + "&scope=" + SCOPE;
+                    respose.sendRedirect(url);
+                    return null;
+                } else {
+                    if (helper.hasRequiredParameters(request)) {
+                        helper.initialize(request, consumerKey, consumerSecret, graphUrl, callbackUrl.toString());
+                    }
+                    JSONObject userDetails = helper.getBasicProfile();
+                    user = new User();
+                    user.setDisplayname(userDetails.getString("first_name"));
+                    user.setUsername(userDetails.getString("id"));
+                    user.setFullname(userDetails.getString("name"));
+                    user.setEmailid(userDetails.getString("email"));
+                    user.setAvatarurl("/" + userDetails.getString("id") + "/picture");
+
+                    HttpSession session = request.getSession();
+                    session.setAttribute("source", "facebook");
+                    session.setAttribute("loggedInUser", user);
+                }
             }
+            // } else {
+            // user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            // }
             return user;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

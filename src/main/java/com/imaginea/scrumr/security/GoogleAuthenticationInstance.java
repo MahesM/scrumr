@@ -51,45 +51,45 @@ public class GoogleAuthenticationInstance implements AuthenticationSource {
         }
         callbackUrl.append(request.getContextPath()).append(CALLBACK_URL);
         logger.info("callback url:" + callbackUrl);
-        //String urlEncode = URLEncoder.encode(callbackUrl.toString());
+        // String urlEncode = URLEncoder.encode(callbackUrl.toString());
         String urlEncode = callbackUrl.toString();
         try {
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                if (request.getParameter("code") == null) {
-                   
-                    //logger.info(" encoded callback url:" + urlEncode);
-                    String authorizeUrl = new GoogleAuthorizationRequestUrl(consumerKey, urlEncode, SCOPE).build();
-                    logger.info("authorizeUrl url:" + authorizeUrl);
-                    //String urlEncode = URLEncoder.encode(authorizeUrl);
-                    respose.sendRedirect(authorizeUrl);
-                    return null;
-                } else {
-                    if (helper.hasRequiredParameters(request)) {
-                        helper.initialize(request, consumerKey, consumerSecret, hostUrl, callbackUrl.toString());
-                    }
-                    JSONObject userDetails = helper.getBasicProfile();
-                    user = new User();
-                    user.setDisplayname(userDetails.getString("given_name"));
-                    user.setUsername(userDetails.getString("id"));
-                    user.setFullname(userDetails.getString("name"));
-                    user.setEmailid(userDetails.getString("email"));
-                    if (userDetails.has("picture")) {
-                        user.setAvatarurl(userDetails.getString("picture"));
-                    } else {
-                        user.setAvatarurl(request.getContextPath() + "/themes/images/default.png");
-                    }
-                    HttpSession session = request.getSession();
-                    session.setAttribute("source", "google");
-                    session.setAttribute("loggedInUser", user);
-                    // Refresh a token (SHOULD ONLY BE DONE WHEN ACCESS TOKEN EXPIRES)
-                    /*
-                     * access.refreshToken(); System.out.println("Original Token: " + accessToken +
-                     * " New Token: " + access.getAccessToken());
-                     */
-                }
+            // if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (request.getParameter("code") == null) {
+
+                // logger.info(" encoded callback url:" + urlEncode);
+                String authorizeUrl = new GoogleAuthorizationRequestUrl(consumerKey, urlEncode, SCOPE).build();
+                logger.info("authorizeUrl url:" + authorizeUrl);
+                // String urlEncode = URLEncoder.encode(authorizeUrl);
+                respose.sendRedirect(authorizeUrl);
+                return null;
             } else {
-                user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                if (helper.hasRequiredParameters(request)) {
+                    helper.initialize(request, consumerKey, consumerSecret, hostUrl, callbackUrl.toString());
+                }
+                JSONObject userDetails = helper.getBasicProfile();
+                user = new User();
+                user.setDisplayname(userDetails.getString("given_name"));
+                user.setUsername(userDetails.getString("id"));
+                user.setFullname(userDetails.getString("name"));
+                user.setEmailid(userDetails.getString("email"));
+                if (userDetails.has("picture")) {
+                    user.setAvatarurl(userDetails.getString("picture"));
+                } else {
+                    user.setAvatarurl(request.getContextPath() + "/themes/images/default.png");
+                }
+                HttpSession session = request.getSession();
+                session.setAttribute("source", "google");
+                session.setAttribute("loggedInUser", user);
+                // Refresh a token (SHOULD ONLY BE DONE WHEN ACCESS TOKEN EXPIRES)
+                /*
+                 * access.refreshToken(); System.out.println("Original Token: " + accessToken +
+                 * " New Token: " + access.getAccessToken());
+                 */
             }
+            // } else {
+            user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            // }
             return user;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

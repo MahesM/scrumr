@@ -67,30 +67,33 @@ public class QontextAuthenticationInstance implements AuthenticationSource {
                         basicInfo = (JSONObject) bodyObject.get("basicInfo");
                 }
                 userId = helper.getAccountId();
-                if (basicInfo != null && headers != null) {
-                    displayName = basicInfo.getString("displayName");
-                    fullName = basicInfo.getString("fullName");
-                    emailId = basicInfo.getString("userId");
+                if (userId != null) {
+                    if (basicInfo != null && headers != null) {
+                        displayName = basicInfo.getString("displayName");
+                        fullName = basicInfo.getString("fullName");
+                        emailId = basicInfo.getString("userId");
 
-                    String api_version = headers.getString("api-version");
-                    String baseUrl = mySettings.getQontextHostUrl();
-                    avatarUrl = "/portal/st/" + api_version + "/profile/defaultUser.gif";
-                    if (basicInfo.has("avatarUrl")) {
-                        avatarUrl = basicInfo.getString("avatarUrl");
+                        String api_version = headers.getString("api-version");
+                        String baseUrl = mySettings.getQontextHostUrl();
+                        avatarUrl = "/portal/st/" + api_version + "/profile/defaultUser.gif";
+                        if (basicInfo.has("avatarUrl")) {
+                            avatarUrl = basicInfo.getString("avatarUrl");
+                        }
                     }
+                    user = new User();
+                    user.setDisplayname(displayName);
+                    user.setUsername(userId);
+                    user.setFullname(fullName);
+                    user.setEmailid(emailId);
+                    user.setAvatarurl(avatarUrl);
+                    session.setAttribute("loggedInUser", user);
+                    String accessToken = mySettings.getOAuthAccessToken(session);
+                    mySettings.saveOAuthAccessToken(session, accessToken);
+                    session.setAttribute("token", accessToken);
+                    request.getSession().setAttribute("source", "qontext");
                 }
-                user = new User();
-                user.setDisplayname(displayName);
-                user.setUsername(userId);
-                user.setFullname(fullName);
-                user.setEmailid(emailId);
-                user.setAvatarurl(avatarUrl);
-                session.setAttribute("loggedInUser", user);
-                String accessToken = mySettings.getOAuthAccessToken(session);
-                mySettings.saveOAuthAccessToken(session, accessToken);
-                session.setAttribute("token", accessToken);
 
-                request.getSession().setAttribute("source", "qontext");
+                
 
             } else {
                 user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

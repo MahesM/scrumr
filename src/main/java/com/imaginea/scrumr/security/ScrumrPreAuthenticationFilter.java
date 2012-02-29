@@ -49,7 +49,14 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
     @Override
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
         String userId = extractUsername(request);
-        logger.info("Obtained principal for authentication " + userId);
+        /*
+         * String source = (String) request.getSession().getAttribute("source"); String sourceId =
+         * request.getParameter("id"); logger.info("Obtained principal for authentication " + userId
+         * + "source" + source + " SourceId:" + sourceId); if ((source!= null &&
+         * !source.equals(sourceId) && !source.equals("qontext")) || ( sourceId != null &&
+         * !sourceId.equals(source))) return null;
+         */
+
         return userId;
     }
 
@@ -71,8 +78,11 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
      * @return the username value (if present), null otherwise.
      */
     private String extractUsername(HttpServletRequest request) {
-        User user = (User)request.getSession().getAttribute("loggedInUser");
-        return user.getUsername();
+        User user = (User) request.getSession().getAttribute("loggedInUser");
+        if (user != null)
+            return user.getUsername();
+        else
+            return null;
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -85,9 +95,9 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
 
         if (!requiresAuthentication((HttpServletRequest) request)) {
             // doesn't require any authentication as token for Authenticated principal is available
-            
+            logger.info("doesnt require auth ");
             super.doFilter(request, response, chain);
-            //chain.doFilter(request, response);
+            // chain.doFilter(request, response);
         } else {
 
             try {
@@ -102,6 +112,7 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
                     successfulAuthentication((HttpServletRequest) request, (HttpServletResponse) response, authResult);
                 } else if (user == null && authResult != null) {
                     chain.doFilter((HttpServletRequest) request, (HttpServletResponse) response);
+                    // super.doFilter(request, response, chain);
                 }
                 if (user != null)
                     chain.doFilter(request, response);
@@ -123,6 +134,13 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             return true;
         } else {
+            String source = (String) request.getSession().getAttribute("source");
+            String sourceId = request.getParameter("id");
+            logger.info("Source changed " + "source" + source + " SourceId:" + sourceId);
+            if ((source != null && !source.equals(sourceId) && !source.equals("qontext"))
+                                            || (sourceId != null && !sourceId.equals(source)))
+                return true;
+
             return false;
         }
     }
