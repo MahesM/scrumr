@@ -41,4 +41,28 @@ public class ProjectLaneSummary{
     public void setLaneid(int laneid) {
 		this.laneid = laneid;
 	}
+    
+    public int getColor() {
+        return color;
+    }
+    
+    public int getRank() {
+        return rank;
+    }
+    
+    public int getProjectid() {
+        return projectid;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public String getType() {
+        return type;
+    }
+    
+    public int getLaneid() {
+        return laneid;
+    }
 }
