@@ -5,6 +5,8 @@ $(document).ready(function() {
         	var sprintinview = 0;
         	var totalsprints = 0;
         	var creator;
+        	var projectLanes = new Object();
+        	var projectPriorities = new Object();
         	var users = null;
         	var userObject = new Object();
         	var creatorObj = new Object();
@@ -31,6 +33,8 @@ $(document).ready(function() {
             			if(project != null && project.length > 0){
             				project = project[0];
             				projectStatus = project.status;
+            				projectLanes = project.projectLanes;
+            				projectPriorities = project.projectPriorities;
             				current_sprint = project.current_sprint > 0?project.current_sprint:1;
             				sprintinview = current_sprint;
             				creator = project.createdby;
@@ -528,28 +532,25 @@ $(document).ready(function() {
 			        		error: function(data) { },
 			        		complete: function(data) { }
 			        	});
-			        	var sprint_stages="";
-			        	$.ajax({
-			        		url: 'api/v1/projectlane/fetchprojectlanes/'+projectId,
-			        		type: 'GET',
-			        		async:false,
-			        		success: function( lane ) {
-			        			sprint_stages = lane;
-			        			var story_html = '<ul id="holderforpage" class="col">';
-			        			for(var i=0;i<lane.length;i++){
-			        				story_html += '<li class="stages"><div class="header "><span></span>'+lane[i].description+'</div><div class="sprintCont"><ul data-type="'+lane[i].type+'" id="stage'+lane[i].rank+'"class="story"></ul></div></li>';
-			        			}
-			        			story_html +='</ul>';
-			        			$('#sprint-view').html(story_html);
-			        			$('#pageCtrls').html("");
-			        			setTimeout(function(){
-			        				$('#holderforpage').sweetPages({perPage:4});
-				    				var controls = $('.swControls').detach();
-			    					controls.appendTo('#pageCtrls'); 
-			        			},1);
+			        	
+	        			var story_html = '<ul id="holderforpage" class="col">';
+	        			//sort the array based on rank as it comes in random order.
+	        			projectLanes.sort(function compareRank(a, b){
+	        				return a.rank> b.rank? 1: -1;
+						});	
+						for(var i=0;i<projectLanes.length;i++){
+        				story_html += '<li class="stages"><div class="header "><span></span>'+projectLanes[i].description+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].type+'" id="stage'+projectLanes[i].rank+'"class="story"></ul></div></li>';
+	        			}
+	        			story_html +='</ul>';
+	        			$('#sprint-view').html(story_html);
+	        			$('#pageCtrls').html("");
+	        			setTimeout(function(){
+	        				$('#holderforpage').sweetPages({perPage:4});
+		    				var controls = $('.swControls').detach();
+	    					controls.appendTo('#pageCtrls'); 
+	        			},1);
+	        			$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
 			        			
-			        		}
-			        	});
 					
 	        		 var post_data2 = 'sprintId='+sprint+'&projectId='+projectId;
 			        	$.ajax({
@@ -591,7 +592,7 @@ $(document).ready(function() {
 				        					if(story.status == 0){
 				        						$('ul#stage'+story.status).find("label#noStories").remove();
 				        					}
-				        					if(story.status == sprint_stages[sprint_stages.length-1]){
+				        					if(story.status == projectLanes[projectLanes.length-1].rank){
 				        						finished = finished + 1;
 				        					}
 
