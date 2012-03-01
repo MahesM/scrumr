@@ -1,6 +1,7 @@
 package com.imaginea.scrumr.entities;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -44,9 +45,8 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 	private String last_updatedby;
 	private Set<Sprint> sprints;
 	private Set<Story> stories;
-	
-	
-
+	private Set<ProjectLane> projectLanes;
+	private Set<ProjectPriority> projectPriorities;
 
 	@Column(name = "ptitle", nullable = false, length = 500)
 	public String getTitle() {
@@ -179,6 +179,79 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 	public void setStories(Set<Story> stories) {
 		this.stories = stories;
 	}
+	
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="project")
+	public Set<ProjectLane> getProjectLanes(){
+        if(projectLanes == null){
+            this.projectLanes = fetchDefaultProjectLanes();
+        }
+        return projectLanes;
+       
+	}
+	
+	public void setProjectLanes(Set<ProjectLane> projectLanes){
+        if(projectLanes != null){
+            this.projectLanes = projectLanes;
+        }
+       
+    }
+	
+	 @OneToMany(cascade=CascadeType.ALL, mappedBy="project")
+	    public Set<ProjectPriority> getProjectPriorities(){
+	        if(projectPriorities == null){
+	            this.projectPriorities = fetchDefaultProjectPriorities();
+	        }
+	        return projectPriorities;
+	       
+	    }
+	    
+	    public void setProjectPriorities(Set<ProjectPriority> projectPriorities){
+	        if(projectLanes != null){
+	            this.projectPriorities = projectPriorities;
+	        }	       
+	    }
+	   	    	    
+	private Set<ProjectLane> fetchDefaultProjectLanes() {
+        ProjectLane.DefaultProjectLanes[] defaultLanes = ProjectLane.DefaultProjectLanes.values();
+        ProjectLane projectLane;
+        Set<ProjectLane> projectLanes = new HashSet<ProjectLane>();
+        for(ProjectLane.DefaultProjectLanes defaultLane: defaultLanes){
+            projectLane = createDefaultProjectLane(this,defaultLane.getDescription(),defaultLane.getRank(),defaultLane.getType(),defaultLane.getLaneId());
+            projectLanes.add(projectLane);
+        }
+        return projectLanes;
+    }
+
+    private ProjectLane createDefaultProjectLane(Project project, String description, int rank,String type, int laneid) {
+        ProjectLane projectLane = new ProjectLane();
+        projectLane.setColor(123);
+        projectLane.setProject(project);
+        projectLane.setDescription(description);
+        projectLane.setPkey(laneid);
+        projectLane.setRank(rank);
+        projectLane.setType(type);
+        return projectLane;
+    }
+    
+    private Set<ProjectPriority> fetchDefaultProjectPriorities() {
+        ProjectPriority.DefaultPriority[] priorities = ProjectPriority.DefaultPriority.values();
+        ProjectPriority projectPriority;
+        Set<ProjectPriority> projectPriorities = new HashSet<ProjectPriority>();
+        for(ProjectPriority.DefaultPriority priority: priorities){
+            projectPriority = createProjectPriority(this,priority.getDescription(),priority.getColor(), priority.getPriorityId());
+            projectPriorities.add(projectPriority);
+        }
+        return projectPriorities;
+    }
+    
+    private ProjectPriority createProjectPriority(Project project, String description, String color, int priorityId) {
+        ProjectPriority projectPriority = new ProjectPriority();
+        projectPriority.setColor(color);
+        projectPriority.setProject(project);
+        projectPriority.setDescription(description);
+        projectPriority.setPkey(priorityId);
+        return projectPriority;        
+    }
 
 	
 }

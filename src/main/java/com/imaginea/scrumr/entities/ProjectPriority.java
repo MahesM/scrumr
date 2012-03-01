@@ -11,6 +11,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import com.imaginea.scrumr.interfaces.IEntity;
 
 @SuppressWarnings("serial")
@@ -25,18 +27,21 @@ public class ProjectPriority extends AbstractEntity implements IEntity, Serializ
     private Project project;
 
     public static enum DefaultPriority {
-        PRIORITY_1 ("Priority 1", "#FC5F5F"),
-        PRIORITY_2 ("Priority 2", "#7395DC"),
-        PRIORITY_3 ("Priority 3", "#EBA143");
+        PRIORITY_1 ("Priority 1", "#FC5F5F",1),
+        PRIORITY_2 ("Priority 2", "#7395DC",2),
+        PRIORITY_3 ("Priority 3", "#EBA143",3);
 
         private final String description;
         private final String color;
-        DefaultPriority(String description, String color) {
+        private final int priorityId;
+        DefaultPriority(String description, String color, int priorityId) {
             this.description = description;
             this.color = color;
+            this.priorityId = priorityId;
         }
         public String getDescription() { return description; }
         public String getColor() { return color; }
+        public int getPriorityId() { return priorityId; }
     }
     
     
@@ -57,7 +62,8 @@ public class ProjectPriority extends AbstractEntity implements IEntity, Serializ
     public void setDescription(String description) {
         this.description = description;
     }
-
+    
+    @JsonIgnore
     @ManyToOne()
     @JoinColumn(name = "projectid", nullable = false)
     public Project getProject() {

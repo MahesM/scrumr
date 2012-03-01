@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectLane;
-import com.imaginea.scrumr.entities.ProjectLaneSummary;
 import com.imaginea.scrumr.interfaces.ProjectLaneManager;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 
@@ -104,26 +103,5 @@ public class ProjectLaneResource {
             logger.debug("FAILURE");
             return "{\"result\":\"failure\"}";
         }
-    }
-    
-    @RequestMapping(value = "/fetchprojectlanes/{id}", method = RequestMethod.GET)
-    public @ResponseBody
-    List<ProjectLaneSummary> fetchProjectLanesByProjectId(@PathVariable("id") String id) {
-    	List<ProjectLane> projectLaneList = projectLaneManager.fetchAllProjectLaneByProject(Integer.parseInt(id));
-        
-        List<ProjectLaneSummary> projectLaneSummary = new ArrayList<ProjectLaneSummary>();
-        for(ProjectLane projectLane:projectLaneList){
-        	ProjectLaneSummary projectLaneDetail = new ProjectLaneSummary();
-        	projectLaneDetail.setColor(projectLane.getColor());
-        	projectLaneDetail.setDescription(projectLane.getDescription());
-        	projectLaneDetail.setLaneid(projectLane.getPkey());
-        	projectLaneDetail.setRank(projectLane.getRank());
-        	projectLaneDetail.setProjectid(projectLane.getProject().getPkey());
-        	projectLaneDetail.setType(projectLane.getType());
-        	projectLaneSummary.add(projectLaneDetail);        	
-        }
-        return projectLaneSummary;
-    }
-
-   
+    }   
 }

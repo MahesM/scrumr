@@ -168,6 +168,7 @@ public class ProjectResource {
             project.setAssignees(userList);
             project.setSprint_duration(duration);
             project.setCreatedby(current_user);
+
             logger.info("CurrentUser:" + current_user + " " + current_user.length());
             project.setLast_updated(new java.sql.Date(System.currentTimeMillis()));
             project.setLast_updatedby("'" + current_user+"'");
@@ -213,8 +214,6 @@ public class ProjectResource {
                 sprintManager.createSprint(sprint);
                 currentdate = new Date(currentdate.getTime() + ((7 * duration) * 86400000L));                
             }
-            createDefaultLanes(project);
-            createDefaultPriorities(project);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
@@ -226,40 +225,7 @@ public class ProjectResource {
         return result;
 
     }
-
-    private void createDefaultPriorities(Project project) {
-        ProjectPriority.DefaultPriority[] priorities = ProjectPriority.DefaultPriority.values();
-        for(ProjectPriority.DefaultPriority priority: priorities){
-            createProjectPriority(project,priority.getDescription(),priority.getColor());
-        }        
-    }
-
-    private void createProjectPriority(Project project, String description, String color) {
-        ProjectPriority projectPriority = new ProjectPriority();
-        projectPriority.setColor(color);
-        projectPriority.setProject(project);
-        projectPriority.setDescription(description);
-        projectPriorityManager.createProjectPriority(projectPriority);
-        
-    }
-
-    private void createDefaultLanes(Project project) {
-        ProjectLane.DefaultProjectLanes[] projectLanes = ProjectLane.DefaultProjectLanes.values();
-        for(ProjectLane.DefaultProjectLanes projectLane: projectLanes){
-            createProjectLane(project,projectLane.getDescription(),projectLane.getRank(),projectLane.getType());
-        }
-	}   
-
-	private void createProjectLane(Project project, String description, int rank, String type) {
-	    ProjectLane projectLane = new ProjectLane();
-        projectLane.setColor(123);
-        projectLane.setProject(project);
-        projectLane.setDescription(description);
-        projectLane.setRank(rank);
-        projectLane.setType(type);
-        projectLaneManager.createProjectLane(projectLane);        
-    }
-
+    
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
     List<Project> updateProject(@RequestParam String pNo, @RequestParam String pTitle,

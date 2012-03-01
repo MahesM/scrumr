@@ -77,10 +77,8 @@ public class ProjectPriorityResource {
 
         if (projectPriority != null) {
             try {
-
                 projectPriority.setColor(color);
                 projectPriority.setDescription(description);
-
                 projectPriorityManager.updateProjectPriority(projectPriority);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -104,11 +102,4 @@ public class ProjectPriorityResource {
             return "{\"result\":\"failure\"}";
         }
     }
-    
-     @RequestMapping(value = "/fetchprojectpriorities/{id}", method = RequestMethod.GET)
-    public @ResponseBody
-    List<ProjectPriority> fetchProjectPrioritiesByProjectId(@PathVariable("id") String id) {
-       return projectPriorityManager.fetchAllProjectPrioritiesByProject(Integer.parseInt(id));
-    }
-      
 }
