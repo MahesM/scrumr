@@ -100,20 +100,25 @@ $(document).ready(function(){
 	});
 	
 	$("#delete-proj").live('click',function(){
-		var id = $(this).parent().parent().find('.pno').attr("id");
-		$.ajax({
-			url: 'api/v1/projects/delete/'+id,
-			type: 'GET',
-			async:false,
-			success: function( obj ) {
-				obj = $.parseJSON(obj);
-				if(obj && obj.result == "success"){
-					 populateProjects();
-				}
-			}
-		});
+		customAlert( { message: {'text':'Do you want to remove this Project?'} }, callbackForDeleteProject, $(this) ); 
 	});
 
+	function callbackForDeleteProject(handerResponse, curEle){
+		if(handerResponse){
+			var id = curEle.parent().parent().find('.pno').attr("id");
+			$.ajax({
+				url: 'api/v1/projects/delete/'+id,
+				type: 'GET',
+				async:false,
+				success: function( obj ) {
+					obj = $.parseJSON(obj);
+					if(obj && obj.result == "success"){
+						 populateProjects();
+					}
+				}
+			});			
+		}
+	}
 	function populateProjects(){
 		var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
 		               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
