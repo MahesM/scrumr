@@ -2692,10 +2692,10 @@ $(document).ready(function() {
 					}
 				}
 			
-				$("#cancel").click(function(){
+				$("#cancel").bind('click',function(){
 					returnCallback(false);
 					$("#alertMsgDiv").slideUp('slow');
-					$('#cancel').unbind('click');			
+					$('#cancel').unbind('click');			 // Click has been called for
 				});
 				
 				$("#ok").bind('click',function(){
