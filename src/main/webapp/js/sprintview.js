@@ -1571,21 +1571,29 @@ $(document).ready(function() {
         	});
         	
         	$(".strRmv").live('click', function(){
-        		 var id = $(this).parent().attr("id");
-        		id = id.replace("st","");
-        		$(this).parent().hide("fade","slow");
-        		setTimeout(function(){
-        			deleteStory(id);
-        			populateUnassignedStories('');
-        			//commented this out as i feel it is unnecessary to populate content. On refresh, it will populate anyways.
-        			/* if(project_view ==1){
-           				populateSprints();
-    				}else{
-   						populateSprintStories(sprintinview);
-    				}  */
-        		},1000);
+        		
+        		customAlert({ message: {'text':'Are you sure. Do you want to remove this story?.'} },callback,$(this)); 
         		
         	});
+        	
+        	function callback(handlerResponse,curObj) {
+
+    			if(handlerResponse){
+            		var id = curObj.parent().attr("id");
+            		id = id.replace("st","");
+            		curObj.parent().hide("fade","slow");
+            		setTimeout(function(){
+            			deleteStory(id);
+            			populateUnassignedStories('');
+            			//commented this out as i feel it is unnecessary to populate content. On refresh, it will populate anyways.
+            			/* if(project_view ==1){
+               				populateSprints();
+        				}else{
+       						populateSprintStories(sprintinview);
+        				}  */
+            			},1000);
+    			}
+    		 }
         	
         	$("#searchStory").keyup(function(event) {
     			if (event.which == 13) {
@@ -2636,5 +2644,74 @@ $(document).ready(function() {
          $('#popup_sprint_cancel, .sprint_close').live("click",function(){
         	 $('.sprint-popup').hide();
          });
+         
+         /************************************** CUSTOME ALERT***************************************/ 
+         
+         
+			var customAlert=  function(options,callback,curObj) {
+				
+				var curEl = curObj;
+				var htmlStr = '<div id="alertMsgDiv">'+
+								'<div id="confirmheader">Pramati Confirm Box</div>'+
+								'<div id="message"></div>'+
+								'<div id="btncontainer" >'+
+									'<a id="ok" href="#" class="round">Ok</a>'+
+									'<a id="cancel"  href="#" class="round">Cancel</a>'+
+								'</div>'+
+							  '</div>';
+
+				$("body").append(htmlStr);
+				
+				// message Style
+				{
+					$("#message").html(options.message["text"]);
+					for(cssprop in options.message) {
+						$('#message').css(cssprop, options.message[cssprop]);
+					}
+				}
+				
+				//container Style 
+				{					
+					$("#alertMsgDiv").slideDown('slow');
+					for(cssprop in options.containerStyle) {
+						$('#alertMsgDiv').css({cssprop : options.containerStyle[cssprop]});
+					}			
+				}
+				
+				//Button Style 
+				{
+					for(cssprop in options.btnStyle) {
+						$('#round').css({cssprop : options.btnStyle[cssprop]});
+					}
+				}
+
+				//Header Style 
+				{
+					for(cssprop in options.headerStyle) {
+						$('#confirmheader').css({cssprop : options.headerStyle[cssprop]});			
+					}
+				}
+			
+				$("#cancel").click(function(){
+					returnCallback(false);
+					$("#alertMsgDiv").slideUp('slow');
+					$('#cancel').unbind('click');			
+				});
+				
+				$("#ok").bind('click',function(){
+					returnCallback(true);		
+					$("#alertMsgDiv").slideUp('slow');
+					$('#ok').unbind('click');
+				});
+				
+				function returnCallback(response) {
+					if (typeof callback == 'function') {					
+						callback.call(this,response,curEl);
+						callback = function(){return null;};
+					}
+				}
+			};
+			
+			/***********************************************************************/ 
 
 });

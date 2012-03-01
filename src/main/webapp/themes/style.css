@@ -2650,3 +2650,70 @@ ul.col li.pink .header span {
     line-height: 38px;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
 }
+
+/*******************CUSTOME ALERT- CONFIRM STYLES*************************************************/
+
+	#btncontainer{
+		text-align:center;
+	}
+	#message {
+		text-align:center;
+		margin: 10px;
+		color:#000;
+		font-size:12px;
+	}
+	#alertMsgDiv {
+		display:none;
+		width:300px;
+		border:1px solid #000;
+		background-color: #CCC;
+		z-index:99999;
+		position:absolute;
+		left:40%;
+		top:40%;
+		
+		-moz-box-shadow: 0 0 5px 5px #888;
+		-webkit-box-shadow: 0 0 5px 5px#888;
+		box-shadow: 0 0 5px 5px #888;
+	}
+	#confirmheader{
+		background-color: #f5a00e;
+		height:20px;
+		padding:5px;
+		background: -webkit-gradient(linear, left top, left bottom, from(#F90), to(white), color-stop(0.5, #FA3));
+		border-bottom: 1px solid black;
+		color:#000;
+	}
+	/* rounded buttons */
+	.round {
+		cursor:pointer; 
+		cursor:hand; 
+		line-height:27px;
+		height:27px;
+		padding-right:30px; 
+		padding-left:30px;
+		display:inline-block;
+		margin: 2px 2px 5px 2px;
+		text-decoration: none;
+		list-style-type: none;
+		-webkit-border-radius: 60px;
+		-moz-border-radius: 60px;
+		border-radius: 60px;
+		border:1px solid #000;
+		text-decoration: none;
+		color:#000;
+		background:-webkit-gradient(linear, left top, left bottom, from(#F90), to(white), color-stop(0.5, #FA0));
+	}
+
+	a.round:hover {
+		-moz-box-shadow: 4px 4px 5px #888;
+		-webkit-box-shadow: 4px 4px 5px #888;
+		box-shadow: 4px 4px 5px #888;
+	}
+	a.round:link, a.round:visited, a.round:active {
+		text-decoration:none;
+		color:#000;
+	}
+
+
+/********************************************************************/
