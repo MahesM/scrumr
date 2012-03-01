@@ -88,7 +88,7 @@ public class GoogleAuthenticationInstance implements AuthenticationSource {
                  */
             }
             // } else {
-            user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            // user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             // }
             return user;
         } catch (Exception e) {
