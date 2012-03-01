@@ -11,6 +11,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.qontextclient.EasySSLProtocolSocketFactory;
@@ -93,20 +94,18 @@ public class QontextAuthenticationInstance implements AuthenticationSource {
                     request.getSession().setAttribute("source", "qontext");
                 }
 
-                
-
             } else {
                 user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             }
             return user;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return null;
+            throw new UsernameNotFoundException(e.getMessage());
         }
 
     }
 
-    public String getFriends(int startIndex, int count) {
+    public String getFriends(int startIndex, int count) throws Exception {
         try {
 
             String users = helper.searchPeople(startIndex, count).toString();
@@ -117,13 +116,13 @@ public class QontextAuthenticationInstance implements AuthenticationSource {
         return null;
     }
 
-    public String searchFriends(String sortType, boolean showTotalCount, int startIndex, int count) {
+    public String searchFriends(String sortType, boolean showTotalCount, int startIndex, int count)
+                                    throws Exception {
         try {
             String users = helper.searchBasicProfile(sortType, startIndex, count).toString();
             return users;
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return null;
     }

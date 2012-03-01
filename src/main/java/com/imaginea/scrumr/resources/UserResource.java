@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Path;
 
-import org.apache.struts2.interceptor.ServletRequestAware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +25,6 @@ import com.imaginea.scrumr.interfaces.TaskManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
 import com.imaginea.scrumr.security.AbstractAuthenticationFactory;
 import com.imaginea.scrumr.security.AuthenticationSource;
-import com.imaginea.scrumr.utils.QontextHelperUtil;
 
 @Controller
 @RequestMapping("/users")
@@ -50,6 +49,8 @@ public class UserResource {
 
     @Autowired
     HttpServletRequest request;
+
+    public static final Logger logger = LoggerFactory.getLogger(UserResource.class);
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public @ResponseBody
@@ -80,8 +81,13 @@ public class UserResource {
     String fetchQontextUsers(@RequestParam String index, @RequestParam String count) {
 
         authenticationSource = abstractAuthenticationFactory.getInstance(request);
-        String str = authenticationSource.getFriends(Integer.parseInt(index), Integer.parseInt(count));
-        System.out.println("Output: " + str);
+        String str = null;
+        try {
+            str = authenticationSource.getFriends(Integer.parseInt(index), Integer.parseInt(count));
+        } catch (Exception e) {
+            return "{\"result\":\"failure\"}";
+        }
+        logger.debug("Output: " + str);
         return str;
     }
 
@@ -91,8 +97,13 @@ public class UserResource {
                                     @RequestParam int startIndex, @RequestParam int count) {
         String userList = null;
         authenticationSource = abstractAuthenticationFactory.getInstance(request);
-        userList = authenticationSource.searchFriends(sortType, showTotalCount, startIndex, count);
-        System.out.println("Users List Arun:" + userList);
+        try {
+            userList = authenticationSource.searchFriends(sortType, showTotalCount, startIndex, count);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return "{\"result\":\"failure\"}";
+        }
+        logger.debug("Users List:" + userList);
         return userList;
 
     }
@@ -135,13 +146,14 @@ public class UserResource {
             user.setAvatarurl(avatarurl);
             user.setDisplayname(displayname);
             user.setEmailid(emailid);
-            System.out.println(user.toString());
+            logger.debug(user.toString());
             User userExisting = userServiceManager.readUser(username);
             if (userExisting == null) {
                 userServiceManager.createUser(user);
             }
 
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return "{\"result\":\"failure\"}";
         }
         return "{\"result\":\"success\"}";
