@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
@@ -93,9 +94,8 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
                                             + SecurityContextHolder.getContext().getAuthentication());
         }
 
-        if (!requiresAuthentication((HttpServletRequest) request)) {
-            // doesn't require any authentication as token for Authenticated principal is available
-            logger.info("doesnt require auth ");
+        if (!requiresAuthentication((HttpServletRequest) request, (HttpServletResponse) response)) {
+            // doesn't require any authentication as token for Authenticated principal is available           
             super.doFilter(request, response, chain);
             // chain.doFilter(request, response);
         } else {
@@ -111,11 +111,17 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
                     // set the Authentication instance into secure Context
                     successfulAuthentication((HttpServletRequest) request, (HttpServletResponse) response, authResult);
                 } else if (user == null && authResult != null) {
-                    chain.doFilter((HttpServletRequest) request, (HttpServletResponse) response);
+                    chain.doFilter((HttpServletRequest) request, (HttpServletResponse) response);                 
                     // super.doFilter(request, response, chain);
                 }
                 if (user != null)
                     chain.doFilter(request, response);
+                else{
+                    //unsuccessfulAuthentication(servletRequest, (HttpServletResponse)response, new AuthenticationException("Provider changed") {
+                        
+                    //});
+                    servletRequest.getSession().removeAttribute("source");
+                }                
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
                 throw e;
@@ -129,20 +135,27 @@ public class ScrumrPreAuthenticationFilter extends AbstractPreAuthenticatedProce
         }
     }
 
-    private boolean requiresAuthentication(HttpServletRequest request) {
+    private boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        String source = (String) request.getSession().getAttribute("source");
+        String sourceId = request.getParameter("id");
+        logger.info("Source changed ?" + "source" + source + " SourceId:" + sourceId);
+        Authentication auth= SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
             return true;
-        } else {
-            String source = (String) request.getSession().getAttribute("source");
-            String sourceId = request.getParameter("id");
-            logger.info("Source changed " + "source" + source + " SourceId:" + sourceId);
-            if ((source != null && !source.equals(sourceId) && !source.equals("qontext"))
-                                            || (sourceId != null && !sourceId.equals(source)))
-                return true;
+        }     
 
-            return false;
+        if ((sourceId != null && source != null && !source.equals(sourceId) && !source.equals("qontext"))
+                                        || (sourceId != null && !sourceId.equals(source))) {
+            String sourceStr = sourceId != null ? sourceId : source;
+            if (sourceStr != null)
+               request.getSession().setAttribute("source", sourceStr);
+            unsuccessfulAuthentication(request, response, new AuthenticationException("Provider changed") {
+            });
+            //SecurityContextHolder.getContext().setAuthentication(null);
+            return true;
         }
+        return false;        
     }
 
     public AuthenticationManager getAuthenticationManager() {

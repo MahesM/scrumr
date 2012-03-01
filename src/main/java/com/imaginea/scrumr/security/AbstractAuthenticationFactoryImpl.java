@@ -16,15 +16,18 @@ public class AbstractAuthenticationFactoryImpl implements AbstractAuthentication
 
         String source = (String) request.getSession().getAttribute("source");
         String sourceId = request.getParameter("id");
-        //quick hacks --TODO separate them into a separate spring config and deploy separately and handle in maven
-        if (sourceId == null) {
-            // request.getSession().setAttribute("source", "qontext");          
+        String code = request.getParameter("code");
+        // quick hacks --TODO separate them into a separate spring config and deploy separately and
+        // handle in maven
+        if (sourceId == null && source == null || (source != null && source.equals("qontext"))
+                                        || (sourceId == null && code != null)) {
+            // request.getSession().setAttribute("source", "qontext");
             return (AuthenticationSource) ctx.getBean("qontext");
         } else {
-            //|| (source!=null && !source.equals("qontext") && !source.equals(sourceId))
+            // || (source!=null && !source.equals("qontext") && !source.equals(sourceId))
             String sourceStr = sourceId != null ? sourceId : source;
-           // if (sourceStr != null)
-            //    request.getSession().setAttribute("source", sourceStr);           
+            // if (sourceStr != null)
+            // request.getSession().setAttribute("source", sourceStr);
             return (AuthenticationSource) ctx.getBean(sourceStr);
         }
     }
