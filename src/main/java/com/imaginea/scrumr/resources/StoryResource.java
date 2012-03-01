@@ -113,7 +113,7 @@ public class StoryResource {
             story.setCreationDate(new java.sql.Date(System.currentTimeMillis()));
             story.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
             story.setLastUpdatedby(user);
-            story.setStatus("notstarted");
+            story.setStatus("0");
             story.setViewCount(0);
             story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
             storyManager.createStory(story);

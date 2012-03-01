@@ -493,17 +493,8 @@ $(document).ready(function() {
 					 var sprintTitle = '';
 	        		 if(totalsprints == 0){
 	        			 sprintTitle = '<label>No Sprints available for this project.</label>';
-		        		// $(".sprints").html(string);
 		        	 }else{
 		        		 sprintTitle = '<span class="sprintHead">Sprint '+sprint+' </span>';
-			        	 /* for(var i=1; i<=totalsprints;i++){
-			        		 if(i == sprint){
-				        		 sprintList += '<li class="sprintHead current">Sprint '+i+' &#187; </li>';
-			        		 }else{
-			        			 sprintList += '<li class="sprintHead">Sprint '+i+' &#187; </li>';
-			        		 }
-			        	 } */
-			        	 //$(".sprints").html(sprintList);
 		        	 }
 	        		 
 	        		 var post_data2 = 'sprintId='+sprint+'&projectId='+projectId;
@@ -537,6 +528,28 @@ $(document).ready(function() {
 			        		error: function(data) { },
 			        		complete: function(data) { }
 			        	});
+			        	var sprint_stages="";
+			        	$.ajax({
+			        		url: 'api/v1/projectlane/fetchprojectlanes/'+projectId,
+			        		type: 'GET',
+			        		async:false,
+			        		success: function( lane ) {
+			        			sprint_stages = lane;
+			        			var story_html = '<ul id="holderforpage" class="col">';
+			        			for(var i=0;i<lane.length;i++){
+			        				story_html += '<li class="stages"><div class="header "><span></span>'+lane[i].description+'</div><div class="sprintCont"><ul data-type="'+lane[i].type+'" id="stage'+lane[i].rank+'"class="story"></ul></div></li>';
+			        			}
+			        			story_html +='</ul>';
+			        			$('#sprint-view').html(story_html);
+			        			$('#pageCtrls').html("");
+			        			setTimeout(function(){
+			        				$('#holderforpage').sweetPages({perPage:4});
+				    				var controls = $('.swControls').detach();
+			    					controls.appendTo('#pageCtrls'); 
+			        			},1);
+			        			
+			        		}
+			        	});
 					
 	        		 var post_data2 = 'sprintId='+sprint+'&projectId='+projectId;
 			        	$.ajax({
@@ -544,11 +557,6 @@ $(document).ready(function() {
 			        		type: 'GET',
 			        		async:false,
 			        		success: function( stories ) {
-				        			$("#sprint-view tbody").html('<tr><td colspan="1"  class="green stages"></td><td colspan="1"  class="yellow stages" ></td><td colspan="1" class="blue stages"></td><td colspan="1" class="pink stages"></td></tr>');
-			        				var story_unassigned = '<div class="header" ><span></span>Sprint Stories</div><div class="sprintCont"><ul id="notstarted" class="story">';
-			        				var story_dev = '<div class="header" ><span></span>Development</div><div class="sprintCont"><ul id="dev" class="story">';
-			        				var story_review = '<div class="header" ><span></span>Review &amp; QA</div><div class="sprintCont"><ul id="review" class="story">';
-			        				var story_finished = '<div class="header" ><span></span>Finished</div><div class="sprintCont"><ul id="finished" class="story">';
 				        			var finished = 0;
 			        				if(stories != null && stories.length > 0){
 			        					var str = '';
@@ -569,55 +577,30 @@ $(document).ready(function() {
 								        					for(var j=0;j<users.length;j++){
 								        						if(j==2){
 																	imageHTML+="<a class='moreStory' href='#story-cont'>more</a>";
-																	//imageHTML+="<a class='viewStory' href='#story-cont'>.....</a>";
 																	break;
 																}
 																imageHTML+="<img height='26' width='26' class='' src='"+qontextHostUrl+""+users[j].user.avatarurl+"' title='"+users[j].user.fullName+"'>";
 															}							        					
-								        					//str =  '<li id="st'+story.pkey+'" class="p'+story.priority+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 							        					}
 						        					 	storyObj = {story:story, backlog:false, image:imageHTML};
 						        					 	str = new EJS({url: 'ejs/story_template.ejs'}).render(storyObj);
-						        					 	//else{
-						        							//str = '<li id="st'+story.pkey+'" class="p'+story.priority+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-							        					//}
 				        						}
 				        					});
-
-				        					if(story.status == "notstarted"){
-				        						story_unassigned += str;
-				        					}else if(story.status == "dev"){
-				        						story_dev += str;
-				        					}else if(story.status == "review"){
-				        						story_review += str;
-				        					}else if(story.status == "finished"){
-				        						story_finished += str;
+				        					
+				        					$('ul#stage'+story.status).append(str);
+				        					if(story.status == 0){
+				        						$('ul#stage'+story.status).find("label#noStories").remove();
+				        					}
+				        					if(story.status == sprint_stages[sprint_stages.length-1]){
 				        						finished = finished + 1;
 				        					}
+
 				        				}
 				        				$("#sprint_total").html(stories.length);
 				        				$("#sprint_finished").html(finished);
 
-				        				story_unassigned += '</div></ul>';
-				       					story_dev += '</div></ul>';
-				       					story_review += '</div></ul>';
-				       					story_finished += '</div></ul>';
-				        				$(".green").html(story_unassigned);
-				        				$(".yellow").html(story_dev);
-				        				$(".blue").html(story_review);
-				        				$(".pink").html(story_finished);
-				        				
 				        			}else{
-				        				story_unassigned += '</ul>';
-				       					story_dev += '</ul>';
-				       					story_review += '</ul>';
-				       					story_finished += '</ul>';
-				        				$(".green").html(story_unassigned);
-				        				$(".yellow").html(story_dev);
-				        				$(".blue").html(story_review);
-				        				$(".pink").html(story_finished);
-				        				
-				        				$("#notstarted").html('<label id="noStories" style="margin:5px;float:left">No Stories assigned to this sprint.</label>');
+				        				$("ul#stage0").html('<label id="noStories" style="margin:5px;float:left">No Stories assigned to this sprint.</label>');
 				        			}
 				        			$( ".stages ul" ).sortable({
 			        	        		connectWith: ".story",
@@ -628,66 +611,46 @@ $(document).ready(function() {
 			        	        		placeholder: 'ui-state-highlight',
 			        	        		update: function( event, ui ) {
 			        	   				 	var id = ui.item.attr("id");
-			        	   				 	var status = "notstarted";
-			        		   				var stat = $(this).attr("id");
-			        		   				if(stat == "dev"){
-			        		       				status = "dev";
-			        		       			}else if(stat == "review"){
-			        		       				status = "review";
-			        		       			}else if(stat == "notstarted"){
-			        		       				status = "notstarted";
-			        		       				$(this).find("label#noStories").remove();
-			        		       			}else if(stat == "finished"){
-			        		       				status = "finished";
-			        		       			}
-			        		   				if($(ui.item[0]).closest('ul').attr('id') == 'notstarted'){
-			        		   					var success = updateStoryStatus(id.split("st")[1],"notstarted",sprint); 
+			        		   				if($(ui.item[0]).closest('ul').attr('data-type') == 'BACKLOG'){
+			        		   					$(ui.item[0]).closest('ul').find("label#noStories").remove();
+			        		   					var success = updateStoryStatus(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],sprint); 
 			        		   					$(ui.item[0]).find('.img-cont').html("");
-			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
 			        		   				}else if(($(ui.item[0]).closest('section').hasClass('left'))) {
 			        		   					var new_id = id.replace("st","");
 			        		   					$(ui.item[0]).find('a.remove').removeClass('sptRmv').addClass('strRmv');
-			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+			        		   				//	removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
 			        		   					addtoCurrentSprint(new_id, 0);
 			        		   					populateUnassignedStories('');
 			        		   				}else{
 				        		   				if(projectStatus !="Not Started" && projectStatus !="Finished"){
-					        		   				var success = updateStoryStatus(id.split("st")[1],status,sprint); 
+					        		   				var success = updateStoryStatus(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],sprint); 
 					        		   				var elOffset = $(ui.item[0]).offset();
-					        		   				if($(ui.item[0]).closest('ul').attr('id') == 'finished'){			        		   								        		   				
-					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
-					        		   					refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
+					        		   				if($(ui.item[0]).closest('ul').attr('data-type') == 'finished'){			        		   								        		   				
+					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
+					        		   					refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],creatorObj);
 					        		   				}
-					        		   				if((ui.sender != null) && !($(ui.item[0]).closest('ul').attr('id') == 'notstarted') && !($(ui.item[0]).closest('ul').attr('id') == 'finished')&& !($(ui.item[0]).closest('section').hasClass('left'))){
+					        		   				if((ui.sender != null) && !($(ui.item[0]).closest('ul').attr('data-type') == 'BACKLOG') && !($(ui.item[0]).closest('ul').attr('data-type') == 'FINISHED')&& !($(ui.item[0]).closest('section').hasClass('left'))){
 					        		   					showAddUserPopup(elOffset);
-					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
 					        		   					var existing_user_arr = [];
 					        		   					if($('#'+id).data("userlist")){
 					        		   						existing_user_arr = $('#'+id).data("userlist");
 					        		   					}
-					      		   						addUserToStory(existing_user_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
-					        		   					//refreshStoryPortlet(id.split("st")[1]);
-					        		   					$('#popup_story_done').live("click",function(){
+					      		   						addUserToStory(existing_user_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]); 
+					        		   					$('#popup_story_done').unbind('click').click(function(){
 					        		   						if(users_arr.length > 0){
-						        		   						removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
+						        		   						removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
 						        		   						$('#'+id).data("userlist", users_arr);  
-							      		   						addUserToStory(users_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id')); 
-						        		   						refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'),creatorObj);
+							      		   						addUserToStory(users_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]); 
+						        		   						refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],creatorObj);
 						        		   						$(this).closest('.popup-story-cont').hide();
-						        		   						$('#popup_story_done').die();
+						        		   						//$('#popup_story_done').die();
 					        		   						}
 					        		   					});
 					        		   				}
 					        		   				
-													/* if(($(ui.item[0]).closest('section').hasClass('left'))) {
-					        		   					var new_id = id.replace("st","");
-					        		   					$(ui.item[0]).find('a.remove').removeClass('sptRmv').addClass('strRmv');
-					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id'));
-					        		   					addtoCurrentSprint(new_id, 0);
-					        		   					populateUnassignedStories('');
-					        		   				} else{*/
-					        		   					$(ui.item[0]).find('a.remove').removeClass('strRmv').addClass('sptRmv');
-					        		   				//}
+					        		   				$(ui.item[0]).find('a.remove').removeClass('strRmv').addClass('sptRmv');
 					        		   				if(success == false){
 					        		   					$(this).sortable('cancel');
 					        		   				}  
@@ -702,8 +665,6 @@ $(document).ready(function() {
 						        	   	        		}
 						        	   				 }
 												
-					        		   				//if($(ui.item[0]).closest('.sprintCont').length > 0){
-					        		   					//$(ui.item[0]).closest('ul').css({'height': (($(window).height()) - 195) + 'px'});
 					        		   					var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
 					        		   					$(ui.sender).css({'height': ulHeight + 'px'});
 					        		   					
@@ -729,10 +690,10 @@ $(document).ready(function() {
 			        		   				}else {
 			        		   					sprintStageScroll[$(ui.item[0]).closest('ul').attr('id')] =$(ui.item[0]).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp; 
 			        		   				}
-			        		   				if($(ui.item[0]).closest('ul').attr('id') !="notstarted"){
+			        		   				if($(ui.item[0]).closest('ul').attr('data-type') !="BACKLOG"){
 			        		   					if(projectStatus == "Finished" || projectStatus == "Not Started"){
 				        		   					$(ui.sender).sortable("cancel");
-				        		   					$('.error-hd a').before("Stories cannot be moved when project has "+projectStatus.toLowerCase());
+				        		   					$('.error-hd label').html("Stories cannot be moved when project has "+projectStatus.toLowerCase());
 				        		   					$('.error-hd').fadeIn("slow");
 				        		   					 setTimeout(function(){
 				        		   						$('.error-hd').fadeOut("slow");
@@ -742,43 +703,30 @@ $(document).ready(function() {
 			        		   				}
 			        		   			}
 			        		   			
-			        		   			 /* start : function(event,ui){
-			        		   				if(projectStatus == "Finished" || projectStatus == "Not Started"){
-			        		   					$(ui.item[0]).closest('ul').sortable("cancel");
-			        		   				}
-			        		   			}  */
 			        	    		}).disableSelection();
 			        				
-				        		//	$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
 				        			$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
 				        			$( ".stages ul:visible").each(function(){
 										if($(this).find('li').length > 0){
 											var ulHeight = ($(this).find('li').outerHeight() * $(this).find('li').length) + 150;
 											$(this).css({'height': ulHeight + 'px'});
-											//$(this).css({'height': (($(window).height()) - 195) + 'px'});
 											sprintStageScroll[$(this).attr('id')] = $(this).parent().jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	
 										}else {
-											//$(this).css({'height': (($(window).height()) - 180) + 'px'});
 											$(this).css({'height': '150px'});
 										}
 									});
-				        			/* if(sprintStageScroll) {
-	        		   					var api = $('.sprintCont').data('jsp');
-	        		   					if(api)api.destroy();
-	        		   				}
-									sprintStageScroll =$('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;	 */
 			        		},
 			        		error: function(data) { },
 			        		complete: function(data) { }
 			        	});
 			}
 			
-			$('#error_hd_close').live("click",function(){
+			$('#error_hd_close').unbind('click').live("click",function(){
 				$('.error-hd').fadeOut("slow");
 			});
 			
 			function addtoCurrentSprint(storyList,sprint){
-    			var post_data = 'projectId='+projectId+'&stories='+storyList+'&status=notstarted&sprint='+sprint;
+    			var post_data = 'projectId='+projectId+'&stories='+storyList+'&status=0&sprint='+sprint;
     			
     			$.ajax({
     				url: 'api/v1/stories/addtosprint',
@@ -1097,7 +1045,7 @@ $(document).ready(function() {
 				$(this).find('.remvUser').hide();
 			});*/
 			
-			$('ul#proj-user-list li').live("click",function(){
+			$('ul#proj-user-list li').unbind('click').live("click",function(){
 				if($(this).hasClass("selected")){
 					$(this).removeClass("selected");
 					$(this).css('opacity','1');
@@ -1231,13 +1179,13 @@ $(document).ready(function() {
 				
 			}
 			
-			$("#addPeople").live('click', function(){
+			$("#addPeople").unbind('click').live('click', function(){
 				populateUserDetails(userIndex,false);
 				$('.story-popup').hide();
 				//$('.popup-proj-cont .c-box-content ul').jScrollPane();
 										
 			});
-			$(".adduser").live('click',function(){
+			$(".adduser").unbind('click').live('click',function(){
 				$(this).css('background', 'url("themes/images/ajax-loader.gif") no-repeat');
 				var el = $(this);
 				setTimeout(function(){
@@ -1259,7 +1207,7 @@ $(document).ready(function() {
 			});
         
 			
-			$(document).live("click",function(event){
+			$(document).unbind('click').live("click",function(event){
 				// if that user assign story popup is visible, hide it on click of anywhere outside the popup
 				var el = event.target;
 				if($(el).closest('.popup-story-cont').length === 0){
@@ -1277,7 +1225,7 @@ $(document).ready(function() {
 				}
 				
 				//add story popup close on clicking anywhere outside popup.
-				if($(el).closest('.story-popup').length == 0 && $(el).closest('#addStory').length == 0 ){
+				if($(el).closest('.story-popup').length == 0 && $(el).closest('#addStory').length == 0 && ($(el).closest('#popup_proj_done').length == 0)){
 					$('.story-popup').hide();
 				}
 				
@@ -1298,7 +1246,7 @@ $(document).ready(function() {
 			});
 			
 			
-			$('#popup_proj_done').live("click",function(){
+			$('#popup_proj_done').unbind('click').live("click",function(){
            	 $('.popup-proj-cont').hide();
            	 userIndex = 0;
            	 if(firstVisit){
@@ -1307,7 +1255,7 @@ $(document).ready(function() {
            	 }
             }); 
 			
-			$("#removePeople").live('click', function(){
+			$("#removePeople").unbind('click').live('click', function(){
 					 if(addUserScroll){
 						var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
 						if(api)api.destroy();
@@ -1328,7 +1276,7 @@ $(document).ready(function() {
 					$('.popup-proj-cont').show();
 					addUserScroll = $('.popup-proj-cont .c-box-content ul').jScrollPane();
 				
-					$(".removeUser").live('click',function(){
+					$(".removeUser").unbind('click').live('click',function(){
 						$(this).css('background', 'url("themes/images/ajax-loader.gif") no-repeat');
 						var el = $(this);
 						setTimeout(function(){
@@ -1405,12 +1353,12 @@ $(document).ready(function() {
 				$(".projectstatview").parent().css('background-color',"#FFFFFF");
 				$(".sprintHead").show();
 				//$(".duration-hd").find('label').hide();
-				$(".duration-hd").find('#pageCtrls').hide();
+				$(".duration-hd").find('#pageCtrls').show();
 				//$(".duration-hd").find('ul').show();
 				$(".duration-hd").find("#task_report").hide();
 			}
             
-        	$(".currentSprint").live('click', function(){
+        	$(".currentSprint").unbind('click').live('click', function(){
         		var storyList = $(this).parent().parent().parent().attr("id").split("st")[1];
        			addtoCurrentSprint(storyList,current_sprint);
        			$(this).parent().parent().parent().hide("fade","slow");
@@ -1489,7 +1437,7 @@ $(document).ready(function() {
         		}
     		});
         	
-        	$('#addAnotherStory,#createStory').live("click",function(){
+        	$('#addAnotherStory,#createStory').unbind('click').live("click",function(){
         		var title = $('input[name=storyTitle]');
         		var description = $('textarea[name=storyDesc]');
         		if(!storyFormValid)
@@ -1519,16 +1467,18 @@ $(document).ready(function() {
         			complete: function(data) { }
         		});
         		if($(this).attr('id') == "addAnotherStory"){
+        			$('input[name=storyTitle]').val("");
         			$('textarea[name=storyDesc]').val("");
-        			var select = $('select[name=stPriority]');
+        			var select = $('select[name=stSprint]');
         			select.val(jQuery('options:first', select).val());
+        			//$('.story-popup .custom-select .option').html('<div class="color p1"></div><div class="label" data-value="1">Priority 1</div></div>');
         		}else{
         			$('.story-popup').hide();
         		}
         		
         	});
         	
-        	$(".sptRmv").live('click', function(){
+        	$(".sptRmv").unbind('click').live('click', function(){
         		 var id = $(this).parent().attr("id");
         		id = id.replace("st","");
         		addtoCurrentSprint(id,0);
@@ -1570,13 +1520,13 @@ $(document).ready(function() {
         		
         	});
         	
-        	$(".strRmv").live('click', function(){
+        	$(".strRmv").unbind('click').live('click', function(){
         		
-        		customAlert({ message: {'text':'Are you sure. Do you want to remove this story?.'} },callback,$(this)); 
+        		customAlert({ message: {'text':'Do you want to remove this story?'} },removeStoryCallback,$(this)); 
         		
         	});
         	
-        	function callback(handlerResponse,curObj) {
+        	function removeStoryCallback(handlerResponse,curObj) {
 
     			if(handlerResponse){
             		var id = curObj.parent().attr("id");
@@ -1611,7 +1561,7 @@ $(document).ready(function() {
     					});
     		});
         	
-        	$("#searchRmvUser").live('keyup',function(event) {
+        	$("#searchRmvUser").unbind('click').live('keyup',function(event) {
     			if (event.which == 13) {
     				event.preventDefault();
     			}
@@ -1628,7 +1578,7 @@ $(document).ready(function() {
     								.hide() : $(this).show();
     					});
     			el.next().addClass('close-Rmvsearch').css('background','url("themes/images/close.png") no-repeat');
-				$('.close-Rmvsearch').live('click',function(){
+				$('.close-Rmvsearch').unbind('click').live('click',function(){
 					el.val("");
 	        		el.next().removeClass('close-Rmvsearch').css('background','url("themes/images/search.jpg") no-repeat');
 	        		 $(selector).find('li').each(function(){
@@ -1637,7 +1587,7 @@ $(document).ready(function() {
     			});
         	});
         	
-    		$("#searchUser").live("keyup",function(event) {
+    		$("#searchUser").unbind('click').live("keyup",function(event) {
     			if (event.which == 13 ||event.which == 8) {
     				event.preventDefault();
     			}
@@ -1696,7 +1646,7 @@ $(document).ready(function() {
 								}
     						}
 							el.next().addClass('close-search').css('background','url("themes/images/close.png") no-repeat');
-							$('.close-search').live('click',function(){
+							$('.close-search').unbind('click').live('click',function(){
 								el.val("");
 				        		populateUserDetails(userIndex,false);
 				        		$('.close-search').die();
@@ -1742,7 +1692,7 @@ $(document).ready(function() {
 			viewStoryFancyBox();
         	
         	
-			$(".stAddmore").live('click', function(){
+			$(".stAddmore").unbind('click').live('click', function(){
 				 if($(".stAddmore").html() == "Add Members"){
 					$(".stAddmore").html("Hide Members");
 					$("#stPeople").show();
@@ -1766,7 +1716,7 @@ $(document).ready(function() {
 				// Ends Here
 			}
 			
-			$(".viewStory, .moreStory").live('click', function(){
+			$(".viewStory, .moreStory").unbind('click').live('click', function(){
 				var id = $(this).closest('li').attr("id");
         		id = id.replace("st","");
         		var stageId = $(this).closest('ul').attr('id');
@@ -1776,14 +1726,14 @@ $(document).ready(function() {
         		populateCommentingUserDetails();
     	       	populateStoryComments();
     	       	populateStoryTodos();
-				$(".add-user").live('click', function(){
+				$(".add-user").unbind('click').live('click', function(){
 					var eid = $(this).attr("alt");
 					var eid_arr = [eid];
 					addUserToStory(eid_arr, id,stageId);
 					populateStoryAssignees(id);	
 				});
 				
-				$(".remvUser").live('click', function(){
+				$(".remvUser").unbind('click').live('click', function(){
 					var eid = $(this).parent().find('img').attr("alt");
 					removeUserFromStory(eid, id,stageId);
 					populateStoryAssignees(id);
@@ -1791,7 +1741,7 @@ $(document).ready(function() {
 				viewStoryFancyBox();
 			});
 			
-			$(".projectview").live('click',function(){
+			$(".projectview").unbind('click').live('click',function(){
 				project_view = 1;
 				$('.sprints').hide();
 		       	$(this).css('color',"#00475C");
@@ -1812,7 +1762,7 @@ $(document).ready(function() {
 				viewStoryFancyBox();
 			});
 			
-			$(".sprintview").live('click',function(){
+			$(".sprintview").unbind('click').live('click',function(){
 				project_view = 0;
 				$('.sprints').show();
 				$(this).css('color',"#00475C");
@@ -1825,14 +1775,14 @@ $(document).ready(function() {
 				$("#project-view").hide();
 				$("#pstat-view").hide();
 				$(".sprintHead").show();
-				$(".duration-hd").find('#pageCtrls').hide();
+				$(".duration-hd").find('#pageCtrls').show();
 				//$(".duration-hd").find('ul').show();
 				$(".duration-hd").find("#task_report").hide();
 				populateSprintStories(current_sprint);
 				viewStoryFancyBox();
 			});
 			
-			$(".projectstatview").live('click',function(){
+			$(".projectstatview").unbind('click').live('click',function(){
 				project_view = 0;
 				$('.sprints').hide();
 				$(this).css('color',"#00475C");
@@ -2056,7 +2006,7 @@ $(document).ready(function() {
 					});	
 			}					
         	
-        	$(".cmtRmvComment").live('click',function(){        		
+        	$(".cmtRmvComment").unbind('click').live('click',function(){        		
             	var commentID = $(this).attr("id").split("cdelete")[1];
             	deleteStoryComment(commentID);
             	populateStoryComments();
@@ -2165,7 +2115,7 @@ $(document).ready(function() {
          // Todo Code starts here
                   
          
-         $('#todo-form #tAdd').live("click",function(){
+         $('#todo-form #tAdd').unbind('click').live("click",function(){
              
         	 var user = userLogged;
         	 var story_id = $("#current_story_id").val();	
@@ -2224,7 +2174,7 @@ $(document).ready(function() {
                	 });          	
          }
 
-         $(".cmtRmvTodo").live('click',function(){        		
+         $(".cmtRmvTodo").unbind('click').live('click',function(){        		
          	var todoID = $(this).attr("id").split("tdelete")[1];
          	deleteStoryTodo(todoID);
          	//if edit was clicked and nothing was done.
@@ -2285,26 +2235,31 @@ $(document).ready(function() {
 					});	
 			}	
          
-         $('#addStory').live("click",function(){
+         $('#addStory').unbind('click').live("click",function(){
         	 $('.popup-proj-cont').hide();
+        	 $('input[name=storyTitle]').val("");
+ 			$('textarea[name=storyDesc]').val("");
+ 			var select = $('select[name=stSprint]');
+ 			select.val(jQuery('options:first', select).val());
+ 			//$('.story-popup .custom-select .option').html('<div class="color p1"></div><div class="label" data-value="1">Priority 1</div></div>');
         	 $('.story-popup').show();
          });
          
-         $('#popup_cancel').live("click",function(){
+         $('#popup_cancel').unbind('click').live("click",function(){
         	 $('.popup-story-cont').hide();
          }); 
          
-         $('#popup_story_cancel').live("click",function(){
+         $('#popup_story_cancel').unbind('click').live("click",function(){
         	 $('.story-popup').hide();
          }); 
          
-         $('#storyClose').live("click",function(){
+         $('#storyClose').unbind('click').live("click",function(){
         	 $('.story-popup').hide();
          }); 
          
 		 //code for story details accordion
                 
-         $('div.acc-head').live("click",function(){
+         $('div.acc-head').unbind('click').live("click",function(){
         	 if($(this).find('div').hasClass('open')){
         		var current_div = $(this).find('div');
         		$('div.down').each(function(){
@@ -2324,7 +2279,7 @@ $(document).ready(function() {
          
          
          //code to toggle chart container
-         $('.toggleChart').live("click",function(){
+         $('.toggleChart').unbind('click').live("click",function(){
         	 $(this).parent().prev('.chart-container').slideToggle("slow",function(){
         		 if(!($(this).is(':visible'))){
         			 $(this).next('.toggleChartLine').find('a.toggleChart').css('background','url("images/br_down.png") no-repeat').css('margin-top','-5px');
@@ -2381,7 +2336,7 @@ $(document).ready(function() {
              return false;
          });
          
-         $('.st_edit_story').live("click",function(){
+         $('.st_edit_story').unbind('click').live("click",function(){
         	 $('#story-section').hide();
         	 var storyId = $(this).attr('id');
         	 $.ajax({
@@ -2411,12 +2366,12 @@ $(document).ready(function() {
         	 
          });
          
-         $('.st_edit_cancel').live("click",function(){
+         $('.st_edit_cancel').unbind('click').live("click",function(){
         	 $('#story-section').show();
         	 $('#story-edit-section').hide();
          });
          
-         $('#st-edit-done').live("click",function(){
+         $('#st-edit-done').unbind('click').live("click",function(){
         	var title = $('input#st-edit-title');
      		var description = $('textarea[name=st-edit-description]');
      		var priority = $('#st-edit-priority .option .label').attr('data-value');
@@ -2451,7 +2406,7 @@ $(document).ready(function() {
          });
          
          
-         $('.ctedit').live("click",function(){
+         $('.ctedit').unbind('click').live("click",function(){
         	 var taskId = $(this).attr('id').split("tedit")[1];
         	 $.ajax({
        			url: 'api/v1/todo/'+taskId,
@@ -2472,7 +2427,7 @@ $(document).ready(function() {
         	 
          });
          
-         $('#tupdate').live("click",function(){
+         $('#tupdate').unbind('click').live("click",function(){
         	 var user = userLogged;
         	 var status= $(this).attr("data-status");
         	 var story_id = $("#current_story_id").val();	
@@ -2504,7 +2459,7 @@ $(document).ready(function() {
               	});
          });
          
-         $('#todo_section .todo-status a').live('click',function(event){
+         $('#todo_section .todo-status a').unbind('click').live('click',function(event){
         	 var id = $(this).closest('li.todo-list').attr('id');
         	 $(this).closest('#todo_section').find('ul.todo-status-list').attr('id','status-'+id);
              if($(this).closest('#todo_section').find('ul.todo-status-list').is(':visible')){
@@ -2518,7 +2473,7 @@ $(document).ready(function() {
 
          });
          
-         $('#todo_section ul.todo-status-list li').live('click',function(event){
+         $('#todo_section ul.todo-status-list li').unbind('click').live('click',function(event){
         	 var user = userLogged;
              var task_id = $(this).closest('ul').attr('id').split("status-todo")[1];
              var c = $('#todo'+task_id).find('.todo-status');
@@ -2556,7 +2511,7 @@ $(document).ready(function() {
      		}
      	}); 
          
-         $('ul.col li.stages .header a.editSprint').live("click",function(){
+         $('ul.col li.stages .header a.editSprint').unbind('click').live("click",function(){
     		 var sprint_id = $(this).closest('li.stages').find('ul.story').attr('id').split('sp')[1];
     		 $('.sprint-popup .c-box .c-box-head').html("Sprint"+sprint_id+" Details");
     		 var top = $(this).position().top + 50;
@@ -2590,7 +2545,7 @@ $(document).ready(function() {
     		 $('.sprint-popup').show();
          });
          
-         $('.new_sprint').live("click",function(){
+         $('.new_sprint').unbind('click').live("click",function(){
     		 $('.sprint-popup .c-box .c-box-head').html("Add New Sprint");
     		 var top = $(this).position().top + 15;
     		 var left = $(this).position().left + 100;
@@ -2599,7 +2554,7 @@ $(document).ready(function() {
     		 $('.sprint-popup').show();
          });
          
-         $('#createSprint').live("click",function(){
+         $('#createSprint').unbind('click').live("click",function(){
         	 if($(this).hasClass('edit')){
         		 //edit sprint 
         		 var sprint_id = $(this).attr('data-id');
@@ -2641,7 +2596,7 @@ $(document).ready(function() {
         	 }
          });
          
-         $('#popup_sprint_cancel, .sprint_close').live("click",function(){
+         $('#popup_sprint_cancel, .sprint_close').unbind('click').live("click",function(){
         	 $('.sprint-popup').hide();
          });
          
@@ -2652,11 +2607,11 @@ $(document).ready(function() {
 				
 				var curEl = curObj;
 				var htmlStr = '<div id="alertMsgDiv">'+
-								'<div id="confirmheader">Pramati Confirm Box</div>'+
+								'<div id="confirmheader">Alert!</div>'+
 								'<div id="message"></div>'+
 								'<div id="btncontainer" >'+
-									'<a id="ok" href="#" class="round">Ok</a>'+
-									'<a id="cancel"  href="#" class="round">Cancel</a>'+
+									'<input type="button" class="submit" id="ok"value="Ok" ></input>'+
+									'<input type="button" class="submit" id="cancel" value="Cancel"></input>'+
 								'</div>'+
 							  '</div>';
 
@@ -2692,22 +2647,20 @@ $(document).ready(function() {
 					}
 				}
 			
-				$("#cancel").bind('click',function(){
+				$("#cancel").unbind('click').bind('click',function(){
 					returnCallback(false);
 					$("#alertMsgDiv").slideUp('slow');
-					$('#cancel').unbind('click');			 // Click has been called for
 				});
 				
-				$("#ok").bind('click',function(){
+				$("#ok").unbind('click').bind('click',function(){
 					returnCallback(true);		
 					$("#alertMsgDiv").slideUp('slow');
-					$('#ok').unbind('click');
 				});
 				
 				function returnCallback(response) {
 					if (typeof callback == 'function') {					
 						callback.call(this,response,curEl);
-						callback = function(){return null;};
+						//callback = function(){return null;};
 					}
 				}
 			};

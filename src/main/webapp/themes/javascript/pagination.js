@@ -85,8 +85,9 @@ $.fn.sweetPages = function(opts){
 	});
 	
 	// Mark the first link as active the first time this code runs:
-	//hyperLinks.eq(0).addClass('active');
-	hyperLinks.eq(curPage).trigger('click');
+	hyperLinks.eq(curPage).addClass('active');
+	swSlider.stop().animate({'margin-left':-(curPage)*pageWidth},'slow');
+//	hyperLinks.eq(curPage).trigger('click');
 	
 	// Center the control div:
 	/*swControls.css({

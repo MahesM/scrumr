@@ -135,7 +135,7 @@
 		                <div class="pstat-view-hd"><label class="projectstatview">Task View</label></div>
 		                <!-- <a href="" class="customize float-rgt">Customize</a> -->
 		                <div class="error-hd" style="display:none;">
-		                	<a id="error_hd_close" href="javascript:void(0)"></a>
+		                	<label></label><a id="error_hd_close" href="javascript:void(0)"></a>
 		                </div>
 	                </div>
 	                <div class="duration-hd">
@@ -163,10 +163,13 @@
                 <div id="project-view" style="overflow:hidden;" class="float-lft clear col-cont" >
                 </div>
                 
-                <table id="sprint-view" class="sprint-detail">
+                <div id="sprint-view" style="overflow:hidden;" class="sprint-detail float-lft clear col-cont" >
+                </div>
+                
+                <!-- <table id="sprint-view" class="sprint-detail">
                     <tbody>
                     </tbody>
-                </table>
+                </table> -->
                 
                 <table id="pstat-view" class="project-list">
              	 <thead>
