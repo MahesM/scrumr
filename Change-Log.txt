@@ -3,3 +3,12 @@ Feb 10, 2012, Version beta_1.0.0 - Staging release
     * Task Creation 
     * Integration with Qontext -SSO and People API
         
+Feb 12, 2012, Version sprint_release_2.0.0.1
+
+    Bug fixes for beta_1.0.0 - https://github.com/Imaginea/scrumr/issues?milestone=2&state=closed
+
+March 02, 2012, Version sprint_release_4.0.0.1_03022012 - Sprint 4 interim release
+    * Full support for standalone version - google and facebook SSO
+    * Upgraded UX 
+    * Ability to add and edit a Sprint when the project is going on
+    * Bug Fixes:#58 #49
