@@ -181,7 +181,7 @@ $(document).ready(function(){
 							if(((i+1)%2) == 0){
 								even = "even";
 							}
-							project_html += '<tr class="'+even+'"><td class="pno" id="'+project.pkey+'"><label>'+project.pkey+'</label></td><td class="ptitle"><a href="sprint.action?view=project&visit=0&projectId='+project.pkey+'">'+title+'</a></td><td class="pdesc">'+project.description+'</td><td class="pstart">'+duration+'</td><td class="status">'+status+'</td><td class="users">'+people+'</td><td class="actions"><a id="edit-proj" href="#create-project"><img title="edit" style="width:16px;height:16px;margin-right:5px;cursor:pointer;" src="/scrumr/themes/images/edit.gif"/></a><img id="delete-proj" style="width:16px;height:16px;cursor:pointer;" title="delete" src="/scrumr/themes/images/delete.gif"/></td></tr>';
+							project_html += '<tr class="'+even+'"><td class="pno" id="'+project.pkey+'"><label>'+project.pkey+'</label></td><td class="ptitle"><a href="sprint.action?view=project&visit=0&projectId='+project.pkey+'">'+title+'</a></td><td class="pdesc">'+project.description+'</td><td class="pstart">'+duration+'</td><td class="status">'+status+'</td><td class="users">'+people+'</td><td class="actions"><a id="edit-proj" href="#create-project"><img title="edit" style="width:16px;height:16px;margin-right:5px;cursor:pointer;" src="themes/images/edit.gif"/></a><img id="delete-proj" style="width:16px;height:16px;cursor:pointer;" title="delete" src="themes/images/delete.gif"/></td></tr>';
 							
 						}
 						$("#project-list tbody.content").html(project_html);
