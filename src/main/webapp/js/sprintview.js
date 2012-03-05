@@ -209,9 +209,10 @@ $(document).ready(function() {
 										status = 'Stories Completed: <span id="project_finished" class="finished">'+result.result+'</span>Total: <span id="project_total" class="total">'+result.result+'</span>';
 					        		}
 								});
-								$('.duration-hd label.duration').html(duration+'&nbsp;&nbsp; | <b>Sprint'+current_sprint+"</b> &nbsp;&nbsp;"+sprints[0].project.status+'&nbsp;&nbsp;|&nbsp;&nbsp;'+status+'&nbsp;&nbsp;| <a href="javascript:void(0);" class="new_sprint" >Add New Sprint</a>');
+								var sprintTitle = '<b>Sprint '+current_sprint+' </b>';
+								var sprint_html = "<div class=\"sprintInfoBand\" >"+duration+"&nbsp;&nbsp; | "+sprintTitle+"  "+sprints[0].project.status+"&nbsp;&nbsp;|&nbsp;&nbsp;"+status+"&nbsp;&nbsp;| <a href=\"javascript:void(0);\" class=\"new_sprint\" >Add New Sprint</a><div id=\"pageCtrls\" style=\"float:right;width:200px;height:30px;\"></div></div>";
 								var finished = 0;
-				        		var sprint_html = '<ul id="holderforpage" class="col">';
+				        		sprint_html += '<ul id="holderforpage" class="col">';
 			        			$("ul.col li").css("width",100/sprints.length+'%');
 			        			for(var k=0; k<sprints.length;k++ ){
 			        				//sprint_html += '<li class="stages"><div class="header "><span></span>Sprint '+(k+1)+'</div><div class="projectCont"><ul id="sp'+sprints[k].id+'"class="story">';
@@ -495,10 +496,11 @@ $(document).ready(function() {
 			function populateSprintStories(sprint){
 					var userObj='';
 					 var sprintTitle = '';
+					 var story_html = "";
 	        		 if(totalsprints == 0){
 	        			 sprintTitle = '<label>No Sprints available for this project.</label>';
 		        	 }else{
-		        		 sprintTitle = '<span class="sprintHead">Sprint '+sprint+' </span>';
+		        		 sprintTitle = '<b>Sprint '+sprint+' </b>';
 		        	 }
 	        		 
 	        		 var post_data2 = 'sprintId='+sprint+'&projectId='+projectId;
@@ -507,6 +509,7 @@ $(document).ready(function() {
 			        		type: 'GET',
 			        		async:false,
 			        		success: function( result ) {
+			        			
 			        			result=result[0];
 			        			if(result != null){
 				        			var duration = '';
@@ -525,15 +528,14 @@ $(document).ready(function() {
 		    							duration += ' - No End Date';
 		    						}
 		    						var status = 'Stories Completed: <span id="sprint_finished" class="finished">0</span> Total: <span id="sprint_total" class="total">0</span>';
-		    						$('.duration-hd label.duration').html('&nbsp;&nbsp;'+duration+'&nbsp;&nbsp; |'+sprintTitle+" "+result.status+'&nbsp;&nbsp; |&nbsp;&nbsp;'+status);
-		    						$('.duration-hd label.duration').show();
+		    						story_html = "<div class=\"sprintInfoBand\" >"+duration+"&nbsp;&nbsp; | "+sprintTitle+" "+result.status+"&nbsp;&nbsp;|&nbsp;&nbsp;"+status+"<div id=\"pageCtrls\" style=\"float:right;width:200px;height:30px;\"></div></div>";
 			        			}
 			        		},
 			        		error: function(data) { },
 			        		complete: function(data) { }
 			        	});
 			        	
-	        			var story_html = '<ul id="holderforpage" class="col">';
+	        			story_html += '<ul id="holderforpage" class="col">';
 	        			//sort the array based on rank as it comes in random order.
 	        			projectLanes.sort(function compareRank(a, b){
 	        				return a.rank> b.rank? 1: -1;
@@ -1330,33 +1332,19 @@ $(document).ready(function() {
 				$("#sprint-view").hide();
 				$("#project-view").show();
 				$('#pstat-view').hide();
-				$('.projectView').css('color',"#00475C");
-		       	$('.projectView').parent().css('background-color',"#F6EEE1");
-				$(".sprintview").css('color',"gray");
-				$(".sprintview").parent().css('background-color',"#FFFFFF");
-				$(".projectstatview").css('color',"gray");
-				$(".projectstatview").parent().css('background-color',"#FFFFFF");
-				$(".sprintHead").hide();
-				$(".duration-hd").find('label.duration').show();
-				$(".duration-hd").find('#pageCtrls').show();
-				//$(".duration-hd").find('ul').hide();
-				$(".duration-hd").find("#task_report").hide();
+				
+				var selectAllLbl = $(".view-hd div");				
+				selectAllLbl.addClass("tabHolder");
+				$('.projectview').parent().removeClass("tabHolder");
 			}else{
      	       	populateSprintStories(current_sprint);
 				$("#sprint-view").show();
 				$("#project-view").hide();
 				$('#pstat-view').hide();
-				$('.sprintview').css('color',"#00475C");
-		       	$('.sprintview').parent().css('background-color',"#F6EEE1");
-				$(".projectview").css('color',"gray");
-				$(".projectview").parent().css('background-color',"#FFFFFF");
-				$(".projectstatview").css('color',"gray");
-				$(".projectstatview").parent().css('background-color',"#FFFFFF");
-				$(".sprintHead").show();
-				//$(".duration-hd").find('label').hide();
-				$(".duration-hd").find('#pageCtrls').show();
-				//$(".duration-hd").find('ul').show();
-				$(".duration-hd").find("#task_report").hide();
+				
+				var selectAllLbl = $(".view-hd div");				
+				selectAllLbl.addClass("tabHolder");
+				$('.sprintview').parent().removeClass("tabHolder");
 			}
             
         	$(".currentSprint").unbind('click').live('click', function(){
@@ -1373,13 +1361,7 @@ $(document).ready(function() {
        			},1000);
         	});
         	
-        	/* $(".sprintHead").live('click', function(){
-        		var sp = $(".sprints li").index($(this)) + 1;
-        		populateSprintStories(sp);
-        		sprintinview = sp;
-        		current_sprint = sp;
-        		viewStoryFancyBox();
-        	}); */
+
         	
         	/* $('#story_form').submit(function(){
         		var title = $('input[name=stTitle]');
@@ -1745,63 +1727,49 @@ $(document).ready(function() {
 			$(".projectview").unbind('click').live('click',function(){
 				project_view = 1;
 				$('.sprints').hide();
-		       	$(this).css('color',"#00475C");
-		       	$(this).parent().css('background-color',"#F6EEE1");
-				$(".sprintview").css('color',"gray");
-				$(".sprintview").parent().css('background-color',"#FFFFFF");
-				$(".projectstatview").css('color',"gray");
-				$(".projectstatview").parent().css('background-color',"#FFFFFF");
+		       
+				var selectAllLbl = $(".view-hd div");				
+				selectAllLbl.addClass("tabHolder");
+				$('.projectview').parent().removeClass("tabHolder");
+				
 				$("#sprint-view").hide();
 				$("#pstat-view").hide();
 				$("#project-view").show();
-				$(".sprintHead").hide();
-				$(".duration-hd").find('label.duration').show();
-				$(".duration-hd").find('#pageCtrls').show();
-				//$(".duration-hd").find('ul').hide();
-				$(".duration-hd").find("#task_report").hide();
+
 				populateSprints();
 				viewStoryFancyBox();
 			});
 			
-			$(".sprintview").unbind('click').live('click',function(){
+			$(".sprintview ").unbind('click').live('click',function(){
 				project_view = 0;
 				$('.sprints').show();
-				$(this).css('color',"#00475C");
-				$(this).parent().css('background-color',"#F6EEE1");
-		       	$(".projectview").css('color',"gray");
-		       	$(".projectview").parent().css('background-color',"#FFFFFF");
-		       	$(".projectstatview").css('color',"gray");
-				$(".projectstatview").parent().css('background-color',"#FFFFFF");
+				
+				var selectAllLbl = $(".view-hd div");				
+				selectAllLbl.addClass("tabHolder");
+				$(this).parent().removeClass("tabHolder");
+				
+				
 				$("#sprint-view").show();
 				$("#project-view").hide();
 				$("#pstat-view").hide();
-				$(".sprintHead").show();
-				$(".duration-hd").find('#pageCtrls').show();
-				//$(".duration-hd").find('ul').show();
-				$(".duration-hd").find("#task_report").hide();
+
 				populateSprintStories(current_sprint);
 				viewStoryFancyBox();
 			});
 			
 			$(".projectstatview").unbind('click').live('click',function(){
 				project_view = 0;
+				
 				$('.sprints').hide();
-				$(this).css('color',"#00475C");
-				$(this).parent().css('background-color',"#F6EEE1");
-		       	$(".projectview").css('color',"gray");
-		       	$(".projectview").parent().css('background-color',"#FFFFFF");
-		       	$(".sprintview").css('color',"gray");
-				$(".sprintview").parent().css('background-color',"#FFFFFF");
+				
+				var selectAllLbl = $(".view-hd div");				
+				selectAllLbl.addClass("tabHolder");
+				$(this).parent().removeClass("tabHolder");
+				
 				$("#sprint-view").hide();
 				$("#project-view").hide();
 				$("#pstat-view").show();
-				$(".sprintHead").css('display','none !important');
-				$(".duration-hd").find('label.duration').hide();
-				$(".duration-hd").find('#pageCtrls').hide();
-				//$(".duration-hd").find('ul').hide();
-				//todo:enable it when the functionality is complete.
-				$(".duration-hd").find("#task_report").show(); 
-				populateProjectStatistics();
+
 				viewStoryFancyBox();
 			});
 			

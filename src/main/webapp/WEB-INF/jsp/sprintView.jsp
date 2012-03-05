@@ -35,10 +35,11 @@
 	<% if(view != null && view.equalsIgnoreCase("sprint")){ %>
 		project_view = 0;
 		$('.sprints').show();
-		$('.sprintview').css('color',"#00475C");
-		$('.sprintview').parent().css('background-color',"#F6EEE1");
-	   	$(".projectview").css('color',"gray");
-	   	$(".projectview").parent().css('background-color',"#FFFFFF");
+	   	
+		var selectAllLbl = $(".view-hd div");				
+		selectAllLbl.addClass("tabHolder");
+		$('.sprintview').parent().removeClass("tabHolder");
+		
 	<% } %>
 	var taskStatusColors = {'CREATED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
  </script>
@@ -125,40 +126,18 @@
 				
 				
            
-            <div class="sprint-cont float-lft" style="border:0;">
+            <div class="sprint-cont float-lft" style="border:0;" id="contentHolder" >
 	            <div class="view-cont float-lft">
-	                <!-- <ul class="sprints float-lft">
-	                </ul> -->
 	                <div class="view-hd">
-	                	<div class="prj-view-hd"><label class="projectview">Project View</label></div>
-		                <div class="sp-view-hd"><label class="sprintview">Sprint View</label></div>
+	                	<div class="prj-view-hd"><label class="projectview" >Project View</label></div>
+		                <div class="sp-view-hd"><label class="sprintview" >Sprint View</label></div>
 		                <div class="pstat-view-hd"><label class="projectstatview">Task View</label></div>
 		                <!-- <a href="" class="customize float-rgt">Customize</a> -->
 		                <div class="error-hd" style="display:none;">
 		                	<label></label><a id="error_hd_close" href="javascript:void(0)"></a>
 		                </div>
 	                </div>
-	                <div class="duration-hd">
-	                	<label class="duration" style="display:none;"></label>
-	                	<ul class="sprints float-lft">
-	                	</ul> 
-	                	<div id="pageCtrls" style="display:none;float:right;width:200px;height:30px;"></div>
-	                	<div id="task_report" style="display:none;float:left;width:100%">
-	                		<input type="text" value="" id="searchTodos" placeholder="Search todos..."></input>
-	                		<label style="float:left;margin-top:5px;">&nbsp;&nbsp;| Sort By :</label>
-	                		<div class="task_sort">
-	                			<label>Created on</label>
-	                			<a href="javascript:void(0);"></a>
-	                			<ul id="sort-list" style="display:none;">
-		                			 <li data-order="createdOn">Created on</li>
-		                			 <li data-order="content">Content</li>
-		                			 <li data-order="timeInDays">Milestone Period</li>
-		                			 <li data-order="status">Status</li>
-	                			</ul>
-	                		</div>
-	                	</div>
-	                </div>
-	                 
+                 
 	            </div>
                 <div id="project-view" style="overflow:hidden;" class="float-lft clear col-cont" >
                 </div>
@@ -166,26 +145,35 @@
                 <div id="sprint-view" style="overflow:hidden;" class="sprint-detail float-lft clear col-cont" >
                 </div>
                 
-                <!-- <table id="sprint-view" class="sprint-detail">
-                    <tbody>
-                    </tbody>
-                </table> -->
-                
-                <table id="pstat-view" class="project-list">
-             	 <thead>
-	             	 <tr class="header">
-	             	 	<td>To do</td>
-	             	 	<td>Milestone</td>
-	             	 	<td>Status</td>
-	             	 	<td>Member</td>
-	             	 	<td>Actions</td>
-	             	 </tr>
-	             </thead>
-             	 <tbody class="content">
-             	 	
-              	 </tbody>
-              </table> 
-            </div>
+                <div id="pstat-view" >
+               	   	<div id="task_report" style="float:left;width:100%" class="sprintInfoBand" >
+                		<input type="text" value="" id="searchTodos" placeholder="Search todos..."></input>
+                		<label style="float:left;margin-top:5px;">&nbsp;&nbsp;| Sort By :</label>
+                		<div class="task_sort">
+                			<label>Created on</label>
+                			<a href="javascript:void(0);"></a>
+                			<ul id="sort-list" style="display:none;">
+	                			 <li data-order="createdOn">Created on</li>
+	                			 <li data-order="content">Content</li>
+	                			 <li data-order="timeInDays">Milestone Period</li>
+	                			 <li data-order="status">Status</li>
+                			</ul>
+                		</div>
+                	</div>
+		            <table class="project-list">
+		             	 <thead>
+			             	 <tr class="header">
+			             	 	<td>To do</td>
+			             	 	<td>Milestone</td>
+			             	 	<td>Status</td>
+			             	 	<td>Member</td>
+			             	 	<td>Actions</td>
+			             	 </tr>
+			             </thead>
+		             	 <tbody class="content"></tbody>
+		              </table>
+	             </div> 
+	          </div>
             
             <div style="display:none;overflow:hidden !important;">
             	<div id="story-cont">

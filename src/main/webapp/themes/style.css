@@ -802,22 +802,15 @@ div#projectList {
 	background-image: -o-linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);
 	background-image: -moz-linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);
 	background-image: -webkit-linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);
-	background-image: -ms-linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);
-	
-	background-image: -webkit-gradient(
-	linear,
-	right top,
-	right bottom,
-	color-stop(0.01, rgb(246,238,225)),
-	color-stop(0.51, rgb(246,238,227)),
-	color-stop(0.94, rgb(255,255,255))
-);
+	background-image: -ms-linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);	
+	background-image: -webkit-gradient(linear,right top,right bottom,color-stop(0.01, rgb(246,238,225)),color-stop(0.51, rgb(246,238,227)),	color-stop(0.94, rgb(255,255,255)));
 }
 
 .view-hd {
     display: inline-block;
     width: 100%;
     background-color: #FFFFFF;
+    vertical-align:bottom;
 }
 
 .error-hd{
@@ -854,7 +847,7 @@ div#projectList {
 	margin-right:3px;
 }
 
-.duration-hd input{
+#task_report input{
 	width: 220px;
 	border: 1px solid #CCC;
 	height: 15px;
@@ -864,17 +857,17 @@ div#projectList {
 	float:left;
 }
 
-.duration-hd .task_sort{
+#task_report .task_sort{
 	float:left;
 	margin:5px 0 0 10px;
 }
 
-.duration-hd .task_sort label {
+#task_report .task_sort label {
 	font-weight:bold;
 	float:left;
 }
 
-.duration-hd .task_sort a{
+#task_report  .task_sort a{
 	background:url("images/down_arrow.gif");
 	height:7px;
 	width:13px;
@@ -883,7 +876,7 @@ div#projectList {
 	margin-left:5px;
 }
 
-.duration-hd .task_sort ul#sort-list {
+#task_report .task_sort ul#sort-list {
     list-style: none;
 	margin: 0;
 	padding: 5px;
@@ -896,21 +889,15 @@ div#projectList {
 	z-index:100;
 }
 
-.duration-hd .task_sort ul#sort-list li {
+#task_report .task_sort ul#sort-list li {
     padding: 0;
     margin: 2px 0;
     height:20px;
 }
 
-.duration-hd .task_sort ul#sort-list li:hover{
+#task_report  .task_sort ul#sort-list li:hover{
 	background-color:#EDEDED;
 	cursor:pointer;
-}
-.sprintHead {
- 	background: none repeat scroll 0 0 transparent !important;
-    display: inline !important;
-    font-weight: bolder;
-    margin: 10px;
 }
 
 .project_count{
@@ -926,7 +913,7 @@ div#projectList {
 	font-weight: bold;
 	font-size: 13px;
 }
-.duration-hd span.total{
+.sprintInfoBand span.total{
 	 background: none repeat scroll 0 0 #FFFFFF !important;
     border: 1px solid gray !important;
     border-radius: 4px 4px 4px 4px;
@@ -939,7 +926,7 @@ div#projectList {
     height:auto;
 }
 
-.duration-hd span.finished{
+.sprintInfoBand span.finished{
 	 background: none repeat scroll 0 0 #FDE9E9 !important;
     border: 1px solid #D17897 !important;
     border-radius: 4px 4px 4px 4px;
@@ -952,7 +939,7 @@ div#projectList {
     height:auto;
 }
 
-.prj-view-hd label{
+.prj-view-hd label, .sp-view-hd label, .pstat-view-hd  label{
 	display: inline-block;
     float: left;
     font-size: 14px;
@@ -962,26 +949,7 @@ div#projectList {
     margin:5px 10px;
 }
 
-.sp-view-hd label{
-	display: inline-block;
-    float: left;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    margin:5px 10px;
-}
-
-.pstat-view-hd  label{
-	display: inline-block;
-    float: left;
-    font-size: 14px;
-    font-weight: bold;
-    color:#00475C;
-    cursor: pointer;
-    margin:5px 10px;
-}
-
-.prj-view-hd {
+.prj-view-hd, .pstat-view-hd, .sp-view-hd {
 	float: left;
     height: 100%;
     line-height: 27px;
@@ -989,31 +957,13 @@ div#projectList {
     border-top-right-radius:5px;
     border-top-left-radius:5px;
 }
-
-.sp-view-hd {
-	float: left;
-    height: 100%;
-    line-height: 27px;
-    background-color: #FFFFFF;
-    border-top-right-radius:5px;
-    border-top-left-radius:5px;
+.tabHolder {
+	background-color : #FFFFFF;
+}
+.tabHolder label{
+	color:gray;
 }
 
-.pstat-view-hd {
-	float: left;
-    height: 100%;
-    line-height: 27px;
-    background-color:#F6EEE1;
-    border-top-right-radius:5px;
-    border-top-left-radius:5px;
-}
-.duration-hd {
-    height:25px;
-    padding:5px;
-    padding-left:10px;
-    font-size: 13px;
-    font-color:black;
-}
 #storyLabel label{
 	color: #FFFFFF;
     float: left;
@@ -1537,7 +1487,7 @@ ul.sprints li a {
     width: 98%;
 }
 
-.pstat-view {
+.pstat-view table{
 	width:98%;
 }
 
@@ -2651,6 +2601,21 @@ ul.col li.pink .header span {
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
 }
 
+.sprintInfoBand {
+	padding: 10px;
+	font-size: 13px;
+	height:20px;
+	width:99%;
+	color:#7F7F7F;
+	background-image: linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);
+	background-image: -o-linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);
+	background-image: -moz-linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);
+	background-image: -webkit-linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);
+	background-image: -ms-linear-gradient(top, rgb(246,238,225) 1%, rgb(246,238,227) 51%, rgb(255,255,255) 94%);	
+	background-image: -webkit-gradient(linear,right top,right bottom,color-stop(0.01, rgb(246,238,225)),color-stop(0.51, rgb(246,238,227)),	color-stop(0.94, rgb(255,255,255)));
+	
+}
+
 /*******************CUSTOME ALERT- CONFIRM STYLES*************************************************/
 
 	#btncontainer{
@@ -2732,3 +2697,5 @@ ul.col li.pink .header span {
 	}
 
 /********************************************************************/
+
+
