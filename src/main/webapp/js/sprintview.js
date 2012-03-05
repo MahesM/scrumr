@@ -1210,7 +1210,7 @@ $(document).ready(function() {
 			});
         
 			
-			$(document).unbind('click').live("click",function(event){
+			$(document).live("click",function(event){
 				// if that user assign story popup is visible, hide it on click of anywhere outside the popup
 				var el = event.target;
 				if($(el).closest('.popup-story-cont').length === 0){
