@@ -3001,4 +3001,370 @@ ul.col li.pink .header span {
 
 /********************************************************************/
 
+/********************************************************************/
 
+
+/******************** New Design ***************/
+			.tabPointer{
+				display: none;
+				float: left;
+				margin-bottom: -13px;
+				margin-left: 0%;
+				margin-top: 33px;
+			}
+			.tab_Recent{background: url("icons/recent.png")15px 2px no-repeat;}
+			.tab_All{background: url("icons/all.png")15px 2px no-repeat;}
+			.tab_New{background: url("icons/new.png")15px 2px no-repeat;}
+			
+			/***********Create project***********/
+
+			.float-lft { float: left; }
+			.pro_head {
+				color:#fff;
+				font-size : 1.8em;
+				padding: 10px 0;
+				color:#B2B3B5;
+			}
+			#create_pro_brdcrum .pro_head_anchor{
+				text-decoration:none;
+				color:#B2B3B5;
+				cursor:pointer;
+				font-size:16px;
+			}
+			#create_pro_brdcrum .pro_head_anchor_enable{
+				font-size:1em;
+			}
+			.nxt_span{
+				padding:0 15px;
+				font-size:11px;
+			}
+			.new_pro_container{
+				background-color : #303437;
+				float:left;
+				padding:20px;
+				border-radius: 6px;	
+				-moz-box-shadow:0 0 1px 0px #B2B3B5;
+				-webkit-box-shadow:0 0 1px 0px #B2B3B5;
+				box-shadow: 0 0 1px 0px #B2B3B5;
+				-moz-border-radius: 4px;
+				-webkit-border-radius: 4px;
+				border-radius: 4px;
+			}
+			.input_title{
+				width: 350px;
+				height: 25px;
+			}
+			.input{
+				margin-top:10px;
+				font-size: 12px;
+				border-radius: 4px;
+				padding: 5px 2px 0px 8px;
+				height:25px;
+				border:none;
+			}
+			.textarea {
+				height:60px;
+			}
+			.cal {
+				background: url("icons/calender.png") no-repeat scroll 95.5% 50% white !important;
+				width: 150px;
+			}
+			.selectbox{
+				width: 164px;
+			}
+			.nxt_prv_holder{
+				float:right;
+			}
+			.prv_link{
+				color:#0886C6;
+				padding:10px;
+				vertical-align:middle;
+				cursor:pointer;
+			}
+			/** Story parameter***/
+			
+			.sty_par_article {
+				display:inline-block;
+				width:29%;
+				height:80%;
+				padding:15px;
+				float:left;
+			}
+			.chk_header{
+				color: black;
+				font-weight: bold;
+				font-size: 1.2em;
+			}
+			.sty_content{
+				border:1px solid #fff;
+				border-radius:4px;
+				-moz-box-shadow: 1px 1px 3px 0px #333;
+			    -webkit-box-shadow: 1px 1px 3px 0px #333;
+			    box-shadow: 1px 1px 3px 0px #333;
+			    height:90%;
+			    background-color:#D8D6D7;
+			    padding: 15px;
+			}
+			.sty_header{
+				padding: 0 0px 10px 0;
+			}
+			.radio_header{
+				font-size:1.2em;
+				font-weight:bold;
+				display:block;
+			}
+			.radio_holder{
+				font-size: 1.2em;
+				padding: 15px 0px;
+			}
+			.slider_style {
+				padding:10px 0 0 0 ;
+				width:95%;
+			}
+			.pHolder{
+				padding:5px 0;			}
+			
+			.pOrder{
+				width: 20px;
+				display: inline-block;
+			}
+			.pInput{
+				border-radius: 4px;
+				height: 12px;
+				padding: 4px;
+			}
+			.pColor{
+				width: 25px;
+				height: 25px;
+				background-color: red;
+				display: inline-block;
+				vertical-align: bottom;
+				border-radius:5px;
+				-moz-box-shadow: 1px 1px 3px 0px #333;
+			    -webkit-box-shadow: 1px 1px 3px 0px #333;
+			    box-shadow: 1px 1px 3px 0px #333;
+			}
+			.pAddRem{
+				width: 19px;
+				height: 19px;
+				background: url(images/sprite.png);
+				background-position: 0px -34px;
+				display: inline-block;
+				vertical-align: bottom;
+			}
+			.jqslider{
+				padding:0 0 10px 0 ;				
+			}
+			.padding5{
+				padding:5px;
+			}
+			#pjt_stages .backloghead{
+				font-size:1.4em;
+				text-align:center;
+			}
+			#pjt_stages .backlogdesp{
+				font-size:1.2em;
+				text-align:center;
+				opacity:.6;
+			}
+
+/******************** New Design - login.jsp***************/
+
+	/***********Create project***********/
+
+	.float-lft { float: left; }
+	.pro_head , .allPjt_header , .recentPjt_header {
+		color:#fff;
+		font-size : 1.8em;
+		padding: 10px 0 20px 0px;
+		color:#B2B3B5;
+	}
+	#new_pro_container , #allProjects_container , #recentProjects_container{
+		background-color : #303437;
+		float:left;
+		padding:20px;
+		border-radius: 6px;	
+		-moz-box-shadow:0 0 1px 0px #B2B3B5;
+		-webkit-box-shadow:0 0 1px 0px #B2B3B5;
+		box-shadow: 0 0 1px 0px #B2B3B5;
+		-moz-border-radius: 4px;
+		-webkit-border-radius: 4px;
+		border-radius: 4px;
+		width:860px;
+	}
+	.input_title{
+		width: 350px;
+		height: 25px;
+	}
+	.input{
+		margin-top:10px;
+		font-size: 12px;
+		border-radius: 4px;
+		padding: 3px;
+		height:25px;
+		border:none;
+	}
+	.textarea {
+		height:60px;
+		margin-left:0px;
+	}
+	.cal {
+		background: url("icons/calender.png") no-repeat scroll 95.5% 50% white !important;
+		width: 150px;
+	}
+	.selectbox{
+		width: 164px;
+	}
+
+	
+/******************All Projects - allProjects.jsp****************************/
+
+.slNo , .pjt_name, .pjt_duration, .sprt_No, .sprt_status{
+	display:inline-block;
+	padding:3px;
+	color:#B2B3B5;
+	font-size : 13px;
+}
+.pjt_desp{
+	margin-left: 30px;
+	text-align: left;
+	width: 50%;
+	clear:both;
+	color:#B2B3B5;
+	font-size : 13px;
+	padding:3px;
+}
+.pjt_name,  .sprt_No, .sprt_status {
+	color:#AFD4DF;
+	cursor:pointer;
+}
+.slNo{
+	width:20px;
+}
+.pjt_name {
+	font-weight: bold;
+
+}
+
+.pjt_detail_container, .pjt_member_container, .pjt_control_container {
+	display:inline-block;
+}
+.pjt_detail_container{
+	width:55%;
+	float:left;
+}
+.pjt_member_container{
+	width:32%;
+}
+.pjt_control_container{
+	width:12%;
+}
+#allProjects_container .pjt_mem_more{
+	color:#AFD4DF;
+	display:none;
+}
+.pjt_mem{
+	width:32px;
+	height:32px;
+}
+.pjt_ctrl{
+	padding:0px 5px;
+	cursor:pointer;
+}
+.pjt_container{
+	padding: 0 0 20px 0;
+}
+/********************TAB STYLES*******************************************************/
+	.tabPointer{
+		display: none;
+		float: left;
+		margin-bottom: -13px;
+		margin-left: 0%;
+		margin-top: 32px;
+	}
+	#tabs .tab_Recent{background: url("icons/recent.png")15px 2px no-repeat;}
+	#tabs .tab_All{background: url("icons/all.png")15px 2px no-repeat;}
+	#tabs .tab_New{background: url("icons/new.png")15px 2px no-repeat;}
+	#tabs a {color:#fff;}
+
+#tabs .ui-tabs-nav { margin: 0; padding: 0; display: inline-block; position:absolute ; left: 35%; border-radius:6px;}
+#tabs .ui-tabs-nav li { list-style: none; float: left; position: relative; border: 0; padding: 0; white-space: nowrap; border-right: 1px solid #000; width:100px; font-size: 14px;margin:0;top 0;opacity:.7 }
+#tabs .ui-tabs-nav li a { float: left; padding:0.5em 0 0.5em 3.4em; text-decoration: none; width: 0%;}
+#tabs .ui-tabs-panel { display: block; border-width: 0; padding:  6em 18em; background:url("../themes/images/pattern.png") repeat scroll 0 0 #434343;float:left;height: 800px;}
+#tabs .ui-widget-header { border: 1px solid #4B4B4B; background: #36383A ; color: #ffffff;}
+#tabs .ui-tabs-nav .ui-tabs-selected { opacity:1 ;background-color:#000;}
+#tabs .ui-tabs-nav li.ui-tabs-selected img{display:block}
+/**************************************/
+
+/*** Custom radio and checkbox ****/
+
+/* hide the real form element by opacity: 0 and position: absolute - display: block and visibility: hidden do not work because then form elements cannot get the focus and actually get checked or unchecked */
+.skinned-form-controls input[type="checkbox"],
+.skinned-form-controls input[type="radio"]
+{
+	position: absolute;
+	-moz-opacity: 0;
+	-webkit-opacity: 0;
+	opacity: 0;
+}
+
+/* prevent the entire page from scrolling if there is overflow and checkbox or radio button are clicked */
+.skinned-form-controls label
+{
+	position: relative;
+}
+
+/* fallback for IE6, IE7 and IE8 */
+.skinned-form-controls input[type="checkbox"],
+.skinned-form-controls input[type="radio"]
+{
+	position: static\9;
+}
+
+.skinned-form-controls input[type="checkbox"] + span::before,
+.skinned-form-controls input[type="radio"] + span::before
+{
+	content: "";
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
+	background-repeat:  no-repeat;
+}
+.skinned-form-controls input[type="checkbox"] + span::before{
+	background-position: 1px -17px;
+}
+
+.skinned-form-controls input[type="checkbox"]:checked + span::before
+{
+	background-position: -18px -17px
+}
+
+.skinned-form-controls input[type="radio"] + span::before
+{
+	background-position: 1px 1px;
+}
+
+.skinned-form-controls input[type="radio"]:checked + span::before
+{
+	background-position: -18px 1px;
+}
+
+/* disabled form elements */
+.skinned-form-controls input[type="radio"]:disabled + span,
+.skinned-form-controls input[type="checkbox"]:disabled + span,
+.skinned-form-controls input[type="radio"]:disabled + span::before,
+.skinned-form-controls input[type="checkbox"]:disabled + span::before
+{
+	-moz-opacity: .4;
+	-webkit-opacity: .4;
+	opacity: .4;
+}
+
+/* skin-specific sprite */
+.skinned-form-controls input[type="checkbox"] + span::before,
+.skinned-form-controls input[type="radio"] + span::before
+{
+	background-image: url("images/sprite.png");
+}
+/*************************/
