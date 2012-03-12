@@ -30,17 +30,26 @@ $.fn.sweetPages = function(opts){
 		$(this).wrapAll('<div class="swPage" />');
 		
 	});
-	for(var i=0;i<pagesNumber;i++)
+	/*for(var i=0;i<pagesNumber;i++)
 	{
 		// Slice a portion of the lis, and wrap it in a swPage div:
 		//li.slice(i*resultsPerPage,(i+1)*resultsPerPage).wrapAll('<div class="swPage" />');
 		//li.slice(i*scrollPerClick,(i+1)*scrollPerClick).wrapAll('<div class="swPage" />')
 		
 		// Adding a link to the swControls div:
-		swControls.append('<a class="swShowPage">'+(i+1)+'</a>');
+		swControls.append('<a class="swShowPage prev">'+(i+1)+'</a>');
+	}*/
+	if(curPage == 0){
+		swControls.append('<a class="swShowPage prev_disabled" ></a>');
+	}else{
+		swControls.append('<a class="swShowPage prev" ></a>');
 	}
 	
-	
+	if(curPage < pagesNumber){
+		swControls.append('<a class="swShowPage next"></a>');
+	}else{
+		swControls.append('<a class="swShowPage next_disabled"></a>');
+	}
 	
 
 	ul.append(swControls);
@@ -56,7 +65,7 @@ $.fn.sweetPages = function(opts){
 		var elem = $(this);
 
 		var tmpHeight = 0;
-		elem.find('li.stages').each(function(){tmpHeight+=$(this).data('height');pageWidth = $(this).data('width');$(this).css('width','98%');});
+		elem.find('li.stages').each(function(){tmpHeight+=$(this).data('height');pageWidth = $(this).data('width');$(this).css('width','100%');});
 
 		if(tmpHeight>maxHeight)
 			maxHeight = tmpHeight;
@@ -72,9 +81,33 @@ $.fn.sweetPages = function(opts){
 	
 	var swSlider = ul.find('.swSlider');
 	swSlider.append('<div class="clear" />').width(totalWidth).css('overflow','hidden');
-
+	if(curPage > 0 ){
+		swSlider.css('margin-left',-(curPage*pageWidth)+"px");
+	}
+	var pageIndex = curPage+1;
 	var hyperLinks = ul.find('a.swShowPage');
+	hyperLinks.click(function(e){
+		var swSliderMargin = parseInt(swSlider.css('margin-left'));
+		if($(this).hasClass('prev')){
+			pageIndex = pageIndex-1;
+			$(this).next().removeClass().addClass('swShowPage next');
+			if(pageIndex == 1) {
+				$(this).removeClass().addClass('swShowPage prev_disabled');
+			}
+			swSlider.stop().animate({'margin-left':swSliderMargin+pageWidth},'slow');
+			
+		}else if($(this).hasClass('next')){
+			pageIndex = pageIndex+1;
+			$(this).prev().removeClass().addClass('swShowPage prev');
+			if(pageIndex >= pagesNumber) {
+				$(this).removeClass().addClass('swShowPage next_disabled');
+			}
+			swSlider.stop().animate({'margin-left':swSliderMargin-pageWidth},'slow');
+		}
+		e.preventDefault();
+	});
 	
+	/*
 	hyperLinks.click(function(e){
 		// If one of the control links is clicked, slide the swSlider div 
 		// (which contains all the pages) and mark it as active:
@@ -82,11 +115,11 @@ $.fn.sweetPages = function(opts){
 		$(this).addClass('active').siblings().removeClass('active');
 		swSlider.stop().animate({'margin-left':-(parseInt($(this).text())-1)*pageWidth},'slow');
 		e.preventDefault();
-	});
+	});*/
 	
 	// Mark the first link as active the first time this code runs:
-	hyperLinks.eq(curPage).addClass('active');
-	swSlider.stop().animate({'margin-left':-(curPage)*pageWidth},'slow');
+	//hyperLinks.eq(curPage).addClass('active');
+	//swSlider.stop().animate({'margin-left':-(curPage)*pageWidth},'slow');
 //	hyperLinks.eq(curPage).trigger('click');
 	
 	// Center the control div:
@@ -96,5 +129,17 @@ $.fn.sweetPages = function(opts){
 	});*/
 	
 	return this;
+},
+
+$.fn.sweetPagesDestroy = function(opts){
+	var ul = this;
+	var li = ul.find('li.stages');
+	var cnt = $(this).find('.swSlider').contents();
+	$(this).find('.swSlider').replaceWith(cnt);
+	li.each(function(){
+		var cnt = $(this).parent('.swPage').contents();
+		$(this).parent('.swPage').replaceWith(cnt);
+		
+	});
 	
 }})(jQuery);

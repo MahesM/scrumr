@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="auth" uri="http://www.springframework.org/security/tags" %>
 
@@ -26,9 +27,39 @@ var emailid = '<s:property value="loggedInUser.emailid"/>';
 var source = '<s:property value="source"/>';
 var qontextHostUrl = '<s:property value="qontextHostUrl"/>';
 $(document).ready(function(){
-	if(userLogged != null && userLogged != ''){
-	 	$(".right-div").html('<img width="32px" height="32px" style="margin:4px;" class="float-lft"  src="'+qontextHostUrl+avatar+'"/><label class="float-lft loginLabel">Hi!, '+displayname+'</label><div class="index-img"><a class="index-img1"/></a></div><div class="index-img"><a class="index-img2"></a></div>');
-	}
+	
 	
 });
 </script>
+
+<header>
+    <div class="project-head">
+    	<div class="projects">
+    		<div class="proj_list"><a href="<%= request.getContextPath() %>/login.action"></a></div>
+    		<div class="proj_title"><label class="project-title"></label></div>
+    	</div>
+    	<div class="project_tab">
+    		<div class="tab projectview">
+    			<label>Project Plan</label>
+    			<img class="project_menu_arrow" src="themes/images/menu_arrow.png"></img>
+    		</div>
+    		<div class="tab sprintview">
+    			<label>Sprint Plan</label>
+    			<img class="project_menu_arrow" src="themes/images/menu_arrow.png"></img>
+    		</div>
+    		<div class="tab projectstatview">
+    			<label>Sprint Tasks</label>
+    			<img class="project_menu_arrow" src="themes/images/menu_arrow.png"></img>
+    		</div>
+    		<div class="tab project_chart">
+    			<a href="<%= request.getContextPath() %>/login.action"></a>
+    			<img class="project_menu_arrow" src="themes/images/menu_arrow.png"></img>
+    		</div>
+    		<div class="tab project_customize">
+    			<a href="<%= request.getContextPath() %>/login.action"></a>
+    			<img class="project_menu_arrow" src="themes/images/menu_arrow.png"></img>
+    		</div>
+    	</div>
+    </div>
+</header>
+

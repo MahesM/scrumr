@@ -9,7 +9,11 @@
 <head>
     <title>Scrumr</title>
     <link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/javascript/pagination.css" />
-    <jsp:include page="header.jsp" />
+</head>
+
+<body>
+<jsp:include page="header.jsp" />
+   
 	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/pagination.js"></script>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/highcharts.js"></script>
 	
@@ -46,18 +50,24 @@
  <script type="text/javascript" src="<%= request.getContextPath() %>/js/commons.js"></script>
   <script type="text/javascript" src="<%= request.getContextPath() %>/js/taskview.js?version=1"></script>
   <script type="text/javascript" src="<%= request.getContextPath() %>/js/sprintview.js?version=1"></script>
- 
- 
-</head>
-<body>
-<header>
-    <a href="<%= request.getContextPath() %>/home.action" class="logo float-lft"></a>
-    <div class="tabs project-tab"><a class="projects" href="<%= request.getContextPath() %>/login.action">Projects</a></div>
-    <div class="right-div" style="float:right;"></div>
-</header>
-<div class="content">
+<div class="main">
     <section class="left bg-pat">
-        <div class="cont float-lft">
+    	<div class="left_tab">
+    		<div class="left_pane">
+    			<a class="collapse" href="javascript:void(0);"></a>
+    		</div>
+    		<div class="tab peopleview">
+    			<label>Members</label>
+    			<a id="addPeople" href="javascript:void(0);"></a>
+    			<img class="project_menu_arrow" src="themes/images/menu_arrow.png"></img>
+    		</div>
+    		<div class="tab backlogview active_tab">
+    			<label>Backlog</label>
+    			<a id="addStory" href="javascript:void(0);"></a>
+    			<img class="project_menu_arrow" src="themes/images/menu_arrow.png"></img>
+    		</div>
+    	</div>
+        <div id="peopleview" class="cont float-lft" style="display:none;">
             <label id="projectName" class="title"></label>
             <ul id="people" class="img-team">
             </ul>
@@ -74,9 +84,9 @@
             </div>
         </div>
         
-        <div class="scroll-cont float-lft">
+        <div id="backlogview" class="scroll-cont float-lft">
             <div class="stories-cont">
-                <div id="storyLabel" class="float-lft">
+               <!--  <div id="storyLabel" class="float-lft">
                        <label>User stories</label>
                        <a id="addStory" style="float:right;" href="javascript:void(0);">Add Story</a>
                       
@@ -89,7 +99,7 @@
 							<div class="p1"></div>
 							<div class="p2" ></div>
 							<div class="p3" ></div>
-						</div>
+						</div> -->
                 <div class="cont" >
                 	<div id="storyList">
                 	<ul class="story">
@@ -98,6 +108,21 @@
                 </div>
             </div>
         </div>
+    </section>
+    <section class="left_collapsed bg-pat" style="display:none;">
+    	<div class="left_collapsed_tab">
+    		<div class="left_pane">
+    			<a class="expand" href="javascript:void(0);"></a>
+    		</div>
+    		<div class="tab backlogview">
+    			<a id="addStory" href="javascript:void(0);"></a>
+    			<label>7 Backlog</label>
+    		</div>
+    		<div class="tab peopleview">
+    			<a id="addPeople" href="javascript:void(0);"></a>
+    			<label>1 Member</label>
+    		</div>
+    	</div>
     </section>
     <section class="right">
         <div class="content float-lft">
@@ -127,18 +152,18 @@
 				
            
             <div class="sprint-cont float-lft" style="border:0;" id="contentHolder" >
-	            <div class="view-cont float-lft">
+	            <!-- <div class="view-cont float-lft">
 	                <div class="view-hd">
 	                	<div class="prj-view-hd"><label class="projectview" >Project View</label></div>
 		                <div class="sp-view-hd"><label class="sprintview" >Sprint View</label></div>
 		                <div class="pstat-view-hd"><label class="projectstatview">Task View</label></div>
-		                <!-- <a href="" class="customize float-rgt">Customize</a> -->
+		                <a href="" class="customize float-rgt">Customize</a>
 		                <div class="error-hd" style="display:none;">
 		                	<label></label><a id="error_hd_close" href="javascript:void(0)"></a>
 		                </div>
 	                </div>
                  
-	            </div>
+	            </div> -->
                 <div id="project-view" style="overflow:hidden;" class="float-lft clear col-cont" >
                 </div>
                 
@@ -448,6 +473,8 @@
        </div>
        
     </section>
+  
 </div>
+ 
 </body>
 </html>

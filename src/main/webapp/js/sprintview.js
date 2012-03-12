@@ -18,6 +18,8 @@ $(document).ready(function() {
         	var projStageScroll = new Object();
         	var addUserScroll = null;
         	var storyDetailScroll = new Object();
+        	var left_pane_collapsed = false;
+        	var perPage = 3;
         	
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
 					window.location.href="auth.action";    			
@@ -56,8 +58,10 @@ $(document).ready(function() {
     						}else{
     							duration += ' - No End Date';
     						} */
-            				$('#projectName').html(title);
+            				$('header .proj_title label').html(title);
             				users = project.assignees;
+            				$('section.left .peopleview label').html("Members ("+users.length+")");
+            				$('section.left_collapsed .peopleview label').html(users.length+" Members");
             				totalsprints = project.no_of_sprints;
             				//populate story popup sprint select box
             				var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
@@ -92,7 +96,7 @@ $(document).ready(function() {
         	}
 			function populateUnassignedStories(name){
 				// $('#storyList ul').css({'height': (($(window).height()) - 320) + 'px'});
-				 $('#storyList').css({'height': (($(window).height()) - 300) + 'px'});
+				 $('#storyList').css({'height': (($(window).height()) -100) + 'px'});
 	        	 $.ajax({
 	        		url: 'api/v1/stories/backlog/'+projectId,
 	        		type: 'GET',
@@ -100,6 +104,8 @@ $(document).ready(function() {
 	        		success: function( stories ) {
         				var story_unassigned = '';
 	        			if(stories != null && stories.length){
+	        				$('section.left .backlogview label').html("Backlog ("+stories.length+")");
+	        				$('section.left_collapsed .backlogview label').html(stories.length+" Backlog");
 	        				for(var i=0;i<stories.length;i++){
 	        					var story = stories[i];
 	        					creatorObj = userObject[story.creator];
@@ -109,11 +115,13 @@ $(document).ready(function() {
 	        				}
 	        			}else{
 	        				story_unassigned += '<b>No pending stories for the project</b>';
+	        				$('section.left .backlogview label').html("Backlog (0)");
+	        				$('section.left_collapsed .backlogview label').html("0 Backlog");
 	        				//$('#storyList ul').css({'height': (($(window).height()) - 250) + 'px'});
 	        			}
         				$("#storyList ul").html(story_unassigned);
         				if($('#storyList ul').find('li').length > 0){
-        					var ulHeight = ($('#storyList ul').find('li').outerHeight() * $('#storyList ul').find('li').length) + 150;
+        					var ulHeight = ($('#storyList ul').find('li').outerHeight() * $('#storyList ul').find('li').length) + ($('#storyList ul').find('li').outerHeight());
         					$('#storyList ul').css({'height': ulHeight + 'px'});
         				}else {
         					$('#storyList ul').css({'height': '150px'});
@@ -131,7 +139,7 @@ $(document).ready(function() {
         	        			};
         	        			//$('#storyList ul').css({'height': (($(window).height()) - 500) + 'px'});
         	        			if($('#storyList ul').find('li').length > 0){
-        	    					var ulHeight = ($('#storyList ul').find('li').outerHeight() * $('#storyList ul').find('li').length) + 150;
+        	    					var ulHeight = ($('#storyList ul').find('li').outerHeight() * $('#storyList ul').find('li').length) + ($('#storyList ul').find('li').outerHeight());
         	    					$('#storyList ul').css({'height': ulHeight + 'px'});
         	    				}else {
         	    					$('#storyList ul').css({'height': '150px'});
@@ -199,7 +207,7 @@ $(document).ready(function() {
 									duration += ' - No End Date';
 								}
 
-								var status = 'Completed:<span id="project_finished" class="finished">0</span> Total: <span id="project_total" class="total">0</span>';
+								//var status = 'Completed:<span id="project_finished" class="finished">0</span> Total: <span id="project_total" class="total">0</span>';
 								$.ajax({
 					        		url: 'api/v1/projects/storycount/'+projectId,
 					        		type: 'GET',
@@ -210,10 +218,10 @@ $(document).ready(function() {
 					        		}
 								});
 								var sprintTitle = '<b>Sprint '+current_sprint+' </b>';
-								var sprint_html = "<div class=\"sprintInfoBand\" >"+duration+"&nbsp;&nbsp; | "+sprintTitle+"  "+sprints[0].project.status+"&nbsp;&nbsp;|&nbsp;&nbsp;"+status+"&nbsp;&nbsp;| <a href=\"javascript:void(0);\" class=\"new_sprint\" >Add New Sprint</a><div id=\"pageCtrls\" style=\"float:right;width:200px;height:30px;\"></div></div>";
+								var sprint_html = "<div class=\"sprintInfoBand\" >"+duration+"&nbsp;&nbsp; | "+sprintTitle+"  "+sprints[0].project.status+"&nbsp;&nbsp;| <a href=\"javascript:void(0);\" class=\"new_sprint\" >Add New Sprint</a><div class=\"pageCtrls\" style=\"float:right;height:30px;\"></div></div>";
 								var finished = 0;
-				        		sprint_html += '<ul id="holderforpage" class="col">';
-			        			$("ul.col li").css("width",100/sprints.length+'%');
+				        		sprint_html += '<ul id="project_holder" class="col"><div class="holder_round">';
+			        			//$("ul.col li").css("width",100/sprints.length+'%');
 			        			for(var k=0; k<sprints.length;k++ ){
 			        				//sprint_html += '<li class="stages"><div class="header "><span></span>Sprint '+(k+1)+'</div><div class="projectCont"><ul id="sp'+sprints[k].id+'"class="story">';
 			        				var sprint_startdate = new Date(sprints[k].startdate);
@@ -250,7 +258,7 @@ $(document).ready(function() {
 						        					//sprint_html += '<li id="st'+story.pkey+'" class="p'+story.priority+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					sprint_html += new EJS({url: 'ejs/story_template.ejs'}).render(storyObj);
 						           				}
-					        					$(".viewStory, .moreStory").fancybox({
+					        					/*$(".viewStory, .moreStory").fancybox({
 					        		        		'overlayColor' : '#000',
 					        		                'overlayOpacity' : '0.6',
 					        		                'autoScale' : false,
@@ -264,7 +272,7 @@ $(document).ready(function() {
 					        		                    // scrollpane.destroy();
 					        		                       })
 
-					        		        	});
+					        		        	});*/
 					        				}
 						        		},
 						        		error: function(data) { },
@@ -276,19 +284,28 @@ $(document).ready(function() {
 			        			}
 			        			$("#project_finished").html(finished);
 
-			        			sprint_html +='</ul>';
+			        			sprint_html +='</div></ul>';
 			        			$("#project-view").html(sprint_html);
 			        	        $('ul.col li.stages .header').hover(function(){
 			        	        	$(this).find('a.editSprint').show(); 
 			        	         },function(){
 			        	        	 $(this).find('a.editSprint').hide();
 			        	         });
-			        			$('#pageCtrls').html("");
+			        	        
+			        			$('#project-view .pageCtrls').html("");
 			        			var current_page = current_sprint - 1;
+			        			if(left_pane_collapsed){
+			        				$('section.right').css('width','96%');
+			        				if($('section.right #project-view li.stages').length > 3){
+			        					$('section.right #project-view li.stages').css('width','24.9%');
+			        				}else{
+			        					$('section.right #project-view li.stages').css('width','33.2%');
+			        				}
+			        			}else{
+		        					$('section.right #project-view li.stages').css('width','33.2%');
+		        				}
 			        			setTimeout(function(){
-			        				$('#holderforpage').sweetPages({perPage:4,curPage:current_page});
-				    				var controls = $('.swControls').detach();
-			    					controls.appendTo('#pageCtrls'); 
+			        				constructPagination($('.col:visible'),perPage,current_page);
 			        			},1);
 			        			//$( ".stages " ).jScrollPane({});
 			        			$( ".stages ul" ).sortable({
@@ -339,7 +356,8 @@ $(document).ready(function() {
 		        		   			}
 		        	    		}).disableSelection();
 			        			
-			        			$('.stages .projectCont ul').parent().css({'height': (($(window).height()) - 175) + 'px'});
+			        			$('.stages .projectCont').css({'height': (($(window).height()) - 120) + 'px'});
+			        			$('.stages').parent('.holder_round').css({'height': (($(window).height()) - 90) + 'px'});
 			        			$( ".stages .projectCont ul").each(function(){
 									if($(this).find('li').length > 0){
 										//$(this).css({'height': (($(window).height()) - 195) + 'px'});
@@ -527,32 +545,40 @@ $(document).ready(function() {
 		    						}else{
 		    							duration += ' - No End Date';
 		    						}
-		    						var status = 'Stories Completed: <span id="sprint_finished" class="finished">0</span> Total: <span id="sprint_total" class="total">0</span>';
-		    						story_html = "<div class=\"sprintInfoBand\" >"+duration+"&nbsp;&nbsp; | "+sprintTitle+" "+result.status+"&nbsp;&nbsp;|&nbsp;&nbsp;"+status+"<div id=\"pageCtrls\" style=\"float:right;width:200px;height:30px;\"></div></div>";
+		    						//var status = 'Stories Completed: <span id="sprint_finished" class="finished">0</span> Total: <span id="sprint_total" class="total">0</span>';
+		    						story_html = "<div class=\"sprintInfoBand\" >"+duration+"&nbsp;&nbsp; | "+sprintTitle+" "+result.status+"&nbsp;&nbsp;<div class=\"pageCtrls\" style=\"float:right;height:30px;\"></div></div>";
+		    						
+		    						story_html += '<ul id="sprint_holder" class="col"><div class="holder_round">';
+		    	        			//sort the array based on rank as it comes in random order.
+		    	        			projectLanes.sort(function compareRank(a, b){
+		    	        				return a.rank> b.rank? 1: -1;
+		    						});	
+		    						for(var i=0;i<projectLanes.length;i++){
+		            				story_html += '<li class="stages"><div class="header "><span></span>'+projectLanes[i].description+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].type+'" id="stage'+projectLanes[i].rank+'"class="story"></ul></div></li>';
+		    	        			}
+		    	        			story_html +='</div></ul>';
+		    	        			$('#sprint-view').html(story_html);
+		    	        			if(left_pane_collapsed){
+		    	        				$('section.right').css('width','96%');
+		    	        				if($('section.right #sprint-view li.stages').length > 3){
+		    	        					$('section.right #sprint-view li.stages').css('width','24.9%');
+		    	        				}else{
+		    	        					$('section.right #sprint-view li.stages').css('width','33.2%');
+		    	        				}
+		    	        			}else{
+		            					$('section.right #sprint-view li.stages').css('width','33.2%');
+		            				}
+		    	        			setTimeout(function(){
+		    	        				constructPagination($('.col:visible'), perPage, 0);
+		    	        			},1);
+		    	        			//$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
+		    			        			
 			        			}
 			        		},
 			        		error: function(data) { },
 			        		complete: function(data) { }
 			        	});
 			        	
-	        			story_html += '<ul id="holderforpage" class="col">';
-	        			//sort the array based on rank as it comes in random order.
-	        			projectLanes.sort(function compareRank(a, b){
-	        				return a.rank> b.rank? 1: -1;
-						});	
-						for(var i=0;i<projectLanes.length;i++){
-        				story_html += '<li class="stages"><div class="header "><span></span>'+projectLanes[i].description+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].type+'" id="stage'+projectLanes[i].rank+'"class="story"></ul></div></li>';
-	        			}
-	        			story_html +='</ul>';
-	        			$('#sprint-view').html(story_html);
-	        			$('#pageCtrls').html("");
-	        			setTimeout(function(){
-	        				$('#holderforpage').sweetPages({perPage:4});
-		    				var controls = $('.swControls').detach();
-	    					controls.appendTo('#pageCtrls'); 
-	        			},1);
-	        			$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
-			        			
 					
 	        		 var post_data2 = 'sprintId='+sprint+'&projectId='+projectId;
 			        	$.ajax({
@@ -708,7 +734,8 @@ $(document).ready(function() {
 			        		   			
 			        	    		}).disableSelection();
 			        				
-				        			$('.stages ul:visible').parent().css({'height': (($(window).height()) - 175) + 'px'});
+				        			$('.stages ul:visible').parent('.sprintCont').css({'height': (($(window).height()) - 120) + 'px'});
+				        			$('.stages').parent('div.holder_round').css({'height': (($(window).height()) - 90) + 'px'});
 				        			$( ".stages ul:visible").each(function(){
 										if($(this).find('li').length > 0){
 											var ulHeight = ($(this).find('li').outerHeight() * $(this).find('li').length) + 150;
@@ -1182,6 +1209,46 @@ $(document).ready(function() {
 				
 			}
 			
+			function constructPagination(element,perPage,currentPage){
+				var el = element;
+				var paginationCtrl =el.prev('.sprintInfoBand').find('.pageCtrls');
+				el.sweetPagesDestroy();
+				paginationCtrl.html("");
+				el.sweetPages({perPage:perPage,curPage:currentPage});
+				var controls = el.find('.swControls').detach();
+				controls.appendTo(paginationCtrl); 
+			}
+			
+			
+			//expand and collapse left panel
+			$('.left_pane a').unbind('click').live('click',function(){
+				var pagingEl = $('.col:visible');
+				if($(this).hasClass('collapse')){
+					perPage = 4;
+					left_pane_collapsed = true;
+					//$('section.left').hide("slide","fast",function(){
+					$('section.left').stop().animate({'margin-left':-$('section.left').width()},"slow",function(){
+						$('section.left_collapsed').show();
+						$('section.right').css('width','96%');
+						if($('section.right li.stages:visible').length > 3){
+							$('section.right li.stages:visible').css('width','24.9%');
+						}
+						constructPagination(pagingEl,perPage,0);
+					});
+				}else{
+					perPage = 3;
+					left_pane_collapsed = false;
+					//$('section.left_collapsed').hide("slide","fast",function(){
+					$('section.left_collapsed').hide("fast",function(){
+						$('section.left').stop().animate({'margin-left':0});
+						$('section.right').css('width','72%');
+						$('section.right li.stages:visible').css('width','33.2%');
+						constructPagination(pagingEl,perPage,0);
+						
+					});
+				}
+			});
+			
 			$("#addPeople").unbind('click').live('click', function(){
 				populateUserDetails(userIndex,false);
 				$('.story-popup').hide();
@@ -1308,9 +1375,9 @@ $(document).ready(function() {
                 $('.right').css({'height': (($(window).height()) - 40) + 'px'});
             });
 
-            $('.right').css({'width': (($(window).width()) - 300) + 'px'});
+            $('.main').css({'width': (($(window).width())) + 'px'});
             $(window).resize(function() {
-                $('.right').css({'width': (($(window).width()) - 300) + 'px'});
+                $('.main').css({'width': (($(window).width())) + 'px'});
             });
             
             populateProjectDetails();
@@ -1333,18 +1400,22 @@ $(document).ready(function() {
 				$("#project-view").show();
 				$('#pstat-view').hide();
 				
-				var selectAllLbl = $(".view-hd div");				
-				selectAllLbl.addClass("tabHolder");
-				$('.projectview').parent().removeClass("tabHolder");
+				//var selectAllLbl = $(".view-hd div");				
+				//selectAllLbl.addClass("tabHolder");
+				//$('.projectview').parent().removeClass("tabHolder");
+				$('.projectview').addClass('active_tab');
+				$('.projectview img').show();
 			}else{
      	       	populateSprintStories(current_sprint);
 				$("#sprint-view").show();
 				$("#project-view").hide();
 				$('#pstat-view').hide();
 				
-				var selectAllLbl = $(".view-hd div");				
+				/*var selectAllLbl = $(".view-hd div");				
 				selectAllLbl.addClass("tabHolder");
-				$('.sprintview').parent().removeClass("tabHolder");
+				$('.sprintview').parent().removeClass("tabHolder");*/
+				$('.sprintview').addClass('active_tab');
+				$('.sprintview img').show();
 			}
             
         	$(".currentSprint").unbind('click').live('click', function(){
@@ -1724,13 +1795,47 @@ $(document).ready(function() {
 				viewStoryFancyBox();
 			});
 			
+			$('.detailview').unbind('click').live('click',function(){
+				var ulHeight=$(this).closest('ul').outerHeight();
+				if($(this).hasClass('expandStory')){
+					$(this).closest('li').find('.meta').show();
+					ulHeight += $(this).closest('li').find('.meta').outerHeight();
+					$(this).closest('li').find('p').css('padding-bottom','0px');
+					$(this).removeClass('expandStory').addClass('collapseStory');
+				}else{
+					$(this).closest('li').find('.meta').hide();
+					ulHeight -= $(this).closest('li').find('.meta').outerHeight();
+					$(this).closest('li').find('p').css('padding-bottom','10px');
+					$(this).removeClass('collapseStory').addClass('expandStory');
+				}
+				$(this).closest('ul').css({'height': ulHeight + 'px'});
+				if(storyListScroll){
+  					 var api = $('#storyList').data('jsp');
+  					 if(api)api.destroy();
+  				 	}
+       			storyListScroll = $('#storyList').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+       			if(sprintStageScroll[$(this).closest('ul').attr('id')]) {
+	   				sprintStageScroll[$(this).closest('ul').attr('id')].destroy();
+   				}
+       			if($(this).closest('.sprintCont').length > 0){
+       				sprintStageScroll[$(this).closest('ul').attr('id')] =$(this).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+       			}
+       			if(projStageScroll[$(this).closest('ul').attr('id')]) {
+       				projStageScroll[$(this).closest('ul').attr('id')].destroy();
+   				}
+       			if($(this).closest('.projectCont').length > 0){
+       				projStageScroll[$(this).closest('ul').attr('id')] =$(this).closest('.projectCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+       			}
+			});
+			
 			$(".projectview").unbind('click').live('click',function(){
 				project_view = 1;
 				$('.sprints').hide();
 		       
-				var selectAllLbl = $(".view-hd div");				
-				selectAllLbl.addClass("tabHolder");
-				$('.projectview').parent().removeClass("tabHolder");
+				$(".project_tab div").removeClass('active_tab');				
+				$(".project_tab img").hide();
+				$('.projectview').addClass('active_tab');
+				$('.projectview img').show();
 				
 				$("#sprint-view").hide();
 				$("#pstat-view").hide();
@@ -1744,14 +1849,15 @@ $(document).ready(function() {
 				project_view = 0;
 				$('.sprints').show();
 				
-				var selectAllLbl = $(".view-hd div");				
-				selectAllLbl.addClass("tabHolder");
-				$(this).parent().removeClass("tabHolder");
+				$(".project_tab div").removeClass('active_tab');				
+				$(".project_tab img").hide();
+				$('.sprintview').addClass('active_tab');
+				$('.sprintview img').show();
 				
-				
-				$("#sprint-view").show();
 				$("#project-view").hide();
 				$("#pstat-view").hide();
+				$("#sprint-view").show();
+				
 
 				populateSprintStories(current_sprint);
 				viewStoryFancyBox();
@@ -1762,15 +1868,67 @@ $(document).ready(function() {
 				
 				$('.sprints').hide();
 				
-				var selectAllLbl = $(".view-hd div");				
-				selectAllLbl.addClass("tabHolder");
-				$(this).parent().removeClass("tabHolder");
+				$(".project_tab div").removeClass('active_tab');				
+				$(".project_tab img").hide();
+				$('.projectstatview').addClass('active_tab');
+				$('.projectstatview img').show();
 				
 				$("#sprint-view").hide();
 				$("#project-view").hide();
 				$("#pstat-view").show();
+				populateProjectStatistics();
+				viewStoryFancyBox();
+			});
+			$(".project_chart").unbind('click').live('click',function(){
+				project_view = 0;
+				
+				$('.sprints').hide();
+				
+				$(".project_tab div").removeClass('active_tab');				
+				$(".project_tab img").hide();
+				$('.project_chart').addClass('active_tab');
+				$('.project_chart img').show();
+				
+				$("#sprint-view").hide();
+				$("#project-view").hide();
+				$("#pstat-view").hide();
 
 				viewStoryFancyBox();
+			});
+			$(".project_customize").unbind('click').live('click',function(){
+				project_view = 0;
+				
+				$('.sprints').hide();
+				
+				$(".project_tab div").removeClass('active_tab');				
+				$(".project_tab img").hide();
+				$('.project_customize').addClass('active_tab');
+				$('.project_customize img').show();
+				
+				$("#sprint-view").hide();
+				$("#project-view").hide();
+				$("#pstat-view").hide();
+
+				viewStoryFancyBox();
+			});
+			
+			
+			$(".peopleview").unbind('click').live('click',function(){
+				$(".peopleview").addClass("active_tab");
+				$(".backlogview").removeClass("active_tab");
+				$(".backlogview img").hide();
+				$(".peopleview img").show();
+				$('#backlogview').hide();
+				$('#peopleview').show();
+			});
+			
+			$(".backlogview").unbind('click').live('click',function(){
+				$(".backlogview").addClass("active_tab");
+				$(".peopleview").removeClass("active_tab");
+				$(".peopleview img").hide();
+				$(".backlogview img").show();
+				$('#backlogview').show();
+				$('#peopleview').hide();
 			});
 			
 			//$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});

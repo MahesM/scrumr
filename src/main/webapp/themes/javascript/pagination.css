@@ -52,33 +52,51 @@ body{
 a.swShowPage{
 
 	/* The links that initiate the page slide */
-
-	background-color:#ffffff;
 	float:left;
-	height:10px;
+	height:16px;
+	width:16px;
 	margin:4px 3px;
+	cursor:pointer;
+	/* background-color:#ffffff;
 	text-indent:-9999px;
-	width:10px;
-	/*border:1px solid #ccc;*/
+	border:1px solid #ccc;
 	
-	/* CSS3 rounded corners */
+	CSS3 rounded corners
 	
 	-moz-border-radius:7px;
 	-webkit-border-radius:7px;
 	border-radius:7px;
-	border:1px solid black;
+	border:1px solid black; */
 }
 
+.prev{
+	background:url("../images/previous_grey.png") no-repeat transparent;
+}
+
+.prev_disabled{
+	background:url("../images/previous_grey.png") no-repeat transparent;
+	opacity:0.4;
+}
+
+.next{
+	background:url("../images/next_grey.png") no-repeat transparent;
+}
+
+.next_disabled{
+	background:url("../images/next_grey.png") no-repeat transparent;
+	opacity:0.4;
+}
+/* 
 a.swShowPage:hover,
 a.swShowPage.active{
 	background-color:#EDEDED;
 	
-	/*	CSS3 inner shadow */
+		CSS3 inner shadow
 	
 	-moz-box-shadow:0 0 7px #F6EEE1 inset;
-	/*-webkit-box-shadow:0 0 7px #1e435d inset;*/
+	-webkit-box-shadow:0 0 7px #1e435d inset;
 	box-shadow:0 0 7px #7f7f7f inset;
-}
+} */
 
 #holder li{
 	background-color:#F4F4F4;
