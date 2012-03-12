@@ -1,0 +1,23 @@
+<div class="pjt_container" >
+	<span class="pjt_detail_container" >
+		<div class="slNo" ><%= pjt.pkey %></div>
+		<div class="pjt_name" onclick="window.location.href='sprint.action?view=project&visit=0&projectId='+<%= pjt.pkey %>+''" ><%= pjt.title %></div>
+		<div class="pjt_duration" ><%= duration %></div>
+		<% if( (pjt.current_sprint > 0) && (pjt.status != "Finished") ) { %>
+			<div class="sprt_No"  onclick="window.location.href='sprint.action?view=project&visit=0&projectId='+<%= pjt.pkey %>+''" >Sprint <%= pjt.current_sprint %></div>
+		<% } %>
+		<div class="sprt_status"  onclick="window.location.href='sprint.action?view=project&visit=0&projectId='+<%= pjt.pkey %>+''" ><%= pjt.status %></div>
+		<div class="pjt_desp" ><%= pjt.description %></div>
+	</span>
+	<div class="pjt_member_container" >
+		<% for ( var cnt=0; cnt < pjt.assignees.length ; cnt++ ){  %>
+			<img src=<%= qontextHostUrl %><%= pjt.assignees[cnt].avatarurl%>" class="pjt_mem" />
+		<% } %>
+		<a href="#" class="pjt_mem_more" >more...</a>
+	</div>
+	<div class="pjt_control_container" >
+		<a><img src="themes/icons/edit_white.png"  class="pjt_ctrl" title="Edit" id="update" /></a>|
+		<a href="sprint.action?view=project&visit=0&projectId='+<%= pjt.pkey %>+'" ><img src="themes/icons/details_white.png" class="pjt_ctrl" title="Details"   /></a>|
+		<a><img src="themes/icons/chart_white.png" class="pjt_ctrl" title="Charts" /></a>
+	</div>
+</div>
