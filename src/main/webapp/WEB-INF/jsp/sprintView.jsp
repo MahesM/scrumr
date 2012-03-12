@@ -38,12 +38,7 @@
 	<%}%>
 	<% if(view != null && view.equalsIgnoreCase("sprint")){ %>
 		project_view = 0;
-		$('.sprints').show();
-	   	
-		var selectAllLbl = $(".view-hd div");				
-		selectAllLbl.addClass("tabHolder");
-		$('.sprintview').parent().removeClass("tabHolder");
-		
+		$('.sprints').show();		
 	<% } %>
 	var taskStatusColors = {'CREATED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
  </script>

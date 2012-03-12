@@ -14,7 +14,7 @@
 	
      <link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/themes/style.css" />
 
-    <script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery-1.7.1.min.js"></script>   
+	<script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery-1.7.js"></script>
 
     <script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/ejs_production.js"></script>
