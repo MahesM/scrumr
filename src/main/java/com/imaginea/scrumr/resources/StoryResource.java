@@ -13,13 +13,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
 import com.imaginea.scrumr.entities.Sprint;
-import com.imaginea.scrumr.entities.Status;
 import com.imaginea.scrumr.entities.Story;
+import com.imaginea.scrumr.entities.StoryHistory;
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.ProjectManager;
+import com.imaginea.scrumr.interfaces.ProjectPriorityManager;
+import com.imaginea.scrumr.interfaces.ProjectStageManager;
 import com.imaginea.scrumr.interfaces.SprintManager;
-import com.imaginea.scrumr.interfaces.StatusManager;
+import com.imaginea.scrumr.interfaces.StoryHistoryManager;
 import com.imaginea.scrumr.interfaces.StoryManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
 
@@ -32,6 +35,12 @@ public class StoryResource {
 
     @Autowired
     SprintManager sprintManager;
+    
+    @Autowired
+    ProjectPriorityManager projectPriorityManager;
+    
+    @Autowired
+    ProjectStageManager projectStageManager;
 
     @Autowired
     UserServiceManager userServiceManager;
@@ -40,7 +49,7 @@ public class StoryResource {
     StoryManager storyManager;
 
     @Autowired
-    StatusManager statusManager;
+    StoryHistoryManager storyHistoryManager;
 
     private static final Logger logger = LoggerFactory.getLogger(StoryResource.class);
 
@@ -99,7 +108,7 @@ public class StoryResource {
     public @ResponseBody
     String createStory(@RequestParam String stTitle, @RequestParam String stDescription,
                                     @RequestParam String stPriority, @RequestParam String user,
-                                    @RequestParam String projectId, @RequestParam String stSprint) {
+                                    @RequestParam String projectId, @RequestParam String stSprint, @RequestParam String stageid) {
 
         Story story = new Story();
         logger.debug("User :" + user);
@@ -108,13 +117,12 @@ public class StoryResource {
             story.setDescription(stDescription);
             Sprint sprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(stSprint));
             story.setSprint_id(sprint);
-            story.setPriority(Integer.parseInt(stPriority));
+            story.setPriority(projectPriorityManager.readProjectPriority(Integer.parseInt(stPriority)));
             story.setCreator(user);
             story.setCreationDate(new java.sql.Date(System.currentTimeMillis()));
             story.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
             story.setLastUpdatedby(user);
-            story.setStatus("0");
-            story.setViewCount(0);
+            story.setStstage(projectStageManager.readProjectStage(Integer.parseInt(stageid)));
             story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
             storyManager.createStory(story);
         } catch (Exception e) {
@@ -139,7 +147,7 @@ public class StoryResource {
                 story.setDescription(stDescription);
 
             if (stPriority != null)
-                story.setPriority(Integer.parseInt(stPriority));
+                story.setPriority(projectPriorityManager.readProjectPriority(Integer.parseInt(stPriority)));
 
             // story.setCreator(user);
             // story.setCreationDate(new java.sql.Date(System.currentTimeMillis()));
@@ -168,7 +176,7 @@ public class StoryResource {
             Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(sprint));
             story.setSprint_id(toSprint);
             // logger.debug(toSprint.toString());
-            story.setStatus(status);
+            story.setStstage(projectStageManager.readProjectStage(Integer.parseInt(status)));
             storyManager.updateStory(story);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -215,8 +223,8 @@ public class StoryResource {
                                     @RequestParam("storyId") String stid,
                                     @RequestParam("stageId") String stage) {
 
-        Status status = statusManager.fetchUserStoryStatus(Integer.parseInt(stid), stage, uid);
-        statusManager.deleteStatus(status);
+        StoryHistory storyHistory = storyHistoryManager.fetchUserStoryHistory(Integer.parseInt(stid), stage, uid);
+        storyHistoryManager.deleteStoryHistory(storyHistory);
         return "{\"result\":\"success\"}";
     }
 
@@ -251,14 +259,14 @@ public class StoryResource {
     @RequestMapping(value = "/adduserwithstage", method = RequestMethod.POST)
     public @ResponseBody
     String addUserWithStage(@RequestParam String userid, @RequestParam String storyId,
-                                    @RequestParam String stage) throws Exception {
+                                    @RequestParam String stageid) throws Exception {
         try {
-            Status story_status = new Status();
-            story_status.setUser(userServiceManager.readUser(userid));
-            story_status.setStory(storyManager.readStory(Integer.parseInt(storyId)));
-            story_status.setStage(stage);
-            logger.debug("Stage :" + stage + ", User :" + userid + ", story" + storyId);
-            statusManager.createStatus(story_status);
+            StoryHistory storyHistory = new StoryHistory();
+            storyHistory.setUser(userServiceManager.readUser(userid));
+            storyHistory.setStory(storyManager.readStory(Integer.parseInt(storyId)));
+            storyHistory.setStage(projectStageManager.readProjectStage(Integer.parseInt(stageid)));
+            logger.debug("Stage :" + stageid + ", User :" + userid + ", story" + storyId);
+            storyHistoryManager.createStoryHistory(storyHistory);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new Exception(e.toString());
@@ -268,9 +276,9 @@ public class StoryResource {
 
     @RequestMapping(value = "/getusers", method = RequestMethod.POST)
     public @ResponseBody
-    List<Status> getUsersFromStory(@RequestParam String storyId, @RequestParam String stage) {
+    List<StoryHistory> getUsersFromStory(@RequestParam String storyId, @RequestParam String stage) {
 
-        return statusManager.fetchStoryStatus(Integer.parseInt(storyId), stage);
+        return storyHistoryManager.fetchStoryHistory(Integer.parseInt(storyId), stage);
     }
 
     @RequestMapping(value = "/adduserswithstage", method = RequestMethod.POST)
@@ -302,7 +310,7 @@ public class StoryResource {
     public @ResponseBody
     String removeUsersWithStage(@RequestParam String storyId, @RequestParam String stage) {
         logger.debug("In Story Resource clear:story id =" + storyId + ", stage =" + stage);
-        statusManager.clearUsersByStage(Integer.parseInt(storyId), stage);
+        storyHistoryManager.clearUsersByStage(Integer.parseInt(storyId), stage);
         return "{\"result\":\"success\"}";
     }
 }

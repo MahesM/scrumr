@@ -3,6 +3,8 @@ package com.imaginea.scrumr.services;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imaginea.scrumr.entities.Comment;
@@ -14,6 +16,8 @@ public class CommentManagerImpl implements CommentManager {
 
     private IDao<IEntity, Integer> genericDao;
 
+    private static final Logger logger = LoggerFactory.getLogger(CommentManagerImpl.class);
+    
     @Transactional
     public void createComment(Comment comment) {
         if (comment != null) {
@@ -52,7 +56,7 @@ public class CommentManagerImpl implements CommentManager {
         // Story story = genericDao.find(Story.class, pkey);
         // return story.getComments();
         Hashtable<String, Object> ht = new Hashtable<String, Object>();
-        System.out.println("Story id :" + pkey);
+        logger.info("Story id :" + pkey);
         ht.put("story_id", pkey);
         return genericDao.getEntities(Comment.class, "comments.fetchCommentsByStory", ht);
     }

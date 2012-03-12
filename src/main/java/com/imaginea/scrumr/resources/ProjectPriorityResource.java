@@ -29,7 +29,7 @@ public class ProjectPriorityResource {
     ProjectPriorityManager projectPriorityManager;
 
 
-    private static final Logger logger = LoggerFactory.getLogger(ProjectResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProjectPriorityResource.class);
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public @ResponseBody
@@ -43,13 +43,14 @@ public class ProjectPriorityResource {
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public @ResponseBody
     List<ProjectPriority> createProjectPriority(@RequestParam String description, @RequestParam String color,
-                                    @RequestParam String projectId)
+                                    @RequestParam String projectId, @RequestParam String rank)
 
     {
         ProjectPriority projectPriority = new ProjectPriority();
         try {
             Project project = projectManager.readProject(Integer.parseInt(projectId));
             projectPriority.setColor(color);
+            projectPriority.setRank(Integer.parseInt(rank));
             projectPriority.setProject(project);
             projectPriority.setDescription(description);
             projectPriorityManager.createProjectPriority(projectPriority);
@@ -69,16 +70,17 @@ public class ProjectPriorityResource {
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
     List<ProjectPriority> updateProjectPriority(@RequestParam String pPriorityNo, @RequestParam String description,
-                                    @RequestParam String color)
+                                    @RequestParam String color,@RequestParam String rank,@RequestParam String pKey)
 
     {
-        ProjectPriority projectPriority = projectPriorityManager.readProjectPriority(Integer.parseInt(pPriorityNo));
+        ProjectPriority projectPriority = projectPriorityManager.readProjectPriority(Integer.parseInt(pKey));
         List<ProjectPriority> result = new ArrayList<ProjectPriority>();
 
         if (projectPriority != null) {
             try {
                 projectPriority.setColor(color);
                 projectPriority.setDescription(description);
+                projectPriority.setRank(Integer.parseInt(rank));
                 projectPriorityManager.updateProjectPriority(projectPriority);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);

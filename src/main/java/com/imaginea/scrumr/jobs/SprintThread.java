@@ -4,16 +4,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Story;
-import com.imaginea.scrumr.interfaces.CommentManager;
 import com.imaginea.scrumr.interfaces.ProjectManager;
+import com.imaginea.scrumr.interfaces.ProjectStageManager;
 import com.imaginea.scrumr.interfaces.SprintManager;
 import com.imaginea.scrumr.interfaces.StoryManager;
-import com.imaginea.scrumr.interfaces.UserServiceManager;
 
 class SprintThread extends TimerTask {
 
@@ -22,17 +22,21 @@ class SprintThread extends TimerTask {
 	StoryManager storyManager;
 
 	SprintManager sprintManager;
+	
+	ProjectStageManager projectStageManager;
+	
+	private static Logger logger = LoggerFactory.getLogger(SprintThread.class);
 
 	public void run() {
-		System.out.println("Triggered Job");
+	    logger.debug("Triggered Job");
 		List<Project> projects = projectManager.fetchAllProjects();
 		if(projects != null){
 			for(Project p: projects){
-				Date end = p.getEnd_date();
-				if (end !=null){
-					if(end.before(new Date())){
+				Date projectEndDate = p.getEnd_date();
+				if (projectEndDate !=null){
+					if(projectEndDate.before(new Date())){
 						p.setStatus("Finished");
-					}else if(end.after(new Date())){
+					}else if(projectEndDate.after(new Date())){
 						Sprint old_sprint = null;
 						Sprint current = null;
 						List<Story> stories = null;
@@ -73,7 +77,8 @@ class SprintThread extends TimerTask {
 						old_sprint = sprintManager.selectSprintByProject(p, p.getCurrent_sprint());
 						Date spend = old_sprint.getEnddate();
 						if(spend.before(new Date())){
-							storiesLastSprint = storyManager.fetchUnfinishedStories(old_sprint.getPkey());
+							String status = projectStageManager.fetchMaxRankByProjectId(p.getPkey());
+						    storiesLastSprint = storyManager.fetchUnfinishedStories(old_sprint.getPkey(), status);
 							storiesInBackLog = storyManager.fetchUnAssignedStories(p.getPkey());
 							old_sprint.setStatus("Finished");
 							sprintManager.updateSprint(old_sprint);
@@ -133,6 +138,13 @@ class SprintThread extends TimerTask {
 	public void setSprintManager(SprintManager sprintManager) {
 		this.sprintManager = sprintManager;
 	}
+	
+	public ProjectStageManager getProjectStageManager() {
+        return projectStageManager;
+    }
+    public void setProjectStageManager(ProjectStageManager projectStageManager) {
+        this.projectStageManager = projectStageManager;
+    }
 	
 	public String statusSetter(Date start, Date end){
 		Date today = new Date();

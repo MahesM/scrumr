@@ -10,7 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +62,7 @@ public class GenericJpaDao<E extends IEntity, K extends Serializable> implements
                 // System.out.println("Entity Removed");
             }
         } catch (Exception e) {
-            System.out.println("Exception in Delete :" + e.toString());
+            LOGGER.error("Exception in Delete :" + e.toString());
         }
     }
 

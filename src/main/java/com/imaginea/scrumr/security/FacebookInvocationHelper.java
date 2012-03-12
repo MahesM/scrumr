@@ -39,7 +39,7 @@ public class FacebookInvocationHelper {
         this.consumerSecret = consumerSecret;
         this.hostUrl = hostUrl;
 
-        System.out.println("Code: " + request.getParameter("code"));
+        logger.info("Code: " + request.getParameter("code"));
         String url = hostUrl + "/oauth/access_token?client_id=" + consumerKey + "&client_secret="
                                         + consumerSecret + "&code=" + request.getParameter("code")
                                         + "&redirect_uri=" + callback;
@@ -59,7 +59,7 @@ public class FacebookInvocationHelper {
             String my_url = hostUrl + "/me?access_token=" + access_token;
             String res = restTemplate.getForObject(my_url, String.class);
             JSONObject resp = new JSONObject(res);
-            System.out.println("My Details: " + resp.toString());
+            logger.info("My Details: " + resp.toString());
             return resp;
         } catch (Throwable ex) {
             return null;

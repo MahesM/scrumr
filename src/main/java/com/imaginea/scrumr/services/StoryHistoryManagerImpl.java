@@ -4,67 +4,70 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.imaginea.scrumr.entities.Status;
+import com.imaginea.scrumr.entities.StoryHistory;
 import com.imaginea.scrumr.interfaces.IDao;
 import com.imaginea.scrumr.interfaces.IEntity;
-import com.imaginea.scrumr.interfaces.StatusManager;
+import com.imaginea.scrumr.interfaces.StoryHistoryManager;
 
-public class StatusManagerImpl implements StatusManager {
+public class StoryHistoryManagerImpl implements StoryHistoryManager {
 
     private IDao<IEntity, Integer> genericDao;
+    private static final Logger logger = LoggerFactory.getLogger(StoryHistoryManagerImpl.class);
 
     @Transactional
-    public void createStatus(Status Status) {
-        if (Status != null) {
+    public void createStoryHistory(StoryHistory StoryHistory) {
+        if (StoryHistory != null) {
 
-            genericDao.save(Status);
+            genericDao.save(StoryHistory);
 
         }
     }
 
-    public Status readStatus(Integer pkey) {
+    public StoryHistory readStoryHistory(Integer pkey) {
 
-        return genericDao.find(Status.class, pkey);
+        return genericDao.find(StoryHistory.class, pkey);
 
     }
 
     @Transactional
-    public void updateStatus(Status Status) {
-        if (Status != null) {
+    public void updateStoryHistory(StoryHistory StoryHistory) {
+        if (StoryHistory != null) {
 
-            genericDao.update(Status);
+            genericDao.update(StoryHistory);
 
         }
     }
 
     @Transactional
-    public void deleteStatus(Status Status) {
-        if (Status != null) {
+    public void deleteStoryHistory(StoryHistory StoryHistory) {
+        if (StoryHistory != null) {
 
-            genericDao.delete(Status);
+            genericDao.delete(StoryHistory);
 
         }
     }
 
-    public List<Status> fetchStoryStatus(Integer storyid, String stage) {
+    public List<StoryHistory> fetchStoryHistory(Integer storyid, String stage) {
 
         Hashtable<String, Object> ht = new Hashtable<String, Object>();
         ht.put("storyid", storyid);
         ht.put("stage", stage);
 
-        return genericDao.getEntities(Status.class, "status.fetchStoryStatus", ht);
+        return genericDao.getEntities(StoryHistory.class, "storyhistory.fetchStoryStoryHistory", ht);
     }
 
-    public Status fetchUserStoryStatus(Integer storyid, String stage, String userid) {
+    public StoryHistory fetchUserStoryHistory(Integer storyid, String stage, String userid) {
 
         Hashtable<String, Object> ht = new Hashtable<String, Object>();
         ht.put("storyid", storyid);
         ht.put("stage", stage);
         ht.put("userid", userid);
 
-        return genericDao.getEntity(Status.class, "status.fetchUserStoryStatus", ht);
+        return genericDao.getEntity(StoryHistory.class, "storyhistory.fetchUserStoryStoryHistory", ht);
     }
 
     @Transactional
@@ -75,19 +78,19 @@ public class StatusManagerImpl implements StatusManager {
         ht.put("stage", stage);
         // System.out.println("Deleting status");
         // return (String) genericDao.getResult("status.clearUsersByStage",ht);
-        List<Status> statusObj = genericDao.getEntities(Status.class, "status.fetchStoryStatus", ht);
+        List<StoryHistory> statusObj = genericDao.getEntities(StoryHistory.class, "storyhistory.fetchStoryStoryHistory", ht);
         // System.out.println("Size of Array :"+statusObj.size());
         try {
 
-            Iterator<Status> iterator = statusObj.iterator();
+            Iterator<StoryHistory> iterator = statusObj.iterator();
             while (iterator.hasNext()) {
-                Status status = iterator.next();
-                System.out.println("Deleting Status Object :" + status.getUser().getFullname());
+                StoryHistory status = iterator.next();
+                logger.info("Deleting StoryHistory Object :" + status.getUser().getFullname());
                 genericDao.delete(status);
 
             }
         } catch (Exception e) {
-            System.out.println(e.toString());
+            logger.info(e.toString());
         }
         return "success";
     }

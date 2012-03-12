@@ -2,7 +2,10 @@ package com.imaginea.scrumr.interfaces;
 
 import java.util.List;
 
+import com.imaginea.scrumr.entities.Project;
+import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Task;
+import com.imaginea.scrumr.entities.UserTaskReport;
 
 public interface TaskManager {
 
@@ -17,7 +20,13 @@ public interface TaskManager {
     List<Task> fetchTasksByStory(Integer pkey);
 
     List<Task> fetchTasksByStatus(String status);
-
+    
+    List<UserTaskReport> fetchUserTaskBySprint(Project project, Sprint sprint);
+    
+    List<Task> fetchAssignedTaskByCurrentUser(int sprintId, String userId);
+    
+    List<Task> fetchUnAssignedTaskBySprint(int sprintId);
+    
     /**
      * fetchTaskStatusSummary
      * 

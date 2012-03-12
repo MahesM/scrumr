@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.PersistenceException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +21,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
-import com.imaginea.scrumr.entities.ProjectLane;
+import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.ProjectPriority;
 import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.User;
-import com.imaginea.scrumr.interfaces.ProjectLaneManager;
+import com.imaginea.scrumr.interfaces.ProjectStageManager;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.ProjectPriorityManager;
 import com.imaginea.scrumr.interfaces.SprintManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
+import com.imaginea.scrumr.utils.MessageLevel;
+import com.imaginea.scrumr.utils.ScrumrException;
 
 @Controller
 @RequestMapping("/projects")
@@ -41,7 +45,7 @@ public class ProjectResource {
     SprintManager sprintManager;
     
     @Autowired
-    ProjectLaneManager projectLaneManager;
+    ProjectStageManager projectStageManager;
     
     @Autowired
     ProjectPriorityManager projectPriorityManager;
@@ -118,112 +122,146 @@ public class ProjectResource {
                                     @RequestParam String current_user)
 
     {
-        Project project = new Project();
+        Project project = null;
+        
+        int currentSprint;
+        String status;
+        Date projectStartDate = null;
+        Date projectEndDate = null;
+        int sprint_count = 0;            
+        int sprintDuration = Integer.parseInt(pSprintDuration);
         try {
-
-            project.setTitle(pTitle);
-            project.setDescription(pDescription);
-            Date date = null;
-            Date date1 = null;
-            int sprint_count = 0;
-            int duration = Integer.parseInt(pSprintDuration);
-            try {
-                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-                if (pStartDate != "" && pEndDate != "") {
-                    date = format.parse(pStartDate);
-                    date1 = format.parse(pEndDate);
-                    project.setStart_date(date);
-                    project.setEnd_date(date1);
-                    sprint_count = getSprintCount(date, date1, Integer.parseInt(pSprintDuration));
-                    project.setNo_of_sprints(sprint_count);
-                } else {
-                    date = format.parse(pStartDate);
-                    project.setStart_date(date);
-                    project.setCurrent_sprint(0);
-                    project.setEnd_date(null);
-                    sprint_count = getSprintCount(date, null, Integer.parseInt(pSprintDuration));
-                    logger.debug("Test: SC: " + sprint_count);
-                    project.setNo_of_sprints(sprint_count);
-                }
-            } catch (ParseException e1) {
-                logger.error(e1.getMessage(), e1);
-            }
+            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+            projectStartDate = format.parse(pStartDate);                
+            
+            if (pEndDate != "") {                    
+                projectEndDate = format.parse(pEndDate);
+            } else {
+                projectEndDate = null;                       
+            }                
+            sprint_count = getSprintCount(projectStartDate, projectEndDate, Integer.parseInt(pSprintDuration));                
+        } catch (ParseException e1) {
+            String exceptionMsg = "Date field values are not proper";
+            logger.error(e1.getMessage(), e1);
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, null);
+        }
+        try {            
             String userStr = assignees;
             String[] users = userStr.split(",");
             Set<User> userList = new HashSet<User>();
             for (String s : users) {
-                logger.debug("user: " + s);
+                logger.info("user: " + s);
                 User user = userServiceManager.readUser(s);
                 userList.add(user);
             }
-
-            if (date.after(new Date())) {
-                project.setCurrent_sprint(0);
-                project.setStatus("Not Started");
-            } else {
-                project.setCurrent_sprint(getCurrentSprint(date, date1, duration));
-                project.setStatus("In Progress");
-            }
-
-            project.setAssignees(userList);
-            project.setSprint_duration(duration);
-            project.setCreatedby(current_user);
+            if (projectStartDate.after(new Date())) {
+                currentSprint = 0;
+                status = "Not Started";
+                
+            } else if(projectEndDate!=null && projectEndDate.before(new Date())){
+                currentSprint = sprint_count;
+                status = "Finished";
+            }else{
+                currentSprint = getCurrentSprint(projectStartDate, projectEndDate, sprintDuration);
+                status = "In Progress";
+            }    
 
             logger.info("CurrentUser:" + current_user + " " + current_user.length());
-            project.setLast_updated(new java.sql.Date(System.currentTimeMillis()));
-            project.setLast_updatedby("'" + current_user+"'");
-            project.setCreation_date(new java.sql.Date(System.currentTimeMillis()));
-
+            
+            project = initializeProject(pTitle, pDescription, projectStartDate, projectEndDate, sprint_count, currentSprint, status, userList, current_user,sprintDuration);
             projectManager.createProject(project);
-            Date currentdate = date;
-            for (int i = 0; i < sprint_count; i++) {
-
-                Sprint sprint = new Sprint();
-                sprint.setId(i + 1);
-                sprint.setStartdate(new java.sql.Date(currentdate.getTime()));
-                Date enddate = new Date(currentdate.getTime() + ((7 * duration) * 86400000L)
-                                                - 3600000L);
-                if (date1 != null && i == (sprint_count - 1)) {
-                    enddate = new Date(currentdate.getTime() + ((7 * duration) * 86400000L));
-                }
-                if (date1 != null) {
-                    if (enddate.before(date1)) {
-                        sprint.setEnddate(new java.sql.Date(enddate.getTime()));
-                    } else {
-                        sprint.setEnddate(new java.sql.Date(date1.getTime()
-                                                        + (86400000L - 3600000L)));
-                    }
-                } else {
-                    sprint.setEnddate(new java.sql.Date(enddate.getTime()));
-                }
-                if (currentdate.after(new Date())) {
-                    sprint.setStatus("Not Started");
-                } else {
-                    if (enddate.before(new Date())) {
-                        logger.debug(enddate.toString());
-                        sprint.setStatus("Finished");
-                    } else {
-                        logger.debug("Past sprint");
-                        sprint.setStatus("In Progress");
-                        project.setCurrent_sprint(sprint.getId());
-                        project.setStatus("In Progress");
-                        projectManager.updateProject(project);
-                    }
-                }
-                sprint.setProject(project);
-                sprintManager.createSprint(sprint);
-                currentdate = new Date(currentdate.getTime() + ((7 * duration) * 86400000L));                
-            }
+            
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return null;
+            if(e instanceof PersistenceException){
+                PersistenceException persistentException = (PersistenceException)e;
+                String exceptionMsg = "Kindly contact the adminstrator";
+                logger.error(persistentException.getCause().getCause().getMessage());
+                logger.error(e.getMessage(), e);
+                ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, null);
+            }
+            ScrumrException.create(e.getMessage(), MessageLevel.SEVERE, null);           
         }
+        try{
+            Date sprintFirstDay = projectStartDate;
+            for (int sprintNo = 1; sprintNo <= sprint_count; sprintNo++) {
 
+                createSprint(sprintNo,sprint_count,sprintFirstDay, projectEndDate, sprintDuration, project);
+                sprintFirstDay = new Date(sprintFirstDay.getTime() + ((7 * sprintDuration) * 86400000L));                
+            } 
+        }catch(Exception e){
+            if(e instanceof PersistenceException){
+                PersistenceException persistentException = (PersistenceException)e;
+                String exceptionMsg = "Kindly contact the adminstrator";
+                logger.error(persistentException.getCause().getCause().getMessage());
+                logger.error(e.getMessage(), e);
+                ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, null);
+            }
+            ScrumrException.create(e.getMessage(), MessageLevel.SEVERE, null);  
+        }  
+        
         List<Project> result = new ArrayList<Project>();
         result.add(project);
 
         return result;
+    }
+    
+    private void createSprint(int sprintNo, int totalSprints, Date sprintFirstDay, Date projectEndDate, int sprintDuration, Project project) {
+        
+        String sprintStatus = null;
+        Date sprintEndDate = new Date(sprintFirstDay.getTime() + ((7 * sprintDuration) * 86400000L)
+                                        - 3600000L);
+        if (sprintNo == (totalSprints)) {
+            sprintEndDate = new Date(sprintFirstDay.getTime() + ((7 * sprintDuration) * 86400000L));
+        }
+        if (projectEndDate != null){
+            if(sprintEndDate.before(projectEndDate)) {
+                sprintEndDate = new java.sql.Date(sprintEndDate.getTime());
+            } else {
+            sprintEndDate = new java.sql.Date(projectEndDate.getTime()
+                                            + (86400000L - 3600000L));                    
+            }
+        }        
+        
+        if (sprintFirstDay.after(new Date())) {
+            sprintStatus = "Not Started"; 
+            
+        } else {
+            if (sprintEndDate.before(new Date())) {
+                logger.debug(sprintEndDate.toString());
+                sprintStatus = "Finished"; 
+            } else {
+                logger.debug("Past sprint");
+                sprintStatus = "In Progress"; 
+            }
+        }
+        
+        Sprint sprint = new Sprint();
+        sprint.setId(sprintNo);
+        sprint.setStartdate(new java.sql.Date(sprintFirstDay.getTime()));
+        sprint.setEnddate(sprintEndDate);
+        sprint.setStatus(sprintStatus);        
+        sprint.setProject(project);
+        sprintManager.createSprint(sprint);        
+    }
 
+    private Project initializeProject(String title, String description, Date startDate, Date endDate,
+                                    int sprint_count, int currentSprint,String status, Set<User> userList, String current_user, int duration){
+        Project project = new Project();
+        project.setTitle(title);
+        project.setDescription(description);
+        project.setStart_date(startDate);
+        project.setEnd_date(endDate);
+        project.setNo_of_sprints(sprint_count);
+        project.setCurrent_sprint(sprint_count);
+        project.setStatus(status);
+        project.setAssignees(userList);
+        project.setSprint_duration(duration);
+        project.setCreatedby(current_user);
+        project.setLast_updated(new java.sql.Date(System.currentTimeMillis()));
+        project.setLast_updatedby(current_user);
+        project.setCreation_date(new java.sql.Date(System.currentTimeMillis()));
+        return project;
+        
     }
     
     @RequestMapping(value = "/update", method = RequestMethod.POST)
@@ -273,7 +311,7 @@ public class ProjectResource {
     }
 
     private void deleteDependantEntities(int projectId) {
-        deleteProjectLanesByProject(projectId);
+        deleteProjectStagesByProject(projectId);
         deleteProjectPrioritiesByProject(projectId);
     }
 
@@ -284,11 +322,11 @@ public class ProjectResource {
             projectPriorityManager.deleteProjectPriority(projectPriority);        
     }
 
-    private void deleteProjectLanesByProject(int projectId) {
-        List<ProjectLane> projectLaneList = projectLaneManager.fetchAllProjectLaneByProject(projectId);
+    private void deleteProjectStagesByProject(int projectId) {
+        List<ProjectStage> projectStageList = projectStageManager.fetchAllProjectStageByProject(projectId);
         
-        for(ProjectLane projectLane:projectLaneList)
-           projectLaneManager.deleteProjectLane(projectLane);        
+        for(ProjectStage projectStage:projectStageList)
+           projectStageManager.deleteProjectStage(projectStage);        
     }
 
     // TODO - fix this crap

@@ -139,7 +139,7 @@ public class UserResource {
                                     @RequestParam String avatarurl) {
 
         try {
-            System.out.println("Create User: " + displayname);
+            logger.info("Create User: " + displayname);
             User user = new User();
             user.setUsername(username);
             user.setFullname(fullname);

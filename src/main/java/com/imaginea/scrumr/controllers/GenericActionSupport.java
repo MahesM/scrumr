@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.imaginea.scrumr.entities.User;
@@ -19,14 +21,14 @@ public class GenericActionSupport extends ActionSupport implements Preparable, S
 	protected HttpServletResponse response;
 	protected UserServiceManager userServiceManager;
 	protected User loggedInUser = null;
-
+	private static final Logger logger = LoggerFactory.getLogger(GenericActionSupport.class);
 	// Default action method
 	public String execute() {
 		return SUCCESS;
 	}
 
 	public void prepare() throws Exception {
-		System.out.println("PREPARE1");
+	    logger.debug("PREPARE1");
 		if( SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null) {
 			loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		}
@@ -34,10 +36,10 @@ public class GenericActionSupport extends ActionSupport implements Preparable, S
 
 
 	public void prepareLoggedinUserDetails() {
-		System.out.println("prepareLoggedinUserDetails");
+	    logger.debug("prepareLoggedinUserDetails");
 		String loggedInUserName = SecurityContextHolder.getContext().getAuthentication().getName();
-		System.out.println(loggedInUserName);
-		System.out.println(SecurityContextHolder.getContext().getAuthentication());
+		logger.info(loggedInUserName);
+		logger.info("SecurityContext",SecurityContextHolder.getContext().getAuthentication());
 
 		if (loggedInUserName.equals("anonymousUser")) {
 			loggedInUser = new User();
@@ -48,9 +50,9 @@ public class GenericActionSupport extends ActionSupport implements Preparable, S
 
 		}
 
-		System.out.println(loggedInUser.getUsername());
+		logger.info(loggedInUser.getUsername());
 
-		System.out.println(loggedInUser.getAuthorities());
+		logger.info("Authorities",loggedInUser.getAuthorities());
 
 
 	}

@@ -6,6 +6,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class ScrumrException extends Exception{
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private String _message;
     private MessageLevel _messageLevel;
     private Exception _nextException;
