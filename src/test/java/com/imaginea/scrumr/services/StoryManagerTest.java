@@ -43,7 +43,6 @@ public class StoryManagerTest {
             Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(projectId), sprintNum);
             story.setSprint_id(toSprint);
             logger.debug(toSprint.toString());
-            story.setStatus("");
             storyManager.updateStory(story);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -58,7 +57,7 @@ public class StoryManagerTest {
             Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(projectId), backlogId);
             story.setSprint_id(toSprint);
             logger.debug(toSprint.toString());
-            story.setStatus("");
+           // story.setStatus("");
             storyManager.updateStory(story);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

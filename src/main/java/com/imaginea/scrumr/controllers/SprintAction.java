@@ -1,6 +1,8 @@
 package com.imaginea.scrumr.controllers;
 
 import org.codehaus.jettison.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class SprintAction extends GenericActionSupport {
@@ -15,6 +17,8 @@ public class SprintAction extends GenericActionSupport {
 
     public String source;
 
+    private static final Logger logger = LoggerFactory.getLogger(SprintAction.class);
+
     @Override
     public void prepare() throws Exception {
         super.prepare();
@@ -23,14 +27,14 @@ public class SprintAction extends GenericActionSupport {
     public String prepareSprintHome() throws Exception {
         if (loggedInUser != null) {
             source = (String) request.getSession().getAttribute("source");
-            System.out.println("Source:" + source);
+            logger.info("Source:" + source);
             if (source != null) {
                 if (source.equalsIgnoreCase("facebook")) {
                     qontextHostUrl = "http://graph.facebook.com";
-                    System.out.println("Source:" + qontextHostUrl);
+                    logger.info("Source:" + qontextHostUrl);
                 } else if (source.equalsIgnoreCase("google")) {
                     qontextHostUrl = "";
-                    System.out.println("Source:" + qontextHostUrl);
+                    logger.info("Source:" + qontextHostUrl);
                 }
             }
             return SUCCESS;

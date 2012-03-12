@@ -17,60 +17,40 @@ import com.imaginea.scrumr.interfaces.IEntity;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "projectlane")
+@Table(name = "project_stage")
 @NamedQueries({
-    @NamedQuery(name = "projectlanes.fetchAllProjectLanesByProjectId", query = "SELECT instance from ProjectLane instance where instance.project.id=:projectid") })
+    @NamedQuery(name = "projectstages.fetchAllProjectStagesByProjectId", query = "SELECT instance from ProjectStage instance where instance.project.id=:projectid"),
+    @NamedQuery(name = "projectstages.fetchMaxRankByProjectId", query = "SELECT max(instance.rank) from ProjectStage instance where instance.project.id=:projectid")})
 @XmlRootElement
-public class ProjectLane extends AbstractEntity implements IEntity, Serializable {
-    private int color; 
+public class ProjectStage extends AbstractEntity implements IEntity, Serializable {
     private String description;
     private Project project;
     private int rank;
-    private String type;
+    private String url;
+    
 
-    public static enum DefaultProjectLanes {
-        LANE_1 ("BackLog", 0, "BACKLOG",1),
-        LANE_2 ("Development", 1, null,2),
-        LANE_3 ("QA", 2, null,3),
-        LANE_4 ("Completed", 3, "FINISHED",4);
+    public static enum DefaultProjectStages {
+        STAGE_1 ("BackLog", 0,1,"url"),
+        STAGE_2 ("Development", 1,2,"url"),
+        STAGE_3 ("QA", 2, 3,"url"),
+        STAGE_4 ("Completed", 3, 4,"url");
 
         private final String description;
-        private final String type;
         private final int rank;
-        private final int laneId;
+        private final int pKey;
+        private String url;
         
-        DefaultProjectLanes(String description,int rank, String type, int laneId) {
+        DefaultProjectStages(String description,int rank, int pKey, String url) {
             this.description = description;
             this.rank = rank;
-            this.type = type;
-            this.laneId = laneId;
+            this.pKey = pKey;
+            this.url = url;
         }
         public String getDescription() { return description; }
         public int getRank() { return rank; }
-        public int getLaneId() { return laneId; }
-        public String getType() { return type; }
+        public int getPKey() { return pKey; }
+        public String getUrl() { return url; }
     }
-
-    
-    
-    @Column(name = "color", nullable = false)
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
-    }
-
-    @Column(name = "type")
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
 
     @Column(name = "description", length = 100)
     public String getDescription() {
@@ -98,6 +78,14 @@ public class ProjectLane extends AbstractEntity implements IEntity, Serializable
 
     public void setProject(Project project) {
         this.project = project;
+    }
+    
+    public String getUrl() {
+        return url;
+    }
+    
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 }

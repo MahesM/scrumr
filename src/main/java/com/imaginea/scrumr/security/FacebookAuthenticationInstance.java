@@ -9,7 +9,6 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.qontextclient.EasySSLProtocolSocketFactory;

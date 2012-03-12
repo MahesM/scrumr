@@ -7,6 +7,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.json.JSONException;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +26,6 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
-
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 
 public class GoogleInvocationHelper {
 
@@ -62,7 +61,7 @@ public class GoogleInvocationHelper {
             String accessToken = authResponse.accessToken;
             GoogleAccessProtectedResource access = new GoogleAccessProtectedResource(accessToken, TRANSPORT, JSON_FACTORY, URLEncoder.encode(consumerKey), URLEncoder.encode(consumerSecret), authResponse.refreshToken);
             HttpRequestFactory rf = TRANSPORT.createRequestFactory(access);
-            System.out.println("Access token: " + authResponse.accessToken);
+            logger.info("Access token: " + authResponse.accessToken);
 
             this.access_token = authResponse.accessToken;
         } catch (RestClientException e) {
@@ -85,7 +84,7 @@ public class GoogleInvocationHelper {
                                             + access_token;
             String obj = restTemplate.getForObject(url, String.class);
             JSONObject resp = new JSONObject(obj);
-            System.out.println("My Details: " + resp.toString());
+            logger.info("My Details: " + resp.toString());
             return resp;
         } catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);

@@ -178,6 +178,7 @@
 		<property name="projectManager" ref="projectManager" />
 		<property name="sprintManager" ref="sprintManager" />
 		<property name="storyManager" ref="storyManager" />
+		<property name="projectStageManager" ref="projectStageManager" />
 
 	</bean>
 
@@ -223,7 +224,7 @@
 		<property name="genericDao" ref="genericDao" />
 	</bean>
 	
-	<bean id="projectLaneManager" class="com.imaginea.scrumr.services.ProjectLaneManagerImpl">
+	<bean id="projectStageManager" class="com.imaginea.scrumr.services.ProjectStageManagerImpl">
 		<property name="genericDao" ref="genericDao" />
 	</bean>
 	
@@ -247,7 +248,11 @@
 		<property name="genericDao" ref="genericDao" />
 	</bean>
 
-	<bean id="statusManager" class="com.imaginea.scrumr.services.StatusManagerImpl">
+	<bean id="storyHistoryManager" class="com.imaginea.scrumr.services.StoryHistoryManagerImpl">
+		<property name="genericDao" ref="genericDao" />
+	</bean>
+	
+	<bean id="projectPreferencesManager" class="com.imaginea.scrumr.services.ProjectPreferencesManagerImpl">
 		<property name="genericDao" ref="genericDao" />
 	</bean>
 

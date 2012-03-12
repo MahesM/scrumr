@@ -48,7 +48,7 @@ public class StoryManagerImpl implements StoryManager {
     public void deleteStory(Story story) {
         if (story != null) {
 
-            System.out.println("Deleting story");
+            LOGGER.info("Deleting story");
             genericDao.delete(story);
 
         }
@@ -90,12 +90,12 @@ public class StoryManagerImpl implements StoryManager {
         return genericDao.getEntities(Story.class, "stories.fetchUnAssignedStories", ht);
     }
 
-    public List<Story> fetchUnfinishedStories(Integer pkey) {
+    public List<Story> fetchUnfinishedStories(Integer pkey, String status) {
 
         Sprint sprint = genericDao.find(Sprint.class, pkey);
         Hashtable<String, Object> ht = new Hashtable<String, Object>();
         ht.put("sprint", sprint);
-        ht.put("status", "finished");
+        ht.put("status", status);
         return genericDao.getEntities(Story.class, "stories.fetchUnfinishedStories", ht);
     }
 

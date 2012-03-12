@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
 
 import com.imaginea.scrumr.interfaces.IEntity;
 
@@ -18,8 +17,6 @@ public class AbstractEntity implements IEntity, Serializable {
     private Integer pkey;
 
     private Date createdOn;    
-
-    private Long version;
 
     @Id
     @GeneratedValue
@@ -39,15 +36,5 @@ public class AbstractEntity implements IEntity, Serializable {
 
     public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
-    }
-    
-    @Version
-    @Column(name = "version")
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
     }
 }

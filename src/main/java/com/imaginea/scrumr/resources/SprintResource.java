@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.Sprint;
+import com.imaginea.scrumr.entities.UserTaskReport;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.SprintManager;
+import com.imaginea.scrumr.interfaces.TaskManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
 
 @Controller
@@ -30,6 +32,9 @@ public class SprintResource {
 
     @Autowired
     SprintManager sprintManager;
+    
+    @Autowired
+    TaskManager taskManager;
 
     @Autowired
     UserServiceManager userServiceManager;
@@ -56,6 +61,16 @@ public class SprintResource {
         List<Sprint> sprints = new ArrayList<Sprint>();
         sprints.add(sprint);
         return sprints;
+    }
+    
+    @RequestMapping(value = "{sprintid}/project/{projectid}/users", method = RequestMethod.GET)
+    public @ResponseBody
+    List<UserTaskReport> fetchUserTasksBySprint(@PathVariable("sprintid") String id,
+                                    @PathVariable("projectid") String pid) {
+
+        Project project = projectManager.readProject(Integer.parseInt(pid));
+        Sprint sprint = sprintManager.readSprint(Integer.parseInt(id));
+        return taskManager.fetchUserTaskBySprint(project, sprint);
     }
 
     @RequestMapping(value = "/project/{id}", method = RequestMethod.GET)

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +38,8 @@ public class CommentResource {
 
     @Autowired
     UserServiceManager userServiceManager;
+    
+    private static final Logger logger = LoggerFactory.getLogger(CommentResource.class);
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public @ResponseBody
@@ -61,7 +65,7 @@ public class CommentResource {
 
         Comment comment = new Comment();
 
-        DateFormat dateFormat = new SimpleDateFormat("yy-mm-dd");
+        DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd");
         Date logDate = null;
 
         try {
@@ -88,9 +92,9 @@ public class CommentResource {
     public @ResponseBody
     String deleteComment(@PathVariable("id") String id) {
         Comment comment = commentManager.readComment(Integer.parseInt(id));
-        System.out.println("Comment : " + comment.getContent());
+        logger.info("Comment : " + comment.getContent());
         commentManager.deleteComment(comment);
-        System.out.println("Comment deleted");
+        logger.info("Comment deleted");
         return "{\"result\":\"success\"}";
     }
 

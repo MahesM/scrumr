@@ -176,4 +176,18 @@ public class TaskResource {
         taskManager.deleteTask(task);
         return "{\"result\":\"success\"}";
     }
+    
+    @RequestMapping(value = "/fetchtasks/{sprintid}/{userid}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<Task> fetchTasksByUser(@PathVariable("sprintid") String sprintId, @PathVariable("userid") String userId) {
+
+        return taskManager.fetchAssignedTaskByCurrentUser(Integer.parseInt(sprintId),userId);
+    }
+    
+    @RequestMapping(value = "/uncompletedtasks/{sprintid}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<Task> fetchUnAssignedTasks(@PathVariable("sprintid")  String sprintId) {
+
+       return taskManager.fetchUnAssignedTaskBySprint(Integer.parseInt(sprintId));
+    }
 }

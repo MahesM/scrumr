@@ -17,8 +17,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
@@ -28,12 +28,12 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @Entity
 @Table(name = "stories")
 @NamedQueries({
-        @NamedQuery(name = "stories.fetchStoriesByProject", query = "SELECT instance from Story instance where instance.project=:project"),
-        @NamedQuery(name = "stories.fetchStoriesByStatus", query = "SELECT instance from Story instance where instance.sprint_id=:sprint and instance.status=:status"),
-        @NamedQuery(name = "stories.fetchUnfinishedStories", query = "SELECT instance from Story instance where instance.sprint_id=:sprint and instance.status !=:status"),
-        @NamedQuery(name = "stories.fetchStoriesBySprint", query = "SELECT instance from Story instance where instance.sprint_id=:sprint"),
-        @NamedQuery(name = "stories.fetchStoriesBySprintProject", query = "SELECT instance from Story instance where instance.project=:project and instance.sprint_id=:sprint"),
-        @NamedQuery(name = "stories.fetchUnAssignedStories", query = "SELECT instance from Story instance where instance.project=:project and instance.sprint_id is null") })
+    @NamedQuery(name = "stories.fetchStoriesByProject", query = "SELECT instance from Story instance where instance.project=:project"),
+    @NamedQuery(name = "stories.fetchStoriesByStatus", query = "SELECT instance from Story instance where instance.sprint_id=:sprint and instance.ststage=:stage"),
+    @NamedQuery(name = "stories.fetchUnfinishedStories", query = "SELECT instance from Story instance where instance.sprint_id=:sprint and instance.ststage !=:projectstage"),
+    @NamedQuery(name = "stories.fetchStoriesBySprint", query = "SELECT instance from Story instance where instance.sprint_id=:sprint"),
+    @NamedQuery(name = "stories.fetchStoriesBySprintProject", query = "SELECT instance from Story instance where instance.project=:project and instance.sprint_id=:sprint"),
+    @NamedQuery(name = "stories.fetchUnAssignedStories", query = "SELECT instance from Story instance where instance.project=:project and instance.sprint_id is null") })
 @XmlRootElement
 public class Story extends AbstractEntity implements IEntity, Serializable {
 
@@ -43,7 +43,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
     private String description;
 
-    private int priority;
+    private ProjectPriority priority;
 
     private Sprint sprint_id;
 
@@ -55,7 +55,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
     private String lastUpdatedby;
 
-    private String status;
+    private ProjectStage ststage;
 
     private Set<User> assignees;
 
@@ -63,9 +63,17 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
     private List<Task> todos;
 
-    private int viewCount;
+    private List<StoryHistory> statusList;
 
-    private List<Status> statusList;
+    private int storyPoint;
+
+    private int mileStone;
+
+    private Set<Task> taskList;
+
+    private int unCompletedTask;
+
+    private int totalTask;
 
     @ManyToOne()
     @JoinColumn(name = "stpid", nullable = false)
@@ -95,17 +103,18 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
         this.description = description;
     }
 
-    @Column(name = "stpriority", nullable = false)
-    public int getPriority() {
+    @ManyToOne
+    @JoinColumn(name = "stpriorityid", nullable = false)
+    public ProjectPriority getPriority() {
         return priority;
     }
 
-    public void setPriority(int priority) {
+    public void setPriority(ProjectPriority priority) {
         this.priority = priority;
     }
 
     @ManyToOne
-    @JoinColumn(name = "stsprint", nullable = true)
+    @JoinColumn(name = "stsprint", nullable = false)
     public Sprint getSprint_id() {
         return sprint_id;
     }
@@ -128,8 +137,18 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
         return creator;
     }
 
+
     public void setCreator(String creator) {
         this.creator = creator;
+    }
+
+    @Column(name = "storypoint", nullable = false)
+    public int getStoryPoint() {
+        return storyPoint;
+    }
+
+    public void setStoryPoint(int storyPoint) {
+        this.storyPoint = storyPoint;
     }
 
     @Column(name = "stlastupdated", nullable = false)
@@ -150,22 +169,14 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
         this.lastUpdatedby = last_updatedby;
     }
 
-    @Column(name = "ststatus", nullable = false, length = 100)
-    public String getStatus() {
-        return status;
+    @ManyToOne
+    @JoinColumn(name = "ststageid", nullable = false)
+    public ProjectStage getStstage() {
+        return ststage;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    @Column(name = "stviewcount", nullable = false)
-    public int getViewCount() {
-        return viewCount;
-    }
-
-    public void setViewCount(int view_count) {
-        this.viewCount = view_count;
+    public void setStstage(ProjectStage ststage) {
+        this.ststage = ststage;
     }
 
     @ManyToMany
@@ -203,11 +214,11 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "story")
     @JsonIgnore
-    public List<Status> getStatusList() {
+    public List<StoryHistory> getStatusList() {
         return statusList;
     }
 
-    public void setStatusList(List<Status> statusList) {
+    public void setStatusList(List<StoryHistory> statusList) {
         this.statusList = statusList;
     }
 
@@ -219,6 +230,58 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
     public void setTodos(List<Task> todos) {
         this.todos = todos;
+    }
+
+    @Column(name = "milestone")
+    public int getMileStone() {
+        return mileStone;
+    }
+
+    public void setMileStone(int mileStone) {
+        this.mileStone = mileStone;
+    }
+    @JsonIgnore
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="story")
+    public Set<Task> getTaskList() {
+        return taskList;
+    }
+
+    public void setTaskList(Set<Task> taskList) {
+        this.taskList = taskList;
+        this.totalTask = 0;
+        this.unCompletedTask = 0;
+        
+        if(this.taskList != null && !(this.taskList.isEmpty())){
+            this.totalTask = this.taskList.size();
+            this.unCompletedTask = getUncompletedTask(taskList); 
+        }
+
+    }
+    private int getUncompletedTask(Set<Task> taskList) {
+        int uncompletedTask = 0;
+        for(Task task:taskList){
+            if(!("COMPLETED".equals(task.getStatus()))){
+                uncompletedTask++;
+            }
+        }
+        return uncompletedTask;
+    }
+
+    @Transient
+    public int getUnCompletedTask() {
+        return unCompletedTask;
+    }
+
+    public void setUnCompletedTask(int unCompletedTask) {
+        this.unCompletedTask = unCompletedTask;
+    }
+    @Transient
+    public int getTotalTask() {
+        return totalTask;
+    }
+
+    public void setTotalTask(int totalTask) {
+        this.totalTask = totalTask;
     }
 
 }
