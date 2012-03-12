@@ -27,9 +27,9 @@
 						<a href="#" class="pjt_mem_more" >more...</a>
 					</div>
 					<div class='pjt_control_container' >
-						<img src="<%= request.getContextPath() %>/themes/icons/edit_white.png"  class="pjt_ctrl"  alt="Edit"  title="Edit" />|
-						<img src="<%= request.getContextPath() %>/themes/icons/details_white.png" class="pjt_ctrl" alt="Details"  title="Details" />|
-						<img src="<%= request.getContextPath() %>/themes/icons/chart_white.png" class="pjt_ctrl"  alt="Chart" title="Charts"/>
+						<img src="<%= request.getContextPath() %>/themes/images/edit_white.png"  class="pjt_ctrl"  alt="Edit"  title="Edit" />|
+						<img src="<%= request.getContextPath() %>/themes/images/details_white.png" class="pjt_ctrl" alt="Details"  title="Details" />|
+						<img src="<%= request.getContextPath() %>/themes/images/chart_white.png" class="pjt_ctrl"  alt="Chart" title="Charts"/>
 					</div>
 				</div>
 				
@@ -52,9 +52,9 @@
 						<a href="#" class="pjt_mem_more" >more...</a>
 					</div>
 					<div class='pjt_control_container' >
-						<img src="<%= request.getContextPath() %>/themes/icons/edit_white.png"  class="pjt_ctrl" />|
-						<img src="<%= request.getContextPath() %>/themes/icons/details_white.png" class="pjt_ctrl" />|
-						<img src="<%= request.getContextPath() %>/themes/icons/chart_white.png" class="pjt_ctrl" />
+						<img src="<%= request.getContextPath() %>/themes/images/edit_white.png"  class="pjt_ctrl" />|
+						<img src="<%= request.getContextPath() %>/themes/images/details_white.png" class="pjt_ctrl" />|
+						<img src="<%= request.getContextPath() %>/themes/images/chart_white.png" class="pjt_ctrl" />
 					</div>
 				</div>
 				</div>
