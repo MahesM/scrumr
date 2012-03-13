@@ -266,15 +266,11 @@ public class ProjectResource {
     
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
-    List<Project> updateProject(@RequestParam String pNo, @RequestParam String pTitle,
-                                    @RequestParam String pDescription,
-                                    @RequestParam String pSprintDuration,
-                                    @RequestParam String pStartDate, @RequestParam String pEndDate,
-                                    @RequestParam String assignees,
-                                    @RequestParam String current_user)
+    List<Project> updateProject(@RequestParam String projectid, @RequestParam String pTitle,
+                                    @RequestParam String pDescription,@RequestParam String current_user)
 
     {
-        Project project = projectManager.readProject(Integer.parseInt(pNo));
+        Project project = projectManager.readProject(Integer.parseInt(projectid));
         List<Project> result = new ArrayList<Project>();
 
         if (project != null) {

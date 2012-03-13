@@ -76,7 +76,10 @@ public class StoryResource {
     List<Story> fetchStoriesByProjectSprint(@PathVariable("sprintid") String sid,
                                     @PathVariable("id") String pid) {
         Sprint sprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(pid)), Integer.parseInt(sid));
-        return storyManager.fetchStoriesBySprint(sprint.getPkey());
+        if(sprint != null)
+            return storyManager.fetchStoriesBySprint(sprint.getPkey());
+        else
+            return null;
 
     }
 
@@ -108,7 +111,7 @@ public class StoryResource {
     public @ResponseBody
     String createStory(@RequestParam String stTitle, @RequestParam String stDescription,
                                     @RequestParam String stPriority, @RequestParam String user,
-                                    @RequestParam String projectId, @RequestParam String stSprint, @RequestParam String stageid) {
+                                    @RequestParam String projectId, @RequestParam String stSprint) {
 
         Story story = new Story();
         logger.debug("User :" + user);
@@ -122,7 +125,6 @@ public class StoryResource {
             story.setCreationDate(new java.sql.Date(System.currentTimeMillis()));
             story.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
             story.setLastUpdatedby(user);
-            story.setStstage(projectStageManager.readProjectStage(Integer.parseInt(stageid)));
             story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
             storyManager.createStory(story);
         } catch (Exception e) {

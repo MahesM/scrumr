@@ -232,19 +232,22 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
             this.projectStoryCount = stories.size();
             Sprint currentSprint = null;
             for(Story story:stories){
-                
-                if(story.getStstage().getPkey() == this.maxRankStageId){
+                ProjectStage stage = story.getStstage();
+                if(stage != null && stage.getPkey() == this.maxRankStageId){
                     completedProjectStoryCount++;
                 }
                 Sprint sprint = story.getSprint_id();
-                Integer SprintId = sprint.getId();
-                if(sprint!= null && SprintId != null && SprintId.equals(current_sprint)){
-                    currentSprint = sprint;
-                    if(story.getStstage().getPkey() == this.maxRankStageId){
-                        completedCurrentSprintStoryCount++;
-                    }
-                    this.currentSprintStoryCount++;                
+                if(sprint != null){
+                    Integer SprintId = sprint.getId();
+                    if(sprint!= null && SprintId != null && SprintId.equals(current_sprint)){
+                        currentSprint = sprint;
+                        if(story.getStstage().getPkey() == this.maxRankStageId){
+                            completedCurrentSprintStoryCount++;
+                        }
+                        this.currentSprintStoryCount++;                
+                    } 
                 }
+                
             }
             if(currentSprint != null) {
                 this.currentSprintTaskCount = currentSprint.getTaskCount();
@@ -340,15 +343,16 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         ProjectStage projectStage;
         Set<ProjectStage> projectStages = new HashSet<ProjectStage>();
         for(ProjectStage.DefaultProjectStages defaultStage: defaultStages){
-            projectStage = createDefaultProjectStage(this,defaultStage.getDescription(),defaultStage.getRank(),defaultStage.getUrl());
+            projectStage = createDefaultProjectStage(this,defaultStage.getTitle(),defaultStage.getDescription(),defaultStage.getRank(),defaultStage.getUrl());
             projectStages.add(projectStage);
         }
         return projectStages;
     }
 
-    private ProjectStage createDefaultProjectStage(Project project, String description, int rank,String url) {
+    private ProjectStage createDefaultProjectStage(Project project, String title, String description, int rank,String url) {
         ProjectStage projectStage = new ProjectStage();
         projectStage.setProject(project);
+        projectStage.setTitle(title);
         projectStage.setDescription(description);
         projectStage.setUrl(url);
         projectStage.setRank(rank);        
