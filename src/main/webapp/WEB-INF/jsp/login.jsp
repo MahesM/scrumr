@@ -39,15 +39,15 @@
 			<ul>
 				<li class="tab_Recent" >
 					<a href="#tabs-1">Recent</a>
-					<img src="<%= request.getContextPath() %>/themes/images/menu_arrow.png" class="tabPointer" />
+					<img src="themes/images/menu_arrow.png" class="tabPointer" />
 				</li>
 				<li class="tab_All" id="tab_All" >
 					<a href="#tabs-2">All</a>
-					<img src="<%= request.getContextPath() %>/themes/images/menu_arrow.png" class="tabPointer" />
+					<img src="themes/images/menu_arrow.png" class="tabPointer" />
 				</li>
 				<li class="tab_New">
 					<a href="#tabs-3">New</a>
-					<img src="<%= request.getContextPath() %>/themes/images/menu_arrow.png" class="tabPointer" />
+					<img src="themes/images/menu_arrow.png" class="tabPointer" />
 				</li>
 			</ul>
 
