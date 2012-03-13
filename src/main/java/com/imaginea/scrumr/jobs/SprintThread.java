@@ -40,7 +40,7 @@ class SprintThread extends TimerTask {
 						Sprint old_sprint = null;
 						Sprint current = null;
 						List<Story> stories = null;
-						if(p.getCurrent_sprint() != 0){
+						if(p.getCurrent_sprint() != 1){
 							old_sprint = sprintManager.selectSprintByProject(p, p.getCurrent_sprint());
 							Date spend = old_sprint.getEnddate();
 							if(spend.before(new Date())){
@@ -67,6 +67,7 @@ class SprintThread extends TimerTask {
 							}
 						}*/
 						p.setStatus("In Progress");
+						projectManager.updateProject(p);
 					}
 				}else{
 					Sprint old_sprint = null;

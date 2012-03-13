@@ -6,18 +6,19 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 public class SprintUpdateJob extends QuartzJobBean {
 
-	private SprintThread sprintThred;
-	 
+	private SprintThread sprintThread;
+	
+	public SprintThread getSprintThread() {
+        return sprintThread;
+    }
+	
 	public void setSprintThread(SprintThread sprintThred) {
-		this.sprintThred = sprintThred;
+		this.sprintThread = sprintThred;
 	}
  
 	protected void executeInternal(JobExecutionContext context)
 	throws JobExecutionException {
- 
-		sprintThred.run();
- 
-	}
-	
-	
+	    Thread thread = new Thread(sprintThread);
+		thread.start(); 
+	}	
 }
