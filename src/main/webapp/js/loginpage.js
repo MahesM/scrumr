@@ -21,7 +21,9 @@ $(document).ready(function(){
 	$( "#amount" ).val(  $( "#slider-range" ).slider( "values", 0 ) +
 		" - " + $( "#slider-range" ).slider( "values", 1 ) );
 	
-	
+	$( "#slider" ).slider();
+	//$( "#slider" ).slider({ range: 'min' });
+	//$( ".selector" ).slider( "option", "range", 'min' );
 	
 	// To get list of all Projects
 	//$('#tab_All').unbind('click').live("click",function(){
@@ -41,7 +43,7 @@ $(document).ready(function(){
 						 $('#mainContainer').html(prjt_string);
 						
 					} else {
-						alert(2323);
+						 $('#mainContainer').html("<label style='color:#fff' >Currently there are no projects.</label>");
 					}    					
 			}
 		//});
@@ -87,6 +89,8 @@ $(document).ready(function(){
 	$('#update').live('click',function(){
 		createProject(true);
 	});
+	
+	$("#new_pjt").addClass("pro_head_anchor_enable");
 	
 	/* on click of next button */
 	$('#nxt_pjt_details, #pjt_stag').live('click',function(){
@@ -150,7 +154,7 @@ $(document).ready(function(){
 			if(userLogged == "" || userLogged == null){
 				return false;
 			}else{
-				var post_data1 = {'username':userLogged,'displayname':'<s:property value="loggedInUser.displayname"/>','fullname':'<s:property value="loggedInUser.fullname"/>','emailid':'<s:property value="loggedInUser.emailid"/>','avatarurl':'<s:property value="loggedInUser.avatarurl"/>'};
+				var post_data1 = {'username':userLogged,'displayname':displayname,'fullname':fullname,'emailid':emailid,'avatarurl':avatar};
 				$.ajax({
 					url: 'api/v1/users/create',
 					type: 'POST',
@@ -237,4 +241,35 @@ $(document).ready(function(){
 		update: function( event, ui ) {
 		}
 	  });
+	 /**********************STORY PARAMETERS*************************/
+
+	  	  
+	  $(".pColor").unbind('click').live("click", function(event){
+		  var curEle = $(this);
+		  $(document).colorpicker(event,function(color){
+			  curEle.css('background-color',color);
+		  });
+	  });
+	  
+	  //This is to render priority lines
+	  
+	  	for(var cnt=0; cnt < 0; cnt++ ) {
+			priority_string += new EJS({url: 'ejs/sty_priority_temp.ejs'}).render(proj);
+	  	}
+	  	
+	  	$('.addPos').unbind('click').live("click", function(event){
+	  		var jsonObj = {'priorityNo': '1'}
+		  	var new_priority_string = new EJS({url: 'ejs/sty_priority_temp.ejs'}).render(jsonObj);
+		  	$('#sty_content_priority').append(new_priority_string);
+		  	$(this).removeClass("addPos");
+		  	$(this).addClass("remPos");
+	  	});
+	  	
+	  	$('.remPos').unbind('click').live("click", function(event){
+	  		$(this).parent().remove();
+	  	});
+	  	
+	  	$(".sty_checkbox").unbind('click').live("click", function(){
+	  		$(this).parent().parent().find("#disable_overlay").toggleClass("disabled_overlay");
+	  	});
 });

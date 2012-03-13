@@ -92,4 +92,91 @@ var customAlert=  function(options,callback,curObj) {
 	}
 };
 
-/***********************************************************************/ 
+/******************************COLOR PICKER - PLUGIN*****************************************/
+//PLUGIN FOR SIMPLE COLOR PICKER
+/******************************************************************************/
+
+ (function($){
+	 $.fn.extend({   
+			colorpicker: function(evt, callback) {
+				var returnCol ;					
+				var htmlStr = 			'<div id="simple_eight_colorpicker" class="cust_col_main_holder" >'+
+											'<ul class="color-chooser">'+
+												'<li class="labelstyle-444444 ">'+
+												  '<label>'+
+													'<input id="label_color_444444" name="label[color]" type="radio" value="444444">'+
+												  '</label>'+
+												'</li>'+
+												'<li class="labelstyle-DDDDDD ">'+
+												  '<label>'+
+													'<input id="label_color_dddddd" name="label[color]" type="radio" value="DDDDDD">'+
+												  '</label>'+
+												'</li>'+
+												'<li class="labelstyle-e10c02 ">'+
+												  '<label>'+
+													'<input id="label_color_e10c02" name="label[color]" type="radio" value="e10c02">'+
+												  '</label>'+
+												'</li>'+
+												'<li class="labelstyle-d7e102 ">'+
+												  '<label>'+
+													'<input id="label_color_d7e102" name="label[color]" type="radio" value="d7e102">'+
+												  '</label>'+
+												'</li>'+
+												'<li class="labelstyle-02e10c">'+
+												  '<label>'+
+													'<input id="label_color_02e10c" name="label[color]" type="radio" value="02e10c">'+
+												  '</label>'+
+												'</li>'+
+												'<li class="labelstyle-02d7e1 ">'+
+												  '<label>'+
+													'<input id="label_color_02d7e1" name="label[color]" type="radio" value="02d7e1">'+
+												  '</label>'+
+												'</li>'+
+												'<li class="labelstyle-0b02e1 ">'+
+												  '<label>'+
+													'<input id="label_color_0b02e1" name="label[color]" type="radio" value="0b02e1">'+
+												  '</label>'+
+												'</li>'+
+												'<li class="labelstyle-e102d8 ">'+
+												  '<label>'+
+													'<input id="label_color_e102d8" name="label[color]" type="radio" value="e102d8">'+
+												  '</label>'+
+												'</li>'+
+											'</ul>'+
+											
+											'<input style="border-radius:3px;float:right" type="submit" class="submit" value="Done" id="custom_col_save" >'+
+										'</div>';
+							  
+				
+				colorpicker = ( $("#simple_eight_colorpicker").length ) ? $("#simple_eight_colorpicker") : htmlStr;
+		
+				$("body").append(colorpicker);
+				$("#simple_eight_colorpicker").css({'left':evt.pageX, 'top':evt.pageY});
+				$("#simple_eight_colorpicker").slideDown('slow');
+				
+				$("input").click(function() {
+					$('input[type=radio]').not(':checked').parent().parent().removeClass("selected");
+					$(":checked").parent().parent().addClass("selected");
+				});
+				
+				$("#custom_color_link").live('click',function(){
+					$(".custom_color_input").slideToggle();
+				});
+				
+				$("#custom_col_save").live('click',function(){
+					$("#simple_eight_colorpicker").slideUp('slow');
+					returnCallback("#"+$("input[name='label[color]']:checked").val());
+				});	
+				
+				function returnCallback(responseColor) {
+
+					if (typeof callback == 'function') {					
+						callback.call(this,responseColor);
+					}
+					callback = null;
+				}
+		}
+	 });  
+ })(jQuery);
+ 
+/*************************************************************************/

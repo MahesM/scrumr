@@ -92,34 +92,35 @@
 		  	
 		  		<article  class="sty_par_article">
 		  			<div class="sty_header" >
-		  				<input type="checkbox" name="priority" value="Story Priority" />
+		  				<input id="sty_priority_checkbox" type="checkbox" name="priority" value="Story Priority" class="sty_checkbox" />
 		  				<span class="chk_header" >Story Priority</span>
 		  			</div>
-		  			<div class="sty_content" >
+		  			<div class="sty_content" id="sty_content_priority" >
 						<div class="pHolder" >
 							<div class="pOrder" >P1</div>
 							<input class="pInput" placeholder="Type Priority Name" />
 							<div class="pColor"></div>
-							<div class="pAddRem"></div>
+							<div class="pAddRem remPos"></div>
 						</div>
 						<div class="pHolder" >
 							<div class="pOrder" >P2</div>
 							<input class="pInput" placeholder="Type Priority Name" />
 							<div class="pColor"></div>
-							<div class="pAddRem"></div>
+							<div class="pAddRem remPos"></div>
 						</div>
 						<div class="pHolder" >
 							<div class="pOrder" >P3</div>
 							<input class="pInput" placeholder="Type Priority Name"  />
 							<div class="pColor"></div>
-							<div class="pAddRem"></div>
+							<div class="pAddRem addPos"></div>
 						</div>
 		  			</div>
+		  			<div id="disable_overlay" class="" ></div>
 		  		</article>
 		  		
 		  		<article class="sty_par_article">
 		  			<div class="sty_header">
-		  				<input type="checkbox" name="storySize" value="Story Size" />
+		  				<input id="sty_size_checkbox" type="checkbox" name="storySize" value="Story Size"  class="sty_checkbox" />
 		  				<span class="chk_header" >Story Size</span>
 		  			</div>
 		  			<div class="sty_content" >
@@ -130,17 +131,18 @@
 		  				<div>
 			  			 	<label class="radio_header jqslider">Size Range</label>
 							<p>
-								<input type="text" id="amount" style="border:0; color:#000; background:transparent" />
+								<input type="text" id="amount" style="border:0; color:#000; background:transparent;width:100%;text-align:center" />
 							</p>
 			  			 	<div id="slider-range"></div>
 			  			 	<div class="padding5" ><sup>XS</sup><sup style="float:right">XXXL</sup></div>
 		  			    </div>	
 		  			</div>
+		  			<div id="disable_overlay" class="" ></div>
 		  		</article>
 		  		
 		  		<article class="sty_par_article">
 		  			<div class="sty_header">
-		  				<input type="checkbox" name="taskMilestone" value="Task Milestone Unit" />
+		  				<input id="sty_milestone_checkbox" type="checkbox" name="taskMilestone" value="Task Milestone Unit" class="sty_checkbox"  />
 		  				<span class="chk_header" >Task Milestone Unit</span>
 		  			</div>
 		  			<div class="sty_content" >
@@ -151,10 +153,12 @@
 		  			 </div>
 		  			 <div>
 		  			 	<label class="radio_header">Max Value Allowed</label>
-		  			 	<input type="range" min="1" max="40" value="16" class="slider_style" />
+		  			 	<div id="slider"></div>
+		  			 	<!-- input type="range" min="1" max="40" value="16" class="slider_style" / -->
 		  			 	<div class="padding5" ><sup>1</sup><sup style="float:right">40</sup></div>
 		  			 </div>
 		  			</div>
+		  			<div id="disable_overlay" class="" ></div>
 		  		</article>
 		  		
 		  	</section>

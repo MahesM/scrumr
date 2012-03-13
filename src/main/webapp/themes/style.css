@@ -2919,6 +2919,130 @@ ul.col li.pink .header span {
 	
 }
 
+
+/******************* COLOR PICKER ***********************/
+
+ul.color-chooser {
+	margin: 8px 0;
+	height: 22px;
+}
+ul.color-chooser .selected label {
+	background: url('images/color-chooser-check.png') 50% 50% no-repeat;
+}
+ul.color-chooser label {
+	margin: 0;
+	display: block;
+	height: 22px;
+	text-indent: -9999px;
+	cursor: pointer;
+}
+ul.color-chooser li:hover, ul.color-chooser li.selected {
+	opacity: 1.0;
+	filter: alpha(opacity=100);
+	box-shadow: 0 0 5px #2466a7;
+}
+ul.color-chooser li {
+	list-style-type: none;
+	margin: 0 0 0 1px;
+	float: left;
+	width: 26px;
+	height: 22px;
+	opacity: .7;
+	filter: alpha(opacity=70);
+}
+/******************/
+
+
+.labelstyle-02e10c {
+	background: #02E81D;
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#02e81d', endColorstr='#08d901');
+	background: -webkit-gradient(linear, left top, left bottom, from(#02E81D), to(#08D901));
+	background: -moz-linear-gradient(top, #02E81D, #08D901);
+	color: #006605;
+	text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+}
+.labelstyle-444444 {
+	background: #727272;
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#727272', endColorstr='#151313');
+	background: -webkit-gradient(linear, left top, left bottom, from(#727272), to(#151313));
+	background: -moz-linear-gradient(top, #727272, #151313);
+	color: white;
+	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
+}
+.labelstyle-DDDDDD {
+	background: #E5E5E5;
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#e5e5e5', endColorstr='#d4c7c7');
+	background: -webkit-gradient(linear, left top, left bottom, from(#E5E5E5), to(#D4C7C7));
+	background: -moz-linear-gradient(top, #E5E5E5, #D4C7C7);
+	color: #666;
+	text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+}
+.labelstyle-e10c02 {
+	background: #E80C02;
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#e80c02', endColorstr='#d90b01');
+	background: -webkit-gradient(linear, left top, left bottom, from(#E80C02), to(#D90B01));
+	background: -moz-linear-gradient(top, #E80C02, #D90B01);
+	color: white;
+	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
+}
+.labelstyle-d7e102 {
+	background: #D5E802;
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#d5e802', endColorstr='#d8d901');
+	background: -webkit-gradient(linear, left top, left bottom, from(#D5E802), to(#D8D901));
+	background: -moz-linear-gradient(top, #D5E802, #D8D901);
+	color: #616600;
+	text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+}
+.labelstyle-02d7e1 {
+	background: #02C4E8;
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#02c4e8', endColorstr='#01d9ca');
+	background: -webkit-gradient(linear, left top, left bottom, from(#02C4E8), to(#01D9CA));
+	background: -moz-linear-gradient(top, #02C4E8, #01D9CA);
+	color: #006166;
+	text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+}
+.labelstyle-0b02e1 {
+	background: #2D02E8;
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#2d02e8', endColorstr='#0119d9');
+	background: -webkit-gradient(linear, left top, left bottom, from(#2D02E8), to(#0119D9));
+	background: -moz-linear-gradient(top, #2D02E8, #0119D9);
+	color: white;
+	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
+}
+.labelstyle-e102d8 {
+	background: #E802B4;
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#e802b4', endColorstr='#b901d9');
+	background: -webkit-gradient(linear, left top, left bottom, from(#E802B4), to(#B901D9));
+	background: -moz-linear-gradient(top, #E802B4, #B901D9);
+	color: white;
+	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/******************/
+.custom_color_holder{
+	padding: 0px 40px;
+}
+.custom_color_input{
+	width:100px;
+	height:20px;
+	display:none;
+	border-radius: 4px;
+}
+
+/*******************/
+.cust_col_main_holder{
+
+	padding: 10px;
+	position: absolute;
+	background: white;
+	border: 1px solid #C1C1C1;
+	width: 110px;
+	z-index: 21;
+	box-shadow: 0 0 13px rgba(0,0,0,0.31);
+	border-radius: 5px;
+	display:none;
+}
+
 /*******************CUSTOME ALERT- CONFIRM STYLES*************************************************/
 
 	#btncontainer{
@@ -3114,15 +3238,25 @@ ul.col li.pink .header span {
 				display:block;
 			}
 			.radio_holder{
-				font-size: 1.2em;
-				padding: 15px 0px;
+				font-size: 1em;
+				padding: 8px 0px;
 			}
 			.slider_style {
 				padding:10px 0 0 0 ;
 				width:95%;
 			}
+			#slider-range .ui-slider-handle, #slider .ui-slider-handle{
+				border:none;
+				background:#F6F6F6 url(images/slider.png) 50% 50% repeat-x;
+			}
+			#slider-range, #slider {
+				height:1px;
+				margin-top:15px;
+			}
+			
 			.pHolder{
-				padding:5px 0;			}
+				padding:5px 0;	
+			}
 			
 			.pOrder{
 				width: 20px;
@@ -3148,9 +3282,16 @@ ul.col li.pink .header span {
 				width: 19px;
 				height: 19px;
 				background: url(images/sprite.png);
-				background-position: 0px -34px;
+				
 				display: inline-block;
 				vertical-align: bottom;
+			}
+			.remPos{
+				background-position: 0px -34px;
+				margin-left:2px;
+			}
+			.addPos{
+				background-position: 18px -34px;
 			}
 			.jqslider{
 				padding:0 0 10px 0 ;				
@@ -3167,7 +3308,16 @@ ul.col li.pink .header span {
 				text-align:center;
 				opacity:.6;
 			}
-
+			.disabled_overlay {
+				height: 284px;
+				width: 250px; 
+				position: relative;
+				top: -284px;
+				left: 0;
+				opacity: 0.6;
+				background-color: #ccc;
+				z-index:3;
+			}
 /******************** New Design - login.jsp***************/
 
 	/***********Create project***********/
@@ -3335,9 +3485,8 @@ ul.col li.pink .header span {
 #tabs .ui-tabs-nav .ui-tabs-selected { opacity:1 ;background-color:#000;}
 #tabs .ui-tabs-nav li.ui-tabs-selected img{display:block}
 
-/**************************************/
 
-/*** Custom radio and checkbox ****/
+/*****************  Custom radio and checkbox *********************/
 
 /* hide the real form element by opacity: 0 and position: absolute - display: block and visibility: hidden do not work because then form elements cannot get the focus and actually get checked or unchecked */
 .skinned-form-controls input[type="checkbox"],
@@ -3353,6 +3502,7 @@ ul.col li.pink .header span {
 .skinned-form-controls label
 {
 	position: relative;
+	padding:10px 0;
 }
 
 /* fallback for IE6, IE7 and IE8 */
@@ -3378,7 +3528,7 @@ ul.col li.pink .header span {
 
 .skinned-form-controls input[type="checkbox"]:checked + span::before
 {
-	background-position: -18px -17px
+	background-position: -17px -17px;
 }
 
 .skinned-form-controls input[type="radio"] + span::before
@@ -3388,7 +3538,7 @@ ul.col li.pink .header span {
 
 .skinned-form-controls input[type="radio"]:checked + span::before
 {
-	background-position: -18px 1px;
+	background-position: -17px 1px;
 }
 
 /* disabled form elements */
