@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectSummaryReport;
+import com.imaginea.scrumr.entities.Sprint;
+import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.Task;
 import com.imaginea.scrumr.entities.Task.TaskStatus;
 import com.imaginea.scrumr.entities.User;
@@ -108,9 +111,13 @@ public class TaskResource {
         Task task = new Task();
         List<Task> result = new ArrayList<Task>();
         try {
-
+            Story story = storyManager.readStory(Integer.parseInt(storyid));
+            Project project = story.getProject();
+            Sprint sprint = story.getSprint_id();
             User createdBy = userServiceManager.readUser(user);
             task.setContent(content);
+            task.setSprint(sprint);
+            task.setProject(project);
             if (createdBy != null)
                 task.setCreatedByUser(createdBy);
             task.setMilestonePeriod(milestonePeriod);

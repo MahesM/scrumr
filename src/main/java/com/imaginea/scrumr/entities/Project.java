@@ -241,7 +241,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
                     Integer SprintId = sprint.getId();
                     if(sprint!= null && SprintId != null && SprintId.equals(current_sprint)){
                         currentSprint = sprint;
-                        if(story.getStstage().getPkey() == this.maxRankStageId){
+                        if(stage != null && stage.getPkey() == this.maxRankStageId){
                             completedCurrentSprintStoryCount++;
                         }
                         this.currentSprintStoryCount++;                
@@ -257,7 +257,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     }
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="project")
-    @OrderBy("pkey ASC")
+    @OrderBy("rank ASC")
     public Set<ProjectStage> getProjectStages(){
         if(projectStages == null){
             this.projectStages = fetchDefaultProjectStages();
@@ -324,6 +324,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     }
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="project")
+    @OrderBy("rank ASC")
     public Set<ProjectPriority> getProjectPriorities(){
         if(projectPriorities == null){
             this.projectPriorities = fetchDefaultProjectPriorities();

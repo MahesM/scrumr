@@ -45,6 +45,10 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	private int completedTasks;
     private int[] storyCountByStages = new int[5];
     private String[] stageImageUrl = new String[5];
+    private Date projectStartDate;
+    private Date projectEndDate;
+    private String projectStatus;
+    
 	@Column(name = "spid")
 	public Integer getId() {
 		return id;
@@ -57,10 +61,13 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	@ManyToOne
 	@JoinColumn (name="sppid", nullable = false)
 	public Project getProject() {
-		return project;
+		return project;		
 	}
 	public void setProject(Project project) {
-		this.project = project;
+	    this.projectStartDate = project.getStart_date();
+        this.projectEndDate = project.getEnd_date();
+        this.projectStatus = project.getStatus();
+	    this.project = project;
 	}
 
 	@Column(name = "spstart", nullable = true)
@@ -168,5 +175,32 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
     
     public void setStageImageUrl(String[] stageImageUrl) {
         this.stageImageUrl = stageImageUrl;
+    }
+    
+    @Transient
+    public Date getProjectStartDate() {
+        return projectStartDate;
+    }
+    
+    public void setProjectStartDate(Date projectStartDate) {
+        this.projectStartDate = projectStartDate;
+    }
+    
+    @Transient
+    public Date getProjectEndDate() {
+        return projectEndDate;
+    }
+    
+    public void setProjectEndDate(Date projectEndDate) {
+        this.projectEndDate = projectEndDate;
+    }
+    
+    @Transient
+    public String getProjectStatus() {
+        return projectStatus;
+    }
+    
+    public void setProjectStatus(String projectStatus) {
+        this.projectStatus = projectStatus;
     }
 }

@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "story_history")
 @NamedQueries({
-	@NamedQuery(name="storyhistory.fetchStoryStatus", query="SELECT instance from StoryHistory instance where instance.story.id=:storyid and instance.stage=:stage" ),
+	@NamedQuery(name="storyhistory.fetchStoryStatus", query="SELECT instance from StoryHistory instance where instance.story.id=:storyid" ),
 	@NamedQuery(name="storyhistory.fetchUserStoryStatus", query="SELECT instance from StoryHistory instance where instance.user.username =:userid and instance.story.id=:storyid and instance.stage=:stage" ),
 	@NamedQuery(name="storyhistory.clearUsersByStage", query="DELETE from StoryHistory instance where instance.story.id=:storyid and instance.stage=:stage" )
 })

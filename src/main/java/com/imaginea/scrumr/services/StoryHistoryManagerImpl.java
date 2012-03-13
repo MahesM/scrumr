@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.StoryHistory;
 import com.imaginea.scrumr.interfaces.IDao;
 import com.imaginea.scrumr.interfaces.IEntity;
@@ -51,13 +52,12 @@ public class StoryHistoryManagerImpl implements StoryHistoryManager {
         }
     }
 
-    public List<StoryHistory> fetchStoryHistory(Integer storyid, String stage) {
+    public List<StoryHistory> fetchStoryHistory(Integer storyid, ProjectStage stage) {
 
         Hashtable<String, Object> ht = new Hashtable<String, Object>();
         ht.put("storyid", storyid);
-        ht.put("stage", stage);
 
-        return genericDao.getEntities(StoryHistory.class, "storyhistory.fetchStoryStoryHistory", ht);
+        return genericDao.getEntities(StoryHistory.class, "storyhistory.fetchStoryStatus", ht);
     }
 
     public StoryHistory fetchUserStoryHistory(Integer storyid, String stage, String userid) {

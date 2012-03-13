@@ -104,7 +104,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     }
 
     @ManyToOne
-    @JoinColumn(name = "stpriorityid", nullable = false)
+    @JoinColumn(name = "stpriorityid", nullable = true)
     public ProjectPriority getPriority() {
         return priority;
     }
@@ -142,7 +142,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
         this.creator = creator;
     }
 
-    @Column(name = "storypoint", nullable = false)
+    @Column(name = "storypoint", nullable = true)
     public int getStoryPoint() {
         return storyPoint;
     }

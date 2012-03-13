@@ -2,6 +2,7 @@ package com.imaginea.scrumr.interfaces;
 
 import java.util.List;
 
+import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.StoryHistory;
 
 public interface StoryHistoryManager {
@@ -14,7 +15,7 @@ public interface StoryHistoryManager {
 	
 	void deleteStoryHistory(StoryHistory StoryHistory);
 	
-	List<StoryHistory> fetchStoryHistory(Integer storyid, String stage);
+	List<StoryHistory> fetchStoryHistory(Integer storyid, ProjectStage stage);
 	
 	String clearUsersByStage(Integer storyid, String stage);
 	

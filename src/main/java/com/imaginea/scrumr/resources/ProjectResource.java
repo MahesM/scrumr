@@ -155,7 +155,7 @@ public class ProjectResource {
                 userList.add(user);
             }
             if (projectStartDate.after(new Date())) {
-                currentSprint = 0;
+                currentSprint = 1;
                 status = "Not Started";
                 
             } else if(projectEndDate!=null && projectEndDate.before(new Date())){
@@ -252,7 +252,7 @@ public class ProjectResource {
         project.setStart_date(startDate);
         project.setEnd_date(endDate);
         project.setNo_of_sprints(sprint_count);
-        project.setCurrent_sprint(sprint_count);
+        project.setCurrent_sprint(currentSprint);
         project.setStatus(status);
         project.setAssignees(userList);
         project.setSprint_duration(duration);
@@ -347,7 +347,7 @@ public class ProjectResource {
             if (rem > 0) {
                 return count + 1;
             }
-            return count;
+            return count + 1;
         } else {
             return 1;
         }

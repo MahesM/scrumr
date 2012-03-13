@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.StoryHistory;
@@ -279,8 +280,12 @@ public class StoryResource {
     @RequestMapping(value = "/getusers", method = RequestMethod.POST)
     public @ResponseBody
     List<StoryHistory> getUsersFromStory(@RequestParam String storyId, @RequestParam String stage) {
-
-        return storyHistoryManager.fetchStoryHistory(Integer.parseInt(storyId), stage);
+        ProjectStage projectStage;
+        if("undefined".equals(stage))
+            projectStage = null;
+        else
+            projectStage = projectStageManager.readProjectStage(Integer.parseInt(stage));
+        return storyHistoryManager.fetchStoryHistory(Integer.parseInt(storyId), projectStage);
     }
 
     @RequestMapping(value = "/adduserswithstage", method = RequestMethod.POST)
