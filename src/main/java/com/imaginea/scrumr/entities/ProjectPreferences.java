@@ -8,6 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -27,13 +28,13 @@ public class ProjectPreferences extends AbstractEntity implements IEntity, Seria
     private Project project;
     private int storyPointType;
     private int storyPointLimit;
+    private int storySizeLowRangeIndex;
+    private int storySizeHighRangeIndex;
     private int mileStoneType;
     private int mileStoneRange;
     private boolean storypriorityEnabled;
     private boolean storyPointEnabled;
     private boolean taskMileStoneEnabled;
-    private boolean storyPointMandatory;
-    private boolean taskMileStoneMandatory;
     
     @JsonIgnore
     @ManyToOne()
@@ -62,8 +63,26 @@ public class ProjectPreferences extends AbstractEntity implements IEntity, Seria
     
     public void setStoryPointLimit(int storyPointLimit) {
         this.storyPointLimit = storyPointLimit;
+  
+        this.storySizeLowRangeIndex = calculateRangeIndex(storyPointLimit, false);
+        this.storySizeHighRangeIndex = calculateRangeIndex(storyPointLimit, true);
+     
     }
     
+    private int calculateRangeIndex(int storyPointLimit, boolean isUpperLimit) {
+        int index = 0;
+        boolean rangeBitNotSet = (storyPointLimit & 1)!= 1;
+        while(rangeBitNotSet || isUpperLimit){
+            if(!rangeBitNotSet){
+                isUpperLimit = false;
+            }
+            index ++;
+            storyPointLimit = storyPointLimit >> 1;
+            rangeBitNotSet = (storyPointLimit & 1)!= 1;
+        }
+        return index;
+    }
+
     @Column(name = "milestonerange")
     public int getMileStoneRange() {
         return mileStoneRange;
@@ -108,23 +127,24 @@ public class ProjectPreferences extends AbstractEntity implements IEntity, Seria
     public void setTaskMileStoneEnabled(boolean taskMileStoneEnabled) {
         this.taskMileStoneEnabled = taskMileStoneEnabled;
     }
-
-    @Column(name = "storypointmandatory")
-    public boolean isStoryPointMandatory() {
-        return storyPointMandatory;
+    
+    @Transient
+    public int getStorySizeHighRangeIndex() {
+        return storySizeHighRangeIndex;
     }
-
-    public void setStoryPointMandatory(boolean storyPointMandatory) {
-        this.storyPointMandatory = storyPointMandatory;
+    
+    public void setStorySizeHighRangeIndex(int storySizeHighRangeIndex) {
+        this.storySizeHighRangeIndex = storySizeHighRangeIndex;
     }
-
-    @Column(name = "taskmilestonemandatory")
-    public boolean isTaskMileStoneMandatory() {
-        return taskMileStoneMandatory;
+    
+    @Transient
+    public int getStorySizeLowRangeIndex() {
+        return storySizeLowRangeIndex;
     }
-
-    public void setTaskMileStoneMandatory(boolean taskMileStoneMandatory) {
-        this.taskMileStoneMandatory = taskMileStoneMandatory;
+    
+    public void setStorySizeLowRangeIndex(int storySizeLowRangeIndex) {
+        this.storySizeLowRangeIndex = storySizeLowRangeIndex;
     }
+    
 
 }

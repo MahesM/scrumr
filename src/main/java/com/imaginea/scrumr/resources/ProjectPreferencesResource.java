@@ -55,13 +55,10 @@ public class ProjectPreferencesResource {
             projectPreferences.setProject(project);
             
             projectPreferences.setStorypriorityEnabled(Boolean.valueOf(storypriorityEnabled));
-            
-            projectPreferences.setStoryPointMandatory(Boolean.valueOf(storyPointMandatory));
             projectPreferences.setStoryPointType(Integer.parseInt(storyPointType));
             projectPreferences.setStoryPointLimit(Integer.parseInt(storyPointLimit));
             projectPreferences.setStoryPointEnabled(Boolean.valueOf(storySizeEnabled));            
-            
-            projectPreferences.setTaskMileStoneMandatory(Boolean.valueOf(taskMileStoneMandatory));
+
             projectPreferences.setTaskMileStoneEnabled(Boolean.valueOf(taskMileStoneEnabled));
             projectPreferences.setMileStoneType(Integer.parseInt(mileStoneType));
             projectPreferences.setMileStoneRange(Integer.parseInt(mileStoneRange));
@@ -82,29 +79,28 @@ public class ProjectPreferencesResource {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
-    List<ProjectPreferences> updateProjectPreferences(@RequestParam String pKey,@RequestParam String projectId, @RequestParam String storypriorityEnabled,
-                                    @RequestParam String storyPointMandatory, @RequestParam String storyPointType,
-                                    @RequestParam String storyPointLimit,@RequestParam String storySizeEnabled,
-                                    @RequestParam String taskMileStoneMandatory,@RequestParam String taskMileStoneEnabled,
-                                    @RequestParam String mileStoneType,@RequestParam String mileStoneRange)
+    List<ProjectPreferences> updateProjectPreferences(@RequestParam String pPreferenceNo,@RequestParam String projectId, @RequestParam String storypriorityEnabled,
+                                     @RequestParam String storySizeType,
+                                    @RequestParam String storySizeLowRangeIndex,@RequestParam String storySizeHighRangeIndex,
+                                    @RequestParam String storySizeEnabled,
+                                    @RequestParam String taskMileStoneEnabled,
+                                    @RequestParam String taskmileStoneType,@RequestParam String taskmileStoneUpperRange)
 
     {
-        ProjectPreferences projectPreferences = projectPreferencesManager.readProjectPreferences(Integer.parseInt(pKey));
+        ProjectPreferences projectPreferences = projectPreferencesManager.readProjectPreferences(Integer.parseInt(pPreferenceNo));
         List<ProjectPreferences> result = new ArrayList<ProjectPreferences>();
 
         if (projectPreferences != null) {
             try {
                 projectPreferences.setStorypriorityEnabled(Boolean.valueOf(storypriorityEnabled));
-                
-                projectPreferences.setStoryPointMandatory(Boolean.valueOf(storyPointMandatory));
-                projectPreferences.setStoryPointType(Integer.parseInt(storyPointType));
-                projectPreferences.setStoryPointLimit(Integer.parseInt(storyPointLimit));
+                projectPreferences.setStoryPointType(Integer.parseInt(storySizeType));
+                int storyPointLimit = 0 & 1<<Integer.parseInt(storySizeLowRangeIndex) & 1<<Integer.parseInt(storySizeHighRangeIndex);
+                projectPreferences.setStoryPointLimit(storyPointLimit);
                 projectPreferences.setStoryPointEnabled(Boolean.valueOf(storySizeEnabled));            
-                
-                projectPreferences.setTaskMileStoneMandatory(Boolean.valueOf(taskMileStoneMandatory));
+
                 projectPreferences.setTaskMileStoneEnabled(Boolean.valueOf(taskMileStoneEnabled));
-                projectPreferences.setMileStoneType(Integer.parseInt(mileStoneType));
-                projectPreferences.setMileStoneRange(Integer.parseInt(mileStoneRange));
+                projectPreferences.setMileStoneType(Integer.parseInt(taskmileStoneType));
+                projectPreferences.setMileStoneRange(Integer.parseInt(taskmileStoneUpperRange));
                 
                 projectPreferencesManager.updateProjectPreferences(projectPreferences);
             } catch (Exception e) {

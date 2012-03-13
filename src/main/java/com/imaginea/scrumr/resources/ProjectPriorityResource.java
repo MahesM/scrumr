@@ -69,11 +69,11 @@ public class ProjectPriorityResource {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
-    List<ProjectPriority> updateProjectPriority(@RequestParam String pPriorityNo, @RequestParam String description,
-                                    @RequestParam String color,@RequestParam String rank,@RequestParam String pKey)
+    List<ProjectPriority> updateProjectPriority(@RequestParam String projectid,@RequestParam String pPriorityNo, @RequestParam String description,
+                                    @RequestParam String color,@RequestParam String rank)
 
     {
-        ProjectPriority projectPriority = projectPriorityManager.readProjectPriority(Integer.parseInt(pKey));
+        ProjectPriority projectPriority = projectPriorityManager.readProjectPriority(Integer.parseInt(pPriorityNo));
         List<ProjectPriority> result = new ArrayList<ProjectPriority>();
 
         if (projectPriority != null) {
@@ -87,6 +87,13 @@ public class ProjectPriorityResource {
                 return null;
             }
             result.add(projectPriority);
+        }else{
+            projectPriority = new ProjectPriority();
+            projectPriority.setColor(color);
+            projectPriority.setDescription(description);
+            projectPriority.setProject(projectManager.readProject(Integer.parseInt(projectid)));
+            projectPriority.setRank(Integer.parseInt(rank));
+            projectPriorityManager.createProjectPriority(projectPriority);                                            
         }
         return result;
     }
