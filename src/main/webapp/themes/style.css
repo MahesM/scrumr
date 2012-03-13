@@ -109,7 +109,7 @@ body {
     min-width: 1000px;
     margin: 0 auto;
     overflow: hidden;
-    font-family: tahoma, arial, sans-serif;
+    font-family: tahoma, arial, sans-serif !important;
     font-size: 11px;
     line-height: 120%;
     color: #707070;
@@ -3012,9 +3012,9 @@ ul.col li.pink .header span {
 				margin-left: 0%;
 				margin-top: 33px;
 			}
-			.tab_Recent{background: url("icons/recent.png")15px 2px no-repeat;}
-			.tab_All{background: url("icons/all.png")15px 2px no-repeat;}
-			.tab_New{background: url("icons/new.png")15px 2px no-repeat;}
+			.tab_Recent{background: url("imagess/recent.png")15px 2px no-repeat;}
+			.tab_All{background: url("images/all.png")15px 2px no-repeat;}
+			.tab_New{background: url("images/new.png")15px 2px no-repeat;}
 			
 			/***********Create project***********/
 
@@ -3029,7 +3029,7 @@ ul.col li.pink .header span {
 				text-decoration:none;
 				color:#B2B3B5;
 				cursor:pointer;
-				font-size:16px;
+				font-size:15px;
 			}
 			#create_pro_brdcrum .pro_head_anchor_enable{
 				font-size:1em;
@@ -3066,7 +3066,7 @@ ul.col li.pink .header span {
 				height:60px;
 			}
 			.cal {
-				background: url("icons/calender.png") no-repeat scroll 95.5% 50% white !important;
+				background: url("images/calender.png") no-repeat scroll 95.5% 50% white !important;
 				width: 150px;
 			}
 			.selectbox{
@@ -3209,7 +3209,7 @@ ul.col li.pink .header span {
 		margin-left:0px;
 	}
 	.cal {
-		background: url("icons/calender.png") no-repeat scroll 95.5% 50% white !important;
+		background: url("images/calender.png") no-repeat scroll 95.5% 50% white !important;
 		width: 150px;
 	}
 	.selectbox{
@@ -3282,18 +3282,19 @@ ul.col li.pink .header span {
 		margin-left: 0%;
 		margin-top: 32px;
 	}
-	#tabs .tab_Recent{background: url("icons/recent.png")15px 2px no-repeat;}
-	#tabs .tab_All{background: url("icons/all.png")15px 2px no-repeat;}
-	#tabs .tab_New{background: url("icons/new.png")15px 2px no-repeat;}
+	#tabs .tab_Recent{background: url("images/recent.png")15px 2px no-repeat;}
+	#tabs .tab_All{background: url("images/all.png")15px 2px no-repeat;}
+	#tabs .tab_New{background: url("images/new.png")15px 2px no-repeat;}
 	#tabs a {color:#fff;}
 
-#tabs .ui-tabs-nav { margin: 0; padding: 0; display: inline-block; position:absolute ; left: 35%; border-radius:6px;}
+#tabs .ui-tabs-nav { margin: 0; padding: 0; display: inline-block; position:absolute ; left: 35%;}
 #tabs .ui-tabs-nav li { list-style: none; float: left; position: relative; border: 0; padding: 0; white-space: nowrap; border-right: 1px solid #000; width:100px; font-size: 14px;margin:0;top 0;opacity:.7 }
 #tabs .ui-tabs-nav li a { float: left; padding:0.5em 0 0.5em 3.4em; text-decoration: none; width: 0%;}
 #tabs .ui-tabs-panel { display: block; border-width: 0; padding:  6em 18em; background:url("../themes/images/pattern.png") repeat scroll 0 0 #434343;float:left;height: 800px;}
 #tabs .ui-widget-header { border: 1px solid #4B4B4B; background: #36383A ; color: #ffffff;}
 #tabs .ui-tabs-nav .ui-tabs-selected { opacity:1 ;background-color:#000;}
 #tabs .ui-tabs-nav li.ui-tabs-selected img{display:block}
+
 /**************************************/
 
 /*** Custom radio and checkbox ****/
