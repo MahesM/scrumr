@@ -21,8 +21,6 @@
     <script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/jquery.jcarousel.js"></script>
     <script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/ejs_production.js"></script>
     <script type="text/javascript" src="<%= request.getContextPath() %>/themes/javascript/common-functions.js"></script>
-    <script type="text/javascript" src="<%= request.getContextPath() %>/js/loginpage.js"></script>
-    <script type="text/javascript" src="<%= request.getContextPath() %>/js/commons.js"></script>
 	<script type="text/javascript" >
 		var userLogged = '<s:property value="loggedInUser.username"/>';
 		var fullname = '<s:property value="loggedInUser.fullname"/>';
@@ -34,6 +32,8 @@
 		
 		
 	</script>
+    <script type="text/javascript" src="<%= request.getContextPath() %>/js/loginpage.js"></script>
+    <script type="text/javascript" src="<%= request.getContextPath() %>/js/commons.js"></script>
 </head>
 	<body>
 
