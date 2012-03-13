@@ -444,7 +444,7 @@ input.submit {
 
 .left_tab .left_pane{
 	height:100%;
-	width:25px;
+	width:7%;
 	float:left;
 }
 
@@ -465,7 +465,7 @@ input.submit {
 .left_tab .tab{
 	float:left;
 	height:100%;
-	width:170px;
+	width:46%;
 }
 
 .left_tab .tab label{
@@ -3215,6 +3215,46 @@ ul.col li.pink .header span {
 	.selectbox{
 		width: 164px;
 	}
+	
+	
+/********************* Create project -- stage customization *****************/
+
+.stage_container{
+	/* background:#D8D6D7;
+	border:1px solid white;
+	border-radius:4px; */
+	padding:10px;
+	height:150px;
+	width:150px;
+	
+}
+
+.stage_highlight{
+	float:left;
+	padding:10px;
+	height:150px;
+	width:150px;
+	 background:#D8D6D7;
+	border:1px solid white;
+	border-radius:4px;
+	list-style:none;
+	margin-right:25px;
+}
+
+.pro_stage_title{
+	margin:10px;
+	font-weight:bold;
+	font-size:16px;
+}
+
+.pro_stage_desc{
+	margin:10px;
+	font-size:13px;
+}
+
+.pro_stage_image{
+	margin:10px;
+}
 
 	
 /******************All Projects - allProjects.jsp****************************/

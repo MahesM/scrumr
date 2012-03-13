@@ -35,7 +35,7 @@ $(document).ready(function() {
             			if(project != null && project.length > 0){
             				project = project[0];
             				projectStatus = project.status;
-            				projectLanes = project.projectLanes;
+            				projectLanes = project.projectStages;
             				projectPriorities = project.projectPriorities;
             				current_sprint = project.current_sprint > 0?project.current_sprint:1;
             				sprintinview = current_sprint;
@@ -192,15 +192,15 @@ $(document).ready(function() {
 		        		success: function( sprints ) {
 		        			if(sprints.length > 0){
 		        				var duration = '';
-								if(sprints[0].project.start_date != null){
-									var startdate = new Date(sprints[0].project.start_date);
+								if(sprints[0].projectStartDate != null){
+									var startdate = new Date(sprints[0].projectStartDate);
 									startdate = startdate.format("mmm dd");
 									duration += startdate;
 								}else{
 									duration += 'No Start Date';
 								}
-								if(sprints[0].project.end_date != null){
-									var enddate = new Date(sprints[0].project.end_date);
+								if(sprints[0].projectEndDate != null){
+									var enddate = new Date(sprints[0].projectEndDate);
 									enddate = enddate.format("mmm dd");
 									duration += '&nbsp;&nbsp;-&nbsp;&nbsp;'+ enddate;
 								}else{
@@ -218,7 +218,7 @@ $(document).ready(function() {
 					        		}
 								});
 								var sprintTitle = '<b>Sprint '+current_sprint+' </b>';
-								var sprint_html = "<div class=\"sprintInfoBand\" >"+duration+"&nbsp;&nbsp; | "+sprintTitle+"  "+sprints[0].project.status+"&nbsp;&nbsp;| <a href=\"javascript:void(0);\" class=\"new_sprint\" >Add New Sprint</a><div class=\"pageCtrls\" style=\"float:right;height:30px;\"></div></div>";
+								var sprint_html = "<div class=\"sprintInfoBand\" >"+duration+"&nbsp;&nbsp; | "+sprintTitle+"  "+sprints[0].projectStatus+"&nbsp;&nbsp;| <a href=\"javascript:void(0);\" class=\"new_sprint\" >Add New Sprint</a><div class=\"pageCtrls\" style=\"float:right;height:30px;\"></div></div>";
 								var finished = 0;
 				        		sprint_html += '<ul id="project_holder" class="col"><div class="holder_round">';
 			        			//$("ul.col li").css("width",100/sprints.length+'%');
@@ -307,7 +307,6 @@ $(document).ready(function() {
 			        			setTimeout(function(){
 			        				constructPagination($('.col:visible'),perPage,current_page);
 			        			},1);
-			        			//$( ".stages " ).jScrollPane({});
 			        			$( ".stages ul" ).sortable({
 		        	        		connectWith: ".story",
 		        	        		items:'li',

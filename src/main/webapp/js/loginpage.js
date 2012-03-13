@@ -217,4 +217,24 @@ $(document).ready(function(){
 						}
 					}); 
 	 /***********************************************/
+	 
+	function mycarousel_initCallback(){
+		$('.jcarousel-container-horizontal').append("<div>Click to edit properties or drag to rearrange | <a id='new_stage' style='color:blue;' href='javascript:void(0);'>Introduce new stage</a></div>");
+	} 
+	 
+	  $('#stageCarousel').jcarousel({
+		 scroll:1,
+		 initCallback: mycarousel_initCallback,
+	  });
+	  
+	  $('#stageCarousel').sortable({
+		items:'li',
+		cursor:'move',
+		//helper:'clone',
+		//appendTo: 'body',
+		forcePlaceholderSize: true,
+		placeholder: 'stage_highlight',
+		update: function( event, ui ) {
+		}
+	  });
 });
