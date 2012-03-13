@@ -45,6 +45,10 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	private int completedTasks;
     private int[] storyCountByStages = new int[5];
     private String[] stageImageUrl = new String[5];
+    private Date projectStartDate;
+    private Date projectEndDate;
+    private String projectStatus;
+    
 	@Column(name = "spid")
 	public Integer getId() {
 		return id;
@@ -57,7 +61,10 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	@ManyToOne
 	@JoinColumn (name="sppid", nullable = false)
 	public Project getProject() {
-		return project;
+	    this.projectStartDate = project.getStart_date();
+        this.projectEndDate = project.getEnd_date();
+        this.projectStatus = project.getStatus();
+		return project;		
 	}
 	public void setProject(Project project) {
 		this.project = project;
@@ -86,16 +93,18 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
     
     public void setStoryList(Set<Story> storyList) {
         this.storyList = storyList;
-        for(Story story:storyList){
-            ProjectStage stage = story.getStstage();
-            if(stage != null){
-                int rank = stage.getRank();
-                int currentCount = this.storyCountByStages[rank];
-                currentCount++;
-                this.storyCountByStages[rank] = currentCount;
-                this.stageImageUrl[rank] = stage.getUrl();
-            }
-                     
+        if(this.storyList != null){
+            for(Story story:storyList){
+                ProjectStage stage = story.getStstage();
+                if(stage != null){
+                    int rank = stage.getRank();
+                    int currentCount = this.storyCountByStages[rank];
+                    currentCount++;
+                    this.storyCountByStages[rank] = currentCount;
+                    this.stageImageUrl[rank] = stage.getUrl();
+                }
+                         
+            } 
         }
     }
 
@@ -166,5 +175,32 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
     
     public void setStageImageUrl(String[] stageImageUrl) {
         this.stageImageUrl = stageImageUrl;
+    }
+    
+    @Transient
+    public Date getProjectStartDate() {
+        return projectStartDate;
+    }
+    
+    public void setProjectStartDate(Date projectStartDate) {
+        this.projectStartDate = projectStartDate;
+    }
+    
+    @Transient
+    public Date getProjectEndDate() {
+        return projectEndDate;
+    }
+    
+    public void setProjectEndDate(Date projectEndDate) {
+        this.projectEndDate = projectEndDate;
+    }
+    
+    @Transient
+    public String getProjectStatus() {
+        return projectStatus;
+    }
+    
+    public void setProjectStatus(String projectStatus) {
+        this.projectStatus = projectStatus;
     }
 }
