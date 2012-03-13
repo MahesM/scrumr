@@ -86,16 +86,18 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
     
     public void setStoryList(Set<Story> storyList) {
         this.storyList = storyList;
-        for(Story story:storyList){
-            ProjectStage stage = story.getStstage();
-            if(stage != null){
-                int rank = stage.getRank();
-                int currentCount = this.storyCountByStages[rank];
-                currentCount++;
-                this.storyCountByStages[rank] = currentCount;
-                this.stageImageUrl[rank] = stage.getUrl();
-            }
-                     
+        if(this.storyList != null){
+            for(Story story:storyList){
+                ProjectStage stage = story.getStstage();
+                if(stage != null){
+                    int rank = stage.getRank();
+                    int currentCount = this.storyCountByStages[rank];
+                    currentCount++;
+                    this.storyCountByStages[rank] = currentCount;
+                    this.stageImageUrl[rank] = stage.getUrl();
+                }
+                         
+            } 
         }
     }
 

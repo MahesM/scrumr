@@ -114,7 +114,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     }
 
     @ManyToOne
-    @JoinColumn(name = "stsprint", nullable = false)
+    @JoinColumn(name = "stsprint", nullable = true)
     public Sprint getSprint_id() {
         return sprint_id;
     }
@@ -170,7 +170,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     }
 
     @ManyToOne
-    @JoinColumn(name = "ststageid", nullable = false)
+    @JoinColumn(name = "ststageid", nullable = true)
     public ProjectStage getStstage() {
         return ststage;
     }
