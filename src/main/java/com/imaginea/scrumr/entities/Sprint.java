@@ -44,7 +44,7 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	private int taskCount;
 	private int completedTasks;
     private int[] storyCountByStages = new int[5];
-    private String[] stageImageUrl = new String[5];
+    private int[] stageImageUrl = new int[5];
     private Date projectStartDate;
     private Date projectEndDate;
     private String projectStatus;
@@ -101,7 +101,7 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
                     int currentCount = this.storyCountByStages[rank];
                     currentCount++;
                     this.storyCountByStages[rank] = currentCount;
-                    this.stageImageUrl[rank] = stage.getUrl();
+                    this.stageImageUrl[rank] = stage.getImageUrlIndex();
                 }
                          
             } 
@@ -169,11 +169,11 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
     }
     
     @Transient
-    public String[] getStageImageUrl() {
+    public int[] getStageImageUrl() {
         return stageImageUrl;
     }
     
-    public void setStageImageUrl(String[] stageImageUrl) {
+    public void setStageImageUrl(int[] stageImageUrl) {
         this.stageImageUrl = stageImageUrl;
     }
     

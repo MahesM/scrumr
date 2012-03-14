@@ -20,39 +20,39 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @Table(name = "project_stage")
 @NamedQueries({
     @NamedQuery(name = "projectstages.fetchAllProjectStagesByProjectId", query = "SELECT instance from ProjectStage instance where instance.project.id=:projectid"),
-    @NamedQuery(name = "projectstages.fetchMaxRankByProjectId", query = "SELECT max(instance.rank) from ProjectStage instance where instance.project.id=:projectid")})
+    @NamedQuery(name = "projectstages.fetchMaxRankStageIDByProjectId", query = "SELECT max(instance.rank), instance from ProjectStage instance where instance.project.id=:projectid")})
 @XmlRootElement
 public class ProjectStage extends AbstractEntity implements IEntity, Serializable {
     private String description;
     private Project project;
     private int rank;
-    private String url;
+    private int imageUrlIndex;
     private String title;
     
 
     public static enum DefaultProjectStages {
-        STAGE_1 ("BackLog","BackLog", 0,1,"url"),
-        STAGE_2 ("Development","Development", 1,2,"url"),
-        STAGE_3 ("QA","QA", 2, 3,"url"),
-        STAGE_4 ("Completed","Completed", 3, 4,"url");
+        STAGE_1 ("BackLog","BackLog", 0,1,0),
+        STAGE_2 ("Development","Development", 1,2,1),
+        STAGE_3 ("QA","QA", 2, 3,2),
+        STAGE_4 ("Completed","Completed", 3, 4,3);
 
         private final String description;
         private final int rank;
         private final int pKey;
         private final String title;
-        private String url;
+        private int imageUrlIndex;
         
-        DefaultProjectStages(String title, String description,int rank, int pKey, String url) {
+        DefaultProjectStages(String title, String description,int rank, int pKey, int imageUrlIndex) {
             this.description = description;
             this.rank = rank;
             this.pKey = pKey;
-            this.url = url;
+            this.imageUrlIndex = imageUrlIndex;
             this.title = title;
         }
         public String getDescription() { return description; }
         public int getRank() { return rank; }
         public int getPKey() { return pKey; }
-        public String getUrl() { return url; }
+        public int getImageUrlIndex() { return imageUrlIndex; }
         public String getTitle() { return title; }
     }
 
@@ -94,12 +94,13 @@ public class ProjectStage extends AbstractEntity implements IEntity, Serializabl
         this.project = project;
     }
     
-    public String getUrl() {
-        return url;
+    @Column(name = "imageurlindex")
+    public int getImageUrlIndex() {
+        return imageUrlIndex;
     }
     
-    public void setUrl(String url) {
-        this.url = url;
+    public void setImageUrlIndex(int imageUrlIndex) {
+        this.imageUrlIndex = imageUrlIndex;
     }
 
 }
