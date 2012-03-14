@@ -173,12 +173,12 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         projectPreferences.setStorypriorityEnabled(true);
 
         projectPreferences.setStoryPointType(0);
-        projectPreferences.setStoryPointLimit(5);
+        projectPreferences.setStoryPointLimit(18);
         projectPreferences.setStoryPointEnabled(true);            
 
         projectPreferences.setTaskMileStoneEnabled(true);
         projectPreferences.setMileStoneType(0);
-        projectPreferences.setMileStoneRange(5); 
+        projectPreferences.setMileStoneRange(40); 
 
         this.projectPreferences = projectPreferences;
     }
@@ -252,7 +252,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
                 this.currentSprintTaskCount = currentSprint.getTaskCount();
                 this.completedCurrentSprintTaskCount = currentSprint.getCompletedTasks();
             }                            
-        }      
+        }	   
     }
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="project")
@@ -310,29 +310,29 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     }
     
     @Transient
-    public int getCurrentSprintTaskCount() {
+	public int getCurrentSprintTaskCount() {
         return currentSprintTaskCount;
     }
 
-    public void setCurrentSprintTaskCount(int currentSprintTaskCount) {
+	public void setCurrentSprintTaskCount(int currentSprintTaskCount) {
         this.currentSprintTaskCount = currentSprintTaskCount;
     }
 
-    @Transient
-    public int getProjectStoryCount() {
+	@Transient
+	public int getProjectStoryCount() {
         return projectStoryCount;
     }
 
-    public void setProjectStoryCount(int projectStoryCount) {
+	public void setProjectStoryCount(int projectStoryCount) {
         this.projectStoryCount = projectStoryCount;
     }
 
-    @Transient
-    public int getCurrentSprintStoryCount(){
-        return currentSprintStoryCount;
-    }
+	@Transient
+	public int getCurrentSprintStoryCount(){
+	    return currentSprintStoryCount;
+	}
 
-    public void setCurrentSprintStoryCount(int currentSprintStoryCount) {
+	public void setCurrentSprintStoryCount(int currentSprintStoryCount) {
         this.currentSprintStoryCount = currentSprintStoryCount;
     }
 
@@ -349,7 +349,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     public void setProjectPriorities(Set<ProjectPriority> projectPriorities){
         if(projectPriorities != null){
             this.projectPriorities = projectPriorities;
-        }          
+        }	       
     }
 
     private Set<ProjectStage> fetchDefaultProjectStages() {
