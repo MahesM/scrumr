@@ -24,7 +24,10 @@
 				   <option value="4">4 Week</option>
 				   <option value="5">5 Week</option>
 			   </select>
-			   <input style="float:right;border-radius:3px;" type="submit" class="submit" value="Next >>" id="nxt_pjt_details" >
+			    <div style="float:right;margin-top: 30px;">
+			   		<span  class="prv_link" id="create_pjt" >Launch Project ></span>
+			   		<input style="border-radius:3px;" type="submit" class="submit" value="Create and continue >>" id="nxt_pjt_details" >
+			   </div>
 		  </div>
 		  
 		  <div id="pjt_stages" style="display:none" >
@@ -80,8 +83,12 @@
 		  		 	<!-- </div> -->
 		  		 </div>
 		  		 <div class="nxt_prv_holder" >
-			  		<span  class="prv_link" id="pjt_stages_prv" ><< Previous</span>
-			  		<input style="border-radius:3px;" type="submit" class="submit" value="Next >>" id="nxt_pjt_stages" >
+		  		 	<span style="float:right">
+			  			<!--  span  class="prv_link" id="pjt_stages_prv" ><< Previous</span>  -->
+			  			<input style="border-radius:3px;margin-top:0px" type="submit" class="submit" value="Continue >>" id="nxt_pjt_stages" >
+			  			<span  class="prv_link" id="lan_pro" >Launch Project ></span>
+			  		</span>
+			  		<span class="prv_link" id="delete_pro">Delete Project</span>
 			  	 </div>
 		  </div>
 		  
@@ -92,80 +99,78 @@
 		  	
 		  		<article  class="sty_par_article">
 		  			<div class="sty_header" >
-		  				<input id="sty_priority_checkbox" type="checkbox" name="priority" value="Story Priority" class="sty_checkbox" />
+		  				<input id="sty_priority_checkbox" type="checkbox" name="priority" value="Story Priority" checked="checked" class="sty_checkbox" />
 		  				<span class="chk_header" >Story Priority</span>
 		  			</div>
 		  			<div class="sty_content" id="sty_content_priority" >
 						<div class="pHolder" >
-							<div class="pOrder" >P1</div>
 							<input class="pInput" placeholder="Type Priority Name" />
 							<div class="pColor"></div>
 							<div class="pAddRem remPos"></div>
 						</div>
 						<div class="pHolder" >
-							<div class="pOrder" >P2</div>
 							<input class="pInput" placeholder="Type Priority Name" />
 							<div class="pColor"></div>
 							<div class="pAddRem remPos"></div>
 						</div>
 						<div class="pHolder" >
-							<div class="pOrder" >P3</div>
 							<input class="pInput" placeholder="Type Priority Name"  />
 							<div class="pColor"></div>
 							<div class="pAddRem addPos"></div>
 						</div>
 		  			</div>
-		  			<div id="disable_overlay" class="" ></div>
+		  			<div id="disable_overlay" class="" style="display:none"><div class="disable_notify" >Select checkbox to add</br><span style="font-weight:bold;padding:5px">Story Priority</span>as Parameter</div></div>
 		  		</article>
 		  		
 		  		<article class="sty_par_article">
 		  			<div class="sty_header">
-		  				<input id="sty_size_checkbox" type="checkbox" name="storySize" value="Story Size"  class="sty_checkbox" />
 		  				<span class="chk_header" >Story Size</span>
 		  			</div>
 		  			<div class="sty_content" >
 		  				<label class="radio_header" >Size In</label>
-		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="male" /><span>1,2,4,8,16,32</span></div>
-		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="male" /><span>1,2,3,5,8,13,21,34,45</span></div>
-		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="male" /><span>XS, S, M, L, XL, XXL, XXXL</span></div>
+		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="pow_2" checked="checked"  /><span>1,2,4,8,16,32</span></div>
+		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="fib_Ser" /><span>1,2,3,5,8,13,21,34,45</span></div>
+		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="rom_char" /><span>XS, S, M, L, XL, XXL, XXXL</span></div>
 		  				<div>
 			  			 	<label class="radio_header jqslider">Size Range</label>
 							<p>
 								<input type="text" id="amount" style="border:0; color:#000; background:transparent;width:100%;text-align:center" />
 							</p>
 			  			 	<div id="slider-range"></div>
-			  			 	<div class="padding5" ><sup>XS</sup><sup style="float:right">XXXL</sup></div>
+			  			 	<div class="padding5" id="sty_size_indicator" ><sup>XS</sup><sup style="float:right">XXXL</sup></div>
 		  			    </div>	
 		  			</div>
-		  			<div id="disable_overlay" class="" ></div>
 		  		</article>
 		  		
 		  		<article class="sty_par_article">
 		  			<div class="sty_header">
-		  				<input id="sty_milestone_checkbox" type="checkbox" name="taskMilestone" value="Task Milestone Unit" class="sty_checkbox"  />
 		  				<span class="chk_header" >Task Milestone Unit</span>
 		  			</div>
 		  			<div class="sty_content" >
 		  			 <div>
 		  				<label class="radio_header">Unit</label>
-		  				<div class="radio_holder" ><input type="radio" name="sty_unit_radio" value="male" /><span>Hours</span></div>
-		  				<div class="radio_holder" ><input type="radio" name="sty_unit_radio" value="male" /><span>Days</span></div>
+		  				<div class="radio_holder" ><input type="radio" name="sty_unit_radio" value="hours"  checked="checked" /><span>Hours</span></div>
+		  				<div class="radio_holder" ><input type="radio" name="sty_unit_radio" value="days" /><span>Days</span></div>
 		  			 </div>
 		  			 <div>
 		  			 	<label class="radio_header">Max Value Allowed</label>
+		  			 		<p>
+								<input type="text" id="sty_milestone_ran_lbl" value="1" style="border:0; color:#000; background:transparent;width:100%;text-align:center" />
+							</p>
 		  			 	<div id="slider"></div>
-		  			 	<!-- input type="range" min="1" max="40" value="16" class="slider_style" / -->
-		  			 	<div class="padding5" ><sup>1</sup><sup style="float:right">40</sup></div>
+		  			 	<div class="padding5" id="sty_unit_indicator" ><sup>1</sup><sup style="float:right">40</sup></div>
 		  			 </div>
 		  			</div>
-		  			<div id="disable_overlay" class="" ></div>
 		  		</article>
 		  		
 		  	</section>
 	
-		  	 <div class="nxt_prv_holder" >
-		  		<span  class="prv_link" id="story_prv" ><< Previous</span>
-		  		<input style="border-radius:3px;" type="submit" class="submit" value="Launch Project >>" id="create_pjt" >
+			<div class="nxt_prv_holder">
+				<span style="float: right;">
+		  			<span class="prv_link" id="story_prv">&lt;&lt; Previous</span>
+		  			<input style="border-radius:3px;" type="submit" class="submit" value="Launch Project &gt;&gt;"  id="lan_pro" >
+		  	 	</span>
+		  	 	<span class="prv_link" id="delete_pro">Delete Project</span>
 		  	 </div>
 		  </div>
 	   <label id="proj-error" class="error-msg"></label>

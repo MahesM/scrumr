@@ -3197,7 +3197,9 @@ ul.color-chooser li {
 				width: 164px;
 			}
 			.nxt_prv_holder{
-				float:right;
+				width: 100%;
+				float: left;
+				padding-top: 30px;
 			}
 			.prv_link{
 				color:#0886C6;
@@ -3205,7 +3207,7 @@ ul.color-chooser li {
 				vertical-align:middle;
 				cursor:pointer;
 			}
-			/** Story parameter***/
+/********************* Story parameter***/
 			
 			.sty_par_article {
 				display:inline-block;
@@ -3258,14 +3260,11 @@ ul.color-chooser li {
 				padding:5px 0;	
 			}
 			
-			.pOrder{
-				width: 20px;
-				display: inline-block;
-			}
 			.pInput{
 				border-radius: 4px;
 				height: 12px;
 				padding: 4px;
+				width: 70%;
 			}
 			.pColor{
 				width: 25px;
@@ -3277,12 +3276,13 @@ ul.color-chooser li {
 				-moz-box-shadow: 1px 1px 3px 0px #333;
 			    -webkit-box-shadow: 1px 1px 3px 0px #333;
 			    box-shadow: 1px 1px 3px 0px #333;
+			    cursor:pointer;
 			}
 			.pAddRem{
 				width: 19px;
 				height: 19px;
 				background: url(images/sprite.png);
-				
+				cursor:pointer;
 				display: inline-block;
 				vertical-align: bottom;
 			}
@@ -3309,14 +3309,22 @@ ul.color-chooser li {
 				opacity:.6;
 			}
 			.disabled_overlay {
-				height: 284px;
-				width: 250px; 
+				height: 280px;
+				width: 247px;
 				position: relative;
-				top: -284px;
-				left: 0;
-				opacity: 0.6;
-				background-color: #ccc;
-				z-index:3;
+				top: -282px;
+				left: 1px;
+				opacity: 1;
+				background-color: #CCC;
+				z-index: 3;
+				color: #0886C6;
+				display:block !important;
+			}
+			.disable_notify{
+				padding: 35% 5%;
+				text-align: center;
+				font-size: 13px;
+				line-height: 20px;
 			}
 /******************** New Design - login.jsp***************/
 

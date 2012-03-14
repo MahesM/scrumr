@@ -2,6 +2,7 @@
 
 var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+var new_proj_response;
 
 $(document).ready(function(){
 	
@@ -9,22 +10,10 @@ $(document).ready(function(){
 	$('#tabs').tabs();
 	
 	// For Slider
-	$( "#slider-range" ).slider({
-		range: true,
-		min: 0,
-		max: 500,
-		values: [ 75, 300 ],
-		slide: function( event, ui ) {
-			$( "#amount" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
-		}
-	});
-	$( "#amount" ).val(  $( "#slider-range" ).slider( "values", 0 ) +
-		" - " + $( "#slider-range" ).slider( "values", 1 ) );
-	
-	$( "#slider" ).slider();
-	//$( "#slider" ).slider({ range: 'min' });
-	//$( ".selector" ).slider( "option", "range", 'min' );
-	
+	createSlider_sty_size("pow_2");
+	createSlider_sty_unit("hours");
+
+
 	// To get list of all Projects
 	//$('#tab_All').unbind('click').live("click",function(){
 		$.ajax({
@@ -93,7 +82,11 @@ $(document).ready(function(){
 	$("#new_pjt").addClass("pro_head_anchor_enable");
 	
 	/* on click of next button */
-	$('#nxt_pjt_details, #pjt_stag').live('click',function(){
+	$('#pjt_stag').unbind("click").live('click',function(){
+		if(! new_proj_response ) {
+			return false;
+		}
+		$('#proj-error').hide();
 		$("#pjt_create_details, #story_parms").hide();
 		$("#pjt_stages").show();
 		
@@ -102,7 +95,10 @@ $(document).ready(function(){
 		
 	});
 	
-	$('#nxt_pjt_stages, #sty_parm').live('click',function(){
+	$('#nxt_pjt_stages, #sty_parm').unbind('click').live('click',function(){
+		if(! new_proj_response ) {
+			return false;
+		}
 		$("#pjt_create_details , #pjt_stages").hide();
 		$("#story_parms").show();
 		
@@ -112,7 +108,7 @@ $(document).ready(function(){
 	});
 	
 	/* on click of previous button */
-	$('#pjt_stages_prv, #new_pjt').live('click',function(){
+	$('#pjt_stages_prv').unbind("click").live('click',function(){
 		$("#pjt_create_details").show();
 		$("#pjt_stages, #story_parms").hide();
 		
@@ -121,7 +117,7 @@ $(document).ready(function(){
 		
 	});	
 	
-	$('#story_prv').live('click',function(){
+	$('#story_prv').unbind("click").live('click',function(){
 		$("#pjt_create_details, #story_parms").hide();
 		$("#pjt_stages").show();
 		
@@ -130,8 +126,20 @@ $(document).ready(function(){
 		
 	});
 	
-	
-	function createProject(update){
+	$('#nxt_pjt_details').unbind('click').live('click',function(){
+		
+		$('#proj-error').hide();
+		$("#pjt_create_details, #story_parms").hide();
+		$("#pjt_stages").show();
+		
+		$("#new_pjt, #sty_parm").removeClass("pro_head_anchor_enable");
+		$("#pjt_stag").addClass("pro_head_anchor_enable");
+		
+		createProject(false,true);
+		
+	});
+
+	function createProject(update,nxtProcess){
 
 		var title = $('input[name=pTitle]');
 		var description = $('textarea[name=pDescription]');
@@ -172,7 +180,8 @@ $(document).ready(function(){
 								data: post_data,
 								async:false,
 								success: function( records ) {
-									if(records[0].pkey){
+									new_proj_response = records;
+									if(records[0].pkey && !nxtProcess){
 										window.location.href = 'sprint.action?&visit=1&projectId='+records[0].pkey;
 									}
 								},
@@ -228,7 +237,7 @@ $(document).ready(function(){
 	 
 	  $('#stageCarousel').jcarousel({
 		 scroll:1,
-		 initCallback: mycarousel_initCallback,
+		 initCallback: mycarousel_initCallback
 	  });
 	  
 	  $('#stageCarousel').sortable({
@@ -269,7 +278,102 @@ $(document).ready(function(){
 	  		$(this).parent().remove();
 	  	});
 	  	
-	  	$(".sty_checkbox").unbind('click').live("click", function(){
-	  		$(this).parent().parent().find("#disable_overlay").toggleClass("disabled_overlay");
+	  	$('input[name="priority"]').change(function() {
+	  			$(this).parent().parent().find("#disable_overlay").toggleClass("disabled_overlay");
 	  	});
+	  	
+	  	$('input[name="sty_unit_radio"]').live('click', function() {
+	  	    var valu = $(this).val();
+	  	    createSlider_sty_unit(valu);
+	  	   // $("#selectedSlot").val(valu);
+	  	});
+	  	$('input[name="sty_size_radio"]').live('click', function() {
+	  	    var valu = $(this).val();
+	  	    createSlider_sty_size(valu);
+	  	    
+	  	});
+	  	
+	  	
+	  	function createSlider_sty_unit(value){
+	  		var sizes;
+	  		if( value == "hours" ){
+	  			 sizes = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40"];
+  	  			 $($("#sty_unit_indicator").find('sup')[1]).html('40');
+
+	  		} else {
+	  			 sizes = ["1","2","3","4","5"];
+	  			 $($("#sty_unit_indicator").find('sup')[1]).html('5');
+	  		}
+
+	  		 $("#sty_milestone_ran_lbl").val("");
+	  		 
+	  		$("#slider").slider({
+	  		  min: 0,
+	  		  max: sizes.length - 1,
+	  		  step: 1,
+	  		  range:'min',
+	  		  slide: function(event, ui) {
+	  		    $("#sty_milestone_ran_lbl").val(sizes[ui.value]);
+	  		  }
+	  		});
+	  	}
+	  	
+	  	function createSlider_sty_size(value){
+	  		var sizes;
+	  		if( value == "pow_2" ){
+	  			 sizes = ["1","2","4","8","16","32"];
+	  			 $($("#sty_size_indicator").find('sup')[0]).html('1');
+  	  			 $($("#sty_size_indicator").find('sup')[1]).html('32');
+
+	  		} else if( value == "fib_Ser" ) {
+	  			 sizes = ["1","2","3","5","8","13","21","34","45"];
+	  			 $($("#sty_size_indicator").find('sup')[0]).html('1');
+	  			 $($("#sty_size_indicator").find('sup')[1]).html('45');
+	  		} else {
+	  			 sizes = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+	  			 $($("#sty_size_indicator").find('sup')[1]).html('XXXL');
+	  			 $($("#sty_size_indicator").find('sup')[0]).html('XS');
+	  		}
+
+	  		 $("#amount").val("");
+	  		 
+	  		$( "#slider-range" ).slider({
+	  			range: true,
+	  			min: 0,
+	  			max: sizes.length - 1,
+	  			step: 1,
+	  			values: [ sizes.length-6,sizes.length-2 ],
+	  			slide: function( event, ui ) {
+	  				$( "#amount" ).val( sizes[ui.values[ 0 ]] + " - " + sizes[ui.values[ 1 ]]);
+	  			}
+	  		});
+	  	}
+	  	
+	  	/************** Create / Launch project ************************/
+	  	
+	  	$("#lan_pro").unbind("click").live('click',function(){
+	  			window.location.href = 'sprint.action?&visit=1&projectId='+new_proj_response[0].pkey;
+	  	});
+		
+		
+	  	$("#delete_pro").unbind('click').live('click',function(){
+	  		customAlert( { message: {'text':'Do you want to remove this Project?'} }, callbackForDeleteProject, $(this) );
+	  	});
+
+		function callbackForDeleteProject(handerResponse, curEle){
+			if(handerResponse){
+				var id = new_proj_response[0].pkey;
+				$.ajax({
+					url: 'api/v1/projects/delete/'+id,
+					type: 'GET',
+					async:false,
+					success: function( obj ) {
+						obj = $.parseJSON(obj);
+						if(obj && obj.result == "success"){
+							 populateProjects();
+						}
+					}
+				});			
+			}
+		}
 });
