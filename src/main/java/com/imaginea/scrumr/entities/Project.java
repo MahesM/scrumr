@@ -1,7 +1,11 @@
 package com.imaginea.scrumr.entities;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -48,7 +52,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     private String last_updatedby;
     private Set<Sprint> sprints;
     private Set<Story> stories;
-    private Set<ProjectStage> projectStages;
+    private List<ProjectStage> projectStages;
     private Set<ProjectPriority> projectPriorities;
     private ProjectPreferences projectPreferences;
     private int projectStoryCount;
@@ -257,7 +261,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="project")
     @OrderBy("rank ASC")
-    public Set<ProjectStage> getProjectStages(){
+    public List<ProjectStage> getProjectStages(){
         if(projectStages == null){
             this.projectStages = fetchDefaultProjectStages();
         }
@@ -265,8 +269,9 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 
     }
 
-    public void setProjectStages(Set<ProjectStage> projectStages){
+    public void setProjectStages(List<ProjectStage> projectStages){
         if(projectStages != null){
+            Collections.sort((projectStages));
             this.projectStages = projectStages;
             setStageMaxRank();
         }
@@ -352,10 +357,10 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         }	       
     }
 
-    private Set<ProjectStage> fetchDefaultProjectStages() {
+    private List<ProjectStage> fetchDefaultProjectStages() {
         ProjectStage.DefaultProjectStages[] defaultStages = ProjectStage.DefaultProjectStages.values();
         ProjectStage projectStage;
-        Set<ProjectStage> projectStages = new HashSet<ProjectStage>();
+        List<ProjectStage> projectStages = new ArrayList<ProjectStage>();
         for(ProjectStage.DefaultProjectStages defaultStage: defaultStages){
             projectStage = createDefaultProjectStage(this,defaultStage.getTitle(),defaultStage.getDescription(),defaultStage.getRank(),defaultStage.getImageUrlIndex());
             projectStages.add(projectStage);

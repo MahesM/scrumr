@@ -8,6 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -20,9 +21,9 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @Table(name = "project_stage")
 @NamedQueries({
     @NamedQuery(name = "projectstages.fetchAllProjectStagesByProjectId", query = "SELECT instance from ProjectStage instance where instance.project.id=:projectid"),
-    @NamedQuery(name = "projectstages.fetchMaxRankStageIDByProjectId", query = "SELECT max(instance.rank), instance from ProjectStage instance where instance.project.id=:projectid")})
+    @NamedQuery(name = "projectstages.fetchMaxRankByProjectId", query = "SELECT max(instance.rank) from ProjectStage instance where instance.project.id=:projectid")})
 @XmlRootElement
-public class ProjectStage extends AbstractEntity implements IEntity, Serializable {
+public class ProjectStage extends AbstractEntity implements IEntity, Serializable, Comparable<ProjectStage> {
     private String description;
     private Project project;
     private int rank;
@@ -76,6 +77,7 @@ public class ProjectStage extends AbstractEntity implements IEntity, Serializabl
     
     
     @Column(name = "rank")
+    @OrderBy("rank ASC")
     public int getRank() {
         return rank;
     }
@@ -101,6 +103,10 @@ public class ProjectStage extends AbstractEntity implements IEntity, Serializabl
     
     public void setImageUrlIndex(int imageUrlIndex) {
         this.imageUrlIndex = imageUrlIndex;
+    }
+
+    public int compareTo(ProjectStage stage) {
+          return this.rank -  stage.rank; 
     }
 
 }
