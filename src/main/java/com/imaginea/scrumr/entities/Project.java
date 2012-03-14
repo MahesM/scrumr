@@ -58,6 +58,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     private int completedCurrentSprintStoryCount;
     private int completedCurrentSprintTaskCount;
     private int maxRankStageId;
+    private int minRankStageId;
 
     @Column(name = "ptitle", nullable = false, length = 500)
     public String getTitle() {
@@ -251,7 +252,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
                 this.currentSprintTaskCount = currentSprint.getTaskCount();
                 this.completedCurrentSprintTaskCount = currentSprint.getCompletedTasks();
             }                            
-        }	   
+        }      
     }
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="project")
@@ -273,8 +274,9 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     }
     
     private void setStageMaxRank() {
-        int maxStage = 0;
-        this.maxRankStageId = 0;
+        int maxStage = 0, minRange = Integer.MAX_VALUE;
+        this.maxRankStageId = 4;
+        this.minRankStageId = 1;
         for(ProjectStage projectStage:projectStages){
             if(projectStage.getPkey() == null)
                 return;
@@ -283,6 +285,10 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
                maxStage = rank;
                this.maxRankStageId = projectStage.getPkey();
            }
+            if(rank < minRange){
+                minRange = rank;
+                this.minRankStageId = projectStage.getPkey();
+            }
         }
     }
     @Transient
@@ -295,29 +301,38 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     }
     
     @Transient
-	public int getCurrentSprintTaskCount() {
+    public int getMinRankStageId() {
+        return minRankStageId;
+    }
+    
+    public void setMinRankStageId(int minRankStageId) {
+        this.minRankStageId = minRankStageId;
+    }
+    
+    @Transient
+    public int getCurrentSprintTaskCount() {
         return currentSprintTaskCount;
     }
 
-	public void setCurrentSprintTaskCount(int currentSprintTaskCount) {
+    public void setCurrentSprintTaskCount(int currentSprintTaskCount) {
         this.currentSprintTaskCount = currentSprintTaskCount;
     }
 
-	@Transient
-	public int getProjectStoryCount() {
+    @Transient
+    public int getProjectStoryCount() {
         return projectStoryCount;
     }
 
-	public void setProjectStoryCount(int projectStoryCount) {
+    public void setProjectStoryCount(int projectStoryCount) {
         this.projectStoryCount = projectStoryCount;
     }
 
-	@Transient
-	public int getCurrentSprintStoryCount(){
-	    return currentSprintStoryCount;
-	}
+    @Transient
+    public int getCurrentSprintStoryCount(){
+        return currentSprintStoryCount;
+    }
 
-	public void setCurrentSprintStoryCount(int currentSprintStoryCount) {
+    public void setCurrentSprintStoryCount(int currentSprintStoryCount) {
         this.currentSprintStoryCount = currentSprintStoryCount;
     }
 
@@ -334,7 +349,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     public void setProjectPriorities(Set<ProjectPriority> projectPriorities){
         if(projectPriorities != null){
             this.projectPriorities = projectPriorities;
-        }	       
+        }          
     }
 
     private Set<ProjectStage> fetchDefaultProjectStages() {
@@ -342,18 +357,18 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         ProjectStage projectStage;
         Set<ProjectStage> projectStages = new HashSet<ProjectStage>();
         for(ProjectStage.DefaultProjectStages defaultStage: defaultStages){
-            projectStage = createDefaultProjectStage(this,defaultStage.getTitle(),defaultStage.getDescription(),defaultStage.getRank(),defaultStage.getUrl());
+            projectStage = createDefaultProjectStage(this,defaultStage.getTitle(),defaultStage.getDescription(),defaultStage.getRank(),defaultStage.getImageUrlIndex());
             projectStages.add(projectStage);
         }
         return projectStages;
     }
 
-    private ProjectStage createDefaultProjectStage(Project project, String title, String description, int rank,String url) {
+    private ProjectStage createDefaultProjectStage(Project project, String title, String description, int rank,int imageUrlIndex) {
         ProjectStage projectStage = new ProjectStage();
         projectStage.setProject(project);
         projectStage.setTitle(title);
         projectStage.setDescription(description);
-        projectStage.setUrl(url);
+        projectStage.setImageUrlIndex(imageUrlIndex);
         projectStage.setRank(rank);        
         return projectStage;
     }

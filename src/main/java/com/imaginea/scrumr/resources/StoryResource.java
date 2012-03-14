@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Story;
@@ -178,8 +179,10 @@ public class StoryResource {
             Story story = storyManager.readStory(Integer.parseInt(stories));
             Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(sprint));
             story.setSprint_id(toSprint);
+            Project project = projectManager.readProject(Integer.parseInt(projectId));
+            ProjectStage projectStage = projectStageManager.readProjectStage(project.getMinRankStageId());
+            story.setStstage(projectStage);
             // logger.debug(toSprint.toString());
-            story.setStstage(projectStageManager.readProjectStage(Integer.parseInt(status)));
             storyManager.updateStory(story);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

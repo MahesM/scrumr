@@ -31,97 +31,128 @@ class SprintThread extends TimerTask {
 	    logger.debug("Triggered Job");
 		List<Project> projects = projectManager.fetchAllProjects();
 		if(projects != null){
-			for(Project p: projects){
-				Date projectEndDate = p.getEnd_date();
-				if (projectEndDate !=null){
-					if(projectEndDate.before(new Date())){
-						p.setStatus("Finished");
-					}else if(projectEndDate.after(new Date())){
-						Sprint old_sprint = null;
-						Sprint current = null;
-						List<Story> stories = null;
-						if(p.getCurrent_sprint() != 1){
-							old_sprint = sprintManager.selectSprintByProject(p, p.getCurrent_sprint());
-							Date spend = old_sprint.getEnddate();
-							if(spend.before(new Date())){
-								current = sprintManager.selectSprintByProject(p, p.getCurrent_sprint()+1);
-								if(current !=null){
-									p.setCurrent_sprint(current.getId());
-								}
-								stories = storyManager.fetchStoriesBySprint(old_sprint.getPkey());
-							}
-						}
-
-						// MOVE ALL UNFINISHED STORIES TO NEXT SPRINT
-						/*if(stories != null && stories.size() > 0){
-							for(Story us: stories){
-								if(!us.getStatus().equalsIgnoreCase("finished")){
-									if(current != null){
-										us.setSprint_id(current);
-									}else{
-										us.setSprint_id(null);
-									}
-									us.setStatus("notstarted");
-									storyManager.updateStory(us);
-								}
-							}
-						}*/
-						p.setStatus("In Progress");
-						projectManager.updateProject(p);
-					}
-				}else{
-					Sprint old_sprint = null;
-					Sprint current = null;
-					List<Story> storiesLastSprint = null;
-					List<Story> storiesInBackLog = null;
-					if(p.getCurrent_sprint() != 0){
-						old_sprint = sprintManager.selectSprintByProject(p, p.getCurrent_sprint());
-						Date spend = old_sprint.getEnddate();
-						if(spend.before(new Date())){
-							String status = projectStageManager.fetchMaxRankByProjectId(p.getPkey());
-						    storiesLastSprint = storyManager.fetchUnfinishedStories(old_sprint.getPkey(), status);
-							storiesInBackLog = storyManager.fetchUnAssignedStories(p.getPkey());
-							old_sprint.setStatus("Finished");
-							sprintManager.updateSprint(old_sprint);
-						}
-					}
-					if((storiesLastSprint != null && storiesLastSprint.size() > 0) || (storiesInBackLog != null && storiesInBackLog.size() > 0)){
-						current = new Sprint();
-						current.setId(p.getCurrent_sprint()+1);
-						current.setStartdate(new Date(old_sprint.getEnddate().getTime()+3600000));
-						current.setEnddate(new Date(old_sprint.getEnddate().getTime()+ 3600000 + ((7*p.getSprint_duration())*86400000L) - 3600000L));
-						current.setStatus(statusSetter(current.getStartdate(), current.getEnddate()));
-						p.setCurrent_sprint(current.getId());
-						p.setStatus("In Progress");
-						projectManager.updateProject(p);
-						current.setProject(p);
-						sprintManager.createSprint(current);
-
-						// MOVE ALL UNFINISHED STORIES TO NEWLY CREATED SPRINT
-						/*if(storiesLastSprint != null && storiesLastSprint.size() > 0){
-							for(Story us: storiesLastSprint){
-								if(!us.getStatus().equalsIgnoreCase("finished")){
-									if(current != null){
-										us.setSprint_id(current);
-									}else{
-										us.setSprint_id(null);
-									}
-									us.setStatus("notstarted");
-									storyManager.updateStory(us);
-								}
-							}
-						}*/
-						
-					}else{
-						p.setStatus("Finished");
-						projectManager.updateProject(p);
-					}
-				}
+			for(Project project: projects){
+			    logger.debug("Updating project:" + project.getPkey());
+			    updateProject(project);
 			}
 		}
 	}
 
-	public ProjectManager getProjectManager() {
+	private void updateProject(Project project) {
+	    Date projectEndDate = project.getEnd_date();
+        if (projectEndDate !=null){
+            if(projectEndDate.before(new Date())){
+                logger.debug("Project end date is before the current date ");
+                project.setStatus("Finished");
+            }else if(projectEndDate.after(new Date())){
+                logger.debug("Project end date is after the current date ");
+                updateForInProgressProject(project);
+            }
+        }else{
+            logger.debug("Project didn't have end date ");
+            updateProjectWithoutEndDate(project);
+        }
+        projectManager.updateProject(project);
+    }
+
+    private void updateProjectWithoutEndDate(Project project) {
+        Sprint currentSprint = null;        
+        List<Story> unfinishedStoriesLastSprint = null;
+        List<Story> storiesInBackLog = null;
+        
+        currentSprint = sprintManager.selectSprintByProject(project, project.getCurrent_sprint());
+        logger.debug("Project's current sprint before updation is "+project.getCurrent_sprint());
+        
+        Date sprintEndDate = currentSprint.getEnddate();
+        if(sprintEndDate.before(new Date())){
+            logger.debug("Current sprint's end date is before the current date");
+           // unfinishedStoriesLastSprint = getUnfinishedStoriesAndUpdateSprint(project, currentSprint);
+            storiesInBackLog = storyManager.fetchUnAssignedStories(project.getPkey());
+        }
+
+        if((unfinishedStoriesLastSprint != null && unfinishedStoriesLastSprint.size() > 0) || (storiesInBackLog != null && storiesInBackLog.size() > 0)){
+            Sprint newSprint = createNewSprint(project,currentSprint);            
+            
+            project.setCurrent_sprint(newSprint.getId());
+            project.setStatus("In Progress");          
+
+            // MOVE ALL UNFINISHED STORIES TO NEWLY CREATED SPRINT
+            //updateStories(unfinishedStoriesLastSprint,newSprint); 
+            
+        }else{
+            logger.debug("All the stories in the current sprint are completed and there are no stories in the project backlog ");
+            project.setStatus("Finished");
+        }
+        
+    }
+
+    private void updateStories(List<Story> unfinishedStoriesLastSprint, Sprint newSprint) {
+        if(unfinishedStoriesLastSprint != null && unfinishedStoriesLastSprint.size() > 0){
+            for(Story story: unfinishedStoriesLastSprint){
+                story.setSprint_id(newSprint);
+                logger.debug("The sprint id of the story with id "+ story.getPkey() +" is updated to "+newSprint.getPkey());
+                
+                story.setStstage(projectStageManager.readProjectStage(story.getProject().getMinRankStageId()));
+                storyManager.updateStory(story);
+                logger.debug("The stage id of the story with id "+ story.getPkey() +" is updated to "+story.getProject().getMinRankStageId());
+                
+            }
+        }
+        
+    }
+
+    private Sprint createNewSprint(Project project, Sprint currentSprint) {
+        Sprint newSprint = null;
+        newSprint = new Sprint();
+        newSprint.setId(project.getCurrent_sprint()+1);
+        newSprint.setStartdate(new Date(currentSprint.getEnddate().getTime()+3600000));
+        newSprint.setEnddate(new Date(currentSprint.getEnddate().getTime()+ 3600000 + ((7*project.getSprint_duration())*86400000L) - 3600000L));
+        newSprint.setStatus(statusSetter(newSprint.getStartdate(), newSprint.getEnddate()));
+        newSprint.setProject(project);
+        sprintManager.createSprint(newSprint);
+        logger.debug("New sprint is created with id: "+newSprint.getId());
+        
+        return newSprint;
+    }
+
+    private void updateForInProgressProject(Project project) {
+        Sprint currentSprint = null;
+        Sprint nextSprint = null;
+        List<Story> unfinishedStoriesLastSprint = null;
+
+        currentSprint = sprintManager.selectSprintByProject(project, project.getCurrent_sprint());
+        Date sprintEndDate = currentSprint.getEnddate();
+        if(sprintEndDate.before(new Date())){
+            logger.debug("Current sprint's end date is before the current date");
+            
+            nextSprint = sprintManager.selectSprintByProject(project, project.getCurrent_sprint()+1);
+            if(nextSprint !=null){
+                project.setCurrent_sprint(nextSprint.getId());
+            }else{
+                project.setCurrent_sprint(createNewSprint(project, currentSprint).getId());
+            }
+          //  unfinishedStoriesLastSprint = getUnfinishedStoriesAndUpdateSprint(project, currentSprint);
+        }
+
+
+        // MOVE ALL UNFINISHED STORIES TO NEXT SPRINT
+        //updateStories(unfinishedStoriesLastSprint,nextSprint);
+        
+        project.setStatus("In Progress");        
+    }
+
+    private List<Story> getUnfinishedStoriesAndUpdateSprint(Project project, Sprint currentSprint) {
+        String stageMaxRank = projectStageManager.fetchMaxRankByProjectId(project.getPkey());
+        List<Story> unfinishedStories = storyManager.fetchUnfinishedStories(currentSprint.getPkey(), stageMaxRank);
+        
+        currentSprint.setStatus("Finished");
+        sprintManager.updateSprint(currentSprint);
+        logger.debug("The status of the sprint with pKey "+currentSprint.getPkey()+" is updated to finished");
+        
+        return unfinishedStories;
+    }
+
+    public ProjectManager getProjectManager() {
 		return projectManager;
 	}
 	public void setProjectManager(ProjectManager projectManager) {
@@ -150,11 +181,14 @@ class SprintThread extends TimerTask {
 	public String statusSetter(Date start, Date end){
 		Date today = new Date();
 		if(start.after(today)){
-			return "Not Started";
+		    logger.debug("Start date is after the current date");
+		    return "Not Started";
 		}else{
 			if(end.before(today)){
-				return "Finished";
+			    logger.debug("End date is before the current date");
+			    return "Finished";
 			}else{
+			    logger.debug("Start date is before the current date and end date is after the current date");
 				return "In Progress";
 			}
 		}
