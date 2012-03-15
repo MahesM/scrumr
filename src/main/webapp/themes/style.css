@@ -3576,15 +3576,18 @@ ul.proj_ppl_list li {
 	cursor:pointer;
 	display:none;
 }
+
 ul.proj_ppl_list li:hover{
 	-moz-box-shadow: 1px 2px 4px 4px black;
     -webkit-box-shadow: 1px 2px 4px 4px black;
     box-shadow: 1px 2px 4px 4px black;
 }
+
 #add_ppl_info{
 	padding:10px;
 	width:100%;
 }
+
 div #add_ppl_info div{
 	color:#75A0BF;
 	font-size:1.2em;
