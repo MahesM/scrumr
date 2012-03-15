@@ -1,7 +1,6 @@
 package com.imaginea.scrumr.entities;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -259,7 +258,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         }	   
     }
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="project")
+    @OneToMany(cascade=CascadeType.REMOVE, mappedBy="project")
     @OrderBy("rank ASC")
     public List<ProjectStage> getProjectStages(){
         if(projectStages == null){
