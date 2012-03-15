@@ -217,7 +217,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     }
 
     @JsonIgnore
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="project")
+    @OneToMany(cascade=CascadeType.REMOVE, mappedBy="project")
     public Set<Story> getStories() {
         return stories;
     }
@@ -340,7 +340,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         this.currentSprintStoryCount = currentSprintStoryCount;
     }
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="project")
+    @OneToMany(cascade=CascadeType.REMOVE, mappedBy="project")
     @OrderBy("rank ASC")
     public Set<ProjectPriority> getProjectPriorities(){
         if(projectPriorities == null){

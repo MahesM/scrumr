@@ -197,7 +197,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
         this.assignees.remove(assignee);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "story")
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "story")
     @JsonIgnore
     // @JoinColumn (name="stid", nullable = false)
     public List<Comment> getComments() {
@@ -222,7 +222,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
         this.statusList = statusList;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "story")
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "story")
     @JsonIgnore
     public List<Task> getTodos() {
         return todos;
@@ -241,7 +241,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
         this.mileStone = mileStone;
     }
     @JsonIgnore
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="story")
+    @OneToMany(cascade=CascadeType.REMOVE, mappedBy="story")
     public Set<Task> getTaskList() {
         return taskList;
     }

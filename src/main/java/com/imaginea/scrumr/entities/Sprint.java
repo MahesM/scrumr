@@ -86,7 +86,7 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 		this.enddate = enddate;
 	}
 	@JsonIgnore
-	@OneToMany(cascade=CascadeType.ALL, mappedBy="sprint_id")
+	@OneToMany(cascade=CascadeType.REMOVE, mappedBy="sprint_id")
     public Set<Story> getStoryList() {
         return storyList;
     }
@@ -117,7 +117,7 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	}
 	
 	@JsonIgnore
-	@OneToMany(cascade=CascadeType.ALL, mappedBy="sprint")
+	@OneToMany(cascade=CascadeType.REMOVE, mappedBy="sprint")
 	public Set<Task> getTaskList() {
         return taskList;
     }

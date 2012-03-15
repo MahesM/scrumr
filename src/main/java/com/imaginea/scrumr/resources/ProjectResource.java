@@ -295,8 +295,7 @@ public class ProjectResource {
     public @ResponseBody
     String deleteProject(@PathVariable("id") String id) {
         Project project = projectManager.readProject(Integer.parseInt(id));
-        if (project != null) {           
-            deleteDependantEntities(project.getPkey());                        
+        if (project != null) { 
             projectManager.deleteProject(project);
             logger.debug("SUCCESS");
             return "{\"result\":\"success\"}";
@@ -306,24 +305,7 @@ public class ProjectResource {
         }
     }
 
-    private void deleteDependantEntities(int projectId) {
-        deleteProjectStagesByProject(projectId);
-        deleteProjectPrioritiesByProject(projectId);
-    }
-
-    private void deleteProjectPrioritiesByProject(int projectId) {
-       List<ProjectPriority> projectProrityList = projectPriorityManager.fetchAllProjectPrioritiesByProject(projectId);
-        
-        for(ProjectPriority projectPriority:projectProrityList)
-            projectPriorityManager.deleteProjectPriority(projectPriority);        
-    }
-
-    private void deleteProjectStagesByProject(int projectId) {
-        List<ProjectStage> projectStageList = projectStageManager.fetchAllProjectStageByProject(projectId);
-        
-        for(ProjectStage projectStage:projectStageList)
-           projectStageManager.deleteProjectStage(projectStage);        
-    }
+   
 
     // TODO - fix this crap
     int getSprintCount(Date start, Date end, int duration) {
