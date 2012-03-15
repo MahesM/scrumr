@@ -85,15 +85,9 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	public void setEnddate(Date enddate) {
 		this.enddate = enddate;
 	}
-	@JsonIgnore
-	@OneToMany(cascade=CascadeType.ALL, mappedBy="sprint_id")
+	@OneToMany(cascade=CascadeType.REMOVE, mappedBy="sprint_id")
     public Set<Story> getStoryList() {
-        return storyList;
-    }
-    
-    public void setStoryList(Set<Story> storyList) {
-        this.storyList = storyList;
-        if(this.storyList != null){
+	    if(this.storyList != null){
             for(Story story:storyList){
                 ProjectStage stage = story.getStstage();
                 if(stage != null){
@@ -106,6 +100,11 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
                          
             } 
         }
+	    return storyList;
+    }
+    
+    public void setStoryList(Set<Story> storyList) {
+        this.storyList = storyList;
     }
 
 	@Column(name = "spstatus", nullable = false)
@@ -117,7 +116,7 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	}
 	
 	@JsonIgnore
-	@OneToMany(cascade=CascadeType.ALL, mappedBy="sprint")
+	@OneToMany(cascade=CascadeType.REMOVE, mappedBy="sprint")
 	public Set<Task> getTaskList() {
         return taskList;
     }

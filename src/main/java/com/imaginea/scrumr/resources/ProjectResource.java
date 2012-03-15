@@ -21,14 +21,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
-import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.ProjectPriority;
+import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.User;
-import com.imaginea.scrumr.interfaces.ProjectStageManager;
 import com.imaginea.scrumr.interfaces.ProjectManager;
+import com.imaginea.scrumr.interfaces.ProjectPreferencesManager;
 import com.imaginea.scrumr.interfaces.ProjectPriorityManager;
+import com.imaginea.scrumr.interfaces.ProjectStageManager;
 import com.imaginea.scrumr.interfaces.SprintManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
 import com.imaginea.scrumr.utils.MessageLevel;
@@ -52,6 +53,9 @@ public class ProjectResource {
     
     @Autowired
     UserServiceManager userServiceManager;
+    
+    @Autowired
+    ProjectPreferencesManager projectPreferencesManager;
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectResource.class);
 
@@ -198,11 +202,52 @@ public class ProjectResource {
             }
             ScrumrException.create(e.getMessage(), MessageLevel.SEVERE, null);  
         }  
+        createDefaultProjectStages(project);
+        createDefaultProjectPriorities(project);
         
         List<Project> result = new ArrayList<Project>();
+        if(project.getProjectStages() == null)
+            project.setProjectStages(projectStageManager.fetchAllProjectStageByProject(project.getPkey()));
+        if(project.getProjectPriorities() == null)
+        project.setProjectPriorities(projectPriorityManager.fetchAllProjectPrioritiesByProject(project.getPkey()));
+    
         result.add(project);
 
         return result;
+    }
+    
+    private void createProjectPriority(Project project, String description, String color, int pkey, int rank) {
+        ProjectPriority projectPriority = new ProjectPriority();
+        projectPriority.setColor(color);
+        projectPriority.setProject(project);
+        projectPriority.setRank(rank);
+        projectPriority.setDescription(description);
+        projectPriorityManager.createProjectPriority(projectPriority);        
+    }
+    
+    private void createDefaultProjectPriorities(Project project) {
+        ProjectPriority.DefaultPriority[] priorities = ProjectPriority.DefaultPriority.values();
+        for(ProjectPriority.DefaultPriority priority: priorities){
+            createProjectPriority(project,priority.getDescription(),priority.getColor(), priority.getPKey(), priority.getRank());
+        }
+    }
+    
+    private void createDefaultProjectStages(Project project) {
+        ProjectStage.DefaultProjectStages[] defaultStages = ProjectStage.DefaultProjectStages.values();
+        for(ProjectStage.DefaultProjectStages defaultStage: defaultStages){
+            createDefaultProjectStage(project, defaultStage.getTitle(),defaultStage.getDescription(),defaultStage.getRank(),defaultStage.getImageUrlIndex());
+        }
+
+    }
+
+    private void createDefaultProjectStage(Project project, String title, String description, int rank,int imageUrlIndex) {
+        ProjectStage projectStage = new ProjectStage();
+        projectStage.setProject(project);
+        projectStage.setTitle(title);
+        projectStage.setDescription(description);
+        projectStage.setImageUrlIndex(imageUrlIndex);
+        projectStage.setRank(rank);        
+        projectStageManager.createProjectStage(projectStage);
     }
     
     private void createSprint(int sprintNo, int totalSprints, Date sprintFirstDay, Date projectEndDate, int sprintDuration, Project project) {
@@ -295,8 +340,7 @@ public class ProjectResource {
     public @ResponseBody
     String deleteProject(@PathVariable("id") String id) {
         Project project = projectManager.readProject(Integer.parseInt(id));
-        if (project != null) {           
-            deleteDependantEntities(project.getPkey());                        
+        if (project != null) { 
             projectManager.deleteProject(project);
             logger.debug("SUCCESS");
             return "{\"result\":\"success\"}";
@@ -306,24 +350,7 @@ public class ProjectResource {
         }
     }
 
-    private void deleteDependantEntities(int projectId) {
-        deleteProjectStagesByProject(projectId);
-        deleteProjectPrioritiesByProject(projectId);
-    }
-
-    private void deleteProjectPrioritiesByProject(int projectId) {
-       List<ProjectPriority> projectProrityList = projectPriorityManager.fetchAllProjectPrioritiesByProject(projectId);
-        
-        for(ProjectPriority projectPriority:projectProrityList)
-            projectPriorityManager.deleteProjectPriority(projectPriority);        
-    }
-
-    private void deleteProjectStagesByProject(int projectId) {
-        List<ProjectStage> projectStageList = projectStageManager.fetchAllProjectStageByProject(projectId);
-        
-        for(ProjectStage projectStage:projectStageList)
-           projectStageManager.deleteProjectStage(projectStage);        
-    }
+   
 
     // TODO - fix this crap
     int getSprintCount(Date start, Date end, int duration) {

@@ -129,19 +129,6 @@ $(document).ready(function(){
 		
 	});
 	
-	$('#nxt_pjt_details').unbind('click').live('click',function(){
-		
-		$('#proj-error').hide();
-		$("#pjt_create_details, #story_parms").hide();
-		$("#pjt_stages").show();
-		
-		$("#new_pjt, #sty_parm").removeClass("pro_head_anchor_enable");
-		$("#pjt_stag").addClass("pro_head_anchor_enable");
-		
-		createProject(false,true);
-		
-	});
-
 	function createProject(update,nxtProcess){
 
 		var title = $('input[name=pTitle]');
@@ -486,14 +473,35 @@ $(document).ready(function(){
 	  			window.location.href = 'sprint.action?&visit=1&projectId='+new_proj_response[0].pkey;
 	  	});
 		
+		$('#nxt_pjt_details').unbind('click').live('click',function(){
+			
+
+			createProject(false,true);
+			if( new_proj_response ) {
+				$('#proj-error').hide();
+				$("#pjt_create_details, #story_parms").hide();
+				$("#pjt_stages").show();
+				
+				$("#new_pjt, #sty_parm").removeClass("pro_head_anchor_enable");
+				$("#pjt_stag").addClass("pro_head_anchor_enable");
+				
+			}
+
+			
+		});
+		
+	  	$("#delete_pro_fromALL").unbind('click').live('click',function(){
+	  		customAlert( { message: {'text':'Do you want to remove this Project?'} }, callbackForDeleteProject, $(this) );
+	  	});
+	  	
 		
 	  	$("#delete_pro").unbind('click').live('click',function(){
-	  		customAlert( { message: {'text':'Do you want to remove this Project?'} }, callbackForDeleteProject, $(this) );
+	  		customAlert( { message: {'text':'Do you want to remove this Project?'} }, callbackForDeleteProject );
 	  	});
 
 		function callbackForDeleteProject(handerResponse, curEle){
 			if(handerResponse){
-				var id = new_proj_response[0].pkey;
+				var id = (curEle) ? curEle.parent().parent().parent().find('.slNo').html() : new_proj_response[0].pkey;
 				$.ajax({
 					url: 'api/v1/projects/delete/'+id,
 					type: 'GET',
