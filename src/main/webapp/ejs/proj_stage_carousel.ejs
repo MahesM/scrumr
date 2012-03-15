@@ -1,0 +1,26 @@
+<li id="stage_<%=pkey%>" data-rank=<%=rank%>>
+	<div class="stage_container">
+		<div class="pro_stage_image"><img src='<%=imageCollections[imageUrlIndex].url%>'></img></div>
+		<div class="pro_stage_title"><%=title%></div>
+		<div class="pro_stage_desc"><%=description%></div>
+	</div>
+	<div class="stage_edit_container">
+		<div class="pro_stage_image">
+			<select name="stage_image">
+				<%for(var i=0;i<imageCollections.length;i++){
+					if(imageUrlIndex == imageCollections[i].value){%>
+						<option value="<%=imageCollections[i].value%>" selected title="<%=imageCollections[i].url%>"> </option>
+					<%}else {%>
+						<option value="<%=imageCollections[i].value%>" title="<%=imageCollections[i].url%>"> </option>
+					<%}}%>
+			</select>
+		</div>
+		<div class="pro_stage_title"><input type="text" value="<%=title%>"/></div>
+		<div class="pro_stage_desc"><textarea><%=description%></textarea></div>
+		<div class="stage_edit_action">
+			<a href="javascript:void(0);" class="stage_edit_later">Later</a>
+			<input id="stage_edit_done" type="button" class="float-rgt submit" value="Done"/>
+		</div>
+		<a href="javascript:void(0);" class="stage_delete "></a>
+	</div>
+</li>

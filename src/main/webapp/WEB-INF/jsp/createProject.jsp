@@ -34,51 +34,10 @@
 		  		 <div>
 		  		 	<div class="pro_head backloghead" >Project Backlog</div>
 		  		 	<div class="pro_head backlogdesp" >Planned stories for the project</div>
-		  		 	<div class="pro_head backlogdesp"><img src="themes/images/qontext.jpg" /></div>
+		  		 	<div class="pro_head backlogdesp"><img src="themes/images/bigarrow_down.png" /></div>
 		  		 	<!-- <div class="proj_stage_carousel"> -->
 		  		 		<ul id="stageCarousel" class="jcarousel-skin-ie7">
-		  		 			<li>
-		  		 				<div class="stage_container">
-			  		 				<div class="pro_stage_image"><img src="themes/images/comment.png"></img></div>
-			  		 				<div class="pro_stage_title">Sprint Backlog</div>
-			  		 				<div class="pro_stage_desc">Stories that are to be assigned yet for this sprint</div>
-			  		 			</div>
-		  		 			</li>
-		  		 			<li>
-		  		 				<div class="stage_container">
-			  		 				<div class="pro_stage_image"><img src="themes/images/comment.png"></img></div>
-			  		 				<div class="pro_stage_title">Development</div>
-			  		 				<div class="pro_stage_desc">Stories that are to be assigned yet for this sprint</div>
-			  		 			</div>
-		  		 			</li>
-		  		 			<li>
-		  		 				<div class="stage_container">
-			  		 				<div class="pro_stage_image"><img src="themes/images/comment.png"></img></div>
-			  		 				<div class="pro_stage_title">Review</div>
-			  		 				<div class="pro_stage_desc">Stories that are to be assigned yet for this sprint</div>
-			  		 			</div>
-		  		 			</li>
-		  		 			<li>
-		  		 				<div class="stage_container">
-			  		 				<div class="pro_stage_image"><img src="themes/images/comment.png"></img></div>
-			  		 				<div class="pro_stage_title">Finished</div>
-			  		 				<div class="pro_stage_desc">Stories that are to be assigned yet for this sprint</div>
-			  		 			</div>
-		  		 			</li>
-		  		 			<li>
-		  		 				<div class="stage_container">
-			  		 				<div class="pro_stage_image"><img src="themes/images/comment.png"></img></div>
-			  		 				<div class="pro_stage_title">Test</div>
-			  		 				<div class="pro_stage_desc">Stories that are to be assigned yet for this sprint</div>
-			  		 			</div>
-		  		 			</li>
-		  		 			<li>
-		  		 				<div class="stage_container">
-			  		 				<div class="pro_stage_image"><img src="themes/images/comment.png"></img></div>
-			  		 				<div class="pro_stage_title">Test</div>
-			  		 				<div class="pro_stage_desc">Stories that are to be assigned yet for this sprint</div>
-			  		 			</div>
-		  		 			</li>
+		  		 			
 		  		 		</ul>
 		  		 	<!-- </div> -->
 		  		 </div>

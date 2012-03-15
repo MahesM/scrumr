@@ -3399,20 +3399,87 @@ ul.color-chooser li {
 	margin-right:25px;
 }
 
-.pro_stage_title{
+.stage_container{
+	/* background:#D8D6D7;
+	border:1px solid white;
+	border-radius:4px; */
+	padding:10px;
+	height:150px;
+	width:150px;
+	
+}
+.stage_container .pro_stage_title{
 	margin:10px;
 	font-weight:bold;
 	font-size:16px;
 }
 
-.pro_stage_desc{
+.stage_container .pro_stage_desc{
 	margin:10px;
 	font-size:13px;
 }
 
-.pro_stage_image{
+.stage_container .pro_stage_image{
 	margin:10px;
 }
+
+.stage_edit_container{
+	padding:0px 10px;
+	height:200px;
+	width:150px;
+	display:none;
+	position:relative;
+}
+
+.stage_edit_container .pro_stage_title input{
+	width:150px;
+	height:20px;
+	border-radius:5px;
+}
+
+.stage_edit_container .pro_stage_desc textarea{
+	height:50px;
+	width:150px;
+	border-radius:5px;
+}
+
+.stage_edit_container select {
+	width: 70px;
+	height: 30px;
+	border-radius: 5px;
+}
+
+.stage_edit_container .pro_stage_image{
+	margin-bottom:10px;
+}
+
+.stage_edit_container .stage_edit_action{
+	float:right;
+}
+
+.stage_edit_container .stage_edit_action a {
+	color:blue !important;
+	display:inline-block;
+	margin:20px 10px 0 0;
+	float:left;
+}
+
+.stage_edit_container .stage_edit_action input{
+	margin-top:10px;
+}
+
+.stage_edit_container .stage_delete {
+	position:absolute;
+    top:145px;
+    left: 10px;
+    background: url("images/trash_16.png") no-repeat;
+    width: 16px;
+    height: 16px;
+    text-indent: -9999px;
+}
+	
+}
+
 
 	
 /******************All Projects - allProjects.jsp****************************/

@@ -5,7 +5,9 @@ var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 var new_proj_response;
 
 $(document).ready(function(){
-	
+	var stageCarousel = null;
+	var projectId = null;
+	var imageCollections = [{value:0,url:"themes/images/project_stages/repository1.png"},{value:1,url:"themes/images/project_stages/repository2.png"},{value:2,url:"themes/images/project_stages/repository3.png"},{value:3,url:"themes/images/project_stages/repository4.png"},{value:4,url:"themes/images/project_stages/repository5.png"},{value:5,url:"themes/images/project_stages/repository6.png"},{value:6,url:"themes/images/project_stages/repository7.png"},{value:7,url:"themes/images/project_stages/repository8.png"},{value:8,url:"themes/images/project_stages/repository9.png"},{value:9,url:"themes/images/project_stages/repository10.png"}];
 	// To Enable Tabs
 	$('#tabs').tabs();
 	
@@ -32,7 +34,7 @@ $(document).ready(function(){
 						 $('#mainContainer').html(prjt_string);
 						
 					} else {
-						 $('#mainContainer').html("<label style='color:#fff' >Currently there are no projects.</label>");
+						 $('#mainContainer').html("<label style='color:#fff' >Currently there are no projects. Click New tab to create one.</label>");
 					}    					
 			}
 		//});
@@ -151,6 +153,11 @@ $(document).ready(function(){
 				$("#proj-error").html("Project title is mandatory");
 				return false;
 			}
+			
+			if(start_date.val() == ""){
+				$("#proj-error").html("Please provide start date");
+				return false;
+			}
 			if(end_date.val() != ""){
 				var days = days_between(new Date(Date.parse(start_date.val())),new Date(Date.parse(end_date.val())));
 					if((days < (7*duration.val()))){
@@ -182,7 +189,38 @@ $(document).ready(function(){
 								success: function( records ) {
 									new_proj_response = records;
 									if(records[0].pkey && !nxtProcess){
-										window.location.href = 'sprint.action?&visit=1&projectId='+records[0].pkey;
+										projectId = records[0].pkey;
+										//window.location.href = 'sprint.action?&visit=1&projectId='+records[0].pkey;
+										$("#pjt_create_details, #story_parms").hide();
+										var stage_carousel = "";
+										for(var i=0;i<records[0].projectStages.length;i++){
+											var stageData = records[0].projectStages[i];
+											stageData.imageCollections = imageCollections;
+											stage_carousel += new EJS({url: 'ejs/proj_stage_carousel.ejs'}).render(stageData);
+										}
+										$('ul#stageCarousel').html(stage_carousel);
+										 $('#stageCarousel').jcarousel({
+											 scroll:1,
+											 visible:4,
+											 initCallback: mycarousel_initCallback,
+										  });
+										  
+										  $('#stageCarousel').sortable({
+											items:'li',
+											cursor:'move',
+											//helper:'clone',
+											//appendTo: 'body',
+											forcePlaceholderSize: true,
+											placeholder: 'stage_highlight',
+											update: function( event, ui ) {
+												var order = $('#stageCarousel').sortable('serialize');
+												//todo:pass this order to the api
+											}
+										  });
+										$("#pjt_stages").show();
+										
+										$("#new_pjt, #sty_parm").removeClass("pro_head_anchor_enable");
+										$("#pjt_stag").addClass("pro_head_anchor_enable");
 									}
 								},
 								error: function(data) { },
@@ -231,25 +269,74 @@ $(document).ready(function(){
 					}); 
 	 /***********************************************/
 	 
-	function mycarousel_initCallback(){
-		$('.jcarousel-container-horizontal').append("<div>Click to edit properties or drag to rearrange | <a id='new_stage' style='color:blue;' href='javascript:void(0);'>Introduce new stage</a></div>");
+	function mycarousel_initCallback(carousel){
+		stageCarousel = carousel;
+		$('.jcarousel-container-horizontal').append("<div id='help_stage'>Click to edit properties or drag to rearrange | <a id='new_stage' style='color:blue;' href='javascript:void(0);'>Introduce new stage</a></div>");
 	} 
 	 
-	  $('#stageCarousel').jcarousel({
-		 scroll:1,
-		 initCallback: mycarousel_initCallback
-	  });
+   $('.stage_container').unbind('click').live('click',function(){
+		 $(this).parent('li').css('height','198px');
+		 $('#help_stage').hide();
+		 $('select[name=stage_image]').msDropDown();
+		 $(this).hide();
+		 $(this).next().show();
+   });
+   
+   $('a.stage_edit_later').unbind('click').live('click',function(){
+	   $(this).closest('li').css('height','180px');
+	   $('#help_stage').show();
+	   $('.stage_container').show();
+	   $('.stage_edit_container').hide();
+   });
+   
+   $('a.stage_delete').unbind('click').live('click',function(){
+	   var id = $(this).closest('li').attr('id').split('stage')[1];
+	   var carouselIndex = parseInt($(this).closest('li').attr('jcarouselindex'));
+	   $.ajax({
+			url: 'api/v1/projectstage/delete/'+id,
+			type: 'GET',
+			async:false,
+			success: function() {
+				stageCarousel.removeAndAnimate(carouselIndex);
+			}
+	   });
+	   
+   });
+   
+   $('#stage_edit_done').unbind('click').live('click',function(){
+	   var self = $(this); 
+	   var id = $(this).closest('li').attr('id').split('stage_')[1];
+	   var rank = $(this).closest('li').attr('data-rank');
+	   var title=$(this).closest('.stage_edit_container').find('input').val();
+	   var description=$(this).closest('.stage_edit_container').find('textarea').val();
+	   var oHandler = $('select[name=stage_image]').msDropDown().data("dd");
+	   var imageIndex= oHandler.get("selectedIndex");
+	   var post_data = 'projectid='+projectId+'&pStageNo='+id+'&title='+title+'&description='+description+'&imageUrlIndex='+imageIndex+'&rank='+rank;
+	   $.ajax({
+			url: 'api/v1/projectstage/update',
+			type: 'POST',
+			data:post_data,
+			async:false,
+			success: function(stage) {
+				 var stage = stage[0];
+				 self.closest('li').css('height','180px');
+				 $('#help_stage').show();
+				 self.closest('.stage_edit_container').hide();
+				 self.closest('.stage_edit_container').prev('.stage_container').find('.pro_stage_title').html(stage.title);
+				 self.closest('.stage_edit_container').prev('.stage_container').find('.pro_stage_desc').html(stage.description);
+				 self.closest('.stage_edit_container').prev('.stage_container').find('.pro_stage_image img').attr('src', imageCollections[stage.imageUrlIndex].url);
+				 self.closest('.stage_edit_container').prev('.stage_container').show();
+				 
+			}
+	   });
+   });
+/*   
+   $('a#new_stage').unbind('click').live('click',function(){
+	   stageCarousel.add(0,)
+   });*/
+   
+	  //$('select[name=pSprintDuration]').msDropDown();
 	  
-	  $('#stageCarousel').sortable({
-		items:'li',
-		cursor:'move',
-		//helper:'clone',
-		//appendTo: 'body',
-		forcePlaceholderSize: true,
-		placeholder: 'stage_highlight',
-		update: function( event, ui ) {
-		}
-	  });
 	 /**********************STORY PARAMETERS*************************/
 
 	  	  
