@@ -3515,14 +3515,16 @@ ul.color-chooser li {
 	display:inline-block;
 }
 .pjt_detail_container{
-	width:55%;
+	width:53%;
 	float:left;
 }
 .pjt_member_container{
-	width:32%;
+	width:30%;
+	height:32px;
+	overflow:hidden;
 }
 .pjt_control_container{
-	width:12%;
+	width:16%;
 }
 #allProjects_container .pjt_mem_more{
 	color:#AFD4DF;
