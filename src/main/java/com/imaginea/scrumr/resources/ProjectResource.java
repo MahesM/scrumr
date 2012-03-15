@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
-import com.imaginea.scrumr.entities.ProjectPreferences;
 import com.imaginea.scrumr.entities.ProjectPriority;
 import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.Sprint;
@@ -203,11 +202,15 @@ public class ProjectResource {
             }
             ScrumrException.create(e.getMessage(), MessageLevel.SEVERE, null);  
         }  
-        createDefaultProjectPreferences(project);
         createDefaultProjectStages(project);
         createDefaultProjectPriorities(project);
         
         List<Project> result = new ArrayList<Project>();
+        if(project.getProjectStages() == null)
+            project.setProjectStages(projectStageManager.fetchAllProjectStageByProject(project.getPkey()));
+        if(project.getProjectPriorities() == null)
+        project.setProjectPriorities(projectPriorityManager.fetchAllProjectPrioritiesByProject(project.getPkey()));
+    
         result.add(project);
 
         return result;
@@ -224,7 +227,6 @@ public class ProjectResource {
     
     private void createDefaultProjectPriorities(Project project) {
         ProjectPriority.DefaultPriority[] priorities = ProjectPriority.DefaultPriority.values();
-        ProjectPriority projectPriority;
         for(ProjectPriority.DefaultPriority priority: priorities){
             createProjectPriority(project,priority.getDescription(),priority.getColor(), priority.getPKey(), priority.getRank());
         }
@@ -232,28 +234,10 @@ public class ProjectResource {
     
     private void createDefaultProjectStages(Project project) {
         ProjectStage.DefaultProjectStages[] defaultStages = ProjectStage.DefaultProjectStages.values();
-        ProjectStage projectStage;
         for(ProjectStage.DefaultProjectStages defaultStage: defaultStages){
             createDefaultProjectStage(project, defaultStage.getTitle(),defaultStage.getDescription(),defaultStage.getRank(),defaultStage.getImageUrlIndex());
         }
 
-    }
-    
-    
-    private void createDefaultProjectPreferences(Project project) {
-        ProjectPreferences projectPreferences = new ProjectPreferences();
-
-        projectPreferences.setProject(project);            
-        projectPreferences.setStorypriorityEnabled(true);
-
-        projectPreferences.setStoryPointType(0);
-        projectPreferences.setStoryPointLimit(18);
-        projectPreferences.setStoryPointEnabled(true);            
-
-        projectPreferences.setTaskMileStoneEnabled(true);
-        projectPreferences.setMileStoneType(0);
-        projectPreferences.setMileStoneRange(40); 
-        projectPreferencesManager.createProjectPreferences(projectPreferences);
     }
 
     private void createDefaultProjectStage(Project project, String title, String description, int rank,int imageUrlIndex) {

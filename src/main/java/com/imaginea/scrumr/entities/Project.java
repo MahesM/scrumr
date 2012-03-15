@@ -50,7 +50,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     private Set<Sprint> sprints;
     private Set<Story> stories;
     private List<ProjectStage> projectStages;
-    private Set<ProjectPriority> projectPriorities;
+    private List<ProjectPriority> projectPriorities;
     private ProjectPreferences projectPreferences;
     private int projectStoryCount;
     private int currentSprintStoryCount;
@@ -159,13 +159,35 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         this.creation_date = creation_date;
     }
     
-    @OneToOne(cascade=CascadeType.REMOVE, mappedBy="project")
+    private void getDefaultProjectPreferences() {
+        ProjectPreferences projectPreferences = new ProjectPreferences();
+
+        projectPreferences.setProject(this);            
+        projectPreferences.setStorypriorityEnabled(true);
+
+        projectPreferences.setStoryPointType(0);
+        projectPreferences.setStoryPointLimit(18);
+        projectPreferences.setStoryPointEnabled(true);            
+
+        projectPreferences.setTaskMileStoneEnabled(true);
+        projectPreferences.setMileStoneType(0);
+        projectPreferences.setMileStoneRange(40); 
+
+        this.projectPreferences = projectPreferences;
+    }
+    
+    @OneToOne(cascade=CascadeType.ALL, mappedBy="project")
     public ProjectPreferences getProjectPreferences() {
+        if(projectPreferences == null){
+            getDefaultProjectPreferences();
+        }
         return projectPreferences;
     }
     
     public void setProjectPreferences(ProjectPreferences projectPreferences) {
-        this.projectPreferences = projectPreferences;
+        if(projectPreferences != null){
+            this.projectPreferences = projectPreferences;
+        }        
     }
 
     @Column(name = "pstatus", nullable = false, length = 100)
@@ -252,8 +274,8 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     
     private void setStageMaxRank() {
         int maxStage = 0, minRange = Integer.MAX_VALUE;
-        this.maxRankStageId = 4;
-        this.minRankStageId = 1;
+        this.maxRankStageId = 3;
+        this.minRankStageId = 0;
         for(ProjectStage projectStage:projectStages){
             if(projectStage.getPkey() == null)
                 return;
@@ -315,12 +337,12 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 
     @OneToMany(cascade=CascadeType.REMOVE, mappedBy="project")
     @OrderBy("rank ASC")
-    public Set<ProjectPriority> getProjectPriorities(){
+    public List<ProjectPriority> getProjectPriorities(){
         return projectPriorities;
 
     }
 
-    public void setProjectPriorities(Set<ProjectPriority> projectPriorities){
+    public void setProjectPriorities(List<ProjectPriority> projectPriorities){
         if(projectPriorities != null){
             this.projectPriorities = projectPriorities;
         }	       
