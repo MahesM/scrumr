@@ -75,6 +75,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
     private int totalTask;
 
+    @JsonIgnore
     @ManyToOne()
     @JoinColumn(name = "stpid", nullable = false)
     public Project getProject() {
@@ -112,7 +113,8 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     public void setPriority(ProjectPriority priority) {
         this.priority = priority;
     }
-
+    
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "stsprint", nullable = true)
     public Sprint getSprint_id() {

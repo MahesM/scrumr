@@ -1,9 +1,7 @@
 package com.imaginea.scrumr.entities;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -161,35 +159,13 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         this.creation_date = creation_date;
     }
     
-    @OneToOne(cascade=CascadeType.ALL, mappedBy="project")
+    @OneToOne(cascade=CascadeType.REMOVE, mappedBy="project")
     public ProjectPreferences getProjectPreferences() {
-        if(projectPreferences == null){
-            getDefaultProjectPreferences();
-        }
         return projectPreferences;
     }
     
-    private void getDefaultProjectPreferences() {
-        ProjectPreferences projectPreferences = new ProjectPreferences();
-
-        projectPreferences.setProject(this);            
-        projectPreferences.setStorypriorityEnabled(true);
-
-        projectPreferences.setStoryPointType(0);
-        projectPreferences.setStoryPointLimit(18);
-        projectPreferences.setStoryPointEnabled(true);            
-
-        projectPreferences.setTaskMileStoneEnabled(true);
-        projectPreferences.setMileStoneType(0);
-        projectPreferences.setMileStoneRange(40); 
-
-        this.projectPreferences = projectPreferences;
-    }
-    
     public void setProjectPreferences(ProjectPreferences projectPreferences) {
-        if(projectPreferences != null){
-            this.projectPreferences = projectPreferences;
-        }        
+        this.projectPreferences = projectPreferences;
     }
 
     @Column(name = "pstatus", nullable = false, length = 100)
@@ -261,9 +237,6 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     @OneToMany(cascade=CascadeType.REMOVE, mappedBy="project")
     @OrderBy("rank ASC")
     public List<ProjectStage> getProjectStages(){
-        if(projectStages == null){
-            this.projectStages = fetchDefaultProjectStages();
-        }
         return projectStages;
 
     }
@@ -343,9 +316,6 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     @OneToMany(cascade=CascadeType.REMOVE, mappedBy="project")
     @OrderBy("rank ASC")
     public Set<ProjectPriority> getProjectPriorities(){
-        if(projectPriorities == null){
-            this.projectPriorities = fetchDefaultProjectPriorities();
-        }
         return projectPriorities;
 
     }
@@ -354,47 +324,6 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         if(projectPriorities != null){
             this.projectPriorities = projectPriorities;
         }	       
-    }
-
-    private List<ProjectStage> fetchDefaultProjectStages() {
-        ProjectStage.DefaultProjectStages[] defaultStages = ProjectStage.DefaultProjectStages.values();
-        ProjectStage projectStage;
-        List<ProjectStage> projectStages = new ArrayList<ProjectStage>();
-        for(ProjectStage.DefaultProjectStages defaultStage: defaultStages){
-            projectStage = createDefaultProjectStage(this,defaultStage.getTitle(),defaultStage.getDescription(),defaultStage.getRank(),defaultStage.getImageUrlIndex());
-            projectStages.add(projectStage);
-        }
-        return projectStages;
-    }
-
-    private ProjectStage createDefaultProjectStage(Project project, String title, String description, int rank,int imageUrlIndex) {
-        ProjectStage projectStage = new ProjectStage();
-        projectStage.setProject(project);
-        projectStage.setTitle(title);
-        projectStage.setDescription(description);
-        projectStage.setImageUrlIndex(imageUrlIndex);
-        projectStage.setRank(rank);        
-        return projectStage;
-    }
-
-    private Set<ProjectPriority> fetchDefaultProjectPriorities() {
-        ProjectPriority.DefaultPriority[] priorities = ProjectPriority.DefaultPriority.values();
-        ProjectPriority projectPriority;
-        Set<ProjectPriority> projectPriorities = new HashSet<ProjectPriority>();
-        for(ProjectPriority.DefaultPriority priority: priorities){
-            projectPriority = createProjectPriority(this,priority.getDescription(),priority.getColor(), priority.getPKey(), priority.getRank());
-            projectPriorities.add(projectPriority);
-        }
-        return projectPriorities;
-    }
-
-    private ProjectPriority createProjectPriority(Project project, String description, String color, int pkey, int rank) {
-        ProjectPriority projectPriority = new ProjectPriority();
-        projectPriority.setColor(color);
-        projectPriority.setProject(project);
-        projectPriority.setRank(rank);
-        projectPriority.setDescription(description);
-        return projectPriority;        
     }
 
     @Transient

@@ -21,14 +21,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
-import com.imaginea.scrumr.entities.ProjectStage;
+import com.imaginea.scrumr.entities.ProjectPreferences;
 import com.imaginea.scrumr.entities.ProjectPriority;
+import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.User;
-import com.imaginea.scrumr.interfaces.ProjectStageManager;
 import com.imaginea.scrumr.interfaces.ProjectManager;
+import com.imaginea.scrumr.interfaces.ProjectPreferencesManager;
 import com.imaginea.scrumr.interfaces.ProjectPriorityManager;
+import com.imaginea.scrumr.interfaces.ProjectStageManager;
 import com.imaginea.scrumr.interfaces.SprintManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
 import com.imaginea.scrumr.utils.MessageLevel;
@@ -52,6 +54,9 @@ public class ProjectResource {
     
     @Autowired
     UserServiceManager userServiceManager;
+    
+    @Autowired
+    ProjectPreferencesManager projectPreferencesManager;
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectResource.class);
 
@@ -198,11 +203,67 @@ public class ProjectResource {
             }
             ScrumrException.create(e.getMessage(), MessageLevel.SEVERE, null);  
         }  
+        createDefaultProjectPreferences(project);
+        createDefaultProjectStages(project);
+        createDefaultProjectPriorities(project);
         
         List<Project> result = new ArrayList<Project>();
         result.add(project);
 
         return result;
+    }
+    
+    private void createProjectPriority(Project project, String description, String color, int pkey, int rank) {
+        ProjectPriority projectPriority = new ProjectPriority();
+        projectPriority.setColor(color);
+        projectPriority.setProject(project);
+        projectPriority.setRank(rank);
+        projectPriority.setDescription(description);
+        projectPriorityManager.createProjectPriority(projectPriority);        
+    }
+    
+    private void createDefaultProjectPriorities(Project project) {
+        ProjectPriority.DefaultPriority[] priorities = ProjectPriority.DefaultPriority.values();
+        ProjectPriority projectPriority;
+        for(ProjectPriority.DefaultPriority priority: priorities){
+            createProjectPriority(project,priority.getDescription(),priority.getColor(), priority.getPKey(), priority.getRank());
+        }
+    }
+    
+    private void createDefaultProjectStages(Project project) {
+        ProjectStage.DefaultProjectStages[] defaultStages = ProjectStage.DefaultProjectStages.values();
+        ProjectStage projectStage;
+        for(ProjectStage.DefaultProjectStages defaultStage: defaultStages){
+            createDefaultProjectStage(project, defaultStage.getTitle(),defaultStage.getDescription(),defaultStage.getRank(),defaultStage.getImageUrlIndex());
+        }
+
+    }
+    
+    
+    private void createDefaultProjectPreferences(Project project) {
+        ProjectPreferences projectPreferences = new ProjectPreferences();
+
+        projectPreferences.setProject(project);            
+        projectPreferences.setStorypriorityEnabled(true);
+
+        projectPreferences.setStoryPointType(0);
+        projectPreferences.setStoryPointLimit(18);
+        projectPreferences.setStoryPointEnabled(true);            
+
+        projectPreferences.setTaskMileStoneEnabled(true);
+        projectPreferences.setMileStoneType(0);
+        projectPreferences.setMileStoneRange(40); 
+        projectPreferencesManager.createProjectPreferences(projectPreferences);
+    }
+
+    private void createDefaultProjectStage(Project project, String title, String description, int rank,int imageUrlIndex) {
+        ProjectStage projectStage = new ProjectStage();
+        projectStage.setProject(project);
+        projectStage.setTitle(title);
+        projectStage.setDescription(description);
+        projectStage.setImageUrlIndex(imageUrlIndex);
+        projectStage.setRank(rank);        
+        projectStageManager.createProjectStage(projectStage);
     }
     
     private void createSprint(int sprintNo, int totalSprints, Date sprintFirstDay, Date projectEndDate, int sprintDuration, Project project) {
