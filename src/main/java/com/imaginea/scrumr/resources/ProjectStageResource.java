@@ -20,6 +20,8 @@ import com.google.gson.JsonParser;
 import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.ProjectStageManager;
+import com.imaginea.scrumr.utils.MessageLevel;
+import com.imaginea.scrumr.utils.ScrumrException;
 
 @Controller
 @RequestMapping("/projectstage")
@@ -84,7 +86,15 @@ public class ProjectStageResource {
                                     @RequestParam String description,@RequestParam String imageUrlIndex,@RequestParam String rank)
 
     {
-        ProjectStage projectStage = projectStageManager.readProjectStage(Integer.parseInt(pStageNo));
+        int stageNo = 0;
+        ProjectStage projectStage = null;
+        try{
+            stageNo = Integer.parseInt(pStageNo);
+            projectStage = projectStageManager.readProjectStage(stageNo);
+        }catch(NumberFormatException e){
+            projectStage = null;
+        }        
+        
         List<ProjectStage> result = new ArrayList<ProjectStage>();
         
         if (projectStage != null) {

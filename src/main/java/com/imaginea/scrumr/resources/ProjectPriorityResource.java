@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectPriority;
+import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.ProjectPriorityManager;
 
@@ -73,7 +74,15 @@ public class ProjectPriorityResource {
                                     @RequestParam String color,@RequestParam String rank)
 
     {
-        ProjectPriority projectPriority = projectPriorityManager.readProjectPriority(Integer.parseInt(pPriorityNo));
+        int priorityNo = 0;
+        ProjectPriority projectPriority = null;
+        try{
+            priorityNo = Integer.parseInt(pPriorityNo);
+            projectPriority = projectPriorityManager.readProjectPriority(priorityNo);
+        }catch(NumberFormatException e){
+            projectPriority = null;
+        }
+        
         List<ProjectPriority> result = new ArrayList<ProjectPriority>();
 
         if (projectPriority != null) {
