@@ -87,12 +87,7 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	}
 	@OneToMany(cascade=CascadeType.REMOVE, mappedBy="sprint_id")
     public Set<Story> getStoryList() {
-        return storyList;
-    }
-    
-    public void setStoryList(Set<Story> storyList) {
-        this.storyList = storyList;
-        if(this.storyList != null){
+	    if(this.storyList != null){
             for(Story story:storyList){
                 ProjectStage stage = story.getStstage();
                 if(stage != null){
@@ -105,6 +100,11 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
                          
             } 
         }
+	    return storyList;
+    }
+    
+    public void setStoryList(Set<Story> storyList) {
+        this.storyList = storyList;
     }
 
 	@Column(name = "spstatus", nullable = false)
