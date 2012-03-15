@@ -188,39 +188,43 @@ $(document).ready(function(){
 								async:false,
 								success: function( records ) {
 									new_proj_response = records;
-									if(records[0].pkey && !nxtProcess){
-										projectId = records[0].pkey;
-										//window.location.href = 'sprint.action?&visit=1&projectId='+records[0].pkey;
-										$("#pjt_create_details, #story_parms").hide();
-										var stage_carousel = "";
-										for(var i=0;i<records[0].projectStages.length;i++){
-											var stageData = records[0].projectStages[i];
-											stageData.imageCollections = imageCollections;
-											stage_carousel += new EJS({url: 'ejs/proj_stage_carousel.ejs'}).render(stageData);
-										}
-										$('ul#stageCarousel').html(stage_carousel);
-										 $('#stageCarousel').jcarousel({
-											 scroll:1,
-											 visible:4,
-											 initCallback: mycarousel_initCallback,
-										  });
-										  
-										  $('#stageCarousel').sortable({
-											items:'li',
-											cursor:'move',
-											//helper:'clone',
-											//appendTo: 'body',
-											forcePlaceholderSize: true,
-											placeholder: 'stage_highlight',
-											update: function( event, ui ) {
-												var order = $('#stageCarousel').sortable('serialize');
-												//todo:pass this order to the api
+									if(records[0].pkey){
+										 if(!nxtProcess){
+											window.location.href = 'sprint.action?&visit=1&projectId='+records[0].pkey;
+										 }else{
+											projectId = records[0].pkey;
+											$("#pjt_create_details, #story_parms").hide();
+											var stage_carousel = "";
+											for(var i=0;i<records[0].projectStages.length;i++){
+												var stageData = records[0].projectStages[i];
+												stageData.imageCollections = imageCollections;
+												stage_carousel += new EJS({url: 'ejs/proj_stage_carousel.ejs'}).render(stageData);
 											}
-										  });
-										$("#pjt_stages").show();
+											$('ul#stageCarousel').html(stage_carousel);
+											 $('#stageCarousel').jcarousel({
+												 scroll:1,
+												 visible:4,
+												 initCallback: mycarousel_initCallback,
+											  });
+											  
+											  $('#stageCarousel').sortable({
+												items:'li',
+												cursor:'move',
+												//helper:'clone',
+												//appendTo: 'body',
+												forcePlaceholderSize: true,
+												placeholder: 'stage_highlight',
+												update: function( event, ui ) {
+													var order = $('#stageCarousel').sortable('serialize');
+													//todo:pass this order to the api
+												}
+											  });
+											$("#pjt_stages").show();
+											
+											$("#new_pjt, #sty_parm").removeClass("pro_head_anchor_enable");
+											$("#pjt_stag").addClass("pro_head_anchor_enable");
+										 }
 										
-										$("#new_pjt, #sty_parm").removeClass("pro_head_anchor_enable");
-										$("#pjt_stag").addClass("pro_head_anchor_enable");
 									}
 								},
 								error: function(data) { },
