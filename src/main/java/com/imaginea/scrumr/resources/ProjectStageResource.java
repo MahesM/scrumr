@@ -3,7 +3,6 @@ package com.imaginea.scrumr.resources;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +17,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectStage;
-import com.imaginea.scrumr.interfaces.ProjectStageManager;
 import com.imaginea.scrumr.interfaces.ProjectManager;
+import com.imaginea.scrumr.interfaces.ProjectStageManager;
 
 @Controller
 @RequestMapping("/projectstage")
@@ -111,6 +109,22 @@ public class ProjectStageResource {
             projectStageManager.createProjectStage(projectStage);            
         }
         return result;
+    }
+    
+    @RequestMapping(value = "/updatestagerank", method = RequestMethod.POST)
+    public @ResponseBody
+    void updateStageRank(@RequestParam String orderedStageIdList)
+
+    {
+        String[] stages = orderedStageIdList.split("&");
+        int rank = 0;
+        for(String stage:stages){
+            int stageId = Integer.parseInt(stage.split("=")[1]);
+            ProjectStage projectStage = projectStageManager.readProjectStage(stageId);
+            projectStage.setRank(rank);
+            projectStageManager.updateProjectStage(projectStage);
+            rank ++;
+        }
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
