@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectPriority;
-import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.ProjectPriorityManager;
+import com.imaginea.scrumr.utils.MessageLevel;
+import com.imaginea.scrumr.utils.ScrumrException;
 
 @Controller
 @RequestMapping("/projectpriority")
@@ -40,39 +40,11 @@ public class ProjectPriorityResource {
         projectPriorities.add(projectPriority);
         return projectPriorities;
     }
-    
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public @ResponseBody
-    List<ProjectPriority> createProjectPriority(@RequestParam String description, @RequestParam String color,
-                                    @RequestParam String projectId, @RequestParam String rank)
-
-    {
-        ProjectPriority projectPriority = new ProjectPriority();
-        try {
-            Project project = projectManager.readProject(Integer.parseInt(projectId));
-            projectPriority.setColor(color);
-            projectPriority.setRank(Integer.parseInt(rank));
-            projectPriority.setProject(project);
-            projectPriority.setDescription(description);
-            projectPriorityManager.createProjectPriority(projectPriority);
-            
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        }
-
-        List<ProjectPriority> result = new ArrayList<ProjectPriority>();
-        result.add(projectPriority);
-
-        return result;
-
-    }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
-    List<ProjectPriority> updateProjectPriority(@RequestParam String projectid,@RequestParam String pPriorityNo, @RequestParam String description,
+    List<ProjectPriority> updateProjectPriority(@RequestParam String projectid,@RequestParam(required = false) String pPriorityNo, @RequestParam String description,
                                     @RequestParam String color,@RequestParam String rank)
-
     {
         int priorityNo = 0;
         ProjectPriority projectPriority = null;
@@ -93,17 +65,24 @@ public class ProjectPriorityResource {
                 projectPriorityManager.updateProjectPriority(projectPriority);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
-                return null;
-            }
-            result.add(projectPriority);
+                String exceptionMsg = "Error occured during creation of the project priority "+description ;
+                ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+            }            
         }else{
-            projectPriority = new ProjectPriority();
-            projectPriority.setColor(color);
-            projectPriority.setDescription(description);
-            projectPriority.setProject(projectManager.readProject(Integer.parseInt(projectid)));
-            projectPriority.setRank(Integer.parseInt(rank));
-            projectPriorityManager.createProjectPriority(projectPriority);                                            
+            try{
+                projectPriority = new ProjectPriority();
+                projectPriority.setColor(color);
+                projectPriority.setDescription(description);
+                projectPriority.setProject(projectManager.readProject(Integer.parseInt(projectid)));
+                projectPriority.setRank(Integer.parseInt(rank));
+                projectPriorityManager.createProjectPriority(projectPriority); 
+            }catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                String exceptionMsg = "Error occured during creation of the project priority "+description ;
+                ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+            }                                                        
         }
+        result.add(projectPriority);
         return result;
     }
 
@@ -112,12 +91,17 @@ public class ProjectPriorityResource {
     String deleteProject(@PathVariable("id") String id) {
         ProjectPriority projectPriority = projectPriorityManager.readProjectPriority(Integer.parseInt(id));
         if (projectPriority != null) {
-            projectPriorityManager.deleteProjectPriority(projectPriority);
-            logger.debug("SUCCESS");
-            return "{\"result\":\"success\"}";
-        } else {
-            logger.debug("FAILURE");
-            return "{\"result\":\"failure\"}";
-        }
+            try{
+                projectPriorityManager.deleteProjectPriority(projectPriority);
+                logger.debug("SUCCESS");
+                return "{\"result\":\"success\"}";                
+            }catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                String exceptionMsg = "Error occured during deletion of the project priority with pKey "+id ;
+                ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+            }             
+        } 
+        logger.debug("FAILURE");
+        return "{\"result\":\"failure\"}";
     }
 }
