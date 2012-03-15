@@ -425,6 +425,37 @@
 
             return e;
         },
+        
+        /**
+         * Adds an element to the first index and adjusts the carousel
+         *
+         * @method addAndAnimate
+         * @return undefined
+         * @param el{String} The element html
+         */
+        
+        addAndAnimate: function(el) {
+
+            var itemsHTML = new Array();
+            var counter = 0;
+            for(i =1; i <= this.size(); i++)
+            {
+               itemsHTML[counter++] = $('li[jcarouselindex|="' + i + '"]').html();
+            }
+            itemsHTML[counter++] = $(el).html();
+            this.size(this.options.size +1);
+            this.reset();
+
+            counter = 0;
+            for(i = 1; i <= itemsHTML.length; i++)
+            {
+                this.add(++counter, itemsHTML[i-1]);
+            }
+
+            this.reload();
+            this.scroll(counter);
+        },
+
 
         /**
          * Removes an element for the given index from the list.
@@ -450,6 +481,38 @@
             e.remove();
 
             this.list.css(this.wh, $jc.intval(this.list.css(this.wh)) - d + 'px');
+        },
+        
+        /**
+         * Removes an element for the given index from the list and adjusts the carousel.
+         *
+         * @method removeAndAnimate
+         * @return undefined
+         * @param i {Number} The index of the element.
+         */
+        
+        removeAndAnimate: function(index) {
+
+            var itemsHTML = new Array();
+            var counter = 0;
+
+            for(i = 1; i <= this.size(); i++)
+            {
+                if(i != (index))
+                    itemsHTML[counter++] = $('li[jcarouselindex|="' + i + '"]').html();
+            }
+
+            this.size(this.options.size -1);
+            this.reset();
+
+
+            counter = 0;
+            for(i = 0; i < itemsHTML.length; i++)
+            {
+                this.add(++counter, itemsHTML[i]);
+            }
+
+            this.reload();
         },
 
         /**

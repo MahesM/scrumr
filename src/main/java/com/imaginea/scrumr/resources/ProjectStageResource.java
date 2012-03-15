@@ -80,11 +80,20 @@ public class ProjectStageResource {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
-    List<ProjectStage> updateProjectStage(@RequestParam String projectid, @RequestParam String pStageNo, @RequestParam String title, 
+    List<ProjectStage> updateProjectStage(@RequestParam String projectid, @RequestParam(required = false) String pStageNo, @RequestParam String title, 
                                     @RequestParam String description,@RequestParam String imageUrlIndex,@RequestParam String rank)
 
     {
-        ProjectStage projectStage = projectStageManager.readProjectStage(Integer.parseInt(pStageNo));
+        int stageNo = 0;
+        ProjectStage projectStage = null;
+        
+        try{
+        	stageNo = Integer.parseInt(pStageNo) ;
+        	projectStage = projectStageManager.readProjectStage(stageNo);
+        }catch(NumberFormatException e){
+        	projectStage = null;
+        }
+    	
         List<ProjectStage> result = new ArrayList<ProjectStage>();
         
         if (projectStage != null) {
@@ -106,7 +115,8 @@ public class ProjectStageResource {
             projectStage.setImageUrlIndex(Integer.parseInt(imageUrlIndex));
             projectStage.setRank(Integer.parseInt(rank));
             projectStage.setProject(projectManager.readProject(Integer.parseInt(projectid)));
-            projectStageManager.createProjectStage(projectStage);            
+            projectStageManager.createProjectStage(projectStage);   
+            result.add(projectStage);
         }
         return result;
     }

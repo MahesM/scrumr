@@ -553,7 +553,7 @@ $(document).ready(function() {
 		    	        				return a.rank> b.rank? 1: -1;
 		    						});	
 		    						for(var i=0;i<projectLanes.length;i++){
-		            				story_html += '<li class="stages"><div class="header "><span></span>'+projectLanes[i].description+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].type+'" id="stage'+projectLanes[i].rank+'"class="story"></ul></div></li>';
+		            				story_html += '<li class="stages"><div class="header "><span></span>'+projectLanes[i].title+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].type+'" id="stage'+projectLanes[i].rank+'"class="story"></ul></div></li>';
 		    	        			}
 		    	        			story_html +='</div></ul>';
 		    	        			$('#sprint-view').html(story_html);
