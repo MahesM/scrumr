@@ -1,8 +1,11 @@
-<li style="border-left:3px solid <%=story.priority.color%>" data-priority ="<%=story.priority.pkey%>" data-size="<%=story.storyPoint%>" id="st<%= story.pkey %>">
+<li style="border-left:6px solid <%=story.priority.color%>" data-priority ="<%=story.priority.pkey%>" data-size="<%=story.storyPoint%>" id="st<%= story.pkey %>">
 	<p><%= story.title %></p>
-	<div class="meta">
+	<div class="meta" style="display:none;">
+		<div class="story_desc"><%= story.description %></div>
 		<div class="img-cont"><%  if(image) %> <%= image %>  </div>
+		<div class="story_info">2/12 completed tasks | 2 discussions</div>
 	</div>
 	<a href="javascript:void(0);" <% if(backlog){ %> class="strRmv remove" <% } else  %> class = "sptRmv remove"  ></a>
 	<a href="#story-cont" class="viewStory"></a>
+	<a href="javascript:void(0);" class="detailview expandStory"></a>
 </li>
