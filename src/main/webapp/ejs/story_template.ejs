@@ -1,4 +1,4 @@
-<li class="p<%= story.priority %>" id="st<%= story.pkey %>">
+<li style="border-left:3px solid <%=story.priority.color%>" data-priority ="<%=story.priority.pkey%>" data-size="<%=story.storyPoint%>" id="st<%= story.pkey %>">
 	<p><%= story.title %></p>
 	<div class="meta">
 		<div class="img-cont"><%  if(image) %> <%= image %>  </div>

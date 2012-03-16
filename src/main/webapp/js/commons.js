@@ -23,7 +23,7 @@ var customAlert=  function(options,callback,curObj) {
 	var curEl = curObj;
 	
 	var htmlStr = '<div id="alertMsgDiv">'+
-					'<div id="confirmheader">Pramati Confirm Box</div>'+
+					'<div id="confirmheader">Confirm Box</div>'+
 					'<div id="message"></div>'+
 					'<div id="btncontainer" >'+
 						'<input id="ok" type="button" class="submit" value="Ok" />'+

@@ -7,6 +7,7 @@ var new_proj_response;
 $(document).ready(function(){
 	var stageCarousel = null;
 	var projectId = null;
+	var stage_rank = 0;
 	var imageCollections = [{value:0,url:"themes/images/project_stages/repository1.png"},{value:1,url:"themes/images/project_stages/repository2.png"},{value:2,url:"themes/images/project_stages/repository3.png"},{value:3,url:"themes/images/project_stages/repository4.png"},{value:4,url:"themes/images/project_stages/repository5.png"},{value:5,url:"themes/images/project_stages/repository6.png"},{value:6,url:"themes/images/project_stages/repository7.png"},{value:7,url:"themes/images/project_stages/repository8.png"},{value:8,url:"themes/images/project_stages/repository9.png"},{value:9,url:"themes/images/project_stages/repository10.png"}];
 	// To Enable Tabs
 	$('#tabs').tabs();
@@ -14,10 +15,11 @@ $(document).ready(function(){
 	// For Slider
 	createSlider_sty_size("pow_2");
 	createSlider_sty_unit("hours");
-
+	 populatePro();
 
 	// To get list of all Projects
 	//$('#tab_All').unbind('click').live("click",function(){
+	function populatePro(){
 		$.ajax({
 			url: 'api/v1/projects/user/'+userLogged,
 			type: 'GET',
@@ -39,6 +41,7 @@ $(document).ready(function(){
 			}
 		//});
 	});
+   }
 	
 	
 	// To get the sprint duration with json response
@@ -183,15 +186,17 @@ $(document).ready(function(){
 											$("#pjt_create_details, #story_parms").hide();
 											var stage_carousel = "";
 											for(var i=0;i<records[0].projectStages.length;i++){
+												stage_rank++;
 												var stageData = records[0].projectStages[i];
 												stageData.imageCollections = imageCollections;
+												stageData.new_stage = false;
 												stage_carousel += new EJS({url: 'ejs/proj_stage_carousel.ejs'}).render(stageData);
 											}
 											$('ul#stageCarousel').html(stage_carousel);
 											 $('#stageCarousel').jcarousel({
 												 scroll:1,
 												 visible:4,
-												 initCallback: mycarousel_initCallback,
+												 initCallback: mycarousel_initCallback
 											  });
 											  
 											  $('#stageCarousel').sortable({
@@ -203,7 +208,17 @@ $(document).ready(function(){
 												placeholder: 'stage_highlight',
 												update: function( event, ui ) {
 													var order = $('#stageCarousel').sortable('serialize');
-													//todo:pass this order to the api
+													alert(order);
+													var post_data = { orderedStageIdList: order};
+													$.ajax({
+														url: 'api/v1/projectstage/updatestagerank',
+														type: 'POST',
+														data: post_data,
+														async:false,
+														success: function( records ) {
+															
+														}
+													});
 												}
 											  });
 											$("#pjt_stages").show();
@@ -262,6 +277,9 @@ $(document).ready(function(){
 	 
 	function mycarousel_initCallback(carousel){
 		stageCarousel = carousel;
+		$('#stageCarousel li').each(function(){
+			$(this).attr('id',$(this).find('#stageId').val());
+		});
 		$('.jcarousel-container-horizontal').append("<div id='help_stage'>Click to edit properties or drag to rearrange | <a id='new_stage' style='color:blue;' href='javascript:void(0);'>Introduce new stage</a></div>");
 	} 
 	 
@@ -280,29 +298,53 @@ $(document).ready(function(){
 	   $('.stage_edit_container').hide();
    });
    
+   $('a.stage_edit_remove').unbind('click').live('click',function(){
+	   $('#help_stage').remove();
+	   var carouselIndex = parseInt($(this).closest('li').attr('jcarouselindex'));
+	   stageCarousel.removeAndAnimate(carouselIndex);
+   });
+   
    $('a.stage_delete').unbind('click').live('click',function(){
-	   var id = $(this).closest('li').attr('id').split('stage')[1];
+	   var id = $(this).closest('li').find('input.hidden#stageId').val().split('stage_')[1];
 	   var carouselIndex = parseInt($(this).closest('li').attr('jcarouselindex'));
 	   $.ajax({
 			url: 'api/v1/projectstage/delete/'+id,
 			type: 'GET',
 			async:false,
 			success: function() {
+				$('#help_stage').remove();
 				stageCarousel.removeAndAnimate(carouselIndex);
 			}
 	   });
 	   
    });
    
+   $('a#new_stage').unbind('click').live('click',function(){
+	  var stage_container = "";
+	  stageData = {new_stage:true,pkey:"",rank:stage_rank,imageUrlIndex:0,imageCollections:imageCollections,title:"",description:""};
+	  stage_container += new EJS({url: 'ejs/proj_stage_carousel.ejs'}).render(stageData);
+	  $('#help_stage').remove();
+	  stageCarousel.addAndAnimate(stage_container);
+	  $('#stageCarousel').find('li:last').css('height','198px');
+	  $('#help_stage').hide();
+	  $('#stageCarousel').find('li:last').find($('select[name=stage_image]')).msDropDown();
+	  
+   });
+   
    $('#stage_edit_done').unbind('click').live('click',function(){
 	   var self = $(this); 
-	   var id = $(this).closest('li').attr('id').split('stage_')[1];
-	   var rank = $(this).closest('li').attr('data-rank');
+	   var id = $(this).closest('li').find('#stageId').val().split('stage_')[1];
+	   var rank = $(this).closest('li').find('#stageRank').val();
 	   var title=$(this).closest('.stage_edit_container').find('input').val();
 	   var description=$(this).closest('.stage_edit_container').find('textarea').val();
 	   var oHandler = $('select[name=stage_image]').msDropDown().data("dd");
 	   var imageIndex= oHandler.get("selectedIndex");
-	   var post_data = 'projectid='+projectId+'&pStageNo='+id+'&title='+title+'&description='+description+'&imageUrlIndex='+imageIndex+'&rank='+rank;
+	   if(id == ""){ //its create
+		   var post_data = 'projectid='+projectId+'&title='+title+'&description='+description+'&imageUrlIndex='+imageIndex+'&rank='+rank;
+	   }else{ //its update
+		   var post_data = 'projectid='+projectId+'&pStageNo='+id+'&title='+title+'&description='+description+'&imageUrlIndex='+imageIndex+'&rank='+rank;
+	   }
+	   
 	   $.ajax({
 			url: 'api/v1/projectstage/update',
 			type: 'POST',
@@ -469,10 +511,12 @@ $(document).ready(function(){
 					success: function( obj ) {
 						obj = $.parseJSON(obj);
 						if(obj && obj.result == "success"){
-							 populateProjects();
+							populatePro();
+							if(!curEle) window.location.href = 'login.action';
 						}
 					}
 				});			
 			}
-		}
+		}	
+		
 });

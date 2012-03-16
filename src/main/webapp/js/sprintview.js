@@ -24,6 +24,33 @@ $(document).ready(function() {
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
 					window.location.href="auth.action";    			
     		});
+    		var availableTags = [
+    		         			"ActionScript",
+    		         			"AppleScript",
+    		         			"Asp",
+    		         			"BASIC",
+    		         			"C",
+    		         			"C++",
+    		         			"Clojure",
+    		         			"COBOL",
+    		         			"ColdFusion",
+    		         			"Erlang",
+    		         			"Fortran",
+    		         			"Groovy",
+    		         			"Haskell",
+    		         			"Java",
+    		         			"JavaScript",
+    		         			"Lisp",
+    		         			"Perl",
+    		         			"PHP",
+    		         			"Python",
+    		         			"Ruby",
+    		         			"Scala",
+    		         			"Scheme"
+    		         		];
+    		$( "#backlog_seach_input" ).autocomplete({
+    			source: availableTags
+    		});
     		    		
        	
         	function populateProjectDetails(){
@@ -72,7 +99,9 @@ $(document).ready(function() {
             				$("#people").html('');
             				if(users != null && users.length > 0){
             					for(var i=0;i< users.length;i++){
-            						$("#people").append('<li><img title="'+users[i].fullname+'" src="'+qontextHostUrl+users[i].avatarurl+'" /></li>');
+            						var userFullName = users[i].fullname;
+            						if( fullname ==  users[i].fullname )  userFullName += " ( You )" ; 
+            						$("#people").append('<li><img title="'+ users[i].fullname +'" src="'+qontextHostUrl+users[i].avatarurl+'" /><div class="proj_mem_name" id= "'+ users[i].fullname +'" >'+ userFullName +'</div><img class="remove_mem" title="Remove" src="themes/images/delete_member.png" id="'+users[i].fullname+'" ></li>');
             						userObject[users[i].username] = users[i];
             					}
             				}else{
@@ -553,7 +582,7 @@ $(document).ready(function() {
 		    	        				return a.rank> b.rank? 1: -1;
 		    						});	
 		    						for(var i=0;i<projectLanes.length;i++){
-		            				story_html += '<li class="stages"><div class="header "><span></span>'+projectLanes[i].description+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].type+'" id="stage'+projectLanes[i].rank+'"class="story"></ul></div></li>';
+		            				story_html += '<li class="stages"><div class="header "><span></span>'+projectLanes[i].title+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].type+'" id="stage'+projectLanes[i].rank+'"class="story"></ul></div></li>';
 		    	        			}
 		    	        			story_html +='</div></ul>';
 		    	        			$('#sprint-view').html(story_html);
@@ -2725,5 +2754,31 @@ $(document).ready(function() {
          $('#popup_sprint_cancel, .sprint_close').unbind('click').live("click",function(){
         	 $('.sprint-popup').hide();
          });
+         
+         /***************************************/
+         
+         	$("ul.proj_ppl_list li").live('mouseover',function() {
+        	 		$(this).find("img.remove_mem[id != '"+fullname+"']").css("display","inline");
+        	  	}).live('mouseout',function(){
+        		  	$(this).find("img.remove_mem").css("display","none");
+        	});
+         	
+
+			$(".remove_mem").unbind('click').live('click',function(){
+				$(this).parent().css('background', 'url("themes/images/ajax-loader.gif") no-repeat 50% 50% #fff');
+				var el = $(this);
+				setTimeout(function(){
+					var id = (el.attr("id"));
+					if(id != creator){
+					var success = removeUser(id);
+						if(success == true){
+							populateProjectDetails();
+							el.parent().hide();
+						}
+					}
+				},1000);
+			
+		});
+         /***************************************/
          
 });

@@ -57,13 +57,14 @@ public class ProjectStageResource {
     {
         int stageNo = 0;
         ProjectStage projectStage = null;
-        try{
-            stageNo = Integer.parseInt(pStageNo);
-            projectStage = projectStageManager.readProjectStage(stageNo);
-        }catch(NumberFormatException e){
-            projectStage = null;
-        }        
         
+        try{
+        	stageNo = Integer.parseInt(pStageNo) ;
+        	projectStage = projectStageManager.readProjectStage(stageNo);
+        }catch(NumberFormatException e){
+        	projectStage = null;
+        }
+
         List<ProjectStage> result = new ArrayList<ProjectStage>();
         
         if (projectStage != null) {

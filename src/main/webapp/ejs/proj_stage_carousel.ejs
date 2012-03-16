@@ -1,11 +1,21 @@
-<li id="stage_<%=pkey%>" data-rank=<%=rank%>>
-	<div class="stage_container">
-		<div class="pro_stage_image"><img src='<%=imageCollections[imageUrlIndex].url%>'></img></div>
-		<div class="pro_stage_title"><%=title%></div>
-		<div class="pro_stage_desc"><%=description%></div>
-	</div>
-	<div class="stage_edit_container">
-		<div class="pro_stage_image">
+<li>
+	<input type="hidden" id="stageId" value="stage_<%=pkey%>" />
+	<input type="hidden" id="stageRank" value="<%=rank%>" />
+	<%if(new_stage == false){%>
+		<div class="stage_container">
+	<%}else{%>
+		<div class="stage_container" style="display:none;">
+	<%}%>
+			<div class="pro_stage_image"><img src='<%=imageCollections[imageUrlIndex].url%>'></img></div>
+			<div class="pro_stage_title"><%=title%></div>
+			<div class="pro_stage_desc"><%=description%></div>
+		</div>
+	<%if(new_stage == false){%>
+		<div class="stage_edit_container" style="display:none;">
+	<%}else{%>
+		<div class="stage_edit_container">
+	<%}%>
+			<div class="pro_stage_image">
 			<select name="stage_image">
 				<%for(var i=0;i<imageCollections.length;i++){
 					if(imageUrlIndex == imageCollections[i].value){%>
@@ -18,9 +28,15 @@
 		<div class="pro_stage_title"><input type="text" value="<%=title%>"/></div>
 		<div class="pro_stage_desc"><textarea><%=description%></textarea></div>
 		<div class="stage_edit_action">
-			<a href="javascript:void(0);" class="stage_edit_later">Later</a>
+			<%if(new_stage == false){%>
+				<a href="javascript:void(0);" class="stage_edit_later">Later</a>
+			<%}else{%>
+				<a href="javascript:void(0);" class="stage_edit_remove">Later</a>
+			<%}%>
 			<input id="stage_edit_done" type="button" class="float-rgt submit" value="Done"/>
 		</div>
-		<a href="javascript:void(0);" class="stage_delete "></a>
+		<%if(new_stage == false){%>
+			<a href="javascript:void(0);" class="stage_delete "></a>
+		<%}%>
 	</div>
 </li>

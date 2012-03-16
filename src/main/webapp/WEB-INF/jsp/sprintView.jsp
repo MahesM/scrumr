@@ -63,11 +63,19 @@
     		</div>
     	</div>
         <div id="peopleview" class="cont float-lft" style="display:none;">
-            <label id="projectName" class="title"></label>
-            <ul id="people" class="img-team">
-            </ul>
-            <a id="addPeople" href="javascript:void(0);">Add</a> /
-            <a id="removePeople" href="javascript:void(0);">Remove</a> 
+
+            <ul id="people" class="proj_ppl_list"></ul>
+            
+            <div  id="add_ppl_info"  >
+            	<div >
+            		To add,click 
+            		<img src="themes/images/add_people.png" />
+            		in the respective tab
+            	</div>
+            	<div style="overflow:hidden" >..........................................................................</div>
+            	<div >To assign drag and drop<b> story </b>to the</br>Sprint lane and <b> Member </b>to sprint story</div>
+            </div>
+
             <div style="display:none;overflow:hidden !important;">
             	<div id="people-cont">
 	                <div id="userInput" class="">
@@ -97,8 +105,9 @@
 						</div> -->
                 <div class="cont" >
                 	<div id="storyList">
-                	<ul class="story">
-                	</ul>
+						<input id="backlog_seach_input" placeholder="-- Type here to search backlogs --" />
+						<img src= "themes/images/search.png" style="margin-left:-25px;vertical-align: middle;" />
+                		<ul class="story"></ul>
                 	</div>
                 </div>
             </div>

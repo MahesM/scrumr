@@ -1,13 +1,17 @@
 <div class="pjt_container" >
 	<span class="pjt_detail_container" >
 		<div class="slNo" ><%= pjt.pkey %></div>
-		<div class="pjt_name" onclick="window.location.href='sprint.action?view=project&visit=0&projectId=<%= pjt.pkey %>'" ><%= pjt.title %></div>
-		<div class="pjt_duration" ><%= duration %></div>
-		<% if( (pjt.current_sprint > 0) && (pjt.status != "Finished") ) { %>
-			<div class="sprt_No"  onclick="window.location.href='sprint.action?view=project&visit=0&projectId=<%= pjt.pkey %>'" >Sprint <%= pjt.current_sprint %></div>
-		<% } %>
-		<div class="sprt_status"  onclick="window.location.href='sprint.action?view=project&visit=0&projectId=<%= pjt.pkey %>'" ><%= pjt.status %></div>
-		<div class="pjt_desp" ><%= pjt.description %></div>
+		<div class="pjt_detail_subHolder" >
+			<div class="pjt_name" onclick="window.location.href='sprint.action?view=project&visit=0&projectId=<%= pjt.pkey %>'" ><%= pjt.title %></div>
+			<img src="themes/images/seperator_white.png"  >
+			<div class="pjt_duration" ><%= duration %></div>
+			<img src="themes/images/seperator_white.png"  >
+			<% if( (pjt.current_sprint > 0) && (pjt.status != "Finished") ) { %>
+				<div class="sprt_No"  onclick="window.location.href='sprint.action?view=project&visit=0&projectId=<%= pjt.pkey %>'" >Sprint <%= pjt.current_sprint %></div>
+			<% } %>
+			<div class="sprt_status"  onclick="window.location.href='sprint.action?view=project&visit=0&projectId=<%= pjt.pkey %>'" ><%= pjt.status %></div>
+			<div class="pjt_desp" ><%= pjt.description %></div>
+		</div>
 	</span>
 	<div class="pjt_member_container" >
 		<% for ( var cnt=0; cnt < pjt.assignees.length ; cnt++ ){  %>
