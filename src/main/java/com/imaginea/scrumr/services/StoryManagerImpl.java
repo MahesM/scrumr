@@ -116,25 +116,17 @@ public class StoryManagerImpl implements StoryManager {
         return genericDao.getResults(queryName, criteria);
     }
     
-    public List<Object> searchAllStoryPointsByProject(Integer pkey, String searchString) {
+    public List<Object> searchAllStoryPointsByProject(Integer pkey) {
         String queryName = "stories.searchStoryPointsByProject";
         Hashtable<String, Object> criteria = new Hashtable<String, Object>();
         criteria.put("projectid", pkey);
-        int searchPoint = 0;
-        try{
-            searchPoint = Integer.parseInt(searchString);
-        }catch(NumberFormatException e){
-            searchPoint = 0;
-        }
-        criteria.put("searchstring", searchPoint);
         return genericDao.getResults(queryName, criteria);
     }
     
-    public List<Object> searchAllStoryTagsByProject(Integer pkey, String searchString) {
+    public List<Object> searchAllStoryTagsByProject(Integer pkey) {
         String queryName = "stories.searchStoryTagsByProject";
         Hashtable<String, Object> criteria = new Hashtable<String, Object>();
         criteria.put("projectid", pkey);
-        criteria.put("searchstring", "%"+searchString+"%");
         return genericDao.getResults(queryName, criteria);
     }
 

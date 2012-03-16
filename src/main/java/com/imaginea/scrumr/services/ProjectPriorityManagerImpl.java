@@ -64,12 +64,12 @@ public class ProjectPriorityManagerImpl implements ProjectPriorityManager {
         return genericDao.getEntities(ProjectPriority.class, "projectpriorities.fetchAllPrioritiesByProjectId", ht);
     }
 
-    public List<ProjectPriority> searchAllProjectPrioritiesByProject(Integer pkey,
+  /*  public List<ProjectPriority> searchAllProjectPrioritiesByProject(Integer pkey,
                                     String searchString) {
         Hashtable<String, Object> ht = new Hashtable<String, Object>();
         ht.put("projectid",pkey);
         ht.put("searchstring", "%"+searchString+"%");
         return genericDao.getEntities(ProjectPriority.class, "projectpriorities.searchAllPrioritiesByProjectId", ht);
-    }
+    }*/
 
 }

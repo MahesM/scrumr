@@ -18,7 +18,7 @@ public interface ProjectPriorityManager {
 	
 	List<ProjectPriority> fetchAllProjectPrioritiesByProject(Integer pkey);
 
-    List<ProjectPriority> searchAllProjectPrioritiesByProject(Integer pkey, String searchString);
+   // List<ProjectPriority> searchAllProjectPrioritiesByProject(Integer pkey, String searchString);
 
 	
 }
