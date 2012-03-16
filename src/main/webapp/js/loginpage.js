@@ -15,10 +15,11 @@ $(document).ready(function(){
 	// For Slider
 	createSlider_sty_size("pow_2");
 	createSlider_sty_unit("hours");
-
+	 populatePro();
 
 	// To get list of all Projects
 	//$('#tab_All').unbind('click').live("click",function(){
+	function populatePro(){
 		$.ajax({
 			url: 'api/v1/projects/user/'+userLogged,
 			type: 'GET',
@@ -40,6 +41,7 @@ $(document).ready(function(){
 			}
 		//});
 	});
+   }
 	
 	
 	// To get the sprint duration with json response
@@ -194,7 +196,7 @@ $(document).ready(function(){
 											 $('#stageCarousel').jcarousel({
 												 scroll:1,
 												 visible:4,
-												 initCallback: mycarousel_initCallback,
+												 initCallback: mycarousel_initCallback
 											  });
 											  
 											  $('#stageCarousel').sortable({
@@ -509,10 +511,12 @@ $(document).ready(function(){
 					success: function( obj ) {
 						obj = $.parseJSON(obj);
 						if(obj && obj.result == "success"){
-							 populateProjects();
+							populatePro();
+							if(!curEle) window.location.href = 'login.action';
 						}
 					}
 				});			
 			}
-		}
+		}	
+		
 });

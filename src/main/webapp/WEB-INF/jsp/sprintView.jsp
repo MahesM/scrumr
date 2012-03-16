@@ -106,7 +106,7 @@
                 <div class="cont" >
                 	<div id="storyList">
 						<input id="backlog_seach_input" placeholder="-- Type here to search backlogs --" />
-						<img src= "themes/images/search.jpg" style="margin-left:-25px;vertical-align: middle;" />
+						<img src= "themes/images/search.png" style="margin-left:-25px;vertical-align: middle;" />
                 		<ul class="story"></ul>
                 	</div>
                 </div>

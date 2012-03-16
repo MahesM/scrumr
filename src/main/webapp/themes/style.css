@@ -3491,7 +3491,6 @@ ul.color-chooser li {
 	font-size : 13px;
 }
 .pjt_desp{
-	margin-left: 30px;
 	text-align: left;
 	width: 85%;
 	clear:both;
@@ -3505,6 +3504,7 @@ ul.color-chooser li {
 }
 .slNo{
 	width:20px;
+	vertical-align:top;
 }
 .pjt_name {
 	font-weight: bold;
@@ -3516,15 +3516,16 @@ ul.color-chooser li {
 }
 .pjt_detail_container{
 	width:50%;
-	float:left;
 }
 .pjt_member_container{
 	width:33%;
 	height:32px;
 	overflow:hidden;
+	vertical-align:top;
 }
 .pjt_control_container{
 	width:16%;
+	vertical-align:top;
 }
 #allProjects_container .pjt_mem_more{
 	color:#AFD4DF;
@@ -3541,7 +3542,10 @@ ul.color-chooser li {
 .pjt_container{
 	padding: 0 0 20px 0;
 }
-
+.pjt_detail_subHolder{
+	display:inline-block;
+	width:93%;
+}
 /******************** PROJECT MEMEBER AND BACKLOG - STYLES ***************************/
 
 ul.proj_ppl_list {
