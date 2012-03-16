@@ -317,10 +317,13 @@ public class StoryResource {
     public @ResponseBody
     List<StoryHistory> getUsersFromStory(@RequestParam String storyId, @RequestParam String stage) {
         ProjectStage projectStage;
-        if("undefined".equals(stage))
-            projectStage = null;
-        else
-            projectStage = projectStageManager.readProjectStage(Integer.parseInt(stage));
+        int stageNo = 0;
+        try{
+            stageNo = Integer.parseInt(stage); 
+        }catch(NumberFormatException e){
+            stageNo = 0;
+        }
+        projectStage = projectStageManager.readProjectStage(stageNo);
         return storyHistoryManager.fetchStoryHistory(Integer.parseInt(storyId), projectStage);
     }
 
