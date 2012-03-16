@@ -19,6 +19,5 @@ public interface ProjectStageManager {
 	List<ProjectStage> fetchAllProjectStageByProject(Integer pkey);
 
     String fetchMaxRankByProjectId(Integer pkey);
-
 	
 }

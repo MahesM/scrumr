@@ -33,8 +33,6 @@ public class ProjectPreferences extends AbstractEntity implements IEntity, Seria
     private int mileStoneType;
     private int mileStoneRange;
     private boolean storypriorityEnabled;
-    private boolean storyPointEnabled;
-    private boolean taskMileStoneEnabled;
     
     @JsonIgnore
     @ManyToOne()
@@ -108,26 +106,8 @@ public class ProjectPreferences extends AbstractEntity implements IEntity, Seria
     
     public void setStorypriorityEnabled(boolean storypriorityEnabled) {
         this.storypriorityEnabled = storypriorityEnabled;
-    }
-    
-    @Column(name = "storysizeenabled")
-    public boolean isStoryPointEnabled() {
-        return storyPointEnabled;
-    }
-    
-    public void setStoryPointEnabled(boolean setStoryPointEnabled) {
-        this.storyPointEnabled = setStoryPointEnabled;
-    }
-
-    @Column(name = "taskmilestoneenabled")
-    public boolean isTaskMileStoneEnabled() {
-        return taskMileStoneEnabled;
-    }
-
-    public void setTaskMileStoneEnabled(boolean taskMileStoneEnabled) {
-        this.taskMileStoneEnabled = taskMileStoneEnabled;
-    }
-    
+    }    
+ 
     @Transient
     public int getStorySizeHighRangeIndex() {
         return storySizeHighRangeIndex;

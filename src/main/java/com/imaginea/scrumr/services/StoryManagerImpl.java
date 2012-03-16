@@ -109,4 +109,11 @@ public class StoryManagerImpl implements StoryManager {
         this.genericDao = genericDao;
     }
 
+    public List<Object> fetchAllStoryPointsByProject(Integer pkey) {
+        String queryName = "stories.fetchDistinctStoryPointsByProject";
+        Hashtable<String, Object> criteria = new Hashtable<String, Object>();
+        criteria.put("projectid", pkey);
+        return genericDao.getResults(queryName, criteria);
+    }
+
 }

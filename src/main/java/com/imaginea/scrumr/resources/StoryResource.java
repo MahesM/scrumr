@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 import com.imaginea.scrumr.entities.Project;
+import com.imaginea.scrumr.entities.ProjectPriority;
 import com.imaginea.scrumr.entities.ProjectStage;
+import com.imaginea.scrumr.entities.SearchStoryParameters;
 import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.StoryHistory;
@@ -70,6 +72,24 @@ public class StoryResource {
     List<Story> fetchStoriesByProject(@PathVariable("id") String id) {
 
         return storyManager.fetchStoriesByProject(Integer.parseInt(id));
+
+    }
+    
+    @RequestMapping(value = "/searchstories/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<SearchStoryParameters> searchStories(@PathVariable("id") String id) {
+
+        Project project = projectManager.readProject(Integer.parseInt(id));
+        List<ProjectPriority> projectPrioritiesList = projectPriorityManager.fetchAllProjectPrioritiesByProject(project.getPkey());
+        List<Object> storyPointsList = storyManager.fetchAllStoryPointsByProject(project.getPkey());
+        
+        List<SearchStoryParameters> searchStoryParameters = new ArrayList<SearchStoryParameters>();
+        SearchStoryParameters storyParameters = new SearchStoryParameters();
+        storyParameters.setProjectPrioritiesList(projectPrioritiesList);
+        storyParameters.setStoryPoints(storyPointsList);
+        searchStoryParameters.add(storyParameters);
+        
+        return searchStoryParameters;
 
     }
 
