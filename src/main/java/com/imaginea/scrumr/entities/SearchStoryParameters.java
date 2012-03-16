@@ -10,6 +10,7 @@ public class SearchStoryParameters {
 
     private List<ProjectPriority> projectPrioritiesList;
     private List<Object> storyPoints;
+    private List<Object> tags;
     
     public List<ProjectPriority> getProjectPrioritiesList() {
         return projectPrioritiesList;
@@ -25,5 +26,13 @@ public class SearchStoryParameters {
     
     public void setStoryPoints(List<Object> storyPoints) {
         this.storyPoints = storyPoints;
-    }    
+    }
+    
+    public List<Object> getTags() {
+        return tags;
+    }
+    
+    public void setTags(List<Object> tags) {
+        this.tags = tags;
+    }
 }

@@ -32,8 +32,11 @@ import com.imaginea.scrumr.interfaces.IEntity;
     @NamedQuery(name = "stories.fetchStoriesByStatus", query = "SELECT instance from Story instance where instance.sprint_id=:sprint and instance.ststage=:stage"),
     @NamedQuery(name = "stories.fetchUnfinishedStories", query = "SELECT instance from Story instance where instance.sprint_id=:sprint and instance.ststage !=:projectstage"),
     @NamedQuery(name = "stories.fetchStoriesBySprint", query = "SELECT instance from Story instance where instance.sprint_id=:sprint"),
+    
     @NamedQuery(name = "stories.fetchStoriesBySprintProject", query = "SELECT instance from Story instance where instance.project=:project and instance.sprint_id=:sprint"),
+    @NamedQuery(name = "stories.searchStoryTagsByProject", query = "SELECT instance.storyTags from Story instance where instance.project.id=:projectid and instance.storyTags LIKE :searchstring"),
     @NamedQuery(name = "stories.fetchDistinctStoryPointsByProject", query = "SELECT distinct(instance.storyPoint) from Story instance where instance.project.id=:projectid"),
+    @NamedQuery(name = "stories.searchStoryPointsByProject", query = "SELECT distinct(instance.storyPoint) from Story instance where instance.project.id=:projectid and instance.storyPoint = :searchstring "),
     @NamedQuery(name = "stories.fetchUnAssignedStories", query = "SELECT instance from Story instance where instance.project=:project and instance.sprint_id is null") })
 @XmlRootElement
 public class Story extends AbstractEntity implements IEntity, Serializable {
@@ -55,7 +58,9 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     private Date lastUpdated;
 
     private String lastUpdatedby;
-
+    
+    private String storyTags;
+    
     private ProjectStage ststage;
 
     private Set<User> assignees;
@@ -113,6 +118,15 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
     public void setPriority(ProjectPriority priority) {
         this.priority = priority;
+    }
+    
+    @Column(name = "sttags", length = 500, nullable = true)
+    public String getStoryTags() {
+        return storyTags;
+    }
+    
+    public void setStoryTags(String storyTags) {
+        this.storyTags = storyTags;
     }
     
     @JsonIgnore

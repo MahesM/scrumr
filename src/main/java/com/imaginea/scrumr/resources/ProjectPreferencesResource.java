@@ -119,7 +119,8 @@ public class ProjectPreferencesResource {
                         projectPreferencesManager.updateProjectPreferences(projectPreferences);
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
-                        return null;
+                        String exceptionMsg = "Error occured during updation of the project preferences with pKey "+pPreferenceNo ;
+                        ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
                     }
                     result.add(projectPreferences);
                 }
@@ -171,8 +172,6 @@ public class ProjectPreferencesResource {
                         ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
                     }                                                        
                 }
-                
-                
             }
         }
         

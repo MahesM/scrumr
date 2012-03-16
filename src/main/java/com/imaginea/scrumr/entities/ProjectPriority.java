@@ -19,7 +19,9 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @Entity
 @Table(name = "project_priority")
 @NamedQueries({
-    @NamedQuery(name = "projectpriorities.fetchAllPrioritiesByProjectId", query = "SELECT instance from ProjectPriority instance where instance.project.id=:projectid")
+    @NamedQuery(name = "projectpriorities.fetchAllPrioritiesByProjectId", query = "SELECT instance from ProjectPriority instance where instance.project.id=:projectid"),
+    @NamedQuery(name = "projectpriorities.searchAllPrioritiesByProjectId", query = "SELECT instance from ProjectPriority instance where instance.project.id=:projectid and instance.description like :searchstring")
+    
     //@NamedQuery(name = "projectpriorities.fetchMaxPriorityIdByProjectId", query = "SELECT max(instance.priorityid) from ProjectPriority instance where instance.project.id=:projectid")
     })
 @XmlRootElement
