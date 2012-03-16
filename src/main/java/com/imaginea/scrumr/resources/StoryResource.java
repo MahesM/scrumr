@@ -1,6 +1,7 @@
 package com.imaginea.scrumr.resources;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 import com.imaginea.scrumr.entities.Project;
+import com.imaginea.scrumr.entities.ProjectPriority;
 import com.imaginea.scrumr.entities.ProjectStage;
+import com.imaginea.scrumr.entities.SearchStoryParameters;
 import com.imaginea.scrumr.entities.Sprint;
 import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.StoryHistory;
@@ -70,6 +73,36 @@ public class StoryResource {
     List<Story> fetchStoriesByProject(@PathVariable("id") String id) {
 
         return storyManager.fetchStoriesByProject(Integer.parseInt(id));
+
+    }
+    
+    @RequestMapping(value = "/searchstories/{id}", method = RequestMethod.POST)
+    public @ResponseBody
+    List<SearchStoryParameters> searchStories(@PathVariable("id") String id, @RequestParam String searchString) {
+
+        Project project = projectManager.readProject(Integer.parseInt(id));
+        List<ProjectPriority> projectPrioritiesList = projectPriorityManager.searchAllProjectPrioritiesByProject(project.getPkey(),searchString);
+        List<Object> storyPointsList = storyManager.searchAllStoryPointsByProject(project.getPkey(),searchString);
+        List<Object> tags = storyManager.searchAllStoryTagsByProject(project.getPkey(),searchString);
+        List<Object> tagsList = new ArrayList<Object>();
+        if(tags != null && tags.size() > 0){
+            for (Iterator iterator = tags.iterator(); iterator.hasNext();) {
+                String searchTags = (String)iterator.next();                
+                String[] storyTags = searchTags.split(",");
+                for(String storyTag:storyTags)
+                tagsList.add(storyTag);
+            }
+        }
+        
+        List<SearchStoryParameters> searchStoryParameters = new ArrayList<SearchStoryParameters>();
+        SearchStoryParameters storyParameters = new SearchStoryParameters();
+        storyParameters.setProjectPrioritiesList(projectPrioritiesList);
+        storyParameters.setStoryPoints(storyPointsList);
+        
+        storyParameters.setTags(tagsList);
+        searchStoryParameters.add(storyParameters);
+        
+        return searchStoryParameters;
 
     }
 

@@ -13,10 +13,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectPreferences;
+import com.imaginea.scrumr.entities.ProjectPriority;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.ProjectPreferencesManager;
+import com.imaginea.scrumr.interfaces.ProjectPriorityManager;
+import com.imaginea.scrumr.utils.MessageLevel;
+import com.imaginea.scrumr.utils.ScrumrException;
 
 @Controller
 @RequestMapping("/projectpreferences")
@@ -28,6 +36,8 @@ public class ProjectPreferencesResource {
     @Autowired
     ProjectPreferencesManager projectPreferencesManager;
 
+    @Autowired
+    ProjectPriorityManager projectPriorityManager;
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectPreferencesResource.class);
 
@@ -43,9 +53,8 @@ public class ProjectPreferencesResource {
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public @ResponseBody
     List<ProjectPreferences> createProjectPreferences(@RequestParam String projectId, @RequestParam String storypriorityEnabled,
-                                    @RequestParam String storyPointMandatory, @RequestParam String storyPointType,
-                                    @RequestParam String storyPointLimit,@RequestParam String storySizeEnabled,
-                                    @RequestParam String taskMileStoneMandatory,@RequestParam String taskMileStoneEnabled,
+                                    @RequestParam String storyPointType,
+                                    @RequestParam String storyPointLimit,
                                     @RequestParam String mileStoneType,@RequestParam String mileStoneRange)
 
     {
@@ -57,9 +66,7 @@ public class ProjectPreferencesResource {
             projectPreferences.setStorypriorityEnabled(Boolean.valueOf(storypriorityEnabled));
             projectPreferences.setStoryPointType(Integer.parseInt(storyPointType));
             projectPreferences.setStoryPointLimit(Integer.parseInt(storyPointLimit));
-            projectPreferences.setStoryPointEnabled(Boolean.valueOf(storySizeEnabled));            
-
-            projectPreferences.setTaskMileStoneEnabled(Boolean.valueOf(taskMileStoneEnabled));
+            
             projectPreferences.setMileStoneType(Integer.parseInt(mileStoneType));
             projectPreferences.setMileStoneRange(Integer.parseInt(mileStoneRange));
                        
@@ -79,50 +86,95 @@ public class ProjectPreferencesResource {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
-    List<ProjectPreferences> updateProjectPreferences(@RequestParam String pPreferenceNo,@RequestParam String projectId, @RequestParam String storypriorityEnabled,
-                                     @RequestParam String storySizeType,
-                                    @RequestParam String storySizeLowRangeIndex,@RequestParam String storySizeHighRangeIndex,
-                                    @RequestParam String storySizeEnabled,
-                                    @RequestParam String taskMileStoneEnabled,
-                                    @RequestParam String taskmileStoneType,@RequestParam String taskmileStoneUpperRange)
+    List<ProjectPreferences> updateProjectPreferences(@RequestParam String projectPreference)
 
     {
-        ProjectPreferences projectPreferences = projectPreferencesManager.readProjectPreferences(Integer.parseInt(pPreferenceNo));
-        List<ProjectPreferences> result = new ArrayList<ProjectPreferences>();
-
-        if (projectPreferences != null) {
-            try {
-                projectPreferences.setStorypriorityEnabled(Boolean.valueOf(storypriorityEnabled));
-                projectPreferences.setStoryPointType(Integer.parseInt(storySizeType));
-                int storyPointLimit = 0 & 1<<Integer.parseInt(storySizeLowRangeIndex) & 1<<Integer.parseInt(storySizeHighRangeIndex);
-                projectPreferences.setStoryPointLimit(storyPointLimit);
-                projectPreferences.setStoryPointEnabled(Boolean.valueOf(storySizeEnabled));            
-
-                projectPreferences.setTaskMileStoneEnabled(Boolean.valueOf(taskMileStoneEnabled));
-                projectPreferences.setMileStoneType(Integer.parseInt(taskmileStoneType));
-                projectPreferences.setMileStoneRange(Integer.parseInt(taskmileStoneUpperRange));
+        List<ProjectPreferences> result = new ArrayList<ProjectPreferences>();        
+        JsonElement jsonElement = new JsonParser().parse(projectPreference);
+        JsonArray projectPreferencesJson = jsonElement.getAsJsonObject().get("projectPreferences").getAsJsonArray();
+        for(Object preference:projectPreferencesJson){
+            JsonObject jsonPreference;
+            if(preference instanceof JsonObject){
+                jsonPreference = (JsonObject)preference;
+                Boolean storypriorityEnabled = jsonPreference.get("storypriorityEnabled").getAsBoolean();
+                int storySizeType = jsonPreference.get("storySizeType").getAsInt();
+                int storySizeLowRangeIndex = jsonPreference.get("storySizeLowRangeIndex").getAsInt();
+                int storySizeHighRangeIndex = jsonPreference.get("storySizeHighRangeIndex").getAsInt();
+                int taskmileStoneType = jsonPreference.get("taskmileStoneType").getAsInt();
+                int taskmileStoneUpperRange = jsonPreference.get("taskmileStoneUpperRange").getAsInt();
+                int pPreferenceNo = jsonPreference.get("pPreferenceNo").getAsInt();
                 
-                projectPreferencesManager.updateProjectPreferences(projectPreferences);
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-                return null;
+                ProjectPreferences projectPreferences = projectPreferencesManager.readProjectPreferences(pPreferenceNo);
+                
+                if (projectPreferences != null) {
+                    try {
+                        projectPreferences.setStorypriorityEnabled(storypriorityEnabled);
+                        projectPreferences.setStoryPointType(storySizeType);
+                        int storyPointLimit = 0 & 1<<(storySizeLowRangeIndex) & 1<<(storySizeHighRangeIndex);
+                        projectPreferences.setStoryPointLimit(storyPointLimit);
+                        
+                        projectPreferences.setMileStoneType(taskmileStoneType);
+                        projectPreferences.setMileStoneRange(taskmileStoneUpperRange);
+                        
+                        projectPreferencesManager.updateProjectPreferences(projectPreferences);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        String exceptionMsg = "Error occured during updation of the project preferences with pKey "+pPreferenceNo ;
+                        ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+                    }
+                    result.add(projectPreferences);
+                }
+                
+                JsonArray projectPriorities = jsonPreference.get("projectPriority").getAsJsonArray();
+                updateProjectPriorities(projectPriorities);
             }
-            result.add(projectPreferences);
         }
         return result;
     }
 
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public @ResponseBody
-    String deleteProject(@PathVariable("id") String id) {
-        ProjectPreferences projectPreferences = projectPreferencesManager.readProjectPreferences(Integer.parseInt(id));
-        if (projectPreferences != null) {
-            projectPreferencesManager.deleteProjectPreferences(projectPreferences);
-            logger.debug("SUCCESS");
-            return "{\"result\":\"success\"}";
-        } else {
-            logger.debug("FAILURE");
-            return "{\"result\":\"failure\"}";
+    private void updateProjectPriorities(JsonArray projectPriorities) {
+        for(Object prjectPriority:projectPriorities){
+            JsonObject priority;
+            if(prjectPriority instanceof JsonObject){
+                priority = (JsonObject)prjectPriority;
+                int projectid =  priority.get("projectid").getAsInt();
+                String description =  priority.get("description").getAsString();
+                String color =  priority.get("color").getAsString();
+                int rank =  priority.get("rank").getAsInt();
+                JsonElement pPriorityNo =  priority.get("pPriorityNo");
+                ProjectPriority projectPriority = null;
+                if(pPriorityNo != null){
+                    projectPriority = projectPriorityManager.readProjectPriority(pPriorityNo.getAsInt());
+                }
+                
+                if (projectPriority != null) {
+                    try {
+                        projectPriority.setColor(color);
+                        projectPriority.setDescription(description);
+                        projectPriority.setRank(rank);
+                        projectPriorityManager.updateProjectPriority(projectPriority);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        String exceptionMsg = "Error occured during creation of the project priority "+description ;
+                        ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+                    }            
+                }else{
+                    try{
+                        projectPriority = new ProjectPriority();
+                        projectPriority.setColor(color);
+                        projectPriority.setDescription(description);
+                        projectPriority.setProject(projectManager.readProject(projectid));
+                        projectPriority.setRank(rank);
+                        projectPriorityManager.createProjectPriority(projectPriority); 
+                    }catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        String exceptionMsg = "Error occured during creation of the project priority "+description ;
+                        ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+                    }                                                        
+                }
+            }
         }
-    }
+        
+    }  
+    
 }

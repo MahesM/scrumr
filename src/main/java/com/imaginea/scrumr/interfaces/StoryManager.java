@@ -23,5 +23,11 @@ public interface StoryManager {
 	List<Story> fetchUnAssignedStories(Integer pkey);
 	
 	List<Story> fetchUnfinishedStories(Integer pkey, String status);
+
+    List<Object> fetchAllStoryPointsByProject(Integer pkey);
+    
+    List<Object> searchAllStoryTagsByProject(Integer pkey, String searchString);
+
+    List<Object> searchAllStoryPointsByProject(Integer pkey, String searchString);
 	
 }

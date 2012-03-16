@@ -167,9 +167,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
 
         projectPreferences.setStoryPointType(0);
         projectPreferences.setStoryPointLimit(18);
-        projectPreferences.setStoryPointEnabled(true);            
 
-        projectPreferences.setTaskMileStoneEnabled(true);
         projectPreferences.setMileStoneType(0);
         projectPreferences.setMileStoneRange(40); 
 
