@@ -626,7 +626,6 @@ ul.story li p, #backlog p {
     padding-bottom:10px;
     line-height: 18px;
     word-wrap:break-word;
-    width:123px;
 }
 
 li.p1{
@@ -3270,7 +3269,6 @@ ul.color-chooser li {
 			.pColor{
 				width: 25px;
 				height: 25px;
-				background-color: red;
 				display: inline-block;
 				vertical-align: bottom;
 				border-radius:5px;

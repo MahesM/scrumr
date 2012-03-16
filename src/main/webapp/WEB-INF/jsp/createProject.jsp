@@ -52,8 +52,7 @@
 		  </div>
 		  
 		  <div id="story_parms" style="display:none" >
-		  	
-		  	
+				  	
 		  	<section style="border-radius:6px;height:350px;background:#CACACA" class="skinned-form-controls" >
 		  	
 		  		<article  class="sty_par_article">
@@ -61,23 +60,7 @@
 		  				<input id="sty_priority_checkbox" type="checkbox" name="priority" value="Story Priority" checked="checked" class="sty_checkbox" />
 		  				<span class="chk_header" >Story Priority</span>
 		  			</div>
-		  			<div class="sty_content" id="sty_content_priority" >
-						<div class="pHolder" >
-							<input class="pInput" placeholder="Type Priority Name" />
-							<div class="pColor"></div>
-							<div class="pAddRem remPos"></div>
-						</div>
-						<div class="pHolder" >
-							<input class="pInput" placeholder="Type Priority Name" />
-							<div class="pColor"></div>
-							<div class="pAddRem remPos"></div>
-						</div>
-						<div class="pHolder" >
-							<input class="pInput" placeholder="Type Priority Name"  />
-							<div class="pColor"></div>
-							<div class="pAddRem addPos"></div>
-						</div>
-		  			</div>
+		  			<div class="sty_content" id="sty_content_priority" ></div>
 		  			<div id="disable_overlay" class="" style="display:none"><div class="disable_notify" >Select checkbox to add</br><span style="font-weight:bold;padding:5px">Story Priority</span>as Parameter</div></div>
 		  		</article>
 		  		
@@ -131,8 +114,10 @@
 		  	 	</span>
 		  	 	<span class="prv_link" id="delete_pro">Delete Project</span>
 		  	 </div>
+		 
 		  </div>
-	   <label id="proj-error" class="error-msg"></label>
+	  
+	  	  <label id="proj-error" class="error-msg"></label>
 	</div>
 	
 	
