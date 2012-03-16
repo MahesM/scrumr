@@ -1,5 +1,5 @@
 <div class="pHolder" >
-	<input class="pInput" placeholder="Type Priority Name"  />
-	<div class="pColor"></div>
-	<div class="pAddRem addPos"></div>
+	<input class="pInput" placeholder="Type Priority Name"  value="<%= pjt.description %>" />
+	<div class="pColor" style="background-color:<%= pjt.color %>" ></div>
+	<div class="pAddRem <% if( last ) { %>addPos<% } else { %>remPos<% } %>"  id="<%= pjt.pkey %>" ></div>
 </div>
