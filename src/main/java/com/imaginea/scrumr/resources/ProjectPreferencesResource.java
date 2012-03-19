@@ -110,7 +110,7 @@ public class ProjectPreferencesResource {
                     try {
                         projectPreferences.setStorypriorityEnabled(storypriorityEnabled);
                         projectPreferences.setStoryPointType(storySizeType);
-                        int storyPointLimit = 0 & 1<<(storySizeLowRangeIndex) & 1<<(storySizeHighRangeIndex);
+                        int storyPointLimit = 0 | 1<<(storySizeLowRangeIndex) | 1<<(storySizeHighRangeIndex);
                         projectPreferences.setStoryPointLimit(storyPointLimit);
                         
                         projectPreferences.setMileStoneType(taskmileStoneType);
@@ -144,7 +144,9 @@ public class ProjectPreferencesResource {
                 JsonElement pPriorityNo =  priority.get("pPriorityNo");
                 ProjectPriority projectPriority = null;
                 if(pPriorityNo != null){
-                    projectPriority = projectPriorityManager.readProjectPriority(pPriorityNo.getAsInt());
+                    String priorityId = pPriorityNo.getAsString();
+                    if(priorityId != null && !priorityId.isEmpty())
+                        projectPriority = projectPriorityManager.readProjectPriority(pPriorityNo.getAsInt());
                 }
                 
                 if (projectPriority != null) {
