@@ -20,38 +20,32 @@ $(document).ready(function() {
         	var storyDetailScroll = new Object();
         	var left_pane_collapsed = false;
         	var perPage = 3;
+        	var backlogSearchSource= null;
+        	var backlogentry = false;
         	
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
 					window.location.href="auth.action";    			
     		});
-    		var availableTags = [
-    		         			"ActionScript",
-    		         			"AppleScript",
-    		         			"Asp",
-    		         			"BASIC",
-    		         			"C",
-    		         			"C++",
-    		         			"Clojure",
-    		         			"COBOL",
-    		         			"ColdFusion",
-    		         			"Erlang",
-    		         			"Fortran",
-    		         			"Groovy",
-    		         			"Haskell",
-    		         			"Java",
-    		         			"JavaScript",
-    		         			"Lisp",
-    		         			"Perl",
-    		         			"PHP",
-    		         			"Python",
-    		         			"Ruby",
-    		         			"Scala",
-    		         			"Scheme"
-    		         		];
-    		$( "#backlog_seach_input" ).autocomplete({
-    			source: availableTags
-    		});
-    		    		
+    		
+    		$("#backlog_seach_input" ).autocomplete({
+    			source: backlogSearchSource,
+    		}).data( "autocomplete" )._renderItem = function( ul, item ) {
+    			ul.attr('id','backlog-search-menu');
+				var el = $( "<li></li>" ).data( "item.autocomplete", item );
+					el.append( "<a style='color:black'>" + item.value + " - <label style='color:grey'> " + item.type + "</label></a>" );
+    			return el.appendTo( ul );
+		};
+    		
+    		function populateSearchDataSource(){
+    			$.ajax({
+            		url: 'api/v1/stories/fetchstorydata/'+projectId,
+            		type: 'GET',
+            		async:false,
+            		success: function( source ) {
+            			backlogSearchSource = source;
+            		}
+    			});
+    		}
        	
         	function populateProjectDetails(){
         		$.ajax({
@@ -124,6 +118,7 @@ $(document).ready(function() {
             	});
         	}
 			function populateUnassignedStories(name){
+				populateSearchDataSource(); //populate datasource everytime stories are added to backlog
 				// $('#storyList ul').css({'height': (($(window).height()) - 320) + 'px'});
 				 $('#storyList').css({'height': (($(window).height()) -100) + 'px'});
 	        	 $.ajax({
@@ -1627,23 +1622,71 @@ $(document).ready(function() {
     			}
     		 }
         	
-        	$("#searchStory").keyup(function(event) {
+        	$("#backlog_seach_input").keydown(function(event) {
     			if (event.which == 13) {
     				event.preventDefault();
     			}
-    			var query=$('#searchStory').val();
+    			var el = $(this);
     			var selector = $('#storyList').find('ul.story');
-    			//query = query.replace(/ /gi, '|'); //add OR for regex query  
-
-    			$(selector).find('li').each(
-    					function() {
-    						($(this).find('p').text()
-    								.search(new RegExp(query, "i")) < 0) ? $(this)
-    								.hide() : $(this).show();
-    					});
+    			setTimeout(function(){
+    				for(var i=0;i<backlogSearchSource.length;i++){
+        				if(backlogSearchSource[i].type == "Search Backlog" && backlogentry){
+        					backlogSearchSource[i].value = $("#backlog_seach_input").val();
+        				}
+        			}
+        			if(!backlogentry){
+        				var current_entry = {value:$("#backlog_seach_input").val(),type:"Search Backlog"};
+        				backlogSearchSource.push(current_entry);
+        				backlogentry = true;
+        			}
+        			$( "#backlog_seach_input" ).autocomplete( "option", "source",backlogSearchSource );
+        			$( "#backlog_seach_input" ).bind( "autocompleteselect", function(event, ui) {
+        				  var query=ui.item.value;
+        				  if(ui.item.type == "Search Backlog"){
+        					  $("#backlog_seach_input").val(ui.item.value);
+        					  el.next().addClass('close-BacklogSearch').attr('src',"themes/images/close.png");
+        					  $(selector).find('li').each(
+    	        					function() {
+    	        						($(this).find('p').text()
+    	        								.search(new RegExp(query, "i")) < 0) ? $(this)
+    	        								.hide() : $(this).show();
+    	        			 });
+        				  }else if(ui.item.type == "Priority"){
+        					  $("#backlog_seach_input").val(ui.item.value+":"+ui.item.type);
+        					  el.next().addClass('close-BacklogSearch').attr('src',"themes/images/close.png");
+        					  $(selector).find('li').each(
+    	        					function() {
+    	        						($(this).attr('data-priority')
+    	        								.search(new RegExp(query, "i")) < 0) ? $(this)
+    	        								.hide() : $(this).show();
+    	        			 });
+        					  
+        				  }else if(ui.item.type == "Size"){
+        					  $("#backlog_seach_input").val(ui.item.value+":"+ui.item.type);
+        					  el.next().addClass('close-BacklogSearch').attr('src',"themes/images/close.png");
+        					  $(selector).find('li').each(
+    	        					function() {
+    	        						($(this).attr('data-size')
+    	        								.search(new RegExp(query, "i")) < 0) ? $(this)
+    	        								.hide() : $(this).show();
+    	        			 });
+        					  
+        				  }else if(ui.item.type == "tag"){
+        					  //todo:
+        				  }
+        			});
+    			},1);
+    			
+    			$('.close-BacklogSearch').unbind('click').live('click',function(){
+					el.val("");
+	        		el.next().attr('src',"themes/images/search.png");
+	        		 $(selector).find('li').each(function(){
+	        			$(this).show();
+	        		}); 
+    			});
     		});
         	
-        	$("#searchRmvUser").unbind('click').live('keyup',function(event) {
+        	$("#searchRmvUser").unbind('keyup').live('keyup',function(event) {
     			if (event.which == 13) {
     				event.preventDefault();
     			}

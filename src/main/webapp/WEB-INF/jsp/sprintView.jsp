@@ -104,9 +104,9 @@
 							<div class="p3" ></div>
 						</div> -->
                 <div class="cont" >
-               		<input id="backlog_seach_input" placeholder="-- Type here to search backlogs --" />
-                	<div id="storyList">						
-						<img src= "themes/images/search.png" style="margin-left:-25px;vertical-align: middle;" />
+                	<input id="backlog_seach_input" placeholder="-- Type here to search backlogs --" />
+					<img src= "themes/images/search.png" style="margin-left:-25px;vertical-align: middle;" />
+                	<div id="storyList">
                 		<ul class="story"></ul>
                 	</div>
                 </div>
