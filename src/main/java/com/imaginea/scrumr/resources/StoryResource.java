@@ -120,7 +120,7 @@ public class StoryResource {
         List<ProjectPriority> projectPrioritiesList = projectPriorityManager.fetchAllProjectPrioritiesByProject(project.getPkey());
         for(ProjectPriority projectPriority:projectPrioritiesList){
             SearchStoryParameters storyParameters = new SearchStoryParameters();
-            storyParameters.setType("story_priority");
+            storyParameters.setType("Priority");
             storyParameters.setValue(projectPriority.getDescription());
             searchStoryParameters.add(storyParameters);
         }        
@@ -132,7 +132,7 @@ public class StoryResource {
         
         for(int index =lowRangeIndex; index <= highRangeIndex;index++ ){
             SearchStoryParameters storyParameters = new SearchStoryParameters();
-            storyParameters.setType("story_size");
+            storyParameters.setType("Size");
             storyParameters.setValue(ProjectPreferences.defaultStoryTypes[storyType][index]);
             searchStoryParameters.add(storyParameters);
         }
@@ -146,7 +146,7 @@ public class StoryResource {
                     String[] storyTags = searchTags.split(",");
                     for(String storyTag:storyTags){
                         SearchStoryParameters storyParameters = new SearchStoryParameters();
-                        storyParameters.setType("story_tag");
+                        storyParameters.setType("Tag");
                         storyParameters.setValue(storyTag);
                         searchStoryParameters.add(storyParameters);
                     } 

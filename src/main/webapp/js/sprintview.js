@@ -22,6 +22,7 @@ $(document).ready(function() {
         	var perPage = 3;
         	var backlogSearchSource= null;
         	var backlogentry = false;
+        	var imageCollections = [{value:0,url:"themes/images/project_stages/repository1.png"},{value:1,url:"themes/images/project_stages/repository2.png"},{value:2,url:"themes/images/project_stages/repository3.png"},{value:3,url:"themes/images/project_stages/repository4.png"},{value:4,url:"themes/images/project_stages/repository5.png"},{value:5,url:"themes/images/project_stages/repository6.png"},{value:6,url:"themes/images/project_stages/repository7.png"},{value:7,url:"themes/images/project_stages/repository8.png"},{value:8,url:"themes/images/project_stages/repository9.png"},{value:9,url:"themes/images/project_stages/repository10.png"}];
         	
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
 					window.location.href="auth.action";    			
@@ -32,7 +33,7 @@ $(document).ready(function() {
     		}).data( "autocomplete" )._renderItem = function( ul, item ) {
     			ul.attr('id','backlog-search-menu');
 				var el = $( "<li></li>" ).data( "item.autocomplete", item );
-					el.append( "<a style='color:black'>" + item.value + " - <label style='color:grey'> " + item.type + "</label></a>" );
+					el.append( "<a style='color:black'>" + item.value + " - <label style='color:grey;'> " + item.type + "</label></a>" );
     			return el.appendTo( ul );
 		};
     		
@@ -120,7 +121,7 @@ $(document).ready(function() {
 			function populateUnassignedStories(name){
 				populateSearchDataSource(); //populate datasource everytime stories are added to backlog
 				// $('#storyList ul').css({'height': (($(window).height()) - 320) + 'px'});
-				 $('#storyList').css({'height': (($(window).height()) -100) + 'px'});
+				 $('#storyList').css({'height': (($(window).height()) -150) + 'px'});
 	        	 $.ajax({
 	        		url: 'api/v1/stories/backlog/'+projectId,
 	        		type: 'GET',
@@ -302,7 +303,7 @@ $(document).ready(function() {
 						        		error: function(data) { },
 						        		complete: function(data) { }
 						        	});
-			        				sprint_html += '</ul></div>';
+			        				sprint_html += '<div class="sprint-info" style="display:none;"></div></ul></div>';
 			        				sprint_html +='</li>';
 			        				
 			        			}
@@ -312,8 +313,10 @@ $(document).ready(function() {
 			        			$("#project-view").html(sprint_html);
 			        	        $('ul.col li.stages .header').hover(function(){
 			        	        	$(this).find('a.editSprint').show(); 
+			        	        	$(this).find('div.sprint-info').show(); 
 			        	         },function(){
 			        	        	 $(this).find('a.editSprint').hide();
+			        	        	 $(this).find('div.sprint-info').hide(); 
 			        	         });
 			        	        
 			        			$('#project-view .pageCtrls').html("");
@@ -577,7 +580,7 @@ $(document).ready(function() {
 		    	        				return a.rank> b.rank? 1: -1;
 		    						});	
 		    						for(var i=0;i<projectLanes.length;i++){
-		            				story_html += '<li class="stages"><div class="header "><span></span>'+projectLanes[i].title+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].type+'" id="stage'+projectLanes[i].rank+'"class="story"></ul></div></li>';
+		            				story_html += '<li class="stages"><div class="header "><img src="'+imageCollections[projectLanes[i].imageUrlIndex].url+'"></span>'+projectLanes[i].title+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].type+'" id="stage'+projectLanes[i].pkey+'"class="story"></ul></div></li>';
 		    	        			}
 		    	        			story_html +='</div></ul>';
 		    	        			$('#sprint-view').html(story_html);
@@ -639,7 +642,7 @@ $(document).ready(function() {
 				        						}
 				        					});
 				        					
-				        					$('ul#stage'+story.status).append(str);
+				        					$('ul#stage'+story.ststage.pkey).append(str);
 				        					if(story.status == 0){
 				        						$('ul#stage'+story.status).find("label#noStories").remove();
 				        					}
@@ -666,8 +669,8 @@ $(document).ready(function() {
 			        		   				if($(ui.item[0]).closest('ul').attr('data-type') == 'BACKLOG'){
 			        		   					$(ui.item[0]).closest('ul').find("label#noStories").remove();
 			        		   					var success = updateStoryStatus(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],sprint); 
-			        		   					$(ui.item[0]).find('.img-cont').html("");
-			        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
+			        		   					//$(ui.item[0]).find('.img-cont').html("");
+			        		   					//removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
 			        		   				}else if(($(ui.item[0]).closest('section').hasClass('left'))) {
 			        		   					var new_id = id.replace("st","");
 			        		   					$(ui.item[0]).find('a.remove').removeClass('sptRmv').addClass('strRmv');
@@ -679,11 +682,11 @@ $(document).ready(function() {
 					        		   				var success = updateStoryStatus(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],sprint); 
 					        		   				var elOffset = $(ui.item[0]).offset();
 					        		   				if($(ui.item[0]).closest('ul').attr('data-type') == 'finished'){			        		   								        		   				
-					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
+					        		   					//removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
 					        		   					refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],creatorObj);
 					        		   				}
 					        		   				if((ui.sender != null) && !($(ui.item[0]).closest('ul').attr('data-type') == 'BACKLOG') && !($(ui.item[0]).closest('ul').attr('data-type') == 'FINISHED')&& !($(ui.item[0]).closest('section').hasClass('left'))){
-					        		   					showAddUserPopup(elOffset);
+					        		   					/*showAddUserPopup(elOffset);
 					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
 					        		   					var existing_user_arr = [];
 					        		   					if($('#'+id).data("userlist")){
@@ -699,7 +702,7 @@ $(document).ready(function() {
 						        		   						$(this).closest('.popup-story-cont').hide();
 						        		   						//$('#popup_story_done').die();
 					        		   						}
-					        		   					});
+					        		   					});*/
 					        		   				}
 					        		   				
 					        		   				$(ui.item[0]).find('a.remove').removeClass('strRmv').addClass('sptRmv');
@@ -1867,14 +1870,16 @@ $(document).ready(function() {
 			});
 			
 			$('.detailview').unbind('click').live('click',function(){
-				var ulHeight=$(this).closest('ul').outerHeight();
+				var ulHeight=$(this).closest('ul').height();
 				if($(this).hasClass('expandStory')){
 					$(this).closest('li').find('.meta').show();
+					$(this).closest('li').find('.story_desc').show();
 					ulHeight += $(this).closest('li').find('.meta').outerHeight();
 					$(this).closest('li').find('p').css('padding-bottom','0px');
 					$(this).removeClass('expandStory').addClass('collapseStory');
 				}else{
 					$(this).closest('li').find('.meta').hide();
+					$(this).closest('li').find('.story_desc').hide();
 					ulHeight -= $(this).closest('li').find('.meta').outerHeight();
 					$(this).closest('li').find('p').css('padding-bottom','10px');
 					$(this).removeClass('collapseStory').addClass('expandStory');
@@ -2823,5 +2828,11 @@ $(document).ready(function() {
 			
 		});
          /***************************************/
+			
+			
+			$('ul.story li').unbind('hover').live('hover',function(){
+				$(this).find('a.viewStory').toggle();
+				$(this).find('a.remove').toggle();
+			})
          
 });

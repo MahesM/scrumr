@@ -5,6 +5,7 @@ var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 var new_proj_response;
 
 $(document).ready(function(){
+    var projListScroll = null;
 	var stageCarousel = null;
 	var projectId = null;
 	var stage_rank = 0;
@@ -33,7 +34,7 @@ $(document).ready(function(){
 							var proj = { pjt : obj[cnt] , duration : duration};
 							prjt_string += new EJS({url: 'ejs/project_list_temp.ejs'}).render(proj);					
 						} 
-						 $('#mainContainer').html(prjt_string);
+						 $('#scroll_container').html(prjt_string);
 						
 					} else {
 						 $('#mainContainer').html("<label style='color:#fff' >Currently there are no projects. Click New tab to create one.</label>");
@@ -42,6 +43,13 @@ $(document).ready(function(){
 		//});
 	});
    }
+	
+	$('#tabs').bind('tabsshow',function(event,ui){
+		$('.mainContainer').css({'height': (($(window).height()) -160) + 'px'});
+		$('#allProjects_container').css({'height': (($(window).height()) -130) + 'px'});
+		projListScroll = $('.mainContainer').show().jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+		
+	});
 	
 	
 	// To get the sprint duration with json response
@@ -197,7 +205,8 @@ $(document).ready(function(){
 											 $('#stageCarousel').jcarousel({
 												 scroll:1,
 												 visible:4,
-												 initCallback: mycarousel_initCallback
+												 initCallback: mycarousel_initCallback,
+												 reloadCallback:mycarousel_initCallback
 											  });
 											  
 											  $('#stageCarousel').sortable({
@@ -209,7 +218,6 @@ $(document).ready(function(){
 												placeholder: 'stage_highlight',
 												update: function( event, ui ) {
 													var order = $('#stageCarousel').sortable('serialize');
-													alert(order);
 													var post_data = { orderedStageIdList: order};
 													$.ajax({
 														url: 'api/v1/projectstage/updatestagerank',
@@ -281,6 +289,7 @@ $(document).ready(function(){
 		$('#stageCarousel li').each(function(){
 			$(this).attr('id',$(this).find('#stageId').val());
 		});
+		if($('#help_stage'))$('#help_stage').remove();
 		$('.jcarousel-container-horizontal').append("<div id='help_stage'>Click to edit properties or drag to rearrange | <a id='new_stage' style='color:blue;' href='javascript:void(0);'>Introduce new stage</a></div>");
 	} 
 	 
@@ -338,7 +347,7 @@ $(document).ready(function(){
 	   var rank = $(this).closest('li').find('#stageRank').val();
 	   var title=$(this).closest('.stage_edit_container').find('input').val();
 	   var description=$(this).closest('.stage_edit_container').find('textarea').val();
-	   var oHandler = $('select[name=stage_image]').msDropDown().data("dd");
+	   var oHandler = $(this).closest('.stage_edit_container').find('.pro_stage_image').find('select').msDropDown().data("dd");
 	   var imageIndex= oHandler.get("selectedIndex");
 	   if(id == ""){ //its create
 		   var post_data = 'projectid='+projectId+'&title='+title+'&description='+description+'&imageUrlIndex='+imageIndex+'&rank='+rank;

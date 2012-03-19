@@ -1,11 +1,18 @@
-<li style="border-left:6px solid <%=story.priority.color%>" data-priority ="<%=story.priority.description%>" data-size="<%=story.storyPoint%>" id="st<%= story.pkey %>">
+<li style="border-left:6px solid <%=story.priority.color%>" data-priority ="<%=story.priority.description%>" data-size="<%=story.storyPoint%>" data-stage="<%=story.ststage.pkey%>" id="st<%= story.pkey %>">
 	<p><%= story.title %></p>
+	<div class="story_desc" style="display:none;"><%= story.description %></div>
 	<div class="meta" style="display:none;">
-		<div class="story_desc"><%= story.description %></div>
-		<div class="img-cont"><%  if(image) %> <%= image %>  </div>
-		<div class="story_info">2/12 completed tasks | 2 discussions</div>
+		<div class="img-cont"><%  if(image){ %> <%= image %> <%}else{%>No Users assigned for this story<%}%> </div>
+		<div class="story-info">
+			<div id="story_members"><a href="javascript:void(0);" class="member-story"></a></div>
+			<div id="story_tasks"><a href="javascript:void(0);" class="task-story"></a><label><%=story.completedTask%>/<%=story.totalTask%></label></div>
+			<div id="story_discussions"><a href="javascript:void(0);" class="discussion-story"></a><label>0</label></div>
+			<div id="story_edit"><a href="javascript:void(0);" class="edit-story"></a></div>
+		</div>
+		<div class="story_tags">#css,#html,#box_model</div>
 	</div>
-	<a href="javascript:void(0);" <% if(backlog){ %> class="strRmv remove" <% } else  %> class = "sptRmv remove"  ></a>
-	<a href="#story-cont" class="viewStory"></a>
+	<a style="display:none;" href="javascript:void(0);" <% if(backlog){ %> class="strRmv remove" <% } else  %> class = "sptRmv remove"  ></a>
+	<a style="display:none;" href="#story-cont" class="viewStory"></a>
+	<label href="javascript:void(0);" class="storySize"><%=story.storyPoint%></label>
 	<a href="javascript:void(0);" class="detailview expandStory"></a>
 </li>

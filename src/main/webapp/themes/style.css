@@ -1353,6 +1353,12 @@ div#projectList {
 	
 }
 
+.storySize{
+	position:absolute;
+	bottom:2px;
+	right:12px;
+}
+
 #story-cont{
 	width:700px;
 	height:auto;
@@ -1664,8 +1670,139 @@ ul.todo-status-list {
 	display:block;
 }
 
-.meta .story_desc{
-	margin:0 0 5px 15px;
+.meta {
+	background:#ECECEC;
+	padding:5px;
+}
+
+.story_desc{
+	padding-left:15px;
+	font-size:13px;
+}
+
+
+/* .meta div{
+	margin:5px 0px 5px 15px;
+	display:inline-block;
+} */
+
+.meta .img-cont{
+	width:95%;
+	margin:5px 0px 5px 15px;
+}
+
+.meta .story-info{
+	width:95%;
+	margin:5px 0px 5px 15px;
+}
+
+.meta .story-info div{
+	display:inline-table;
+	height:25px;
+}
+
+.meta .story-info #story_members{
+	border:1px solid grey;
+	background-color:white;
+	border-radius:3px;
+	width:30px;
+	margin-right:10px;
+}
+
+#story_members .member-story{
+	float:left;
+	background:url("images/adduser_hover.png") no-repeat transparent;
+	height:16px;
+	width:16px;
+	margin: 4px 6px;
+	opacity:0.6;
+	
+}
+
+#story_members .member-story:hover{
+	opacity:1;
+}
+
+.meta .story-info #story_tasks{
+	border:1px solid grey;
+	background-color:white;
+	border-radius:3px;
+	width:55px;
+	margin-right:10px;
+}
+
+#story_tasks .task-story{
+	float:left;
+	background:url("images/tasks.png") no-repeat transparent;
+	height:16px;
+	width:16px;
+	margin: 4px 6px;
+	opacity:0.6;
+}
+
+#story_tasks .task-story:hover{
+	opacity:1;
+}
+
+#story_tasks label{
+	font-size:10px;
+	margin: 4px 6px;
+	display:inline-block;
+}
+
+.meta .story-info #story_discussions{
+	border:1px solid grey;
+	background-color:white;
+	border-radius:3px;
+	width:45px;
+	margin-right:10px;
+}
+
+#story_discussions .discussion-story{
+	float:left;
+	background:url("images/comment.png") no-repeat transparent;
+	height:16px;
+	width:16px;
+	margin: 4px 6px;
+	opacity:0.6;
+}
+
+#story_discussions .discussion-story:hover{
+	opacity:1;
+}
+
+
+#story_discussions label{
+	font-size:10px;
+	margin: 4px 6px;
+	display:inline-block;
+}
+
+.meta .story-info #story_edit{
+	border:1px solid grey;
+	background-color:white;
+	border-radius:3px;
+	width:30px;
+	margin-right:10px;
+	
+}
+
+#story_edit .edit-story{
+	float:left;
+	background:url("images/edit_hover.png") no-repeat transparent;
+	height:16px;
+	width:16px;
+	margin: 4px 6px;
+	opacity:0.6;
+}
+
+#story_edit .edit-story:hover{
+	opacity:1;
+}
+
+.meta .story_tags{
+	width:95%;
+	margin:5px 0px 5px 15px;
 }
 
 .metric {
@@ -2636,6 +2773,13 @@ ul.col li .header label {
 	font-weight:bold;
 	font-size:14px;
 }
+
+ul.col li .header img {
+	margin-right: 10px;
+	float: left;
+}
+
+
 
 ul.col li.yellow .header span {
     background: none repeat scroll 0 0 #FFF9DC !important;
@@ -3704,8 +3848,8 @@ div #add_ppl_info div{
 /*************************/
 
 /*******************autocomplete styles *****************/
-ui#backlog-search-menu li a.ui-state-hover{
-	background: #FDF5CE url(images/ui-bg_glass_100_fdf5ce_1x400.png) 50% 50% repeat-x;
-	font-weight: bold;
-	color: #C77405;
-}
+ 
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus{
+	background: #ECECEC;
+	border:1px solid grey;
+} 

@@ -67,7 +67,7 @@ public class StoryHistoryManagerImpl implements StoryHistoryManager {
         ht.put("stage", stage);
         ht.put("userid", userid);
 
-        return genericDao.getEntity(StoryHistory.class, "storyhistory.fetchUserStoryStoryHistory", ht);
+        return genericDao.getEntity(StoryHistory.class, "storyhistory.fetchUserStoryHistory", ht);
     }
 
     @Transactional
@@ -75,10 +75,10 @@ public class StoryHistoryManagerImpl implements StoryHistoryManager {
 
         Hashtable<String, Object> ht = new Hashtable<String, Object>();
         ht.put("storyid", storyid);
-        ht.put("stage", stage);
+        ht.put("stage", Integer.parseInt(stage));
         // System.out.println("Deleting status");
         // return (String) genericDao.getResult("status.clearUsersByStage",ht);
-        List<StoryHistory> statusObj = genericDao.getEntities(StoryHistory.class, "storyhistory.fetchStoryStoryHistory", ht);
+        List<StoryHistory> statusObj = genericDao.getEntities(StoryHistory.class, "storyhistory.fetchStoryHistory", ht);
         // System.out.println("Size of Array :"+statusObj.size());
         try {
 
