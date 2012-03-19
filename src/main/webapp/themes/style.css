@@ -412,6 +412,7 @@ input.submit {
     margin-bottom: 10px;
     padding: 0 0 0 10px;
     width: 94%;
+    margin-top:20px;
 }
 
 .left_tab {
@@ -1800,7 +1801,6 @@ ul.sprints li a {
 
 #storyList{
 	height:700px;
-	margin-top:20px;
 }
 .createStory{
 	height: 35px !important;
