@@ -133,14 +133,15 @@ public class StoryResource {
         if(tags != null && tags.size() > 0){
             for (Iterator iterator = tags.iterator(); iterator.hasNext();) {
                 String searchTags = (String)iterator.next();                
-                String[] storyTags = searchTags.split(",");
-                for(String storyTag:storyTags){
-                    SearchStoryParameters storyParameters = new SearchStoryParameters();
-                    storyParameters.setType("story_tag");
-                    storyParameters.setValue(storyTag);
-                    searchStoryParameters.add(storyParameters);
+                if(searchTags != null){
+                    String[] storyTags = searchTags.split(",");
+                    for(String storyTag:storyTags){
+                        SearchStoryParameters storyParameters = new SearchStoryParameters();
+                        storyParameters.setType("story_tag");
+                        storyParameters.setValue(storyTag);
+                        searchStoryParameters.add(storyParameters);
+                    } 
                 }
-                
             }
         }
         return searchStoryParameters;
