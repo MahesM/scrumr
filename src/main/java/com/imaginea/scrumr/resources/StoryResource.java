@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectPriority;
 import com.imaginea.scrumr.entities.ProjectStage;
@@ -76,7 +75,7 @@ public class StoryResource {
 
     }
     
-    @RequestMapping(value = "/searchstories/{id}", method = RequestMethod.POST)
+ /*   @RequestMapping(value = "/searchstories/{id}", method = RequestMethod.POST)
     public @ResponseBody
     List<SearchStoryParameters> searchStories(@PathVariable("id") String id, @RequestParam String searchString) {
 
@@ -104,6 +103,48 @@ public class StoryResource {
         
         return searchStoryParameters;
 
+    }*/
+    
+    @RequestMapping(value = "/fetchstorydata/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<SearchStoryParameters> fetchStories(@PathVariable("id") String id) {
+
+        Project project = projectManager.readProject(Integer.parseInt(id));
+        List<SearchStoryParameters> searchStoryParameters = new ArrayList<SearchStoryParameters>();
+        
+        List<ProjectPriority> projectPrioritiesList = projectPriorityManager.fetchAllProjectPrioritiesByProject(project.getPkey());
+        for(ProjectPriority projectPriority:projectPrioritiesList){
+            SearchStoryParameters storyParameters = new SearchStoryParameters();
+            storyParameters.setType("story_priority");
+            storyParameters.setValue(projectPriority.getDescription());
+            searchStoryParameters.add(storyParameters);
+        }        
+        
+        List<Object> storyPointsList = storyManager.searchAllStoryPointsByProject(project.getPkey());
+        for(Object storyPoint:storyPointsList){
+            SearchStoryParameters storyParameters = new SearchStoryParameters();
+            storyParameters.setType("story_size");
+            storyParameters.setValue(storyPoint.toString());
+            searchStoryParameters.add(storyParameters);
+        }
+        
+        
+        List<Object> tags = storyManager.searchAllStoryTagsByProject(project.getPkey());
+        if(tags != null && tags.size() > 0){
+            for (Iterator iterator = tags.iterator(); iterator.hasNext();) {
+                String searchTags = (String)iterator.next();                
+                if(searchTags != null){
+                    String[] storyTags = searchTags.split(",");
+                    for(String storyTag:storyTags){
+                        SearchStoryParameters storyParameters = new SearchStoryParameters();
+                        storyParameters.setType("story_tag");
+                        storyParameters.setValue(storyTag);
+                        searchStoryParameters.add(storyParameters);
+                    } 
+                }
+            }
+        }
+        return searchStoryParameters;
     }
 
     @RequestMapping(value = "{sprintid}/project/{id}", method = RequestMethod.GET)
@@ -317,10 +358,13 @@ public class StoryResource {
     public @ResponseBody
     List<StoryHistory> getUsersFromStory(@RequestParam String storyId, @RequestParam String stage) {
         ProjectStage projectStage;
-        if("undefined".equals(stage))
-            projectStage = null;
-        else
-            projectStage = projectStageManager.readProjectStage(Integer.parseInt(stage));
+        int stageNo = 0;
+        try{
+            stageNo = Integer.parseInt(stage); 
+        }catch(NumberFormatException e){
+            stageNo = 0;
+        }
+        projectStage = projectStageManager.readProjectStage(stageNo);
         return storyHistoryManager.fetchStoryHistory(Integer.parseInt(storyId), projectStage);
     }
 

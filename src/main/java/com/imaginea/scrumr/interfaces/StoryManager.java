@@ -26,8 +26,8 @@ public interface StoryManager {
 
     List<Object> fetchAllStoryPointsByProject(Integer pkey);
     
-    List<Object> searchAllStoryTagsByProject(Integer pkey, String searchString);
+    List<Object> searchAllStoryTagsByProject(Integer pkey);
 
-    List<Object> searchAllStoryPointsByProject(Integer pkey, String searchString);
+    List<Object> searchAllStoryPointsByProject(Integer pkey);
 	
 }

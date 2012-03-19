@@ -34,9 +34,9 @@ import com.imaginea.scrumr.interfaces.IEntity;
     @NamedQuery(name = "stories.fetchStoriesBySprint", query = "SELECT instance from Story instance where instance.sprint_id=:sprint"),
     
     @NamedQuery(name = "stories.fetchStoriesBySprintProject", query = "SELECT instance from Story instance where instance.project=:project and instance.sprint_id=:sprint"),
-    @NamedQuery(name = "stories.searchStoryTagsByProject", query = "SELECT instance.storyTags from Story instance where instance.project.id=:projectid and instance.storyTags LIKE :searchstring"),
+    @NamedQuery(name = "stories.searchStoryTagsByProject", query = "SELECT instance.storyTags from Story instance where instance.project.id=:projectid"),
     @NamedQuery(name = "stories.fetchDistinctStoryPointsByProject", query = "SELECT distinct(instance.storyPoint) from Story instance where instance.project.id=:projectid"),
-    @NamedQuery(name = "stories.searchStoryPointsByProject", query = "SELECT distinct(instance.storyPoint) from Story instance where instance.project.id=:projectid and instance.storyPoint = :searchstring "),
+    @NamedQuery(name = "stories.searchStoryPointsByProject", query = "SELECT distinct(instance.storyPoint) from Story instance where instance.project.id=:projectid"),
     @NamedQuery(name = "stories.fetchUnAssignedStories", query = "SELECT instance from Story instance where instance.project=:project and instance.sprint_id is null") })
 @XmlRootElement
 public class Story extends AbstractEntity implements IEntity, Serializable {

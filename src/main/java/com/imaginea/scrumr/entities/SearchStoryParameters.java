@@ -1,6 +1,5 @@
 package com.imaginea.scrumr.entities;
 
-import java.util.List;
 
 /**
  *  ProjectSummaryReport - represent a task summary report for the project
@@ -8,31 +7,22 @@ import java.util.List;
  */
 public class SearchStoryParameters {
 
-    private List<ProjectPriority> projectPrioritiesList;
-    private List<Object> storyPoints;
-    private List<Object> tags;
-    
-    public List<ProjectPriority> getProjectPrioritiesList() {
-        return projectPrioritiesList;
+    private String type;
+    private String value;
+
+    public String getType() {
+        return type;
     }
     
-    public void setProjectPrioritiesList(List<ProjectPriority> projectPrioritiesList) {
-        this.projectPrioritiesList = projectPrioritiesList;
+    public void setType(String type) {
+        this.type = type;
     }
     
-    public List<Object> getStoryPoints() {
-        return storyPoints;
+    public String getValue() {
+        return value;
     }
     
-    public void setStoryPoints(List<Object> storyPoints) {
-        this.storyPoints = storyPoints;
-    }
-    
-    public List<Object> getTags() {
-        return tags;
-    }
-    
-    public void setTags(List<Object> tags) {
-        this.tags = tags;
+    public void setValue(String value) {
+        this.value = value;
     }
 }
