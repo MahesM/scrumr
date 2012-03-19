@@ -568,10 +568,10 @@ $(document).ready(function(){
 				var curPtyEle = $("#sty_content_priority").children()[cnt];
 				
 				var description = $(".pInput",curPtyEle ).val();
-				var projectid = $(".pAddRem",curPtyEle ).attr("id");
+				var priorityid = $(".pAddRem",curPtyEle ).attr("id");
 				var color = $(".pColor",curPtyEle ).css("background-color");
 				
-				projectPref.projectPreferences[0].projectPriority.push({'projectid':projectid,'description':description,'color':color,'rank':2,'pPriorityNo':projectid});
+				projectPref.projectPreferences[0].projectPriority.push({'projectid':new_proj_response[0].pkey,'description':description,'color':color,'rank':2,'pPriorityNo':priorityid});
 				
 			}
 		}
