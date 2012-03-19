@@ -1,5 +1,7 @@
 package com.imaginea.scrumr.interfaces;
 
+import java.util.List;
+
 import com.imaginea.scrumr.entities.ProjectPreferences;
 
 public interface ProjectPreferencesManager {
@@ -12,6 +14,8 @@ public interface ProjectPreferencesManager {
 	
 	void updateProjectPreferences(ProjectPreferences projectPreferences);
 	
-	void deleteProjectPreferences(ProjectPreferences projectPreferences);	
+	void deleteProjectPreferences(ProjectPreferences projectPreferences);
+	
+	ProjectPreferences getPreferencesByProject(int projectId);
 
 }

@@ -46,6 +46,12 @@ public class ProjectPreferencesManagerImpl implements ProjectPreferencesManager 
 
         }
     }
+    
+    public ProjectPreferences getPreferencesByProject(int projectId) {
+        Hashtable<String, Object> criteria = new Hashtable<String, Object>();
+        criteria.put("projectid", projectId);
+        return genericDao.getEntity(ProjectPreferences.class, "ProjectPreferences.fetchPreferencesByProject", criteria);
+    }
 
 
     /* Getters and Setters */

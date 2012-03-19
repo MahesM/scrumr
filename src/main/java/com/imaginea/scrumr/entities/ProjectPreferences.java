@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -19,7 +20,7 @@ import com.imaginea.scrumr.interfaces.IEntity;
 @Entity
 @Table(name = "project_preferences")
 @NamedQueries({
-    // @NamedQuery(name = "projectpriorities.fetchAllPrioritiesByProjectId", query = "SELECT instance from ProjectPriority instance where instance.project.id=:projectid"),
+     @NamedQuery(name = "ProjectPreferences.fetchPreferencesByProject", query = "SELECT instance from ProjectPreferences instance where instance.project.id=:projectid")
     //@NamedQuery(name = "projectpriorities.fetchMaxPriorityIdByProjectId", query = "SELECT max(instance.priorityid) from ProjectPriority instance where instance.project.id=:projectid")
 })
 @XmlRootElement
@@ -33,6 +34,13 @@ public class ProjectPreferences extends AbstractEntity implements IEntity, Seria
     private int mileStoneType;
     private int mileStoneRange;
     private boolean storypriorityEnabled;
+    
+    public static String[][] defaultStoryTypes = {
+        {"1","2","4","8","16","32","64"},
+        {"1","2","3","5","8","13","21"},
+        {"XS","S","M","L","XL","XXL","XXXL"}
+    };
+    
     
     @JsonIgnore
     @ManyToOne()

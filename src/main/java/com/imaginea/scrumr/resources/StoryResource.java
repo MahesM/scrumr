@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.imaginea.scrumr.entities.Project;
+import com.imaginea.scrumr.entities.ProjectPreferences;
 import com.imaginea.scrumr.entities.ProjectPriority;
 import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.SearchStoryParameters;
@@ -23,6 +24,7 @@ import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.StoryHistory;
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.ProjectManager;
+import com.imaginea.scrumr.interfaces.ProjectPreferencesManager;
 import com.imaginea.scrumr.interfaces.ProjectPriorityManager;
 import com.imaginea.scrumr.interfaces.ProjectStageManager;
 import com.imaginea.scrumr.interfaces.SprintManager;
@@ -42,6 +44,9 @@ public class StoryResource {
     
     @Autowired
     ProjectPriorityManager projectPriorityManager;
+    
+    @Autowired
+    ProjectPreferencesManager projectPreferencesManager;
     
     @Autowired
     ProjectStageManager projectStageManager;
@@ -120,11 +125,15 @@ public class StoryResource {
             searchStoryParameters.add(storyParameters);
         }        
         
-        List<Object> storyPointsList = storyManager.searchAllStoryPointsByProject(project.getPkey());
-        for(Object storyPoint:storyPointsList){
+        ProjectPreferences projectPreference = projectPreferencesManager.getPreferencesByProject(project.getPkey());
+        int highRangeIndex = projectPreference.getStorySizeHighRangeIndex();
+        int lowRangeIndex = projectPreference.getStorySizeLowRangeIndex();
+        int storyType = projectPreference.getStoryPointType();
+        
+        for(int index =lowRangeIndex; index <= highRangeIndex;index++ ){
             SearchStoryParameters storyParameters = new SearchStoryParameters();
             storyParameters.setType("story_size");
-            storyParameters.setValue(storyPoint.toString());
+            storyParameters.setValue(ProjectPreferences.defaultStoryTypes[storyType][index]);
             searchStoryParameters.add(storyParameters);
         }
         
