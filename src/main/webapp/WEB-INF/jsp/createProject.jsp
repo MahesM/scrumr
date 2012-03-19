@@ -70,9 +70,9 @@
 		  			</div>
 		  			<div class="sty_content" >
 		  				<label class="radio_header" >Size In</label>
-		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="pow_2" checked="checked"  /><span>1,2,4,8,16,32</span></div>
-		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="fib_Ser" /><span>1,2,3,5,8,13,21,34,45</span></div>
-		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="rom_char" /><span>XS, S, M, L, XL, XXL, XXXL</span></div>
+		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="0" checked="checked"  /><span>1,2,4,8,16,32</span></div>
+		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="1" /><span>1,2,3,5,8,13,21,34,45</span></div>
+		  				<div class="radio_holder" ><input type="radio" name="sty_size_radio" value="2" /><span>XS, S, M, L, XL, XXL, XXXL</span></div>
 		  				<div>
 			  			 	<label class="radio_header jqslider">Size Range</label>
 							<p>
@@ -91,8 +91,8 @@
 		  			<div class="sty_content" >
 		  			 <div>
 		  				<label class="radio_header">Unit</label>
-		  				<div class="radio_holder" ><input type="radio" name="sty_unit_radio" value="hours"  checked="checked" /><span>Hours</span></div>
-		  				<div class="radio_holder" ><input type="radio" name="sty_unit_radio" value="days" /><span>Days</span></div>
+		  				<div class="radio_holder" ><input type="radio" name="sty_unit_radio" value="0"  checked="checked" /><span>Hours</span></div>
+		  				<div class="radio_holder" ><input type="radio" name="sty_unit_radio" value="1" /><span>Days</span></div>
 		  			 </div>
 		  			 <div>
 		  			 	<label class="radio_header">Max Value Allowed</label>
