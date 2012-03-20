@@ -250,13 +250,13 @@ public class StoryResource {
         int project_Id = ResourceUtil.stringToIntegerConversion("project_id", projectId);
         int sprintId = ResourceUtil.stringToIntegerConversion("sprint_id", stSprint);
         int priorityId = ResourceUtil.stringToIntegerConversion("priority_id", stPriority);
-        int storyPoint = ResourceUtil.stringToIntegerConversion("story_point", storyPointSize);
+        
         Project project = projectManager.readProject(project_Id);
         Sprint sprint = sprintManager.selectSprintByProject(project, sprintId);
         ProjectPriority priority = projectPriorityManager.readProjectPriority(priorityId);
         
         try {
-            createStory(stTitle, stDescription, sprint, priority, user, storyPoint, storyTags, project);
+            createStory(stTitle, stDescription, sprint, priority, user, storyPointSize, storyTags, project);
             return ResourceUtil.SUCCESS_JSON_MSG;
             
         } catch (Exception e) {
@@ -268,7 +268,7 @@ public class StoryResource {
     }
 
     private void createStory(String stTitle, String stDescription, Sprint sprint,
-                                    ProjectPriority priority, String user, int storyPointSize,
+                                    ProjectPriority priority, String user, String storyPointSize,
                                     String storyTags, Project project) {
         
         Date date = new java.sql.Date(System.currentTimeMillis());
@@ -278,7 +278,8 @@ public class StoryResource {
         story.setSprint_id(sprint);
         story.setPriority(priority);
         story.setCreator(user);
-        story.setStoryPoint(storyPointSize);
+        if(storyPointSize != null)
+            story.setStoryPoint(storyPointSize);
         story.setStoryTags(storyTags);
         story.setCreationDate(date);
         story.setLastUpdated(date);
@@ -310,8 +311,7 @@ public class StoryResource {
                 story.setPriority(projectPriorityManager.readProjectPriority(priorityId));                
             }
             if(storyPointSize != null){
-                int storyPoint = ResourceUtil.stringToIntegerConversion("story_point", storyPointSize);
-                story.setStoryPoint(storyPoint);
+                story.setStoryPoint(storyPointSize);
             }
             if(storyTags != null){
                story.setStoryTags(storyTags);

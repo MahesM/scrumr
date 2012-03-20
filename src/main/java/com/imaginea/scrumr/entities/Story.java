@@ -71,7 +71,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
     private List<StoryHistory> statusList;
 
-    private int storyPoint;
+    private String storyPoint;
 
     private int mileStone;
 
@@ -160,11 +160,11 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     }
 
     @Column(name = "storypoint", nullable = true)
-    public int getStoryPoint() {
+    public String getStoryPoint() {
         return storyPoint;
     }
 
-    public void setStoryPoint(int storyPoint) {
+    public void setStoryPoint(String storyPoint) {
         this.storyPoint = storyPoint;
     }
 
