@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,14 +40,6 @@ public class ProjectPreferencesResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectPreferencesResource.class);
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public @ResponseBody
-    List<ProjectPreferences> fetchProjectPreferences(@PathVariable("id") String id) {
-    	ProjectPreferences projectPreference = projectPreferencesManager.readProjectPreferences(Integer.parseInt(id));
-        List<ProjectPreferences> projectPreferences = new ArrayList<ProjectPreferences>();
-        projectPreferences.add(projectPreference);
-        return projectPreferences;
-    }
     
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public @ResponseBody
@@ -58,23 +49,30 @@ public class ProjectPreferencesResource {
                                     @RequestParam String mileStoneType,@RequestParam String mileStoneRange)
 
     {
+        int Project_Id = ResourceUtil.stringToIntegerConversion("project_id", projectId);
+        int story_Point_Type = ResourceUtil.stringToIntegerConversion("project_id", storyPointType);
+        int story_Point_Limit = ResourceUtil.stringToIntegerConversion("project_id", storyPointLimit);
+        int mile_Stone_Type = ResourceUtil.stringToIntegerConversion("project_id", mileStoneType);
+        int mile_Stone_Range = ResourceUtil.stringToIntegerConversion("project_id", mileStoneRange);
+        
         ProjectPreferences projectPreferences = new ProjectPreferences();
         try {
-            Project project = projectManager.readProject(Integer.parseInt(projectId));
+            Project project = projectManager.readProject(Project_Id);
             projectPreferences.setProject(project);
             
             projectPreferences.setStorypriorityEnabled(Boolean.valueOf(storypriorityEnabled));
-            projectPreferences.setStoryPointType(Integer.parseInt(storyPointType));
-            projectPreferences.setStoryPointLimit(Integer.parseInt(storyPointLimit));
+            projectPreferences.setStoryPointType(story_Point_Type);
+            projectPreferences.setStoryPointLimit(story_Point_Limit);
             
-            projectPreferences.setMileStoneType(Integer.parseInt(mileStoneType));
-            projectPreferences.setMileStoneRange(Integer.parseInt(mileStoneRange));
+            projectPreferences.setMileStoneType(mile_Stone_Type);
+            projectPreferences.setMileStoneRange(mile_Stone_Range);
                        
             projectPreferencesManager.createProjectPreferences(projectPreferences);
             
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return null;
+            String exceptionMsg = "Error occured while creating the project preferences ofr the project (pKey) "+projectId ;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
         }
 
         List<ProjectPreferences> result = new ArrayList<ProjectPreferences>();

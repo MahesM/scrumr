@@ -25,6 +25,8 @@ import com.imaginea.scrumr.interfaces.TaskManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
 import com.imaginea.scrumr.security.AbstractAuthenticationFactory;
 import com.imaginea.scrumr.security.AuthenticationSource;
+import com.imaginea.scrumr.utils.MessageLevel;
+import com.imaginea.scrumr.utils.ScrumrException;
 
 @Controller
 @RequestMapping("/users")
@@ -56,7 +58,16 @@ public class UserResource {
     public @ResponseBody
     User fetchUser(@PathVariable("id") String id) {
 
-        User user = userServiceManager.readUser(Integer.parseInt(id));
+        int userId = ResourceUtil.stringToIntegerConversion("user_id", id);
+        User user = null;
+        try{
+            user = userServiceManager.readUser(userId);
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while reading the user with userId "+userId;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e); 
+        }
+        
         return user;
     }
 
@@ -85,9 +96,11 @@ public class UserResource {
         try {
             str = authenticationSource.getFriends(Integer.parseInt(index), Integer.parseInt(count));
         } catch (Exception e) {
-            return "{\"result\":\"failure\"}";
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while reading the qontext user ";
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e); 
+            return ResourceUtil.FAILURE_JSON_MSG;
         }
-        logger.debug("Output: " + str);
         return str;
     }
 
@@ -101,9 +114,10 @@ public class UserResource {
             userList = authenticationSource.searchFriends(sortType, showTotalCount, startIndex, count);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return "{\"result\":\"failure\"}";
+            String exceptionMsg = "Error occured while searching the qontext user with sortType "+sortType;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e); 
+            return ResourceUtil.FAILURE_JSON_MSG;
         }
-        logger.debug("Users List:" + userList);
         return userList;
 
     }
@@ -111,24 +125,24 @@ public class UserResource {
     @RequestMapping(value = "/project/{id}", method = RequestMethod.GET)
     public @ResponseBody
     Set<User> fetchUsersByProject(@PathVariable("id") String id) {
-
-        Project project = projectManager.readProject(Integer.parseInt(id));
+        int projectId = ResourceUtil.stringToIntegerConversion("project_id", id);
+        Project project = projectManager.readProject(projectId);
         return project.getAssignees();
     }
 
     @RequestMapping(value = "/story/{id}", method = RequestMethod.GET)
     public @ResponseBody
     Set<User> fetchUsersByStory(@PathVariable("id") String id) {
-
-        Story story = storyManager.readStory(Integer.parseInt(id));
+        int storyId = ResourceUtil.stringToIntegerConversion("story_id", id);
+        Story story = storyManager.readStory(storyId);
         return story.getAssignees();
     }
 
     @RequestMapping(value = "/task/{id}", method = RequestMethod.GET)
     public @ResponseBody
     User fetchUserByTask(@PathVariable("id") String id) {
-
-        Task task = taskManager.readTask(Integer.parseInt(id));
+        int taskId = ResourceUtil.stringToIntegerConversion("task_id", id);
+        Task task = taskManager.readTask(taskId);
         return task.getUser();
     }
 
@@ -137,25 +151,24 @@ public class UserResource {
     String cacheUser(@RequestParam String username, @RequestParam String displayname,
                                     @RequestParam String fullname, @RequestParam String emailid,
                                     @RequestParam String avatarurl) {
-
-        try {
-            logger.info("Create User: " + displayname);
-            User user = new User();
-            user.setUsername(username);
-            user.setFullname(fullname);
-            user.setAvatarurl(avatarurl);
-            user.setDisplayname(displayname);
-            user.setEmailid(emailid);
-            logger.debug(user.toString());
-            User userExisting = userServiceManager.readUser(username);
-            if (userExisting == null) {
-                userServiceManager.createUser(user);
+        
+        User userExisting = userServiceManager.readUser(username);
+        if(userExisting == null){
+            try {                
+                User user = new User();
+                user.setUsername(username);
+                user.setFullname(fullname);
+                user.setAvatarurl(avatarurl);
+                user.setDisplayname(displayname);
+                user.setEmailid(emailid);
+                userServiceManager.createUser(user);    
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                String exceptionMsg = "Error occured while creating the user with username "+username;
+                ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e); 
+                return ResourceUtil.FAILURE_JSON_MSG;
             }
-
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return "{\"result\":\"failure\"}";
         }
-        return "{\"result\":\"success\"}";
+        return ResourceUtil.SUCCESS_JSON_MSG;
     }
 }

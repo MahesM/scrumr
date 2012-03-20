@@ -1,5 +1,6 @@
 package com.imaginea.scrumr.resources;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +32,8 @@ import com.imaginea.scrumr.interfaces.SprintManager;
 import com.imaginea.scrumr.interfaces.StoryHistoryManager;
 import com.imaginea.scrumr.interfaces.StoryManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
+import com.imaginea.scrumr.utils.MessageLevel;
+import com.imaginea.scrumr.utils.ScrumrException;
 
 @Controller
 @RequestMapping("/stories")
@@ -65,10 +68,19 @@ public class StoryResource {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public @ResponseBody
     List<Story> fetchStory(@PathVariable("id") String id) {
-
-        Story story = storyManager.readStory(Integer.parseInt(id));
+        
         List<Story> stories = new ArrayList<Story>();
-        stories.add(story);
+        int storyId = ResourceUtil.stringToIntegerConversion("story_id", id);
+        
+        try{
+            Story story = storyManager.readStory(storyId);            
+            stories.add(story);            
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while reading the story with pKey "+id ;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+        }
+        
         return stories;
     }
 
@@ -76,181 +88,247 @@ public class StoryResource {
     public @ResponseBody
     List<Story> fetchStoriesByProject(@PathVariable("id") String id) {
 
-        return storyManager.fetchStoriesByProject(Integer.parseInt(id));
-
-    }
-    
- /*   @RequestMapping(value = "/searchstories/{id}", method = RequestMethod.POST)
-    public @ResponseBody
-    List<SearchStoryParameters> searchStories(@PathVariable("id") String id, @RequestParam String searchString) {
-
-        Project project = projectManager.readProject(Integer.parseInt(id));
-        List<ProjectPriority> projectPrioritiesList = projectPriorityManager.searchAllProjectPrioritiesByProject(project.getPkey(),searchString);
-        List<Object> storyPointsList = storyManager.searchAllStoryPointsByProject(project.getPkey(),searchString);
-        List<Object> tags = storyManager.searchAllStoryTagsByProject(project.getPkey(),searchString);
-        List<Object> tagsList = new ArrayList<Object>();
-        if(tags != null && tags.size() > 0){
-            for (Iterator iterator = tags.iterator(); iterator.hasNext();) {
-                String searchTags = (String)iterator.next();                
-                String[] storyTags = searchTags.split(",");
-                for(String storyTag:storyTags)
-                tagsList.add(storyTag);
-            }
+        List<Story> stories = null;
+        int projectId = ResourceUtil.stringToIntegerConversion("project_id", id);
+        
+        try{
+            stories = storyManager.fetchStoriesByProject(projectId);
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while reading the stories of the project with pKey "+id ;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
         }
-        
-        List<SearchStoryParameters> searchStoryParameters = new ArrayList<SearchStoryParameters>();
-        SearchStoryParameters storyParameters = new SearchStoryParameters();
-        storyParameters.setProjectPrioritiesList(projectPrioritiesList);
-        storyParameters.setStoryPoints(storyPointsList);
-        
-        storyParameters.setTags(tagsList);
-        searchStoryParameters.add(storyParameters);
-        
-        return searchStoryParameters;
-
-    }*/
+        return stories;
+    }
     
     @RequestMapping(value = "/fetchstorydata/{id}", method = RequestMethod.GET)
     public @ResponseBody
     List<SearchStoryParameters> fetchStories(@PathVariable("id") String id) {
 
-        Project project = projectManager.readProject(Integer.parseInt(id));
+        int projectId = ResourceUtil.stringToIntegerConversion("project_id", id);
         List<SearchStoryParameters> searchStoryParameters = new ArrayList<SearchStoryParameters>();
         
-        List<ProjectPriority> projectPrioritiesList = projectPriorityManager.fetchAllProjectPrioritiesByProject(project.getPkey());
-        for(ProjectPriority projectPriority:projectPrioritiesList){
-            SearchStoryParameters storyParameters = new SearchStoryParameters();
-            storyParameters.setType("Priority");
-            storyParameters.setValue(projectPriority.getDescription());
-            searchStoryParameters.add(storyParameters);
-        }        
+        try{
+            fetchPriorityInfo(projectId,searchStoryParameters); 
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while reading the priorities of the project with pKey "+id ;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+        }
         
-        ProjectPreferences projectPreference = projectPreferencesManager.getPreferencesByProject(project.getPkey());
+        try{
+            fetchStoryPointInfo(projectId, searchStoryParameters);
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while reading the story points of the project with pKey "+id ;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+        }
+        
+        try{
+            fetchStoryTagInfo(projectId, searchStoryParameters);
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while reading the story tags of the project with pKey "+id ;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+        }
+        return searchStoryParameters;
+    }
+
+    private void fetchStoryTagInfo(int projectId, List<SearchStoryParameters> searchStoryParameters) {
+        List<Object> tags = storyManager.searchAllStoryTagsByProject(projectId);
+        if(ResourceUtil.isNotEmpty(tags)){
+            for (Iterator<Object> iterator = tags.iterator(); iterator.hasNext();) {
+                String searchTags = (String)iterator.next();                
+                if(searchTags != null){
+                    String[] storyTags = searchTags.split(",");
+                    for(String storyTag:storyTags){
+                        searchStoryParameters.add(createStoryParameter("story_tag",storyTag));
+                    } 
+                }
+            }
+        }
+    }
+
+    private void fetchStoryPointInfo(int projectId, List<SearchStoryParameters> searchStoryParameters) {
+        ProjectPreferences projectPreference = projectPreferencesManager.getPreferencesByProject(projectId);
         int highRangeIndex = projectPreference.getStorySizeHighRangeIndex();
         int lowRangeIndex = projectPreference.getStorySizeLowRangeIndex();
         int storyType = projectPreference.getStoryPointType();
         
         for(int index =lowRangeIndex; index <= highRangeIndex;index++ ){
-            SearchStoryParameters storyParameters = new SearchStoryParameters();
-            storyParameters.setType("Size");
-            storyParameters.setValue(ProjectPreferences.defaultStoryTypes[storyType][index]);
-            searchStoryParameters.add(storyParameters);
+            searchStoryParameters.add(createStoryParameter("story_size",ProjectPreferences.defaultStoryTypes[storyType][index]));
+        }    
+    }
+
+    private void fetchPriorityInfo(int projectId, List<SearchStoryParameters> searchStoryParameters) {
+        List<ProjectPriority> projectPrioritiesList = projectPriorityManager.fetchAllProjectPrioritiesByProject(projectId);
+        if(ResourceUtil.isNotEmpty(projectPrioritiesList)){
+            for(ProjectPriority projectPriority:projectPrioritiesList){                
+                searchStoryParameters.add(createStoryParameter("story_priority",projectPriority.getDescription()));            }
         }
-        
-        
-        List<Object> tags = storyManager.searchAllStoryTagsByProject(project.getPkey());
-        if(tags != null && tags.size() > 0){
-            for (Iterator iterator = tags.iterator(); iterator.hasNext();) {
-                String searchTags = (String)iterator.next();                
-                if(searchTags != null){
-                    String[] storyTags = searchTags.split(",");
-                    for(String storyTag:storyTags){
-                        SearchStoryParameters storyParameters = new SearchStoryParameters();
-                        storyParameters.setType("Tag");
-                        storyParameters.setValue(storyTag);
-                        searchStoryParameters.add(storyParameters);
-                    } 
-                }
-            }
-        }
-        return searchStoryParameters;
+    }
+
+    private SearchStoryParameters createStoryParameter(String type, String description) {
+        SearchStoryParameters storyParameters = new SearchStoryParameters();
+        storyParameters.setType(type);
+        storyParameters.setValue(description);
+        return storyParameters;
     }
 
     @RequestMapping(value = "{sprintid}/project/{id}", method = RequestMethod.GET)
     public @ResponseBody
     List<Story> fetchStoriesByProjectSprint(@PathVariable("sprintid") String sid,
                                     @PathVariable("id") String pid) {
-        Sprint sprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(pid)), Integer.parseInt(sid));
+        List<Story> stories = null; 
+        int projectId = ResourceUtil.stringToIntegerConversion("project_id", pid);
+        int sprintId = ResourceUtil.stringToIntegerConversion("sprint_id", sid);
+        Sprint sprint = sprintManager.selectSprintByProject(projectManager.readProject(projectId), sprintId);
+        
         if(sprint != null)
-            return storyManager.fetchStoriesBySprint(sprint.getPkey());
-        else
-            return null;
-
+            stories = storyManager.fetchStoriesBySprint(sprint.getPkey());
+        return stories;
     }
 
     @RequestMapping(value = "/sprint/{id}", method = RequestMethod.GET)
     public @ResponseBody
     List<Story> fetchStoriesBySprint(@PathVariable("id") String id) {
-
-        return storyManager.fetchStoriesBySprint(Integer.parseInt(id));
-
+        
+        List<Story> stories = null;        
+        int sprintId = ResourceUtil.stringToIntegerConversion("sprint_id", id);
+        
+        try{
+            stories = storyManager.fetchStoriesBySprint(sprintId);  
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while reading the stories of the sprint (pKey) "+id ;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+        }
+        return stories;
     }
 
     @RequestMapping(value = "/status", method = RequestMethod.POST)
     public @ResponseBody
     List<Story> fetchStoriesByStatus(@RequestParam String sprintid, @RequestParam String status) {
-
-        return storyManager.fetchStoriesByStatus(Integer.parseInt(sprintid), status);
-
+        
+        List<Story> stories = null;        
+        int sprintId = ResourceUtil.stringToIntegerConversion("sprint_id", sprintid);
+        
+        try{
+            stories = storyManager.fetchStoriesByStatus(sprintId, status);
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while reading the stories of the sprint (pKey) "+sprintId +"with status id "+status;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+        }
+        return stories;
     }
 
     @RequestMapping(value = "/backlog/{id}", method = RequestMethod.GET)
     public @ResponseBody
     List<Story> fetchUnAssignedStories(@PathVariable("id") String id) {
-        logger.debug("UnAssigned Stories");
-        return storyManager.fetchUnAssignedStories(Integer.parseInt(id));
+        
+        List<Story> stories = null;        
+        int projectId = ResourceUtil.stringToIntegerConversion("project_id", id);
+        
+        try{
+            stories = storyManager.fetchUnAssignedStories(projectId);
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while reading the unassigned stories of the project (pKey) "+id;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+        }
+        return stories;
 
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public @ResponseBody
-    String createStory(@RequestParam String stTitle, @RequestParam String stDescription,
-                                    @RequestParam String stPriority, @RequestParam String user,
-                                    @RequestParam String projectId, @RequestParam String stSprint) {
+    String createStory(@RequestParam String stTitle, @RequestParam String stDescription,@RequestParam String stPriority,
+                                    @RequestParam String user,@RequestParam String projectId, @RequestParam String stSprint,
+                                    @RequestParam(required = false) String storyPointSize, @RequestParam(required = false) String storyTags) {
 
-        Story story = new Story();
-        logger.debug("User :" + user);
+        int project_Id = ResourceUtil.stringToIntegerConversion("project_id", projectId);
+        int sprintId = ResourceUtil.stringToIntegerConversion("sprint_id", stSprint);
+        int priorityId = ResourceUtil.stringToIntegerConversion("priority_id", stPriority);
+        int storyPoint = ResourceUtil.stringToIntegerConversion("story_point", storyPointSize);
+        Project project = projectManager.readProject(project_Id);
+        Sprint sprint = sprintManager.selectSprintByProject(project, sprintId);
+        ProjectPriority priority = projectPriorityManager.readProjectPriority(priorityId);
+        
         try {
-            story.setTitle(stTitle);
-            story.setDescription(stDescription);
-            Sprint sprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(stSprint));
-            story.setSprint_id(sprint);
-            story.setPriority(projectPriorityManager.readProjectPriority(Integer.parseInt(stPriority)));
-            story.setCreator(user);
-            story.setCreationDate(new java.sql.Date(System.currentTimeMillis()));
-            story.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
-            story.setLastUpdatedby(user);
-            story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
-            storyManager.createStory(story);
+            createStory(stTitle, stDescription, sprint, priority, user, storyPoint, storyTags, project);
+            return ResourceUtil.SUCCESS_JSON_MSG;
+            
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return "{\"result\":\"failure\"}";
+            String exceptionMsg = "Error occured while creating the story with title "+stTitle;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+            return ResourceUtil.FAILURE_JSON_MSG;
         }
-        return "{\"result\":\"success\"}";
+    }
+
+    private void createStory(String stTitle, String stDescription, Sprint sprint,
+                                    ProjectPriority priority, String user, int storyPointSize,
+                                    String storyTags, Project project) {
+        
+        Date date = new java.sql.Date(System.currentTimeMillis());
+        Story story = new Story();
+        story.setTitle(stTitle);
+        story.setDescription(stDescription);            
+        story.setSprint_id(sprint);
+        story.setPriority(priority);
+        story.setCreator(user);
+        story.setStoryPoint(storyPointSize);
+        story.setStoryTags(storyTags);
+        story.setCreationDate(date);
+        story.setLastUpdated(date);
+        story.setLastUpdatedby(user);
+        story.setProject(project);
+        storyManager.createStory(story);
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
-    String updateStory(@RequestParam String storyId, @RequestParam String stTitle,
-                                    @RequestParam String stDescription,
-                                    @RequestParam String stPriority, @RequestParam String user,
-                                    @RequestParam String projectId, @RequestParam String stSprint) {
+    String updateStory(@RequestParam String storyId, @RequestParam String stTitle,@RequestParam String stDescription,
+                                    @RequestParam String stPriority, @RequestParam String user,@RequestParam String projectId,
+                                    @RequestParam String stSprint,@RequestParam(required = false) String storyPointSize,@RequestParam(required = false) String storyTags) {
 
-        try {
-            Story story = storyManager.readStory(Integer.parseInt(storyId));
+        try {            
+            int story_id = ResourceUtil.stringToIntegerConversion("story_id", storyId);
+            int project_Id = ResourceUtil.stringToIntegerConversion("project_id", projectId);
+            int sprint_Id = ResourceUtil.stringToIntegerConversion("project_id", stSprint);
+            
+            Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(project_Id), sprint_Id);
+            Story story = storyManager.readStory(story_id);
+            
             if (stTitle != null)
                 story.setTitle(stTitle);
             if (stDescription != null)
                 story.setDescription(stDescription);
-
-            if (stPriority != null)
-                story.setPriority(projectPriorityManager.readProjectPriority(Integer.parseInt(stPriority)));
-
-            // story.setCreator(user);
-            // story.setCreationDate(new java.sql.Date(System.currentTimeMillis()));
+            if (stPriority != null){
+                int priorityId = ResourceUtil.stringToIntegerConversion("priority_id", stPriority);
+                story.setPriority(projectPriorityManager.readProjectPriority(priorityId));                
+            }
+            if(storyPointSize != null){
+                int storyPoint = ResourceUtil.stringToIntegerConversion("story_point", storyPointSize);
+                story.setStoryPoint(storyPoint);
+            }
+            if(storyTags != null){
+               story.setStoryTags(storyTags);
+            }
             story.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
             story.setLastUpdatedby(user);
-            Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(stSprint));
             story.setSprint_id(toSprint);
-            // story.setStatus("notstarted");
-            // story.setViewCount(0);
-            // story.setProject(projectManager.readProject(Integer.parseInt(projectId)));
+            
             storyManager.updateStory(story);
+            return ResourceUtil.SUCCESS_JSON_MSG;
+            
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return "{\"result\":\"failure\"}";
-        }
-        return "{\"result\":\"success\"}";
+            String exceptionMsg = "Error occured while updating the story with title "+stTitle;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+            return ResourceUtil.FAILURE_JSON_MSG;
+        }        
     }
 
     @RequestMapping(value = "/addtosprint", method = RequestMethod.POST)
@@ -259,62 +337,91 @@ public class StoryResource {
                                     @RequestParam String status, @RequestParam String projectId) {
 
         try {
-            Story story = storyManager.readStory(Integer.parseInt(stories));
-            Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(Integer.parseInt(projectId)), Integer.parseInt(sprint));
-            story.setSprint_id(toSprint);
-            Project project = projectManager.readProject(Integer.parseInt(projectId));
+            int story_id = ResourceUtil.stringToIntegerConversion("story_id", stories);
+            int project_Id = ResourceUtil.stringToIntegerConversion("project_id", projectId);
+            int sprint_Id = ResourceUtil.stringToIntegerConversion("project_id", sprint);
+            
+            Project project = projectManager.readProject(project_Id);
+            Story story = storyManager.readStory(story_id);
+            Sprint toSprint = sprintManager.selectSprintByProject(project, sprint_Id);
             ProjectStage projectStage = projectStageManager.readProjectStage(project.getMinRankStageId());
+            
+            story.setSprint_id(toSprint);            
             story.setStstage(projectStage);
-            // logger.debug(toSprint.toString());
+
             storyManager.updateStory(story);
+            return ResourceUtil.SUCCESS_JSON_MSG;
+            
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return "{\"result\":\"failure\"}";
-        }
-        return "{\"result\":\"success\"}";
+            String exceptionMsg = "Error occured while adding the story (pkey) "+stories+" to the sprint with id "+sprint;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+            return ResourceUtil.FAILURE_JSON_MSG;
+        }        
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public @ResponseBody
     String deleteStory(@PathVariable("id") String id) {
-
-        Story story = storyManager.readStory(Integer.parseInt(id));
-        logger.debug("Title: " + story.getTitle());
-        storyManager.deleteStory(story);
-        return "{\"result\":\"success\"}";
+        int story_id = ResourceUtil.stringToIntegerConversion("story_id", id);
+        try{
+            Story story = storyManager.readStory(story_id);
+            storyManager.deleteStory(story);
+            return ResourceUtil.SUCCESS_JSON_MSG;
+            
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while deleting the story (pkey) "+id;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+            return ResourceUtil.FAILURE_JSON_MSG;
+        }
     }
 
     @RequestMapping(value = "/{id}/adduser/{uid}", method = RequestMethod.GET)
     public @ResponseBody
     String addUserToStory(@PathVariable("id") String id, @PathVariable("uid") String uid) {
-
-        User user = userServiceManager.readUser(uid);
-        Story story = storyManager.readStory(Integer.parseInt(id));
-        story.addAssignees(user);
-        storyManager.updateStory(story);
-        return "{\"result\":\"success\"}";
+        int story_id = ResourceUtil.stringToIntegerConversion("story_id", id);
+        try{
+            User user = userServiceManager.readUser(uid);
+            Story story = storyManager.readStory(story_id);
+            story.addAssignees(user);
+            storyManager.updateStory(story);
+            return ResourceUtil.SUCCESS_JSON_MSG;
+            
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while adding the user (Pkey) "+uid+" to the story (pkey) "+id;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+            return ResourceUtil.FAILURE_JSON_MSG;
+        }        
     }
 
     @RequestMapping(value = "/{id}/remove/{uid}", method = RequestMethod.POST)
     public @ResponseBody
     String removeUserFromStory(@RequestParam("id") String id, @RequestParam("uid") String uid) {
-
-        User user = userServiceManager.readUser(uid);
-        Story story = storyManager.readStory(Integer.parseInt(id));
-        story.removeAssignees(user);
-        storyManager.updateStory(story);
-        return "{\"result\":\"success\"}";
+        int story_id = ResourceUtil.stringToIntegerConversion("story_id", id);
+        try{
+            User user = userServiceManager.readUser(uid);
+            Story story = storyManager.readStory(story_id);
+            story.removeAssignees(user);
+            storyManager.updateStory(story);
+            return ResourceUtil.SUCCESS_JSON_MSG;
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured while removing the user (Pkey) "+uid+" from the story (pkey) "+id;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+            return ResourceUtil.FAILURE_JSON_MSG;
+        }        
     }
 
     @RequestMapping(value = "removeuser", method = RequestMethod.POST)
     public @ResponseBody
-    String removeUserFromStage(@RequestParam("userid") String uid,
-                                    @RequestParam("storyId") String stid,
+    String removeUserFromStage(@RequestParam("userid") String uid,@RequestParam("storyId") String stid,
                                     @RequestParam("stageId") String stage) {
 
         StoryHistory storyHistory = storyHistoryManager.fetchUserStoryHistory(Integer.parseInt(stid), stage, uid);
         storyHistoryManager.deleteStoryHistory(storyHistory);
-        return "{\"result\":\"success\"}";
+        return ResourceUtil.SUCCESS_JSON_MSG;
     }
 
     @RequestMapping(value = "/{id}/addusers/{uids}", method = RequestMethod.GET)
@@ -328,7 +435,7 @@ public class StoryResource {
             story.addAssignees(user);
         }
         storyManager.updateStory(story);
-        return "{\"result\":\"success\"}";
+        return ResourceUtil.SUCCESS_JSON_MSG;
     }
 
     @RequestMapping(value = "/{id}/removeusers/{uidlist}", method = RequestMethod.GET)
@@ -342,7 +449,7 @@ public class StoryResource {
             story.removeAssignees(user);
         }
         storyManager.updateStory(story);
-        return "{\"result\":\"success\"}";
+        return ResourceUtil.SUCCESS_JSON_MSG;
     }
 
     @RequestMapping(value = "/adduserwithstage", method = RequestMethod.POST)
@@ -360,7 +467,7 @@ public class StoryResource {
             logger.error(e.getMessage(), e);
             throw new Exception(e.toString());
         }
-        return "{\"result\":\"success\"}";
+        return ResourceUtil.SUCCESS_JSON_MSG;
     }
 
     @RequestMapping(value = "/getusers", method = RequestMethod.POST)
@@ -398,15 +505,16 @@ public class StoryResource {
             return "{\"result\":\"failure: Exception occured while adding some users. Users :"
                                             + exceptionString + "\"}";
         }
-        return "{\"result\":\"success\"}";
+        return ResourceUtil.SUCCESS_JSON_MSG;
         // return "{\"result\":\"failure\"}";
     }
-
+    
+    //TODO Remove unused methods from this class
     @RequestMapping(value = "/clearstoryassignees", method = RequestMethod.POST)
     public @ResponseBody
     String removeUsersWithStage(@RequestParam String storyId, @RequestParam String stage) {
         logger.debug("In Story Resource clear:story id =" + storyId + ", stage =" + stage);
         storyHistoryManager.clearUsersByStage(Integer.parseInt(storyId), stage);
-        return "{\"result\":\"success\"}";
+        return ResourceUtil.SUCCESS_JSON_MSG;
     }
 }

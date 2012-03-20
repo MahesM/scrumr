@@ -50,4 +50,6 @@ public interface TaskManager {
      * @return
      */
     List<Task> fetchTaskStatusDetails(Integer projectId, Integer sprintId, Integer userId, String orderBy, Integer pageNumber, Integer maxCount);
+
+    List<Task> getTasksByUser(int userPkey, int storyid);
 }

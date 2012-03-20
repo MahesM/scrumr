@@ -22,6 +22,8 @@ import com.imaginea.scrumr.interfaces.CommentManager;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.StoryManager;
 import com.imaginea.scrumr.interfaces.UserServiceManager;
+import com.imaginea.scrumr.utils.MessageLevel;
+import com.imaginea.scrumr.utils.ScrumrException;
 
 @Controller
 @RequestMapping("/comments")
@@ -44,58 +46,82 @@ public class CommentResource {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public @ResponseBody
     List<Comment> fetchComment(@PathVariable("id") String id) {
-
-        Comment comment = commentManager.readComment(Integer.parseInt(id));
+        
+        int commentId = ResourceUtil.stringToIntegerConversion("comment_id", id);
         List<Comment> comments = new ArrayList<Comment>();
-        comments.add(comment);
+        try{
+            Comment comment = commentManager.readComment(commentId);
+            comments.add(comment);
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured during reading the comment (Pkey) "+id ;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+        }
         return comments;
     }
 
     @RequestMapping(value = "/story/{id}", method = RequestMethod.GET)
     public @ResponseBody
     List<Comment> fetchCommentsByStory(@PathVariable("id") String id) {
-
-        return commentManager.fetchCommentsByStory(Integer.parseInt(id));
+        int storyId = ResourceUtil.stringToIntegerConversion("story_id", id);
+        List<Comment> comments = null;
+        try{
+            comments = commentManager.fetchCommentsByStory(storyId);
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured during reading the comments of the story (Pkey) "+id ;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+        }
+        
+        return comments;
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public @ResponseBody
-    List<Comment> createSprint(@RequestParam String logdate, @RequestParam String user,
+    List<Comment> createComment(@RequestParam String logdate, @RequestParam String user,
                                     @RequestParam String content, @RequestParam String storyid) {
-
-        Comment comment = new Comment();
-
+        
+        List<Comment> result = new ArrayList<Comment>();
+        int storyId = ResourceUtil.stringToIntegerConversion("story_id", storyid);
+        
         DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd");
         Date logDate = null;
 
         try {
-
             logDate = dateFormat.parse(logdate);
+            
+            Comment comment = new Comment();
             comment.setContent(content);
             comment.setLogDate(logDate);
             comment.setUser(userServiceManager.readUser(user));
-            comment.setStory(storyManager.readStory(Integer.parseInt(storyid)));
-
+            comment.setStory(storyManager.readStory(storyId));
             commentManager.createComment(comment);
+            result.add(comment);
         } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured during creating the comment of the story (Pkey) "+storyid+" with content "+content ;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
         }
-
-        List<Comment> result = new ArrayList<Comment>();
-        result.add(comment);
         return result;
-
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public @ResponseBody
     String deleteComment(@PathVariable("id") String id) {
-        Comment comment = commentManager.readComment(Integer.parseInt(id));
-        logger.info("Comment : " + comment.getContent());
-        commentManager.deleteComment(comment);
-        logger.info("Comment deleted");
-        return "{\"result\":\"success\"}";
+        int commentId = ResourceUtil.stringToIntegerConversion("comment_id", id);
+        
+        try{
+            Comment comment = commentManager.readComment(commentId);
+            commentManager.deleteComment(comment);
+            return ResourceUtil.SUCCESS_JSON_MSG;
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            String exceptionMsg = "Error occured during deleting the comment(Pkey) "+id;
+            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+            return ResourceUtil.FAILURE_JSON_MSG;
+        }
+        
+        
     }
 
 }

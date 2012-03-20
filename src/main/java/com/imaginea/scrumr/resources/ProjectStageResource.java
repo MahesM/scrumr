@@ -126,16 +126,13 @@ public class ProjectStageResource {
         if (projectStage != null) {
             try{
                 projectStageManager.deleteProjectStage(projectStage);
-                logger.debug("SUCCESS");
-                return "{\"result\":\"success\"}";
+                return ResourceUtil.SUCCESS_JSON_MSG;
             }catch(Exception e){
                 logger.error(e.getMessage(), e);
                 String exceptionMsg = "Error occured during deletion of the project stage with pKey "+id ;
                 ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
             }            
         }
-        logger.debug("FAILURE");
-        return "{\"result\":\"failure\"}";
-
+        return ResourceUtil.FAILURE_JSON_MSG;
     }   
 }

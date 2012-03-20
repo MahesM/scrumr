@@ -176,4 +176,12 @@ public class TaskManagerImpl implements TaskManager {
     public void setGenericDao(IDao<IEntity, Integer> genericDao) {
         this.genericDao = genericDao;
     }
+
+    public List<Task> getTasksByUser(int pkey, int storyid) {
+        String queryName = "tasks.fetchAllUserTaskStory";
+        Hashtable<String, Object> criteria = new Hashtable<String, Object>();
+        criteria.put("pkey", pkey);
+        criteria.put("storyid", storyid);
+        return genericDao.getResults(queryName, criteria);
+    }
 }
