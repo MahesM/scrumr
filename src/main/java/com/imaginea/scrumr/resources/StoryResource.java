@@ -340,12 +340,22 @@ public class StoryResource {
             int story_id = ResourceUtil.stringToIntegerConversion("story_id", stories);
             int project_Id = ResourceUtil.stringToIntegerConversion("project_id", projectId);
             int sprint_Id = ResourceUtil.stringToIntegerConversion("project_id", sprint);
+            int stage = 0;
+            try{
+                stage = Integer.parseInt(status);
+            }catch(NumberFormatException e){
+                stage = 0; 
+            }
             
             Project project = projectManager.readProject(project_Id);
             Story story = storyManager.readStory(story_id);
             Sprint toSprint = sprintManager.selectSprintByProject(project, sprint_Id);
-            ProjectStage projectStage = projectStageManager.readProjectStage(project.getMinRankStageId());
-            
+            ProjectStage projectStage = null;
+            if(stage == 0){
+                projectStage = projectStageManager.readProjectStage(project.getMinRankStageId());
+            }else{
+                projectStage = projectStageManager.readProjectStage(stage); 
+            }
             story.setSprint_id(toSprint);            
             story.setStstage(projectStage);
 
@@ -357,7 +367,7 @@ public class StoryResource {
             String exceptionMsg = "Error occured while adding the story (pkey) "+stories+" to the sprint with id "+sprint;
             ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
             return ResourceUtil.FAILURE_JSON_MSG;
-        }        
+        }
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
