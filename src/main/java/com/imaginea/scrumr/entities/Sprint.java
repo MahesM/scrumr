@@ -1,7 +1,9 @@
 package com.imaginea.scrumr.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -43,8 +45,10 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	private Set<Story> storyList;
 	private int taskCount;
 	private int completedTasks;
-    private int[] storyCountByStages = new int[5];
-    private int[] stageImageUrl = new int[5];
+    private List<Integer> storyCountByStages = new ArrayList<Integer>();
+    private List<Integer> stageImageUrl =new ArrayList<Integer>();
+    private List<Integer> stageId =new ArrayList<Integer>();
+    private List<StoryStageInfo> storyStageDetails = new ArrayList<StoryStageInfo>();
     private Date projectStartDate;
     private Date projectEndDate;
     private String projectStatus;
@@ -87,19 +91,32 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	}
 	@OneToMany(cascade=CascadeType.REMOVE, mappedBy="sprint_id")
     public Set<Story> getStoryList() {
-	    if(this.storyList != null){
+	    List<ProjectStage> projectStages = this.project.getProjectStages();
+	    for(ProjectStage projectStage:projectStages){
+	        stageImageUrl.add(projectStage.getImageUrlIndex());
+	        stageId.add(projectStage.getPkey());
+	        storyCountByStages.add(0);
+	    }
+	    if(this.storyList != null){	        
             for(Story story:storyList){
                 ProjectStage stage = story.getStstage();
                 if(stage != null){
-                    int rank = stage.getRank();
-                    int currentCount = this.storyCountByStages[rank];
+                    int pKey = stage.getPkey();
+                    int index = stageId.indexOf(pKey);
+                    int currentCount = this.storyCountByStages.get(index);
                     currentCount++;
-                    this.storyCountByStages[rank] = currentCount;
-                    this.stageImageUrl[rank] = stage.getImageUrlIndex();
-                }
-                         
+                    this.storyCountByStages.set(index,currentCount);
+                }       
             } 
         }
+	    
+	    for(int count = 0;count < stageId.size(); count ++){
+	        StoryStageInfo storyStage = new StoryStageInfo();
+	        storyStage.setId(stageId.get(count));
+	        storyStage.setImageUrlIndex(stageImageUrl.get(count));
+	        storyStage.setStoryCount(storyCountByStages.get(count));
+	        storyStageDetails.add(storyStage);
+	    }
 	    return storyList;
     }
     
@@ -107,13 +124,22 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
         this.storyList = storyList;
     }
 
+    @Transient
+    public List<StoryStageInfo> getStoryStageDetails() {
+        return storyStageDetails;
+    }
+    
+    public void setStoryStageDetails(List<StoryStageInfo> storyStageDetails) {
+        this.storyStageDetails = storyStageDetails;
+    }
+    
 	@Column(name = "spstatus", nullable = false)
 	public String getStatus() {
 		return status;
 	}
 	public void setStatus(String status) {
 		this.status = status;
-	}
+	}	
 	
 	@JsonIgnore
 	@OneToMany(cascade=CascadeType.REMOVE, mappedBy="sprint")
@@ -158,24 +184,6 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
         this.completedTasks = completedTasks;
     }
 	
-   @Transient
-    public int[] getStoryCountByStages() {
-        return storyCountByStages;
-    }
-    
-    public void setStoryCountByStages(int[] storyCountByStages) {
-        this.storyCountByStages = storyCountByStages;
-    }
-    
-    @Transient
-    public int[] getStageImageUrl() {
-        return stageImageUrl;
-    }
-    
-    public void setStageImageUrl(int[] stageImageUrl) {
-        this.stageImageUrl = stageImageUrl;
-    }
-    
     @Transient
     public Date getProjectStartDate() {
         return projectStartDate;

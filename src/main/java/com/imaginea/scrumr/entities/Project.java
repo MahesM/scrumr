@@ -1,5 +1,6 @@
 package com.imaginea.scrumr.entities;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -60,6 +61,10 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     private int completedCurrentSprintTaskCount;
     private int maxRankStageId;
     private int minRankStageId;
+    private List<Integer> completedStoriesBySize = new ArrayList<Integer>();
+    private List<Integer> totalStoriesBySize = new ArrayList<Integer>();
+    private List<String> storySizeValue = new ArrayList<String>();
+    private List<StorySizeInfo> storySizeDetails = new ArrayList<StorySizeInfo>();
 
     @Column(name = "ptitle", nullable = false, length = 500)
     public String getTitle() {
@@ -68,7 +73,16 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     public void setTitle(String title) {
         this.title = title;
     }
-
+    
+    @Transient
+    public List<StorySizeInfo> getStorySizeDetails() {
+        return storySizeDetails;
+    }
+    
+    public void setStorySizeDetails(List<StorySizeInfo> storySizeDetails) {
+        this.storySizeDetails = storySizeDetails;
+    }
+    
     @Column(name = "pdescription", nullable = false, length = 600)
     public String getDescription() {
         return description;
@@ -224,16 +238,42 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         this.currentSprintTaskCount = 0;
         this.completedProjectStoryCount = 0;
         this.completedCurrentSprintStoryCount = 0;
-        this.completedCurrentSprintTaskCount = 0;
+        this.completedCurrentSprintTaskCount = 0;        
+        
+        if(projectPreferences == null){
+            getProjectPreferences();
+        }
+        
+        int highIndex = projectPreferences.getStorySizeHighRangeIndex();
+        int lowIndex = projectPreferences.getStorySizeLowRangeIndex();
+        int storyType = projectPreferences.getStoryPointType();
+        storySizeValue.clear();
+        for(int count=lowIndex; count<=highIndex;count++){
+            storySizeValue.add(ProjectPreferences.defaultStoryTypes[storyType][count]);
+            totalStoriesBySize.add(0);
+            completedStoriesBySize.add(0);
+            
+        } 
         
         if(this.stories != null &&  !this.stories.isEmpty()){
             this.projectStoryCount = stories.size();
             Sprint currentSprint = null;
+
             for(Story story:stories){
                 ProjectStage stage = story.getStstage();
-                if(stage != null && stage.getPkey() == this.maxRankStageId){
-                    completedProjectStoryCount++;
+                if(stage != null){
+                    String storyPoint = story.getStoryPoint()+"";
+                    int storyPointIndex = storySizeValue.indexOf(storyPoint);                    
+                    int incrementCount = totalStoriesBySize.get(storyPointIndex) + 1;
+                    totalStoriesBySize.set(storyPointIndex,incrementCount);
+                    
+                    if(stage.getPkey() == this.maxRankStageId){
+                        completedProjectStoryCount++;
+                        incrementCount = completedStoriesBySize.get(storyPointIndex) + 1;
+                        completedStoriesBySize.set(storyPointIndex,incrementCount);
+                    }
                 }
+                    
                 Sprint sprint = story.getSprint_id();
                 if(sprint != null){
                     Integer SprintId = sprint.getId();
@@ -244,14 +284,22 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
                         }
                         this.currentSprintStoryCount++;                
                     } 
-                }
-                
+                }                
             }
+            
+            for(int count=0;count < storySizeValue.size(); count++){
+                StorySizeInfo storySizeInfo = new StorySizeInfo();
+                storySizeInfo.setCompletedStories(completedStoriesBySize.get(count));
+                storySizeInfo.setTotalStories(totalStoriesBySize.get(count));
+                storySizeInfo.setValue(storySizeValue.get(count));
+                storySizeDetails.add(storySizeInfo);
+            }
+            
             if(currentSprint != null) {
                 this.currentSprintTaskCount = currentSprint.getTaskCount();
                 this.completedCurrentSprintTaskCount = currentSprint.getCompletedTasks();
             }                            
-        }	   
+        }      
     }
 
     @OneToMany(cascade=CascadeType.REMOVE, mappedBy="project")
@@ -307,29 +355,29 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     }
     
     @Transient
-	public int getCurrentSprintTaskCount() {
+    public int getCurrentSprintTaskCount() {
         return currentSprintTaskCount;
     }
 
-	public void setCurrentSprintTaskCount(int currentSprintTaskCount) {
+    public void setCurrentSprintTaskCount(int currentSprintTaskCount) {
         this.currentSprintTaskCount = currentSprintTaskCount;
     }
 
-	@Transient
-	public int getProjectStoryCount() {
+    @Transient
+    public int getProjectStoryCount() {
         return projectStoryCount;
     }
 
-	public void setProjectStoryCount(int projectStoryCount) {
+    public void setProjectStoryCount(int projectStoryCount) {
         this.projectStoryCount = projectStoryCount;
     }
 
-	@Transient
-	public int getCurrentSprintStoryCount(){
-	    return currentSprintStoryCount;
-	}
+    @Transient
+    public int getCurrentSprintStoryCount(){
+        return currentSprintStoryCount;
+    }
 
-	public void setCurrentSprintStoryCount(int currentSprintStoryCount) {
+    public void setCurrentSprintStoryCount(int currentSprintStoryCount) {
         this.currentSprintStoryCount = currentSprintStoryCount;
     }
 
@@ -343,7 +391,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     public void setProjectPriorities(List<ProjectPriority> projectPriorities){
         if(projectPriorities != null){
             this.projectPriorities = projectPriorities;
-        }	       
+        }          
     }
 
     @Transient
