@@ -77,7 +77,7 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
     private Set<Task> taskList;
 
-    private int unCompletedTask;
+    private int completedTask;
 
     private int totalTask;
 
@@ -266,32 +266,33 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     public void setTaskList(Set<Task> taskList) {
         this.taskList = taskList;
         this.totalTask = 0;
-        this.unCompletedTask = 0;
+        this.completedTask = 0;
         
         if(this.taskList != null && !(this.taskList.isEmpty())){
             this.totalTask = this.taskList.size();
-            this.unCompletedTask = getUncompletedTask(taskList); 
+            this.completedTask = getCompletedTask(taskList); 
         }
 
     }
-    private int getUncompletedTask(Set<Task> taskList) {
-        int uncompletedTask = 0;
+    private int getCompletedTask(Set<Task> taskList) {
+        int completedTask = 0;
         for(Task task:taskList){
-            if(!("COMPLETED".equals(task.getStatus()))){
-                uncompletedTask++;
+            if("COMPLETED".equals(task.getStatus())){
+                completedTask++;
             }
         }
-        return uncompletedTask;
+        return completedTask;
     }
 
     @Transient
-    public int getUnCompletedTask() {
-        return unCompletedTask;
+    public int getCompletedTask() {
+        return completedTask;
     }
 
-    public void setUnCompletedTask(int unCompletedTask) {
-        this.unCompletedTask = unCompletedTask;
+    public void setCompletedTask(int completedTask) {
+        this.completedTask = completedTask;
     }
+    
     @Transient
     public int getTotalTask() {
         return totalTask;
