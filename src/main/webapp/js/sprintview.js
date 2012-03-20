@@ -14,6 +14,7 @@ $(document).ready(function() {
         	var duration = '';
         	var projectStatus = "";
         	var storyListScroll = null;
+        	var userListScroll = null;
         	var sprintStageScroll = new Object();
         	var projStageScroll = new Object();
         	var addUserScroll = null;
@@ -25,9 +26,10 @@ $(document).ready(function() {
         	var imageCollections = [{value:0,url:"themes/images/project_stages/repository1.png"},{value:1,url:"themes/images/project_stages/repository2.png"},{value:2,url:"themes/images/project_stages/repository3.png"},{value:3,url:"themes/images/project_stages/repository4.png"},{value:4,url:"themes/images/project_stages/repository5.png"},{value:5,url:"themes/images/project_stages/repository6.png"},{value:6,url:"themes/images/project_stages/repository7.png"},{value:7,url:"themes/images/project_stages/repository8.png"},{value:8,url:"themes/images/project_stages/repository9.png"},{value:9,url:"themes/images/project_stages/repository10.png"}];
         	
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
-					window.location.href="auth.action";    			
+				//	window.location.href="auth.action";    			
     		});
     		
+    		localStorage.clear();  
     		$("#backlog_seach_input" ).autocomplete({
     			source: backlogSearchSource,
     		}).data( "autocomplete" )._renderItem = function( ul, item ) {
@@ -49,6 +51,7 @@ $(document).ready(function() {
     		}
        	
         	function populateProjectDetails(){
+        		$('#peopleview').css({'height': (($(window).height()) -150) + 'px'});
         		$.ajax({
             		url: 'api/v1/projects/'+projectId,
             		type: 'GET',
@@ -66,20 +69,6 @@ $(document).ready(function() {
             				if(title.length > 30){
             					title = title.substring(0,30)+" ...";
             				}
-    						/* if(project.start_date != null){
-    							var startdate = new Date(project.start_date);
-    							startdate = startdate.format("mm/dd/yyyy");
-    							duration += '<span></span>'+startdate;
-    						}else{
-    							duration += 'No Start Date';
-    						}
-    						if(project.end_date != null){
-    							var enddate = new Date(project.end_date);
-    							enddate = enddate.format("mm/dd/yyyy");
-    							duration += ' - <span></span>'+ enddate;
-    						}else{
-    							duration += ' - No End Date';
-    						} */
             				$('header .proj_title label').html(title);
             				users = project.assignees;
             				$('section.left .peopleview label').html("Members ("+users.length+")");
@@ -95,8 +84,8 @@ $(document).ready(function() {
             				if(users != null && users.length > 0){
             					for(var i=0;i< users.length;i++){
             						var userFullName = users[i].fullname;
-            						if( fullname ==  users[i].fullname )  userFullName += " ( You )" ; 
-            						$("#people").append('<li><img title="'+ users[i].fullname +'" src="'+qontextHostUrl+users[i].avatarurl+'" /><div class="proj_mem_name" id= "'+ users[i].fullname +'" >'+ userFullName +'</div><img class="remove_mem" title="Remove" src="themes/images/delete_member.png" id="'+users[i].fullname+'" ></li>');
+            						if( userLogged ==  users[i].username )  userFullName += " ( You )" ; 
+            						$("#people").append('<li><img title="'+ users[i].fullname +'" src="'+qontextHostUrl+users[i].avatarurl+'" /><div class="proj_mem_name" id= "'+ users[i].fullName +'" >'+ userFullName +'</div><img class="remove_mem" title="Remove" src="themes/images/delete_member.png" id="'+users[i].username+'" ></li>');
             						userObject[users[i].username] = users[i];
             					}
             				}else{
@@ -112,6 +101,15 @@ $(document).ready(function() {
 	            				}
             				}
            					$('#proj-user-list').html(user_html);
+           					if(userListScroll){
+	   	       					 var api = $('#peopleview').data('jsp');
+	   	       					 if(api)api.destroy();
+          					}
+           					if(!$('#peopleview').is(':visible')){
+           						userListScroll = $('#peopleview').show().jScrollPane({showArrows: true, scrollbarWidth : '20'}).hide().data().jsp;
+           					}else{
+           						userListScroll = $('#peopleview').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+           					}
             			}
             		},
             		error: function(data) { },
@@ -121,7 +119,7 @@ $(document).ready(function() {
 			function populateUnassignedStories(name){
 				populateSearchDataSource(); //populate datasource everytime stories are added to backlog
 				// $('#storyList ul').css({'height': (($(window).height()) - 320) + 'px'});
-				 $('#storyList').css({'height': (($(window).height()) -150) + 'px'});
+				 $('#storyList').css({'height': (($(window).height()) -180) + 'px'});
 	        	 $.ajax({
 	        		url: 'api/v1/stories/backlog/'+projectId,
 	        		type: 'GET',
@@ -129,6 +127,7 @@ $(document).ready(function() {
 	        		success: function( stories ) {
         				var story_unassigned = '';
 	        			if(stories != null && stories.length){
+	        				$('#add_ppl_info').hide();
 	        				$('section.left .backlogview label').html("Backlog ("+stories.length+")");
 	        				$('section.left_collapsed .backlogview label').html(stories.length+" Backlog");
 	        				for(var i=0;i<stories.length;i++){
@@ -248,6 +247,7 @@ $(document).ready(function() {
 				        		sprint_html += '<ul id="project_holder" class="col"><div class="holder_round">';
 			        			//$("ul.col li").css("width",100/sprints.length+'%');
 			        			for(var k=0; k<sprints.length;k++ ){
+			        				var projectStageDetails = sprints[k].storyStageDetails;
 			        				//sprint_html += '<li class="stages"><div class="header "><span></span>Sprint '+(k+1)+'</div><div class="projectCont"><ul id="sp'+sprints[k].id+'"class="story">';
 			        				var sprint_startdate = new Date(sprints[k].startdate);
 			        				sprint_startdate = sprint_startdate.format("mmm dd");
@@ -303,21 +303,37 @@ $(document).ready(function() {
 						        		error: function(data) { },
 						        		complete: function(data) { }
 						        	});
-			        				sprint_html += '<div class="sprint-info" style="display:none;"></div></ul></div>';
-			        				sprint_html +='</li>';
+			        				sprint_html += '</ul></div>';
+			        				sprint_html += '<div class="sprint-info" style="display:none;">';
+				        			for(var i=0;i<projectStageDetails.length;i++){
+				        				sprint_html += "<div id='projectStage"+projectStageDetails[i].id+"'><img src='"+imageCollections[projectStageDetails[i].imageUrlIndex].url+"'/><label>("+projectStageDetails[i].storyCount+")</label></div>";
+				        			}
+			        				sprint_html +='</div></li>';
 			        				
 			        			}
 			        			$("#project_finished").html(finished);
-
+			        			
 			        			sprint_html +='</div></ul>';
 			        			$("#project-view").html(sprint_html);
-			        	        $('ul.col li.stages .header').hover(function(){
+			        			
+			        	        $('ul.col li.stages').hover(function(){
 			        	        	$(this).find('a.editSprint').show(); 
 			        	        	$(this).find('div.sprint-info').show(); 
 			        	         },function(){
 			        	        	 $(this).find('a.editSprint').hide();
 			        	        	 $(this).find('div.sprint-info').hide(); 
 			        	         });
+			        	        
+			        	        $('.sprint-info div').unbind('click').bind('click',function(){
+			        	        	var query = $(this).attr('id').split('projectStage')[1];
+			        	        	var selector = $(this).closest('li').find('ul.story');
+			        	        	$(selector).find('li').each(
+			            					function() {
+			            						($(this).attr('data-stage')
+			            								.search(new RegExp(query, "i")) < 0) ?$(this).css('opacity','0.6'): $(this).css('border','1px solid yellow');
+			            								
+			            					});
+			        	        })
 			        	        
 			        			$('#project-view .pageCtrls').html("");
 			        			var current_page = current_sprint - 1;
@@ -382,8 +398,8 @@ $(document).ready(function() {
 		        		   			}
 		        	    		}).disableSelection();
 			        			
-			        			$('.stages .projectCont').css({'height': (($(window).height()) - 120) + 'px'});
-			        			$('.stages').parent('.holder_round').css({'height': (($(window).height()) - 90) + 'px'});
+			        			$('.stages .projectCont').css({'height': (($(window).height()) - 150) + 'px'});
+			        			$('.stages').parent('.holder_round').css({'height': (($(window).height()) - 120) + 'px'});
 			        			$( ".stages .projectCont ul").each(function(){
 									if($(this).find('li').length > 0){
 										//$(this).css({'height': (($(window).height()) - 195) + 'px'});
@@ -760,8 +776,8 @@ $(document).ready(function() {
 			        		   			
 			        	    		}).disableSelection();
 			        				
-				        			$('.stages ul:visible').parent('.sprintCont').css({'height': (($(window).height()) - 120) + 'px'});
-				        			$('.stages').parent('div.holder_round').css({'height': (($(window).height()) - 90) + 'px'});
+				        			$('.stages ul:visible').parent('.sprintCont').css({'height': (($(window).height()) - 150) + 'px'});
+				        			$('.stages').parent('div.holder_round').css({'height': (($(window).height()) - 120) + 'px'});
 				        			$( ".stages ul:visible").each(function(){
 										if($(this).find('li').length > 0){
 											var ulHeight = ($(this).find('li').outerHeight() * $(this).find('li').length) + 150;
@@ -1113,7 +1129,7 @@ $(document).ready(function() {
 				}
 			});
 			
-			function populateUserDetails(startIndex, isAppend){
+			/*function populateUserDetails(startIndex, isAppend){
 				if(!isAppend){
 					$('.popup-proj-cont').show();
 					$('.popup-proj-cont .c-box-content .user-loading').show();
@@ -1226,14 +1242,114 @@ $(document).ready(function() {
 				},1000);
 				//	var users_html = "<ul>";
 					
-					/* if(firstVisit){
+					 if(firstVisit){
 						$('.popup-proj-cont').show();
 						$('.popup-proj-cont .c-box-content ul').jScrollPane();
-					} */
+					} 
 					
 					
 				
+			}*/
+			
+			function populateUserDetails(){
+				$('ul#selected_user').find('li').each(function(){
+					$(this).remove();
+				})
+				$('.popup-proj-cont').show();
+				$('#addusers').autocomplete({
+					source:[],
+	    		}).data( "autocomplete" )._renderItem = function( ul, item ) {
+					var el = $( "<li></li>" ).data( "item.autocomplete", item );
+					el.append( "<a>" + item.value + " </a>" );
+	    			return el.appendTo( ul );
+				}
 			}
+			
+			$('#addusers').live('keydown',function(){
+				var userSource = [];
+				var callApi = true;
+				delay(function(){
+					var query=$('#addusers').val();
+					for(var i in localStorage){
+						if (query.toLowerCase().indexOf(i) !== -1){
+							var retrievedObject = localStorage.getItem(i);
+							userSource = JSON.parse(retrievedObject);
+							callApi = false;
+						}else{
+							callApi = true;
+						}
+					}
+					if(callApi){
+						var post_data = "sortType="+query+"&showTotalCount=false&startIndex=0&count=20";
+		    			$('.suggestion').show();
+						$.ajax({
+							url : 'api/v1/users/searchqontext/',
+							type : 'POST',
+							data : post_data,
+							success: function( data ) {
+								var data_obj = $.parseJSON(data);
+								var apiVersion = data_obj.success.headers["api-version"];
+								if(data_obj.success.body.objects){
+									var user_obj = data_obj.success.body.objects;
+									for(var i=0;i<user_obj.length;i++){
+										if(!user_obj[i].basicInfo.avatarUrl){
+											user_obj[i].basicInfo.avatarUrl = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
+				        				}
+										userSource[userSource.length] = {value:user_obj[i].basicInfo.fullName,type:user_obj[i].accountId,avatarurl:user_obj[i].basicInfo.avatarUrl,displayname:user_obj[i].basicInfo.displayName,emailid:user_obj[i].basicInfo.userId};
+									}
+									if (localStorage)  {
+										localStorage.setItem(query, JSON.stringify(userSource));
+									}
+									$('.suggestion').hide();
+									$("#addusers").autocomplete( "option", "source", userSource).autocomplete( "search" , query );
+									$("#addusers").unbind('autocompleteselect').bind('autocompleteselect', function(event, ui) { 
+										var str = "<li id='"+ui.item.type+"' data-displayname='"+ui.item.displayname+"' data-emailid='"+ui.item.emailid+"' data-avatarurl='"+ui.item.avatarurl+"' class='selectedUser' ><p>"+ui.item.value+"</p><a href='javascript:void(0);'class='user_remove' /></li>";
+										$('#selected_user input').val("");
+										$('#selected_user input').focus();
+										$('#selected_user input').before(str);
+										$('.user_remove').unbind('click').bind('click',function(){
+											$(this).closest('li').remove();
+										});
+									});
+								}else{
+									$('.suggestion').find('label').html("No Matches found");
+									$('.suggestion').find('img').hide();
+								}
+							}
+						});
+					}else{
+						$("#addusers").autocomplete( "option", "source", userSource).autocomplete( "search" , query );
+						$("#addusers").unbind('autocompleteselect').bind('autocompleteselect', function(event, ui) { 
+							var str = "<li id='"+ui.item.type+"' data-displayname='"+ui.item.displayname+"' data-emailid='"+ui.item.emailid+"' data-avatarurl='"+ui.item.avatarurl+"' class='selectedUser' ><p>"+ui.item.value+"</p><a href='javascript:void(0);'class='user_remove' /></li>";
+							$('#selected_user input').val("");
+							$('#selected_user input').focus();
+							$('#selected_user input').before(str);
+							$('.user_remove').unbind('click').bind('click',function(){
+								$(this).closest('li').remove();
+							});
+						});
+					}
+	    			
+				},1000);
+			});
+			
+			$('#popup_proj_user_done').unbind('click').live('click',function(){
+				$('#add_ppl_info').hide();
+				$('ul#selected_user').find('li').each(function(){
+					var userDetails = {};
+					userDetails.username = $(this).attr('id');
+					userDetails.fullname = $(this).find('p').html();
+					userDetails.avatarurl = $(this).attr('data-avatarurl');
+					userDetails.displayname =$(this).attr('data-displayname');
+					userDetails.emailid = $(this).attr('data-emailid');
+					var success = addUser(userDetails);
+					if(success ==true){
+						populateProjectDetails();
+						$('.popup-proj-cont').hide();
+					}
+				})
+			});
+			
 			
 			function constructPagination(element,perPage,currentPage){
 				var el = element;
@@ -1315,10 +1431,10 @@ $(document).ready(function() {
 						$(this).find('ul.option-list').hide();
 					}
 				}
-				//add user popup close on clicking anywhere outside popup.
+				/*//add user popup close on clicking anywhere outside popup.
 				if($(el).closest('.popup-proj-cont').length == 0 && $(el).closest('#addPeople').length == 0 && $(el).closest('#removePeople').length == 0){
 					$('.popup-proj-cont').hide();
-				}
+				}*/
 				
 				//add story popup close on clicking anywhere outside popup.
 				if($(el).closest('.story-popup').length == 0 && $(el).closest('#addStory').length == 0 && ($(el).closest('#popup_proj_done').length == 0)){
@@ -2452,6 +2568,10 @@ $(document).ready(function() {
         	 $('.popup-story-cont').hide();
          }); 
          
+         $('#popup_user_cancel,.user_close').unbind('click').live("click",function(){
+        	 $('.popup-proj-cont').hide();
+         }); 
+         
          $('#popup_story_cancel').unbind('click').live("click",function(){
         	 $('.story-popup').hide();
          }); 
@@ -2806,7 +2926,7 @@ $(document).ready(function() {
          /***************************************/
          
          	$("ul.proj_ppl_list li").live('mouseover',function() {
-        	 		$(this).find("img.remove_mem[id != '"+fullname+"']").css("display","inline");
+        	 		$(this).find("img.remove_mem[id != '"+userLogged+"']").css("display","inline");
         	  	}).live('mouseout',function(){
         		  	$(this).find("img.remove_mem").css("display","none");
         	});

@@ -357,26 +357,22 @@
         
         <div class="popup-proj-cont" style="display:none;">
            <div class="c-box">
-               <div class="c-box-head">Add people to the project</div>
+               <div class="c-box-head">Add Members</div>
                <div class="c-box-content">
-               		<div id="userInput" class="">
-		                <input type="text" id="searchUser" placeholder="Search user by name..."/>
-		                <a class="search-input" href="javascript:void(0);" ></a>
-	                </div>
-	               <div class="user-loading" id="user_loading" style="display:none;"></div>
-	               
-                   <ul id="total-user-list">
-                   
-                       
-                   </ul>
-				   <div class="more-load" style="display:none;"></div>
+		           <ul id="selected_user">
+		           	<input id="addusers" placeholder="Type member name" />
+		           </ul>
+		           <div class="suggestion" style="display:none;">
+		           		<img src= "themes/images/project_stages/repository2.png" style="vertical-align: middle;" />
+		           		<label>Loading Suggestions</label>
+		           	</div>
                </div>
-              
-                 <div class="actions-cont float-rgt">
-
-                       <input id="popup_proj_done" type="button" class="float-rgt submit" value="Done"/>
-                   </div>
-               <div id="pointerEl" class="pointer"></div> </div>
+               <div class="actions-cont float-rgt">
+               	  <a id="popup_user_cancel">Later</a>
+                  <input id="popup_proj_user_done" type="button" class="float-rgt submit" value="Done"/>
+               </div>
+            </div>
+               <div id="userClose" class="user_close"></div> 
        </div>
         
          <div class="popup-story-cont" style="display:none;">
@@ -477,8 +473,7 @@
        </div>
        
     </section>
-  
+   <jsp:include page="footer.jsp" />
 </div>
- 
 </body>
 </html>
