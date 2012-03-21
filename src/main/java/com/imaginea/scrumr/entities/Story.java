@@ -56,6 +56,8 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     private String creator;
 
     private Date lastUpdated;
+    
+    private int sprintNo;
 
     private String lastUpdatedby;
     
@@ -142,8 +144,20 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
 
     public void setSprint_id(Sprint sprint_id) {
         this.sprint_id = sprint_id;
+        if(this.sprint_id != null){
+            this.sprintNo = this.sprint_id.getPkey();
+        }
     }
 
+    @Transient
+    public int getSprintNo() {
+        return sprintNo;
+    }
+    
+    public void setSprintNo(int sprintNo) {
+        this.sprintNo = sprintNo;
+    }
+    
     @Column(name = "stcreation", nullable = false)
     public Date getCreationDate() {
         return creationDate;

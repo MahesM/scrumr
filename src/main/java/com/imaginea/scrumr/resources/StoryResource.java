@@ -81,7 +81,12 @@ public class StoryResource {
         int storyId = ResourceUtil.stringToIntegerConversion("story_id", id);
         
         try{
-            Story story = storyManager.readStory(storyId);            
+            Story story = storyManager.readStory(storyId);
+            int sprintId = story.getSprintNo();
+            if(sprintId != 0){
+                sprintId = sprintManager.readSprint(sprintId).getId();
+            }
+            story.setSprintNo(sprintId);
             stories.add(story);            
         }catch(Exception e){
             logger.error(e.getMessage(), e);
