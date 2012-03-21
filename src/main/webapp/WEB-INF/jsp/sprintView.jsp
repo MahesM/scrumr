@@ -203,10 +203,45 @@
 		              </table>
 	             </div> 
 	          </div>
+	          
+
+	         		<div id="add_story_popup" style="display:none;" >
+	         				<div class="chosen_tab_header" >Add Story</div>
+	         				<div id="tabs_addstory">
+								<ul>
+									<li  >
+										<a href="#tabs_story">Story Details</a>
+									</li>
+									<li >
+										<a href="#tabs_task">Tasks</a>
+									</li>
+									<li>
+										<a href="#tabs_disc">Discussions</a>
+									</li>
+								</ul>
+					
+								<div id="tabs_story">
+									<jsp:include page="story_details.jsp" />
+								</div>
+								<div id="tabs_task">
+									<jsp:include page="task_details.jsp" />
+								</div>
+								<div id="tabs_disc">
+									<jsp:include page="createProject.jsp" />
+								</div>
+							</div>
+							<div class="actions-cont" style="float:right" >
+			                 	<a id="popup_story_cancel_btn">Later</a>
+			                 	<input id="createStory" type="button" class="submit" value="Done"/>
+								<input id="addAnotherStory" type="button" class="submit" value="Add another story"/>
+			                </div>
+			                <div id="add_story_user_close" class="addStory_user_close"></div>
+	         		</div>
+
             
             <div style="display:none;overflow:hidden !important;">
             	<div id="story-cont">
-                       <div class="popup">
+                  <!--    <div class="popup">
     						<div class="acc-cont">
         						<div class="acc">
 	        						<div class="acc-head">
@@ -222,8 +257,8 @@
 	        								<p id="st-edit"><a href="javascript:void(0);" class="st_edit_story">Edit Story</a></p>
 	        							</div>
 	        							<div id="story-edit-section" style="display:none;" class="story_section">
-	        								<input type="text" id="st-edit-title" /><!-- <p id="st-title"></p> -->
-	        								<textarea style="resize:none;" name="st-edit-description"></textarea><!-- <p id="st-description"></p> -->
+	        								<input type="text" id="st-edit-title" />
+	        								<textarea style="resize:none;" name="st-edit-description"></textarea>
 	        								<div id="st-edit-priority" class="custom-select">
 										        <div class="option">
 										            <div class="color p1"></div>
@@ -249,11 +284,11 @@
 										                </div>
 										            </li>
 										        </ul>
-										    </div><!-- <p id="st-priority"></p> -->
+										    </div>
 	        								<div class="stSprint">
 												<select name="st-edit-sprint" id="st-edit-sprint">
 												</select>
-											</div><!-- <p id="st-sprint"></p> -->
+											</div>
 	        								<div class="st-edit-action">
 	        									<a href="javascript:void(0);" class="st_edit_cancel">Cancel</a>
 	        									<input id="st-edit-done" type="button" class="float-rgt submit" value="Done"/>
@@ -348,7 +383,7 @@
 							            </div>
 					            </div>
    							 </div>
-						</div>
+						</div> -->
 	                </div>
             	</div>
             </div>
@@ -474,6 +509,7 @@
        
     </section>
    <jsp:include page="footer.jsp" />
+   <div id="custom_overlay" ></div>
 </div>
 </body>
 </html>

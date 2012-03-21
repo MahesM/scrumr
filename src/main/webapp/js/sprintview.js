@@ -7,6 +7,7 @@ $(document).ready(function() {
         	var creator;
         	var projectLanes = new Object();
         	var projectPriorities = new Object();
+        	var projectPreferences = new Object();
         	var users = null;
         	var userObject = new Object();
         	var creatorObj = new Object();
@@ -26,12 +27,12 @@ $(document).ready(function() {
         	var imageCollections = [{value:0,url:"themes/images/project_stages/repository1.png"},{value:1,url:"themes/images/project_stages/repository2.png"},{value:2,url:"themes/images/project_stages/repository3.png"},{value:3,url:"themes/images/project_stages/repository4.png"},{value:4,url:"themes/images/project_stages/repository5.png"},{value:5,url:"themes/images/project_stages/repository6.png"},{value:6,url:"themes/images/project_stages/repository7.png"},{value:7,url:"themes/images/project_stages/repository8.png"},{value:8,url:"themes/images/project_stages/repository9.png"},{value:9,url:"themes/images/project_stages/repository10.png"}];
         	
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
-				//	window.location.href="auth.action";    			
+					window.location.href="auth.action";    			
     		});
     		
     		localStorage.clear();  
     		$("#backlog_seach_input" ).autocomplete({
-    			source: backlogSearchSource,
+    			source: backlogSearchSource
     		}).data( "autocomplete" )._renderItem = function( ul, item ) {
     			ul.attr('id','backlog-search-menu');
 				var el = $( "<li></li>" ).data( "item.autocomplete", item );
@@ -62,6 +63,8 @@ $(document).ready(function() {
             				projectStatus = project.status;
             				projectLanes = project.projectStages;
             				projectPriorities = project.projectPriorities;
+            				projectPreferences = project.projectPreferences;
+            				totalsprints = project.no_of_sprints;
             				current_sprint = project.current_sprint > 0?project.current_sprint:1;
             				sprintinview = current_sprint;
             				creator = project.createdby;
@@ -73,13 +76,7 @@ $(document).ready(function() {
             				users = project.assignees;
             				$('section.left .peopleview label').html("Members ("+users.length+")");
             				$('section.left_collapsed .peopleview label').html(users.length+" Members");
-            				totalsprints = project.no_of_sprints;
-            				//populate story popup sprint select box
-            				var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
-            	        	 for(var i=1;i<=totalsprints;i++){
-            	        		 optionsHtml +='<option value="'+i+'">Sprint '+i+'</option>';
-            	        	 }
-            	        	 $('.story-popup #storySprint').html(optionsHtml);
+            				render_proj_sprint();
             				$("#people").html('');
             				if(users != null && users.length > 0){
             					for(var i=0;i< users.length;i++){
@@ -1129,127 +1126,6 @@ $(document).ready(function() {
 				}
 			});
 			
-			/*function populateUserDetails(startIndex, isAppend){
-				if(!isAppend){
-					$('.popup-proj-cont').show();
-					$('.popup-proj-cont .c-box-content .user-loading').show();
-					$('.popup-proj-cont .c-box-content ul').hide();
-					$('.popup-proj-cont .c-box-head').html("Add people to the project");
-					$('.popup-proj-cont .c-box-content input').attr('id',"searchUser");
-					$('#searchUser').val("");
-					$('#searchUser').next().removeClass().addClass('search-input').css('background','url("themes/images/search.jpg") no-repeat');;
-				}
-				var post_data = "index="+startIndex+"&count=40";
-				var _url = "api/v1/users/fetchusers";
-				if(source == "qontext"){
-					_url = "api/v1/users/fetchqontextusers";
-				}
-				setTimeout(function(){
-					$.ajax({
-        			url: _url,
-        			type: 'POST',
-        			data: post_data,
-        			async:false,
-        			success: function( records ) {
-        				if(records != null){
-        					var total_record='';
-							if(source == "qontext"){
-								total_record = $.parseJSON(records);
-								records = total_record.success.body.objects;
-							}
-							if( records.length > 0){
-								var total_users = records;
-								for(var j=0;j<records.length;j++){
-									for(var k=0;k<users.length;k++){
-										if(records[j].ownerAccountId == users[k].username ){
-											total_users.splice(j,1);
-										}
-									}
-								}
-								var users_html="";
-								if(source == "qontext"){
-									var apiVersion = total_record.success.headers["api-version"];
-									for(var i=0;i<total_users.length;i++){
-										if(!total_users[i].avatar){
-				        					total_users[i].avatar = "/portal/st/"+apiVersion+"/profile/defaultUser.gif"; //place default url here.
-				        				}
-										users_html += '<li><img url="'+total_users[i].avatar+'" src="'+qontextHostUrl+total_users[i].avatar+'"/></div><div class="details"><label class="name">'+total_users[i].name+'</label><a class="email">'+total_users[i].profilePrimaryEmail+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].ownerAccountId+'"></div></li>';
-									}
-								}else{
-									for(var i=0;i<total_users.length;i++){
-										users_html += '<li><img url="'+total_users[i].avatarurl+'" src="'+qontextHostUrl+total_users[i].avatarurl+'"/></div><div class="details"><label class="name">'+total_users[i].fullname+'</label><a class="email">'+total_users[i].emailid+'</a></div><div style="float:left;" class="adduser float-rgt enable" id="'+total_users[i].username+'"></div></li>';
-									}
-								}
-								
-								$('.popup-proj-cont .c-box-content .user-loading').hide();
-								$('.popup-proj-cont .c-box-content ul').show();
-								if(isAppend) {
-									  $('.popup-proj-cont .c-box-content .more-load').hide();
-									  $('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);	
-								  }else if(addUserScroll == null){
-									  $('.popup-proj-cont .c-box-content ul').html(users_html);
-								  }
-								var atBottom = false;
-							 	if(addUserScroll && !isAppend){
-									var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
-									if(api){
-										api.getContentPane().html(users_html);	
-										$('.popup-proj-cont .c-box-content ul').bind('jsp-scroll-y',function(event, scrollPositionY, isAtTop, isAtBottom){
-											if(isAtBottom & !atBottom){
-												$('.popup-proj-cont .c-box-content .more-load').show();
-												atBottom = true;
-												userIndex += 1;
-												var startIndex = (userIndex * 40) + 1;
-												populateUserDetails(startIndex,true);
-											}
-										});
-										api.reinitialise();
-									}
-								  }  else   {
-									  
-									  addUserScroll = $('.popup-proj-cont .c-box-content ul').bind('jsp-scroll-y',function(event, scrollPositionY, isAtTop, isAtBottom){
-										if(isAtBottom & !atBottom){
-											$('.popup-proj-cont .c-box-content .more-load').show();
-											atBottom = true;
-											userIndex += 1;
-											var startIndex = (userIndex * 40) + 1;
-											populateUserDetails(startIndex,true);
-										}
-									}).jScrollPane({'maintainPosition':true}).data().jsp;
-								  }
-        				}else{
-        					if (isAppend){
-								$('.popup-proj-cont .c-box-content .more-load').hide();
-								//$('.popup-proj-cont .c-box-content .jspContainer .jspPane').append(users_html);	
-							}else{
-								if(addUserScroll){
-									var api = $('.popup-proj-cont .c-box-content ul').data('jsp');
-									if(api){
-										api.getContentPane().html("No users found for the query..");	
-										api.reinitialise();
-									}
-								}else {
-    								$('.popup-proj-cont .c-box-content ul').html("No users found for the query..");
-								}
-							}
-        				}
-        			 }
-					},
-					failure :function(){
-						},					
-					complete : function(){}											
-					});
-				},1000);
-				//	var users_html = "<ul>";
-					
-					 if(firstVisit){
-						$('.popup-proj-cont').show();
-						$('.popup-proj-cont .c-box-content ul').jScrollPane();
-					} 
-					
-					
-				
-			}*/
 			
 			function populateUserDetails(){
 				$('ul#selected_user').find('li').each(function(){
@@ -1257,7 +1133,7 @@ $(document).ready(function() {
 				})
 				$('.popup-proj-cont').show();
 				$('#addusers').autocomplete({
-					source:[],
+					source:[]
 	    		}).data( "autocomplete" )._renderItem = function( ul, item ) {
 					var el = $( "<li></li>" ).data( "item.autocomplete", item );
 					el.append( "<a>" + item.value + " </a>" );
@@ -1633,7 +1509,8 @@ $(document).ready(function() {
         		}
     		});
         	
-        	$('#addAnotherStory,#createStory').unbind('click').live("click",function(){
+        	
+        	/*$('#addAnotherStory,#createStory').unbind('click').live("click",function(){
         		var title = $('input[name=storyTitle]');
         		var description = $('textarea[name=storyDesc]');
         		if(!storyFormValid)
@@ -1644,7 +1521,7 @@ $(document).ready(function() {
         			return;
         		}
         		var user = userLogged;
-        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority + '&user=' +user + '&stSprint=' + sprint.val();
+        		var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority + '&user=' +user + '&stSprint=' + sprint.val()+'&storyTags={tags:[1,2,3]}';
         		$.ajax({
         			url: 'api/v1/stories/create',
         			type: 'POST',
@@ -1672,7 +1549,7 @@ $(document).ready(function() {
         			$('.story-popup').hide();
         		}
         		
-        	});
+        	});*/
         	
         	$(".sptRmv").unbind('click').live('click', function(){
         		 var id = $(this).parent().attr("id");
@@ -2554,7 +2431,7 @@ $(document).ready(function() {
 					});	
 			}	
          
-         $('#addStory').unbind('click').live("click",function(){
+       /*  $('#addStory').unbind('click').live("click",function(){
         	 $('.popup-proj-cont').hide();
         	 $('input[name=storyTitle]').val("");
  			$('textarea[name=storyDesc]').val("");
@@ -2562,7 +2439,7 @@ $(document).ready(function() {
  			select.val(jQuery('options:first', select).val());
  			//$('.story-popup .custom-select .option').html('<div class="color p1"></div><div class="label" data-value="1">Priority 1</div></div>');
         	 $('.story-popup').show();
-         });
+         });*/
          
          $('#popup_cancel').unbind('click').live("click",function(){
         	 $('.popup-story-cont').hide();
@@ -2948,11 +2825,237 @@ $(document).ready(function() {
 			
 		});
          /***************************************/
+	 	$('ul.story li').unbind('hover').live('hover',function(){
+			$(this).find('a.viewStory').toggle();
+			$(this).find('a.remove').toggle();
+		})
 			
+         /*************** ADD STORY, TASK, DISCUSSION ************************/
+	  	
+		
+		$('#addStory').unbind("click").live('click',function(){
 			
-			$('ul.story li').unbind('hover').live('hover',function(){
-				$(this).find('a.viewStory').toggle();
-				$(this).find('a.remove').toggle();
-			})
-         
+			$("#add_story_popup").show();
+			$("#custom_overlay").fadeIn('slow');
+			clear_sty_popup();
+			render_add_story_tab();
+        	  		
+		});
+	 	
+        $('#popup_story_cancel_btn,.addStory_user_close').unbind('click').live("click",function(){
+       	 	$('#add_story_popup').hide();
+       	 	$("#custom_overlay").fadeOut('slow');
+        }); 
+		
+		function clear_sty_popup(){
+			$('input#sty_title_input').val("");
+ 			$('textarea#sty_desp_input').val("");	
+		}
+		
+		function render_add_story_tab(){
+			
+			$("#tabs_addstory").tabs();
+			
+			render_proj_priority();
+			render_proj_pref();
+			render_proj_sprint();
+			render_proj_assignees();
+			render_proj_tags();
+		}
+		
+		function render_proj_priority(){
+			var optionsHtml = "";
+			for(priority in projectPriorities){
+				var curPriority = projectPriorities[priority];
+				optionsHtml += '<li><div class="option"><div class="color" style="background-color:'+curPriority.color+'" ></div><div class="label" data-rank="'+curPriority.rank+'" data-pkey="'+curPriority.pkey+'" >'+curPriority.description+'</div></div></li>';
+			}
+			$('#story_details_container .option-list').html(optionsHtml);
+	         
+			var c = $('#story_details_container .option-list :first-child').parents('.custom-select');
+	        c.find('>.option').replaceWith($("#story_details_container .option-list :first-child").html());
+	        c.find('>ul.option-list').slideUp();
+		}
+		
+		function render_proj_pref(){			
+			createSlider_sty_size();
+		}
+		
+		function render_proj_sprint(){  //populate story popup sprint select box
+						
+			var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
+        	 for(var cnt=1; cnt <= totalsprints; cnt++){
+        		 optionsHtml +='<option value="'+cnt+'" class="sprint_options" >Sprint '+cnt+'</option>';
+        	 }
+        	 $('#story_details_container #storySprint').html(optionsHtml);
+		}
+		
+		function render_proj_assignees(){
+			
+			/*var assignee = "<ul>";
+			for(var cnt = 0; cnt < users.length ; cnt++) {
+				
+				assignee += "<li class='padding3' >'"+users[cnt].fullname+"'</li>";
+			}
+			assignee += "</ul>"
+			$('#mem_list_holder').html(assignee);*/
+		}
+		
+	  	function createSlider_sty_size(){
+	  		var sizes, lowEnd , highEnd , new_Size_Array = [];
+	  		var value = projectPreferences.storyPointType;
+	  		if( value == 0 ){
+	  			 sizes = ["1","2","4","8","16","32"];
+	  			 lowEnd = parseInt ( sizes[projectPreferences.storySizeLowRangeIndex] );
+	  			 highEnd = parseInt ( sizes[projectPreferences.storySizeHighRangeIndex] );    	  			  
+	  		} else if( value == 1 ) {
+	  			 sizes = ["1","2","3","5","8","13","21","34","45"];
+	  			 lowEnd = sizes[projectPreferences.storySizeLowRangeIndex];
+	  			 highEnd = sizes[projectPreferences.storySizeHighRangeIndex];
+	  		} else {
+	  			 sizes = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+	  			 lowEnd = sizes[projectPreferences.storySizeLowRangeIndex];
+	  			 highEnd = sizes[projectPreferences.storySizeHighRangeIndex];
+	  		}
+	  			 for ( var cnt = 0; cnt < sizes.length ; cnt++ ){
+  				 var curValue = parseInt ( sizes[cnt] );
+  				 if( curValue >= lowEnd  && curValue <= highEnd) {
+  					new_Size_Array.push( curValue );
+  				}
+  			 }
+  			 $($("#sty_size_indicator").find('sup')[0]).html( lowEnd );
+	  			 $($("#sty_size_indicator").find('sup')[1]).html( highEnd );
+	  			 
+	  		 $("#sty_amount_slider").val("");
+	  		 
+	  		$( "#sty_slider-range" ).slider({
+			  		  min: 0,
+			  		  max: new_Size_Array.length - 1,
+			  		  step: 1,
+			  		  range: 'min',
+			  		  value: projectPreferences.storyPointLimit,
+			  		  slide: function(event, ui) {
+			  		    $("#sty_amount_slider").val(new_Size_Array[ui.value]);
+			  		  }
+			  });
+	  	}
+	  	
+	  	function render_proj_tags(){
+	  		$("#tag_list_holder ul").html("");
+	  		/*if ( story_JSON.story[0].storyTags.length <= 0 ) {
+	  			$("#tag_list_holder ul").html("");
+	  		} else {
+	  			$("#tag_list_holder ul").html("");
+	  			for ( tag in story_JSON.story[0].storyTags) {
+	  				var str = "<li class='newTags_li' data-tagValue = '"+story_JSON.story[0].storyTags[ tag ].tagName+"'  ><p>"+story_JSON.story[0].storyTags[ tag ].tagName+"</p><a href='javascript:void(0);'class='tag_remove' /></li>";
+			  		$("#tag_list_holder ul").append(str);
+	  			}
+	  		}*/
+	  	}
+	  	
+	  	$('#add_tags').keyup(function(e) {	  	
+	  		$('span.error-keyup-2').remove();
+	  		var inputVal = $(this).val();
+	  	    var characterReg = /^\s*[a-zA-Z0-9,\s]+\s*$/;
+	  	    if(!characterReg.test(inputVal)) {
+	  	        $(this).after('<span class="error error-keyup-2">No special characters allowed.</span>');
+	  	        return;
+	  	    }
+	  	    if(e.keyCode == 13) {
+	  	    	var str = "<li class='newTags_li' data-tagValue = '"+inputVal+"' ><p>"+inputVal+"</p><a href='javascript:void(0);'class='tag_remove' /></li>";
+		  		$("#tag_list_holder ul").append(str);
+		  		$(this).val("");
+	  	    }	  		
+	  		
+	  	});
+
+	  	$(".tag_remove").unbind('click').live('click',function(){
+	  		$(this).closest('li').remove();
+		});
+	  	
+	  	
+    	$('#addAnotherStory,#createStory,#save_continue_sty').unbind('click').live("click",function(){
+    		var title = $('input#sty_title_input');
+    		var description = $('textarea#sty_desp_input');
+    		if(!storyFormValid)
+    			return;
+    		
+    		if(title.val()==""){
+    			return;
+    		}
+
+    		//var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority + '&user=' +user + '&stSprint=' + sprint.val()+'&storyTags={tags:[1,2,3]}';
+    		var new_story_Json = story_JSON;
+    		update_story_details( new_story_Json );
+    		var post_data = "story="+JSON.stringify(new_story_Json);
+    		
+    		$.ajax({
+    			url: 'api/v1/stories/create',
+    			type: 'POST',
+    			data: post_data,
+    			async:false,
+    			success: function( result ) {
+    				populateUnassignedStories('');
+    				if(project_view ==1){
+    					populateSprints();
+    				}else{
+        		   	 	populateSprintStories(current_sprint);
+    				}
+    		   	 	title.val('');
+    	       	 	$('#add_story_popup').hide();
+    	       	 	$("#custom_overlay").fadeOut('slow');
+    			},
+    			error: function(data) { },
+    			complete: function(data) { }
+    		});
+    		
+    		if($(this).attr('id') == "addAnotherStory"){
+    			title.val("");
+    			description.val("");
+    			var select = $('#story_details_container select[name=stSprint]');
+    			select.val(jQuery('options:first', select).val());
+    			
+    			//$('.story-popup .custom-select .option').html('<div class="color p1"></div><div class="label" data-value="1">Priority 1</div></div>');
+    		}else{
+	       	 	$('#add_story_popup').hide();
+	       	 	$("#custom_overlay").fadeOut('slow');
+    		}
+    		
+    	});
+    	
+    	function update_story_details(new_sty_json){
+    		
+    		new_sty_json.story[0].stTitle = $('input#sty_title_input').val();
+    		new_sty_json.story[0].stDescription  = $('textarea#sty_desp_input').val();
+    		new_sty_json.story[0].user = userLogged;
+    		get_sty_tags( new_sty_json );
+    		new_sty_json.story[0].storyPointSize = $("#sty_amount_slider").val();
+    		new_sty_json.story[0].stPriority = $('#story_details_container .custom-select .option .label').attr('data-pkey');
+    		new_sty_json.story[0].projectId = projectId;
+    		new_sty_json.story[0].stSprint = $('#story_details_container select[name=stSprint]').val();
+    	}
+    	
+    	function get_sty_tags( new_sty_json ){
+    		
+    		var pjt_tags_list =  $("#tag_list_holder ul li");
+    		
+    		for(var cnt=0 ; cnt < pjt_tags_list.length; cnt++ ){
+    			
+    			var tagObj = {"tagName": $( pjt_tags_list[cnt] ).attr("data-tagValue") };
+    			new_sty_json.story[0].storyTags.push( tagObj );
+    		} 
+    		
+    	}
+    	
+		var story_JSON = {'story':[{
+							'stTitle':'',
+							'stDescription':'',
+							'user':'',
+							'storyTags':[],
+							'storyPointSize':'',
+							'stPriority':0,
+							'projectId':0,
+							'stSprint':0
+							}]
+						 };
+	  	
 });
