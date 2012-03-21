@@ -468,7 +468,8 @@ public class StoryResource {
         if(storyPointSize != null)
             story.setStoryPoint(storyPointSize);
         story.setStoryTags(storyTags);
-        story.setStstage(projectStageManager.readProjectStage(project.getMinRankStageId()));
+        if(sprint != null)    
+            story.setStstage(projectStageManager.readProjectStage(project.getMinRankStageId()));
         story.setCreationDate(date);
         story.setLastUpdated(date);
         story.setLastUpdatedby(user);
@@ -478,45 +479,65 @@ public class StoryResource {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
-    String updateStory(@RequestParam String storyId, @RequestParam String stTitle,@RequestParam String stDescription,
-                                    @RequestParam String stPriority, @RequestParam String user,@RequestParam String projectId,
-                                    @RequestParam String stSprint,@RequestParam(required = false) String storyPointSize,@RequestParam(required = false) String storyTags) {
+    String updateStory(@RequestParam String story) {
 
-        try {            
-            int story_id = ResourceUtil.stringToIntegerConversion("story_id", storyId);
-            int project_Id = ResourceUtil.stringToIntegerConversion("project_id", projectId);
-            int sprint_Id = ResourceUtil.stringToIntegerConversion("project_id", stSprint);
-            
-            Sprint toSprint = sprintManager.selectSprintByProject(projectManager.readProject(project_Id), sprint_Id);
-            Story story = storyManager.readStory(story_id);
-            
-            if (stTitle != null)
-                story.setTitle(stTitle);
-            if (stDescription != null)
-                story.setDescription(stDescription);
-            if (stPriority != null){
-                int priorityId = ResourceUtil.stringToIntegerConversion("priority_id", stPriority);
-                story.setPriority(projectPriorityManager.readProjectPriority(priorityId));                
+        JsonElement jsonElement = new JsonParser().parse(story);
+        JsonArray storyJson = jsonElement.getAsJsonObject().get("story").getAsJsonArray();
+        for(Object storyObj:storyJson){
+            JsonObject jsonStory;
+            if(storyObj instanceof JsonObject){
+                jsonStory = (JsonObject)storyObj;
+                String stTitle = jsonStory.get("stTitle").getAsString();
+                String stDescription = jsonStory.get("stDescription").getAsString();
+                String user = jsonStory.get("user").getAsString();
+                JsonElement tags = jsonStory.get("storyTags");
+                String storyTags = "";
+                try{
+                    JsonArray tagsJson = tags.getAsJsonArray();
+                    JsonObject jsonTag;
+                    for(Object tagsObj:tagsJson){
+                        if(tagsObj instanceof JsonObject){
+                            jsonTag = (JsonObject)tagsObj;
+                            storyTags += jsonTag.get("tagName").getAsString()+",";
+                        }
+                    }
+                }catch(Exception e){
+                    storyTags = "";
+                }
+                String storyPointSize = jsonStory.get("storyPointSize").getAsString();
+                
+                int priorityId = jsonStory.get("stPriority").getAsInt();
+                int projectId = jsonStory.get("projectId").getAsInt();
+                int sprintId = jsonStory.get("stSprint").getAsInt();
+                int storyid = jsonStory.get("storyId").getAsInt();
+        
+                Project project = projectManager.readProject(projectId);
+                Sprint sprint = sprintManager.selectSprintByProject(project, sprintId);
+                ProjectPriority priority = projectPriorityManager.readProjectPriority(priorityId);
+        
+                try {
+                    Story story_Obj = storyManager.readStory(storyid);
+                    
+                    story_Obj.setTitle(stTitle);
+                    story_Obj.setDescription(stDescription);
+                    story_Obj.setPriority(priority);
+                    story_Obj.setStoryPoint(storyPointSize);
+                    story_Obj.setStoryTags(storyTags);
+                    story_Obj.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
+                    story_Obj.setLastUpdatedby(user);
+                    story_Obj.setSprint_id(sprint);
+                    
+                    storyManager.updateStory(story_Obj);
+                    return ResourceUtil.SUCCESS_JSON_MSG;
+                    
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    String exceptionMsg = "Error occured while creating the story with title "+stTitle;
+                    ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+                }
             }
-            if(storyPointSize != null){
-                story.setStoryPoint(storyPointSize);
-            }
-            if(storyTags != null){
-               story.setStoryTags(storyTags);
-            }
-            story.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
-            story.setLastUpdatedby(user);
-            story.setSprint_id(toSprint);
-            
-            storyManager.updateStory(story);
-            return ResourceUtil.SUCCESS_JSON_MSG;
-            
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            String exceptionMsg = "Error occured while updating the story with title "+stTitle;
-            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
-            return ResourceUtil.FAILURE_JSON_MSG;
-        }        
+        }
+        return ResourceUtil.FAILURE_JSON_MSG;
     }
 
     @RequestMapping(value = "/addtosprint", method = RequestMethod.POST)
@@ -542,7 +563,9 @@ public class StoryResource {
             if(stage != 0){
                 projectStage = projectStageManager.readProjectStage(stage); 
             }else{
-                story.setStstage(projectStageManager.readProjectStage(project.getMinRankStageId()));
+                if(toSprint != null){
+                    projectStage = projectStageManager.readProjectStage(project.getMinRankStageId());  
+                }
             }
             story.setSprint_id(toSprint);            
             story.setStstage(projectStage);
