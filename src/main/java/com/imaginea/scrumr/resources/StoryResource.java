@@ -404,8 +404,9 @@ public class StoryResource {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public @ResponseBody
-    String createStory(@RequestParam String story) {
+    List<Story> createStory(@RequestParam String story) {
 
+        List<Story> storyList = new ArrayList<Story>();
         JsonElement jsonElement = new JsonParser().parse(story);
         JsonArray storyJson = jsonElement.getAsJsonObject().get("story").getAsJsonArray();
         for(Object storyObj:storyJson){
@@ -416,8 +417,9 @@ public class StoryResource {
                 String stDescription = jsonStory.get("stDescription").getAsString();
                 String user = jsonStory.get("user").getAsString();
                 JsonElement tags = jsonStory.get("storyTags");
-                String storyTags = "";
+                String storyTags = null;
                 try{
+                    storyTags = "";
                     JsonArray tagsJson = tags.getAsJsonArray();
                     JsonObject jsonTag;
                     for(Object tagsObj:tagsJson){
@@ -427,7 +429,7 @@ public class StoryResource {
                         }
                     }
                 }catch(Exception e){
-                    storyTags = "";
+                    storyTags = null;
                 }
                 String storyPointSize = jsonStory.get("storyPointSize").getAsString();
                 
@@ -441,8 +443,8 @@ public class StoryResource {
                 ProjectPriority priority = projectPriorityManager.readProjectPriority(priorityId);
         
                 try {
-                    createStory(stTitle, stDescription, sprint, priority, user, storyPointSize, storyTags, project);
-                    return ResourceUtil.SUCCESS_JSON_MSG;
+                    Story createdStory = createStory(stTitle, stDescription, sprint, priority, user, storyPointSize, storyTags, project);
+                    storyList.add(createdStory);
                     
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -451,10 +453,10 @@ public class StoryResource {
                 }
             }
         }
-        return ResourceUtil.FAILURE_JSON_MSG;
+        return storyList;
     }
 
-    private void createStory(String stTitle, String stDescription, Sprint sprint,
+    private Story createStory(String stTitle, String stDescription, Sprint sprint,
                                     ProjectPriority priority, String user, String storyPointSize,
                                     String storyTags, Project project) {
         
@@ -475,6 +477,7 @@ public class StoryResource {
         story.setLastUpdatedby(user);
         story.setProject(project);
         storyManager.createStory(story);
+        return story;
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)

@@ -80,6 +80,8 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     private int completedTask;
 
     private int totalTask;
+    
+    private String[] storyTag;
 
     @JsonIgnore
     @ManyToOne()
@@ -127,6 +129,8 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
     
     public void setStoryTags(String storyTags) {
         this.storyTags = storyTags;
+        if(this.storyTags != null )
+            this.storyTag =storyTags.split(",");
     }
     
     @JsonIgnore
@@ -168,6 +172,11 @@ public class Story extends AbstractEntity implements IEntity, Serializable {
         this.storyPoint = storyPoint;
     }
 
+    @Transient
+    public String[] getStoryTag() {
+        return storyTag;
+    }
+    
     @Column(name = "stlastupdated", nullable = false)
     public Date getLastUpdated() {
         return lastUpdated;
