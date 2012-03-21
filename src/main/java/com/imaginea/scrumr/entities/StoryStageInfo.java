@@ -5,6 +5,7 @@ public class StoryStageInfo {
     private int id;
     private int imageUrlIndex;
     private int storyCount;
+    private int sprintId;
     
     public int getId() {
         return id;
@@ -28,5 +29,13 @@ public class StoryStageInfo {
     
     public void setStoryCount(int storyCount) {
         this.storyCount = storyCount;
+    }
+    
+    public int getSprintId() {
+        return sprintId;
+    }
+    
+    public void setSprintId(int sprintId) {
+        this.sprintId = sprintId;
     }
 }

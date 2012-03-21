@@ -61,10 +61,6 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
     private int completedCurrentSprintTaskCount;
     private int maxRankStageId;
     private int minRankStageId;
-    private List<Integer> completedStoriesBySize = new ArrayList<Integer>();
-    private List<Integer> totalStoriesBySize = new ArrayList<Integer>();
-    private List<String> storySizeValue = new ArrayList<String>();
-    private List<StorySizeInfo> storySizeDetails = new ArrayList<StorySizeInfo>();
 
     @Column(name = "ptitle", nullable = false, length = 500)
     public String getTitle() {
@@ -74,15 +70,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         this.title = title;
     }
     
-    @Transient
-    public List<StorySizeInfo> getStorySizeDetails() {
-        return storySizeDetails;
-    }
-    
-    public void setStorySizeDetails(List<StorySizeInfo> storySizeDetails) {
-        this.storySizeDetails = storySizeDetails;
-    }
-    
+        
     @Column(name = "pdescription", nullable = false, length = 600)
     public String getDescription() {
         return description;
@@ -238,22 +226,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
         this.currentSprintTaskCount = 0;
         this.completedProjectStoryCount = 0;
         this.completedCurrentSprintStoryCount = 0;
-        this.completedCurrentSprintTaskCount = 0;        
-        
-        if(projectPreferences == null){
-            getProjectPreferences();
-        }
-        
-        int highIndex = projectPreferences.getStorySizeHighRangeIndex();
-        int lowIndex = projectPreferences.getStorySizeLowRangeIndex();
-        int storyType = projectPreferences.getStoryPointType();
-        storySizeValue.clear();
-        for(int count=lowIndex; count<=highIndex;count++){
-            storySizeValue.add(ProjectPreferences.defaultStoryTypes[storyType][count]);
-            totalStoriesBySize.add(0);
-            completedStoriesBySize.add(0);
-            
-        } 
+        this.completedCurrentSprintTaskCount = 0; 
         
         if(this.stories != null &&  !this.stories.isEmpty()){
             this.projectStoryCount = stories.size();
@@ -262,15 +235,9 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
             for(Story story:stories){
                 ProjectStage stage = story.getStstage();
                 if(stage != null){
-                    String storyPoint = story.getStoryPoint()+"";
-                    int storyPointIndex = storySizeValue.indexOf(storyPoint);                    
-                    int incrementCount = totalStoriesBySize.get(storyPointIndex) + 1;
-                    totalStoriesBySize.set(storyPointIndex,incrementCount);
-                    
+                
                     if(stage.getPkey() == this.maxRankStageId){
                         completedProjectStoryCount++;
-                        incrementCount = completedStoriesBySize.get(storyPointIndex) + 1;
-                        completedStoriesBySize.set(storyPointIndex,incrementCount);
                     }
                 }
                     
@@ -287,14 +254,7 @@ public class Project extends AbstractEntity implements IEntity, Serializable {
                 }                
             }
             
-            for(int count=0;count < storySizeValue.size(); count++){
-                StorySizeInfo storySizeInfo = new StorySizeInfo();
-                storySizeInfo.setCompletedStories(completedStoriesBySize.get(count));
-                storySizeInfo.setTotalStories(totalStoriesBySize.get(count));
-                storySizeInfo.setValue(storySizeValue.get(count));
-                storySizeDetails.add(storySizeInfo);
-            }
-            
+           
             if(currentSprint != null) {
                 this.currentSprintTaskCount = currentSprint.getTaskCount();
                 this.completedCurrentSprintTaskCount = currentSprint.getCompletedTasks();

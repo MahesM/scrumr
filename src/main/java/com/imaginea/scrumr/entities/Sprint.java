@@ -95,66 +95,7 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	}
 	@OneToMany(cascade=CascadeType.REMOVE, mappedBy="sprint_id")
     public Set<Story> getStoryList() {
-	    List<ProjectStage> projectStages = this.project.getProjectStages();
-	    stageId.clear();
-	    stageImageUrl.clear();
-	    storyCountByStages.clear();
-	    for(ProjectStage projectStage:projectStages){
-	        stageImageUrl.add(projectStage.getImageUrlIndex());
-	        stageId.add(projectStage.getPkey());
-	        storyCountByStages.add(0);
-	    }
-	    ProjectPreferences preference = project.getProjectPreferences();
-	    int highIndex = preference.getStorySizeHighRangeIndex();
-        int lowIndex = preference.getStorySizeLowRangeIndex();
-        int storyType = preference.getStoryPointType();
-        storySizeValue.clear();
-        storySizeDetails.clear();
-        totalStoriesBySize.clear();
-        completedStoriesBySize.clear();
-        for(int count=lowIndex; count<=highIndex;count++){
-            storySizeValue.add(ProjectPreferences.defaultStoryTypes[storyType][count]);
-            totalStoriesBySize.add(0);
-            completedStoriesBySize.add(0);            
-        }
-        
-	    if(this.storyList != null){	        
-            for(Story story:storyList){
-                ProjectStage stage = story.getStstage();
-                if(stage != null){
-                    String storyPoint = story.getStoryPoint()+"";
-                    int storyPointIndex = storySizeValue.indexOf(storyPoint);                    
-                    int incrementCount = totalStoriesBySize.get(storyPointIndex) + 1;
-                    totalStoriesBySize.set(storyPointIndex,incrementCount);
-                    
-                    if(stage.getPkey() == project.getMaxRankStageId()){
-                        incrementCount = completedStoriesBySize.get(storyPointIndex) + 1;
-                        completedStoriesBySize.set(storyPointIndex,incrementCount);
-                    }
-                    
-                    int pKey = stage.getPkey();
-                    int index = stageId.indexOf(pKey);
-                    int currentCount = this.storyCountByStages.get(index);
-                    currentCount++;
-                    this.storyCountByStages.set(index,currentCount);
-                }       
-            } 
-        }
 	    
-	    for(int count = 0;count < stageId.size(); count ++){
-	        StoryStageInfo storyStage = new StoryStageInfo();
-	        storyStage.setId(stageId.get(count));
-	        storyStage.setImageUrlIndex(stageImageUrl.get(count));
-	        storyStage.setStoryCount(storyCountByStages.get(count));
-	        storyStageDetails.add(storyStage);
-	    }
-	    for(int count = 0;count < storySizeValue.size(); count ++){
-	        StorySizeInfo storySizeInfo = new StorySizeInfo();
-            storySizeInfo.setCompletedStories(completedStoriesBySize.get(count));
-            storySizeInfo.setTotalStories(totalStoriesBySize.get(count));
-            storySizeInfo.setValue(storySizeValue.get(count));
-            storySizeDetails.add(storySizeInfo);
-        }
 	    return storyList;
     }
     

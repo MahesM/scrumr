@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +26,11 @@ import com.imaginea.scrumr.entities.ProjectPriority;
 import com.imaginea.scrumr.entities.ProjectStage;
 import com.imaginea.scrumr.entities.SearchStoryParameters;
 import com.imaginea.scrumr.entities.Sprint;
+
 import com.imaginea.scrumr.entities.Story;
 import com.imaginea.scrumr.entities.StoryHistory;
+import com.imaginea.scrumr.entities.StorySizeInfo;
+import com.imaginea.scrumr.entities.StoryStageInfo;
 import com.imaginea.scrumr.entities.User;
 import com.imaginea.scrumr.interfaces.ProjectManager;
 import com.imaginea.scrumr.interfaces.ProjectPreferencesManager;
@@ -103,6 +107,159 @@ public class StoryResource {
             ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
         }
         return stories;
+    }
+    
+    @RequestMapping(value = "/fetchprojectstorycount/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<StorySizeInfo> getProjectStoryCount(@PathVariable("id") String id) {
+        Project project = projectManager.readProject(Integer.parseInt(id));
+        
+        List<Integer> completedStoriesBySize = new ArrayList<Integer>();
+        List<Integer> totalStoriesBySize = new ArrayList<Integer>();
+        List<String> storySizeValue = new ArrayList<String>();
+        List<StorySizeInfo> storySizeDetails = new ArrayList<StorySizeInfo>();
+
+        
+        ProjectPreferences preference = project.getProjectPreferences();
+        int highIndex = preference.getStorySizeHighRangeIndex();
+        int lowIndex = preference.getStorySizeLowRangeIndex();
+        int storyType = preference.getStoryPointType();
+        
+        for(int count=lowIndex; count<=highIndex;count++){
+            storySizeValue.add(ProjectPreferences.defaultStoryTypes[storyType][count]);
+            totalStoriesBySize.add(0);
+            completedStoriesBySize.add(0);            
+        }
+        Set<Story> storyList = project.getStories(); 
+        if(storyList != null){         
+            for(Story story:storyList){
+                ProjectStage stage = story.getStstage();
+                if(stage != null){
+                    String storyPoint = story.getStoryPoint()+"";
+                    int storyPointIndex = storySizeValue.indexOf(storyPoint);
+                    if(storyPointIndex != -1){
+                        int incrementCount = totalStoriesBySize.get(storyPointIndex) + 1;
+                        totalStoriesBySize.set(storyPointIndex,incrementCount);
+                        
+                        if(stage.getPkey() == project.getMaxRankStageId()){
+                            incrementCount = completedStoriesBySize.get(storyPointIndex) + 1;
+                            completedStoriesBySize.set(storyPointIndex,incrementCount);
+                        }
+                    }                                    
+                }       
+            } 
+        }
+        for(int count = 0;count < storySizeValue.size(); count ++){
+            StorySizeInfo storySizeInfo = new StorySizeInfo();
+            storySizeInfo.setCompletedStories(completedStoriesBySize.get(count));
+            storySizeInfo.setTotalStories(totalStoriesBySize.get(count));
+            storySizeInfo.setValue(storySizeValue.get(count));
+            storySizeDetails.add(storySizeInfo);
+        }
+        return storySizeDetails;
+    }
+    @RequestMapping(value = "/fetchsprintstagecount/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<List<StoryStageInfo>> getProjectStageCount(@PathVariable("id") String id) {
+        Project project = projectManager.readProject(Integer.parseInt(id));
+        List<List<StoryStageInfo>> sprintStoryStage = new ArrayList<List<StoryStageInfo>>();
+        
+        Set<Sprint> sprints = project.getSprints();
+        for(Sprint sprint:sprints){
+            List<Integer> storyCountByStages = new ArrayList<Integer>();
+            List<Integer> stageImageUrl =new ArrayList<Integer>();
+            List<Integer> stageId =new ArrayList<Integer>();
+
+            List<StoryStageInfo> storyStageDetails = new ArrayList<StoryStageInfo>();
+            
+            List<ProjectStage> projectStages = project.getProjectStages();
+           
+            for(ProjectStage projectStage:projectStages){
+                stageImageUrl.add(projectStage.getImageUrlIndex());
+                stageId.add(projectStage.getPkey());
+                storyCountByStages.add(0);
+            }
+            Set<Story> storyList = sprint.getStoryList();
+            if(storyList != null){         
+                for(Story story:storyList){
+                    ProjectStage stage = story.getStstage();
+                    if(stage != null){
+                        int pKey = stage.getPkey();
+                        int index = stageId.indexOf(pKey);
+                        
+                        if(index != -1){
+                            int currentCount = storyCountByStages.get(index);
+                            currentCount++;
+                            storyCountByStages.set(index,currentCount);  
+                        }                    
+                    }       
+                } 
+            }
+            
+            for(int count = 0;count < stageId.size(); count ++){
+                StoryStageInfo storyStage = new StoryStageInfo();
+                storyStage.setId(stageId.get(count));
+                storyStage.setImageUrlIndex(stageImageUrl.get(count));
+                storyStage.setStoryCount(storyCountByStages.get(count));
+                storyStage.setSprintId(sprint.getPkey());
+                storyStageDetails.add(storyStage);
+            }
+            sprintStoryStage.add(storyStageDetails);
+        }
+        return sprintStoryStage;
+    }
+    
+    @RequestMapping(value = "/fetchsprintstorycount/{id}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<StorySizeInfo> fetchSprintStoryCount(@PathVariable("id") String id) {
+
+        Sprint sprint = sprintManager.readSprint(Integer.parseInt(id));
+        Project project = sprint.getProject();
+        
+       
+            List<Integer> completedStoriesBySize = new ArrayList<Integer>();
+            List<Integer> totalStoriesBySize = new ArrayList<Integer>();
+            List<String> storySizeValue = new ArrayList<String>();
+            List<StorySizeInfo> storySizeDetails = new ArrayList<StorySizeInfo>();
+            
+            ProjectPreferences preference = project.getProjectPreferences();
+            int highIndex = preference.getStorySizeHighRangeIndex();
+            int lowIndex = preference.getStorySizeLowRangeIndex();
+            int storyType = preference.getStoryPointType();
+            
+            for(int count=lowIndex; count<=highIndex;count++){
+                storySizeValue.add(ProjectPreferences.defaultStoryTypes[storyType][count]);
+                totalStoriesBySize.add(0);
+                completedStoriesBySize.add(0);            
+            }
+            
+            Set<Story> storyList = sprint.getStoryList();
+            if(storyList != null){         
+                for(Story story:storyList){
+                    ProjectStage stage = story.getStstage();
+                    if(stage != null){
+                        String storyPoint = story.getStoryPoint()+"";
+                        int storyPointIndex = storySizeValue.indexOf(storyPoint);
+                        if(storyPointIndex != -1){
+                            int incrementCount = totalStoriesBySize.get(storyPointIndex) + 1;
+                            totalStoriesBySize.set(storyPointIndex,incrementCount);
+                            
+                            if(stage.getPkey() == project.getMaxRankStageId()){
+                                incrementCount = completedStoriesBySize.get(storyPointIndex) + 1;
+                                completedStoriesBySize.set(storyPointIndex,incrementCount);
+                            }
+                        }                                    
+                    }       
+                } 
+            }
+            for(int count = 0;count < storySizeValue.size(); count ++){
+                StorySizeInfo storySizeInfo = new StorySizeInfo();
+                storySizeInfo.setCompletedStories(completedStoriesBySize.get(count));
+                storySizeInfo.setTotalStories(totalStoriesBySize.get(count));
+                storySizeInfo.setValue(storySizeValue.get(count));
+                storySizeDetails.add(storySizeInfo);
+            }
+        return storySizeDetails;
     }
     
     @RequestMapping(value = "/fetchstorydata/{id}", method = RequestMethod.GET)
@@ -258,7 +415,20 @@ public class StoryResource {
                 String stTitle = jsonStory.get("stTitle").getAsString();
                 String stDescription = jsonStory.get("stDescription").getAsString();
                 String user = jsonStory.get("user").getAsString();
-                String storyTags = jsonStory.get("storyTags").getAsString();
+                JsonElement tags = jsonStory.get("storyTags");
+                String storyTags = null;
+              /*  try{
+                    JsonObject tagsObject = tags.getAsJsonObject();
+                    JsonArray tagsJson = tagsObject.get("tags").getAsJsonArray();
+                    for(Object tagsObj:tagsJson){
+                        if()
+                    }
+                }catch(Exception e){
+                    storyTags = null;
+                }
+                */
+                
+          
                 String storyPointSize = jsonStory.get("storyPointSize").getAsString();
                 
                 int priorityId = jsonStory.get("stPriority").getAsInt();
