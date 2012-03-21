@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.imaginea.scrumr.entities.Project;
 import com.imaginea.scrumr.entities.ProjectPreferences;
 import com.imaginea.scrumr.entities.ProjectPriority;
@@ -243,28 +247,41 @@ public class StoryResource {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public @ResponseBody
-    String createStory(@RequestParam String stTitle, @RequestParam String stDescription,@RequestParam String stPriority,
-                                    @RequestParam String user,@RequestParam String projectId, @RequestParam String stSprint,
-                                    @RequestParam(required = false) String storyPointSize, @RequestParam(required = false) String storyTags) {
+    String createStory(@RequestParam String story) {
 
-        int project_Id = ResourceUtil.stringToIntegerConversion("project_id", projectId);
-        int sprintId = ResourceUtil.stringToIntegerConversion("sprint_id", stSprint);
-        int priorityId = ResourceUtil.stringToIntegerConversion("priority_id", stPriority);
+        JsonElement jsonElement = new JsonParser().parse(story);
+        JsonArray storyJson = jsonElement.getAsJsonObject().get("story").getAsJsonArray();
+        for(Object storyObj:storyJson){
+            JsonObject jsonStory;
+            if(storyObj instanceof JsonObject){
+                jsonStory = (JsonObject)storyObj;
+                String stTitle = jsonStory.get("stTitle").getAsString();
+                String stDescription = jsonStory.get("stDescription").getAsString();
+                String user = jsonStory.get("user").getAsString();
+                String storyTags = jsonStory.get("storyTags").getAsString();
+                String storyPointSize = jsonStory.get("storyPointSize").getAsString();
+                
+                int priorityId = jsonStory.get("stPriority").getAsInt();
+                int projectId = jsonStory.get("projectId").getAsInt();
+                int sprintId = jsonStory.get("stSprint").getAsInt();
+
         
-        Project project = projectManager.readProject(project_Id);
-        Sprint sprint = sprintManager.selectSprintByProject(project, sprintId);
-        ProjectPriority priority = projectPriorityManager.readProjectPriority(priorityId);
+                Project project = projectManager.readProject(projectId);
+                Sprint sprint = sprintManager.selectSprintByProject(project, sprintId);
+                ProjectPriority priority = projectPriorityManager.readProjectPriority(priorityId);
         
-        try {
-            createStory(stTitle, stDescription, sprint, priority, user, storyPointSize, storyTags, project);
-            return ResourceUtil.SUCCESS_JSON_MSG;
-            
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            String exceptionMsg = "Error occured while creating the story with title "+stTitle;
-            ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
-            return ResourceUtil.FAILURE_JSON_MSG;
+                try {
+                    createStory(stTitle, stDescription, sprint, priority, user, storyPointSize, storyTags, project);
+                    return ResourceUtil.SUCCESS_JSON_MSG;
+                    
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    String exceptionMsg = "Error occured while creating the story with title "+stTitle;
+                    ScrumrException.create(exceptionMsg, MessageLevel.SEVERE, e);
+                }
+            }
         }
+        return ResourceUtil.FAILURE_JSON_MSG;
     }
 
     private void createStory(String stTitle, String stDescription, Sprint sprint,
@@ -351,9 +368,7 @@ public class StoryResource {
             Story story = storyManager.readStory(story_id);
             Sprint toSprint = sprintManager.selectSprintByProject(project, sprint_Id);
             ProjectStage projectStage = null;
-            if(stage == 0){
-                projectStage = projectStageManager.readProjectStage(project.getMinRankStageId());
-            }else{
+            if(stage != 0){
                 projectStage = projectStageManager.readProjectStage(stage); 
             }
             story.setSprint_id(toSprint);            
