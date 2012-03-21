@@ -185,6 +185,14 @@ public class ProjectResource {
             }
             ScrumrException.create(e.getMessage(), MessageLevel.SEVERE, null);           
         }
+        createDefaultProjectStages(project);
+        createDefaultProjectPriorities(project);
+        
+        if(project.getProjectStages() == null)
+            project.setProjectStages(projectStageManager.fetchAllProjectStageByProject(project.getPkey()));
+        if(project.getProjectPriorities() == null)
+        project.setProjectPriorities(projectPriorityManager.fetchAllProjectPrioritiesByProject(project.getPkey()));
+        
         try{
             Date sprintFirstDay = projectStartDate;
             for (int sprintNo = 1; sprintNo <= sprint_count; sprintNo++) {
@@ -202,15 +210,9 @@ public class ProjectResource {
             }
             ScrumrException.create(e.getMessage(), MessageLevel.SEVERE, null);  
         }  
-        createDefaultProjectStages(project);
-        createDefaultProjectPriorities(project);
         
-        List<Project> result = new ArrayList<Project>();
-        if(project.getProjectStages() == null)
-            project.setProjectStages(projectStageManager.fetchAllProjectStageByProject(project.getPkey()));
-        if(project.getProjectPriorities() == null)
-        project.setProjectPriorities(projectPriorityManager.fetchAllProjectPrioritiesByProject(project.getPkey()));
-    
+        
+        List<Project> result = new ArrayList<Project>();    
         result.add(project);
 
         return result;
