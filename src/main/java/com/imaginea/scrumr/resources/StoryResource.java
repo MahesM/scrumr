@@ -468,6 +468,7 @@ public class StoryResource {
         if(storyPointSize != null)
             story.setStoryPoint(storyPointSize);
         story.setStoryTags(storyTags);
+        story.setStstage(projectStageManager.readProjectStage(project.getMinRankStageId()));
         story.setCreationDate(date);
         story.setLastUpdated(date);
         story.setLastUpdatedby(user);
@@ -540,6 +541,8 @@ public class StoryResource {
             ProjectStage projectStage = null;
             if(stage != 0){
                 projectStage = projectStageManager.readProjectStage(stage); 
+            }else{
+                story.setStstage(projectStageManager.readProjectStage(project.getMinRankStageId()));
             }
             story.setSprint_id(toSprint);            
             story.setStstage(projectStage);
