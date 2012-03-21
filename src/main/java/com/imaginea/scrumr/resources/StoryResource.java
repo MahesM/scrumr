@@ -416,19 +416,19 @@ public class StoryResource {
                 String stDescription = jsonStory.get("stDescription").getAsString();
                 String user = jsonStory.get("user").getAsString();
                 JsonElement tags = jsonStory.get("storyTags");
-                String storyTags = null;
-              /*  try{
-                    JsonObject tagsObject = tags.getAsJsonObject();
-                    JsonArray tagsJson = tagsObject.get("tags").getAsJsonArray();
+                String storyTags = "";
+                try{
+                    JsonArray tagsJson = tags.getAsJsonArray();
+                    JsonObject jsonTag;
                     for(Object tagsObj:tagsJson){
-                        if()
+                        if(tagsObj instanceof JsonObject){
+                            jsonTag = (JsonObject)tagsObj;
+                            storyTags += jsonTag.get("tagName").getAsString()+",";
+                        }
                     }
                 }catch(Exception e){
-                    storyTags = null;
+                    storyTags = "";
                 }
-                */
-                
-          
                 String storyPointSize = jsonStory.get("storyPointSize").getAsString();
                 
                 int priorityId = jsonStory.get("stPriority").getAsInt();
