@@ -449,6 +449,7 @@ public class StoryResource {
         
                 try {
                     Story createdStory = createStory(stTitle, stDescription, sprint, priority, user, storyPointSize, storyTags, project);
+                    createdStory.setSprintNo(sprintId);
                     storyList.add(createdStory);
                     
                 } catch (Exception e) {
