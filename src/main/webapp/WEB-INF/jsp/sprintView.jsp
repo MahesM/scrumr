@@ -40,7 +40,7 @@
 		project_view = 0;
 		$('.sprints').show();		
 	<% } %>
-	var taskStatusColors = {'CREATED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
+	var taskStatusColors = {'NOT_YET_ASSIGNED':'grey','ASSIGNED':'#1e9ce8','IN_PROGRESS':'#f4b02c','COMPLETED':'#6b9d1c'};
  </script>
  <script type="text/javascript" src="<%= request.getContextPath() %>/js/commons.js"></script>
   <script type="text/javascript" src="<%= request.getContextPath() %>/js/taskview.js?version=1"></script>
@@ -73,7 +73,7 @@
             		in the respective tab
             	</div>
             	<div style="overflow:hidden" >..........................................................................</div>
-            	<div >To assign drag and drop<b> story </b>to the</br>Sprint lane and <b> Member </b>to sprint story</div>
+            	<div >To assign drag and drop<b> story </b>to the</br>Sprint lane </div>
             </div>
 
             <div style="display:none;overflow:hidden !important;">
@@ -401,6 +401,9 @@
 		           <div class="suggestion" style="display:none;">
 		           		<img src= "themes/images/project_stages/repository2.png" style="vertical-align: middle;" />
 		           		<label>Loading Suggestions</label>
+		           	</div>
+		           	 <div class="no_match" style="display:none;">
+		           		<label>No Match Found</label>
 		           	</div>
                </div>
                <div class="actions-cont float-rgt">

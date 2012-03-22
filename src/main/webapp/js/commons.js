@@ -1,4 +1,4 @@
-//execute the ajax call after user has stopped typing for a specified amt of time, here i take 2s
+//execute the ajax call after user has stopped typing for a specified amt of time
 var delay = (function(){
 	  var timer = 0;
 	  return function(callback, ms){

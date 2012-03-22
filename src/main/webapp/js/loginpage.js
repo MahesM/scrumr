@@ -299,13 +299,23 @@ $(document).ready(function(){
 		 $('select[name=stage_image]').msDropDown();
 		 $(this).hide();
 		 $(this).next().show();
+		 $('#stageCarousel').sortable( "option", "disabled", true );
    });
    
    $('a.stage_edit_later').unbind('click').live('click',function(){
 	   $(this).closest('li').css('height','180px');
 	   $('#help_stage').show();
-	   $('.stage_container').show();
-	   $('.stage_edit_container').hide();
+	   $(this).closest('li').find('.stage_container').show();
+	   $(this).closest('li').find('.stage_edit_container').hide();
+	   var editmode = false;
+	   $('#stageCarousel').find('li').each(function(){
+		   if($(this).find('div.stage_edit_container').is(':visible')){
+			   editmode = true;
+		   }
+	   });
+	   if(!editmode){
+		   $('#stageCarousel').sortable( "option", "disabled", false );
+	   }
    });
    
    $('a.stage_edit_remove').unbind('click').live('click',function(){
@@ -315,7 +325,7 @@ $(document).ready(function(){
    });
    
    $('a.stage_delete').unbind('click').live('click',function(){
-	   var id = $(this).closest('li').find('input.hidden#stageId').val().split('stage_')[1];
+	   var id = $(this).closest('li').find('#stageId').val().split('stage_')[1];
 	   var carouselIndex = parseInt($(this).closest('li').attr('jcarouselindex'));
 	   $.ajax({
 			url: 'api/v1/projectstage/delete/'+id,

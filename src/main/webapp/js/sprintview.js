@@ -10,6 +10,7 @@ $(document).ready(function() {
         	var projectPreferences = new Object();
         	var editStory = new Object();
         	var edit = false;
+        	var mileStoneType = projectPreferences.mileStoneType == 0 ?"hour":"day";
         	var users = null;
         	var userObject = new Object();
         	var creatorObj = new Object();
@@ -29,7 +30,7 @@ $(document).ready(function() {
         	var imageCollections = [{value:0,url:"themes/images/project_stages/repository1.png"},{value:1,url:"themes/images/project_stages/repository2.png"},{value:2,url:"themes/images/project_stages/repository3.png"},{value:3,url:"themes/images/project_stages/repository4.png"},{value:4,url:"themes/images/project_stages/repository5.png"},{value:5,url:"themes/images/project_stages/repository6.png"},{value:6,url:"themes/images/project_stages/repository7.png"},{value:7,url:"themes/images/project_stages/repository8.png"},{value:8,url:"themes/images/project_stages/repository9.png"},{value:9,url:"themes/images/project_stages/repository10.png"}];
         	
     		$(document).ajaxError(function(e, jqxhr, settings, exception) {
-					window.location.href="auth.action";    			
+		//			window.location.href="auth.action";    			
     		});
     		
     		localStorage.clear();  
@@ -110,11 +111,70 @@ $(document).ready(function() {
            						userListScroll = $('#peopleview').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
            					}
             			}
+            			constructProjectFooter();
             		},
             		error: function(data) { },
             		complete: function(data) { }
             	});
         	}
+        	
+        	function constructProjectFooter(){
+        		$.ajax({
+            		url: 'api/v1/stories/fetchprojectstorycount/'+projectId,
+            		type: 'GET',
+            		async:false,
+            		success: function( details ) {
+		        		var totalStories = 0;
+		        		var completedStories = 0;
+		        		for(var i=0;i<details.length;i++){
+		        			totalStories +=details[i].totalStories;
+		        			completedStories +=details[i].completedStories;
+		        		}
+		        		if(totalStories == 0){
+		        			$('#project_footer .total_class label span').html('(0/0)');
+		        		}else{
+		        			$('#project_footer .total_class label span').html('('+completedStories+'/'+totalStories+')');
+		        			var str = "";
+		        			for(var i=0;i<details.length;i++){
+		        				str+="<div class='size_class'><label><span>"+details[i].value+"</span> ("+details[i].completedStories+"/"+details[i].totalStories+")</label></div>";
+		        			}
+		        			$('#project_footer').append(str);
+		        		}
+            		}
+        		});
+        	}
+        	
+        	function constructSprintFooter(sprintId){
+        		$.ajax({
+            		url: 'api/v1/stories/fetchsprintstorycount/'+sprintId,
+            		type: 'GET',
+            		async:false,
+            		success: function( details ) {
+		        		var totalStories = 0;
+		        		var completedStories = 0;
+		        		for(var i=0;i<details.length;i++){
+		        			totalStories +=details[i].totalStories;
+		        			completedStories +=details[i].completedStories;
+		        		}
+		        		if(totalStories == 0){
+		        			$('#sprint_footer .total_class label span').html('(0/0)');
+		        		}else{
+		        			$('#sprint_footer .total_class label span').html('('+completedStories+'/'+totalStories+')');
+		        			var str = "";
+		        			for(var i=0;i<details.length;i++){
+		        				str+="<div class='size_class'><label><span>"+details[i].value+"</span> ("+details[i].completedStories+"/"+details[i].totalStories+")</label></div>";
+		        			}
+		        			$('#sprint_footer').append(str);
+		        		}
+            		}
+        		});
+        	}
+        	
+        	function constructTaskFooter(details){
+        		
+        	}
+        	
+        	
 			function populateUnassignedStories(name){
 				populateSearchDataSource(); //populate datasource everytime stories are added to backlog
 				// $('#storyList ul').css({'height': (($(window).height()) - 320) + 'px'});
@@ -266,73 +326,34 @@ $(document).ready(function() {
 						        					if(story.status == "finished"){
 						        						finished = finished+1;
 						        					}
-						        					/*var imageHTML = "";
-						        					if(story.assignees.length > 0){							        					
-							        					for(var j=0;j<story.assignees.length;j++){
-							        						if(j==2){
-																imageHTML+="<a class='moreStory' href='#story-cont'>more</a>";
-																//imageHTML+="<label>.....</label>";
-																break;
-															}
-															imageHTML+="<img height='26' width='26' class='' src='"+qontextHostUrl+""+story.assignees[j].avatarurl+"' title='"+story.assignees[j].fullname+"'>";
-														}							        					
-							        					//sprint_html +=  '<li id="st'+story.pkey+'" class="p'+story.priority+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont">'+imageHTML+'</div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-							        				}*/
+						        					
 						        					storyObj = {story:story,backlog:false,image:null};
 						        					//sprint_html += '<li id="st'+story.pkey+'" class="p'+story.priority+'"><p class="p'+story.priority+'">'+story.title+'</p><div class="meta "><div class="img-cont"></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
 						        					sprint_html += new EJS({url: 'ejs/story_template.ejs'}).render(storyObj);
 						           				}
-					        					/*$(".viewStory, .moreStory").fancybox({
-					        		        		'overlayColor' : '#000',
-					        		                'overlayOpacity' : '0.6',
-					        		                'autoScale' : false,
-					        		                'onComplete' : (function(){
-					        		                    //scrollpane =$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-					        		                       }),
-					        		                'onStart' : (function(el){
-					        		                        }),
-					        		                'onClosed' : (function() {
-					        		                	$("#stPeople").hide();
-					        		                    // scrollpane.destroy();
-					        		                       })
-
-					        		        	});*/
 					        				}
 						        		},
 						        		error: function(data) { },
 						        		complete: function(data) { }
 						        	});
 			        				sprint_html += '</ul></div>';
-			        				sprint_html += '<div class="sprint-info" style="display:none;">';
-				        			for(var i=0;i<projectStageDetails.length;i++){
-				        				sprint_html += "<div id='projectStage"+projectStageDetails[i].id+"'><img src='"+imageCollections[projectStageDetails[i].imageUrlIndex].url+"'/><label>("+projectStageDetails[i].storyCount+")</label></div>";
-				        			}
-			        				sprint_html +='</div></li>';
+			        				sprint_html += '<table cellspacing="0" cellpadding="4" class="sprint-info" id="sprint-info'+sprints[k].pkey+'" style="display:none;"><tr></tr>';
+			        				sprint_html +='</table></li>';
 			        				
 			        			}
 			        			$("#project_finished").html(finished);
 			        			
 			        			sprint_html +='</div></ul>';
 			        			$("#project-view").html(sprint_html);
-			        			
+			        			constructSprintStageBar();
 			        	        $('ul.col li.stages').hover(function(){
 			        	        	$(this).find('a.editSprint').show(); 
-			        	        	$(this).find('div.sprint-info').show(); 
+			        	        	$(this).find('table.sprint-info').show(); 
 			        	         },function(){
 			        	        	 $(this).find('a.editSprint').hide();
-			        	        	 $(this).find('div.sprint-info').hide(); 
+			        	        	 $(this).find('table.sprint-info').hide(); 
 			        	         });
 			        	        
-			        	        $('.sprint-info div').unbind('click').bind('click',function(){
-			        	        	var query = $(this).attr('id').split('projectStage')[1];
-			        	        	var selector = $(this).closest('li').find('ul.story');
-			        	        	$(selector).find('li').each(
-			            					function() {
-			            						($(this).attr('data-stage')
-			            								.search(new RegExp(query, "i")) < 0) ?$(this).css('opacity','0.6'): $(this).css('border','1px solid yellow');
-			            								
-			            					});
-			        	        })
 			        	        
 			        			$('#project-view .pageCtrls').html("");
 			        			var current_page = current_sprint - 1;
@@ -397,8 +418,8 @@ $(document).ready(function() {
 		        		   			}
 		        	    		}).disableSelection();
 			        			
-			        			$('.stages .projectCont').css({'height': (($(window).height()) - 150) + 'px'});
-			        			$('.stages').parent('.holder_round').css({'height': (($(window).height()) - 120) + 'px'});
+			        			$('.stages .projectCont').css({'height': (($(window).height()) - 160) + 'px'});
+			        			$('.stages').parent('.holder_round').css({'height': (($(window).height()) - 130) + 'px'});
 			        			$( ".stages .projectCont ul").each(function(){
 									if($(this).find('li').length > 0){
 										//$(this).css({'height': (($(window).height()) - 195) + 'px'});
@@ -418,7 +439,49 @@ $(document).ready(function() {
 		        		complete: function(data) { 
 		        			
 		        		}
+		        		
 		        	});
+			}
+			
+			function constructSprintStageBar(){
+				$.ajax({
+	        		url: 'api/v1/stories/fetchsprintstagecount/'+projectId,
+	        		type: 'GET',
+	        		async:false,
+	        		success: function( projectStageDetails ) {
+						for(var i=0;i<projectStageDetails.length;i++){
+							var sprint_html="";
+							var sprintId = "";
+							//var stageWidth = ($('.sprint-info').outerWidth()/projectStageDetails[i].length) - projectStageDetails[i].length;
+							for(var k=0;k<projectStageDetails[i].length;k++){
+								sprintId = projectStageDetails[i][k].sprintId;
+								sprint_html += "<td align='center' id='projectStage"+projectStageDetails[i][k].id+"'><img src='"+imageCollections[projectStageDetails[i][k].imageUrlIndex].url+"'/><label>("+projectStageDetails[i][k].storyCount+")</label></td>";
+							}
+							$('#sprint-info'+sprintId+" tr").html(sprint_html);
+							//$('.projectStage').css('width',stageWidth+"px");
+							
+						}
+						 $('.sprint-info td').unbind('click').bind('click',function(){
+							 	var tdEl = $(this);
+							 	$(this).toggleClass('bg');
+							 	$(this).siblings().removeClass('bg');
+		        	        	var query = $(this).attr('id').split('projectStage')[1];
+		        	        	var selector = $(this).closest('li').find('ul.story');
+		        	        	$('ul.story li').removeClass('selected');
+		        	        	$(selector).find('li').each(function() {
+		        	        		if(tdEl.hasClass('bg')){
+		        	        			if($(this).attr('data-stage').search(new RegExp(query, "i")) >= 0) {
+		            						$(this).addClass('selected');
+		            					}
+		            				}else{
+		            					if($(this).attr('data-stage').search(new RegExp(query, "i")) >= 0) {
+		            						$(this).removeClass('selected');
+		            					}
+		            				}
+		        	        	});
+						 });
+	        		}
+				});
 			}
 			
 			function refreshStoryPortlet(storyId,stageId,creatorObj){
@@ -513,51 +576,8 @@ $(document).ready(function() {
 			}
 			
 			
-			function showAddUserPopup(elOffset){
-				users_arr = [];
-				$('ul#proj-user-list li').each(function(){
-					$(this).css('opacity','1');
-					$(this).removeClass('selected');
-				});
-				var origPointerTop = parseInt($('.popup-story-cont').find('div#pointerEl').css('top'));
-				if($('.popup-story-cont').find('div#pointerEl').hasClass('pointer-rgt')){
-					$('.popup-story-cont').find('div#pointerEl').removeClass('pointer-rgt').addClass('pointer');
-				}
-				var elTop = elOffset.top;
-				var elLeft = elOffset.left;
-				var new_left = elLeft+210;
-				var popupWidth =parseInt($('.popup-story-cont').css('width'));
-				var sectionWidth = parseInt($('section.right').css('width'))+parseInt($('section.right').css('padding-left'));
-				var popupHeight =parseInt($('.popup-story-cont').css('height'));
-				var sectionHeight = parseInt($('section.right').css('height'));
-				if(new_left+popupWidth > sectionWidth){
-					var current_left = elLeft-240;
-					$('.popup-story-cont').find('div#pointerEl').removeClass('pointer').addClass('pointer-rgt');
-					$('.popup-story-cont').css('top',elTop);
-					$('.popup-story-cont').css('left',current_left);
-				}else if(new_left > sectionWidth){
-					var current_left = elLeft-500;
-					$('.popup-story-cont').css('top',elTop);
-					$('.popup-story-cont').css('left',current_left);
-				}else{
-					$('.popup-story-cont').css('top',elTop);
-					$('.popup-story-cont').css('left',new_left);
-				}
-				if(elTop+popupHeight > sectionHeight){
-					var new_top = elTop-popupHeight+40;
-					$('.popup-story-cont').css('top',new_top);
-					$('.popup-story-cont').css('left',new_left);
-					$('.popup-story-cont').find('div#pointerEl').css('top',popupHeight-20);
-				}else {
-					$('.popup-story-cont').css('top',elTop);
-					$('.popup-story-cont').css('left',new_left);
-					$('.popup-story-cont').find('div#pointerEl').css('top','30px');
-				}
-				
-				$('.popup-story-cont').show();
-			}
-			
 			function populateSprintStories(sprint){
+					constructSprintFooter(sprint);
 					var userObj='';
 					 var sprintTitle = '';
 					 var story_html = "";
@@ -600,7 +620,7 @@ $(document).ready(function() {
 		    	        				return a.rank> b.rank? 1: -1;
 		    						});	
 		    						for(var i=0;i<projectLanes.length;i++){
-		            				story_html += '<li class="stages"><div class="header "><img src="'+imageCollections[projectLanes[i].imageUrlIndex].url+'"></span>'+projectLanes[i].title+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].type+'" id="stage'+projectLanes[i].pkey+'"class="story"></ul></div></li>';
+		            				story_html += '<li class="stages"><div class="header "><img src="'+imageCollections[projectLanes[i].imageUrlIndex].url+'"></span>'+projectLanes[i].title+'</div><div class="sprintCont"><ul data-type="'+projectLanes[i].rank+'" id="stage'+projectLanes[i].pkey+'"class="story"></ul></div></li>';
 		    	        			}
 		    	        			story_html +='</div></ul>';
 		    	        			$('#sprint-view').html(story_html);
@@ -640,7 +660,19 @@ $(document).ready(function() {
 				        					story = stories[i];
 				        					userObj = userObject[story.creator];
 				        					creatorObj = userObject[story.creator];
-				        					var post_data="storyId="+story.pkey+"&stage="+story.status;
+				        					var story_assignees = story.assignees;
+				        					if(story_assignees !=null && story_assignees.length > 0){								        					
+					        					for(var j=0;j<story_assignees.length;j++){
+					        						if(j==2){
+														imageHTML+="<a class='moreStory' href='#story-cont'>more</a>";
+														break;
+													}
+													imageHTML+="<img height='26' width='26' class='' src='"+qontextHostUrl+""+story_assignees[j].user.avatarurl+"' title='"+story_assignees[j].user.fullName+"'>";
+												}
+					        					storyObj = {story:story, backlog:false, image:imageHTML};
+				        					 	str = new EJS({url: 'ejs/story_template.ejs'}).render(storyObj);
+				        					}
+				        					/*var post_data="storyId="+story.pkey+"&stage="+story.status;
 				        					$.ajax({
 				        						url : 'api/v1/stories/getusers',
 				        						type : 'POST',
@@ -660,7 +692,7 @@ $(document).ready(function() {
 						        					 	storyObj = {story:story, backlog:false, image:imageHTML};
 						        					 	str = new EJS({url: 'ejs/story_template.ejs'}).render(storyObj);
 				        						}
-				        					});
+				        					});*/
 				        					
 				        					$('ul#stage'+story.ststage.pkey).append(str);
 				        					if(story.status == 0){
@@ -686,7 +718,7 @@ $(document).ready(function() {
 			        	        		placeholder: 'ui-state-highlight',
 			        	        		update: function( event, ui ) {
 			        	   				 	var id = ui.item.attr("id");
-			        		   				if($(ui.item[0]).closest('ul').attr('data-type') == 'BACKLOG'){
+			        		   				if($(ui.item[0]).closest('ul').attr('data-type') == 0){
 			        		   					$(ui.item[0]).closest('ul').find("label#noStories").remove();
 			        		   					var success = updateStoryStatus(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],sprint); 
 			        		   					//$(ui.item[0]).find('.img-cont').html("");
@@ -700,56 +732,20 @@ $(document).ready(function() {
 			        		   				}else{
 				        		   				if(projectStatus !="Not Started" && projectStatus !="Finished"){
 					        		   				var success = updateStoryStatus(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],sprint); 
-					        		   				var elOffset = $(ui.item[0]).offset();
-					        		   				if($(ui.item[0]).closest('ul').attr('data-type') == 'finished'){			        		   								        		   				
-					        		   					//removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
-					        		   					refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],creatorObj);
-					        		   				}
-					        		   				if((ui.sender != null) && !($(ui.item[0]).closest('ul').attr('data-type') == 'BACKLOG') && !($(ui.item[0]).closest('ul').attr('data-type') == 'FINISHED')&& !($(ui.item[0]).closest('section').hasClass('left'))){
-					        		   					/*showAddUserPopup(elOffset);
-					        		   					removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
-					        		   					var existing_user_arr = [];
-					        		   					if($('#'+id).data("userlist")){
-					        		   						existing_user_arr = $('#'+id).data("userlist");
-					        		   					}
-					      		   						addUserToStory(existing_user_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]); 
-					        		   					$('#popup_story_done').unbind('click').click(function(){
-					        		   						if(users_arr.length > 0){
-						        		   						removeUserFromStoryInStage(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]);
-						        		   						$('#'+id).data("userlist", users_arr);  
-							      		   						addUserToStory(users_arr,id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1]); 
-						        		   						refreshStoryPortlet(id.split("st")[1],$(ui.item[0]).closest('ul').attr('id').split('stage')[1],creatorObj);
-						        		   						$(this).closest('.popup-story-cont').hide();
-						        		   						//$('#popup_story_done').die();
-					        		   						}
-					        		   					});*/
-					        		   				}
-					        		   				
 					        		   				$(ui.item[0]).find('a.remove').removeClass('strRmv').addClass('sptRmv');
 					        		   				if(success == false){
 					        		   					$(this).sortable('cancel');
 					        		   				}  
-												 	var clss = ui.item.attr("class");
-						        	   				 if(clss == "unassigned"){
-						        	   					ui.item.removeClass("unassigned");
-						        	   					var c = parseInt($("#sprint_total").html());
-						        	   		        	$("#sprint_total").html(c + 1);
-						        	   	        		if($(this).attr("id") == "finished"){
-						        	   	        			var f = parseInt($("#sprint_finished").html());
-						        	   	    	        	$("#sprint_finished").html(f + 1);
-						        	   	        		}
-						        	   				 }
-												
-					        		   					var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
-					        		   					$(ui.sender).css({'height': ulHeight + 'px'});
-					        		   					
-					        		   					if(sprintStageScroll[$(ui.sender).attr('id')]) {
-							        		   				sprintStageScroll[$(ui.sender).attr('id')].destroy();
-						        		   					sprintStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-						        		   				} 
-					        		   				}
-			        		   					
-			        		   					}
+				        		   					var ulHeight = ($(ui.sender).find('li').outerHeight() * $(ui.sender).find('li').length) + 150;
+				        		   					$(ui.sender).css({'height': ulHeight + 'px'});
+				        		   					
+				        		   					if(sprintStageScroll[$(ui.sender).attr('id')]) {
+						        		   				sprintStageScroll[$(ui.sender).attr('id')].destroy();
+					        		   					sprintStageScroll[$(ui.sender).attr('id')] =$(ui.sender).closest('.sprintCont').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+					        		   				} 
+				        		   				}
+		        		   					
+		        		   					}
 			        		   					
 			        		   			},
 			        		   			start:function(event,ui){
@@ -780,8 +776,8 @@ $(document).ready(function() {
 			        		   			
 			        	    		}).disableSelection();
 			        				
-				        			$('.stages ul:visible').parent('.sprintCont').css({'height': (($(window).height()) - 150) + 'px'});
-				        			$('.stages').parent('div.holder_round').css({'height': (($(window).height()) - 120) + 'px'});
+				        			$('.stages ul:visible').parent('.sprintCont').css({'height': (($(window).height()) - 160) + 'px'});
+				        			$('.stages').parent('div.holder_round').css({'height': (($(window).height()) - 130) + 'px'});
 				        			$( ".stages ul:visible").each(function(){
 										if($(this).find('li').length > 0){
 											var ulHeight = ($(this).find('li').outerHeight() * $(this).find('li').length) + 150;
@@ -815,64 +811,6 @@ $(document).ready(function() {
     				complete: function(data) { }
     			});
 			}
-			
-			/*function populateCurrentSprintStatus(){
-				$.ajax({
-	        		url: 'api/v1/stories/'+sprint+'/project/'+projectId,
-	        		type: 'GET',
-	        		async:false,
-	        		success: function( stories ) {
-	        			if(stories != null && stories.length){
-	        				var story_unassigned = '<div class="header " ><span></span>Sprint Stories</div><ul id="notstarted" class="story">';
-	        				var story_dev = '<div class="header " ><span></span>Development</div><ul id="dev" class="story">';
-	        				var story_review = '<div class="header " ><span></span>Review &amp; QA</div><ul id="review" class="story">';
-	        				var story_finished = '<div class="header " ><span></span>Finished</div><ul id="finished" class="story">';
-	        				for(var i=0;i<stories.length;i++){
-	        					var story = stories[i];
-	        					var duration = '<span></span>';
-	    						if(stories[0].sprint_id.startdate != null){
-	    							var startdate = new Date(Date.parse(stories[0].sprint_id.startdate));
-	    							startdate = startdate.format("mm/dd/yyyy");
-	    							duration += startdate;
-	    						}else{
-	    							duration += 'No Start Date';
-	    						}
-	    						if(stories[0].sprint_id.enddate != null){
-	    							var enddate = new Date(Date.parse(stories[0].sprint_id.enddate));
-	    							enddate = enddate.format("mm/dd/yyyy");
-	    							duration += ' - <span></span>'+ enddate;
-	    						}else{
-	    							duration += ' - No End Date';
-	    						}
-	    						var status = '<span class="total">12</span><span class="finished">13</span>';
-	    						$('.duration-hd label.duration').html(duration+'&nbsp;&nbsp;&nbsp;'+status);
-	        					var userObj = userObject[story.creator];
-	        					storyObj = { story:story, backlog:false, image: null};
-	        					if(story.status == "notstarted"){
-	        						story_unassigned += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+qontextHostUrl+''+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-	        					}else if(story.status == "dev"){
-	        						story_dev        += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+qontextHostUrl+''+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-	        					}else if(story.status == "review"){
-	        						story_review     += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+qontextHostUrl+''+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-	        					}else if(story.status == "finished"){
-	        						story_finished   += '<li id="st'+story.pkey+'" class=""><p class="p'+story.priority+'">'+story.title+'</p><div class="meta"><div class="img-cont"><img src="'+qontextHostUrl+''+userObj.avatarurl+'" width="26" height="26" class=""/><label class="">Created by '+creatorObj.fullname+'</label></div></div><a href="javascript:void(0);" class="sptRmv remove"></a><a href="#story-cont" class="viewStory"></a></li>';
-	        					}
-	        				}
-	       					story_unassigned += '</ul>';
-	       					story_dev += '</ul>';
-	       					story_review += '</ul>';
-	       					story_finished += '</ul>';
-	       					$(".green").html(story_unassigned);
-	        				$(".yellow").html(story_dev);
-	        				$(".blue").html(story_review);
-	        				$(".pink").html(story_finished);
-	        			}
-	        			//$('.stages ul').css({'height': (($(window).height()) - 180) + 'px'});
-	        		},
-	        		error: function(data) { },
-	        		complete: function(data) { }
-	        	});
-			}*/
 			
 			function updateStoryStatus(id,status,sprint){
 				var stat = false;
@@ -1141,6 +1079,7 @@ $(document).ready(function() {
 				$('ul#selected_user').find('li').each(function(){
 					$(this).remove();
 				})
+				$('ul#selected_user input').val("");
 				$('.popup-proj-cont').show();
 				$('#addusers').autocomplete({
 					source:[]
@@ -1152,6 +1091,7 @@ $(document).ready(function() {
 			}
 			
 			$('#addusers').live('keydown',function(){
+				$('.no_match').hide();
 				var userSource = [];
 				var callApi = true;
 				delay(function(){
@@ -1161,12 +1101,14 @@ $(document).ready(function() {
 							var retrievedObject = localStorage.getItem(i);
 							userSource = JSON.parse(retrievedObject);
 							callApi = false;
+							return false;
 						}else{
 							callApi = true;
 						}
 					}
-					if(callApi){
-						var post_data = "sortType="+query+"&showTotalCount=false&startIndex=0&count=20";
+					if(callApi && query!=""){
+						//var post_data = "sortType="+query+"&showTotalCount=false&startIndex=0&count=20";
+						var post_data = {"sortType":query,"showTotalCount":false,"startIndex":0,"count":20};
 		    			$('.suggestion').show();
 						$.ajax({
 							url : 'api/v1/users/searchqontext/',
@@ -1198,8 +1140,8 @@ $(document).ready(function() {
 										});
 									});
 								}else{
-									$('.suggestion').find('label').html("No Matches found");
-									$('.suggestion').find('img').hide();
+									$('.suggestion').hide();
+									$('.no_match').show();
 								}
 							}
 						});
@@ -1217,6 +1159,10 @@ $(document).ready(function() {
 					}
 	    			
 				},1000);
+			});
+			
+			$('#selected_user').unbind('click').bind('click',function(){
+				$(this).find('input').focus();
 			});
 			
 			$('#popup_proj_user_done').unbind('click').live('click',function(){
@@ -1433,17 +1379,23 @@ $(document).ready(function() {
 				//$('.projectview').parent().removeClass("tabHolder");
 				$('.projectview').addClass('active_tab');
 				$('.projectview img').show();
+				$("#project_footer").show();
+				$('#sprint_footer').hide();
+				$('#task_footer').hide();
 			}else{
      	       	populateSprintStories(current_sprint);
 				$("#sprint-view").show();
 				$("#project-view").hide();
 				$('#pstat-view').hide();
+				$('#task_footer').hide();
 				
 				/*var selectAllLbl = $(".view-hd div");				
 				selectAllLbl.addClass("tabHolder");
 				$('.sprintview').parent().removeClass("tabHolder");*/
 				$('.sprintview').addClass('active_tab');
 				$('.sprintview img').show();
+				$("#project_footer").hide();
+				$('#sprint_footer').show();
 			}
             
         	$(".currentSprint").unbind('click').live('click', function(){
@@ -1823,7 +1775,7 @@ $(document).ready(function() {
 			viewStoryFancyBox();
         	
         	
-			$(".stAddmore").unbind('click').live('click', function(){
+			/*$(".stAddmore").unbind('click').live('click', function(){
 				 if($(".stAddmore").html() == "Add Members"){
 					$(".stAddmore").html("Hide Members");
 					$("#stPeople").show();
@@ -1839,7 +1791,7 @@ $(document).ready(function() {
  				}
  				storyDetailScroll[id+"detail"] = $('#story_details_section').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 			});
-			
+			*/
 			function setStoryId (storyId){
 				// Comment Section				
 				//$('<input>').attr({type: 'hidden', id: 'current_story_id',value: storyId }).appendTo('form');
@@ -1919,6 +1871,9 @@ $(document).ready(function() {
 				$(".project_tab img").hide();
 				$('.projectview').addClass('active_tab');
 				$('.projectview img').show();
+				$("#project_footer").show();
+				$('#sprint_footer').hide();
+				$('#task_footer').hide();
 				
 				$("#sprint-view").hide();
 				$("#pstat-view").hide();
@@ -1936,6 +1891,9 @@ $(document).ready(function() {
 				$(".project_tab img").hide();
 				$('.sprintview').addClass('active_tab');
 				$('.sprintview img').show();
+				$("#project_footer").hide();
+				$('#sprint_footer').show();
+				$('#task_footer').hide();
 				
 				$("#project-view").hide();
 				$("#pstat-view").hide();
@@ -1955,6 +1913,9 @@ $(document).ready(function() {
 				$(".project_tab img").hide();
 				$('.projectstatview').addClass('active_tab');
 				$('.projectstatview img').show();
+				$("#project_footer").hide();
+				$('#sprint_footer').hide();
+				$('#task_footer').show();
 				
 				$("#sprint-view").hide();
 				$("#project-view").hide();
@@ -2155,90 +2116,9 @@ $(document).ready(function() {
 				
 			}]
 		}); */
-	// Comment Section Code
-        	
-        	var month_list=new Array("January","Febraury","March","April","May","June","July","August","September","October","November","December");
-        	
-        	function populateCommentingUserDetails(){
-            	
-        		var commentBoxHtml = '';
-				var user = userLogged;	
-				var current_user = userObject[user];
-				commentBoxHtml = '<img src="'+qontextHostUrl+current_user.avatarurl+'">';							
-				$(".comment-box-user").html(commentBoxHtml);
-				$(".todo-box-user").html(commentBoxHtml);
-				
-            }
-        	
-			function populateStoryComments(){
-				var loggedDate='';
-				var id = $("#current_story_id").val();	
-				var commentsHtml = '';								
-				$.ajax({
-					url : 'api/v1/comments/story/'+id,
-					type : 'GET',
-					async : false,					
-					success :function(comments){
-											    
-						if (comments != null){	
-							$('#comments_section').prev().find('label').html('Comments ('+comments.length+')');	
-							$('#comments-count').val(comments.length);
-	        				if(comments.length > 0){
-		        				for (var i=0;i<comments.length;i++){
-			        				comment = comments[i];
-			        				var newDate = new Date(comment.logDate);
-			        				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();				        				    				
-			        				//alert($.datepicker.parseDate('MM d,yy',new Date(parseInt(comment.logDate))));			        																						        		
-			        				//commentsHtml += '<li class="comment-list" style="width:100%;"><a id='+comment.pkey+' class="cmtRmvComment remove" href="javascript:void(0);"></a><img title="'+comment.user.fullname+'" src="'+qontextHostUrl+comment.user.avatarurl+'"><div><span><pre style="float:right;">'+comment.content+'</pre></span><div style="clear:both;">'+dtString+'</div></div></li>';
-			        				commentsHtml += '<li class="todo-list"><div class="todo-img"><img class="todo-user" title="'+comment.user.fullname+'" src="'+qontextHostUrl+comment.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+comment.content+'</div></div><div class="todo-action"><a id=cdelete'+comment.pkey+' class="cmtRmvComment ctremove" href="javascript:void(0)"></a></div></li>';
-			        				}
-		        			}			        				        			        			
-						}else{
-								commentsHtml += 'No Comments for this story';
-							}
-						
-						$(".comments-display").find("ul").html(commentsHtml);
-						var sectionVisible = false;
-						if($('#comments_section').is(':visible')){
-							sectionVisible = true;
-						}
-						if(!sectionVisible)$('#comments_section').show();
-						if(storyDetailScroll[id+"comments"]){
-							var api = $('.comments-display').data('jsp');
-							if(api)api.destroy();
-						}
-						storyDetailScroll[id+"comments"] = $('.comments-display').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-						if(!sectionVisible)$('#comments_section').hide();
-						//$("#story-cont").jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;																
-					},
-					error : function(data){},
-					complete : function(data){}					
-					});	
-			}					
-        	
-        	$(".cmtRmvComment").unbind('click').live('click',function(){        		
-            	var commentID = $(this).attr("id").split("cdelete")[1];
-            	deleteStoryComment(commentID);
-            	populateStoryComments();
-            	});
 
-        	function deleteStoryComment(commentID){
-
-        		var post_data = 'commentID='+commentID;
-        		$.ajax({
-          			url: 'api/v1/comments/delete/'+commentID+'',
-          			type: 'GET',
-          			//data: post_data,
-          			async:false,
-          			success: function( result ) {
-              										                  			
-          			},
-          			error: function(data) { },
-         			complete: function(data) { }            		
-                  	 });          	
-            }
-
-        	function parsedString(str){
+         // Task Code starts here
+			function parsedString(str){
             	var commentText = '';
             	var i=0;
             	var nextIndex=0,index=0;
@@ -2273,68 +2153,17 @@ $(document).ready(function() {
                 //alert($.trim(commentText));
                 commentText =$.trim(commentText);         	            
             	return commentText+'\n ';
-        	}
-        	
-            $('.comment-text').keypress(function(e){
-                 if (e.which == 13){                                                                
-                	 var user = userLogged;
-                	 var story_id = $("#current_story_id").val();	
-                	 var commentText = $('.comment-text').val(); 
-                	 if(commentText =="") return;
-					 commentText = parsedString(commentText);		                    	 			                   	               	        	          	                 	      
-                     var post_data = '&content='+ commentText+'&storyid='+story_id+'&logdate='+$.datepicker.formatDate('yy-mm-dd', new Date())+'&user='+user;                     
-                     $.ajax({
-              			url: 'api/v1/comments/create',
-              			type: 'POST',
-              			data: post_data,
-              			async:false,
-              			success: function( comment ) {
-              				
-              				comment = comment[0];
-                  			e.preventDefault();
-
-                  			var count =  parseInt($('#comments-count').val());
-              				count = count+1;
-              				$('#comments-count').val(count);
-              				$('#comments_section').prev().find('label').html('Comments ('+count+')');
-                  			
-              				$('.comment-text').val('');							            				             			
-              				var newDate = new Date(comment.logDate);
-              				var dtString = newDate.getDate()+" "+month_list[newDate.getMonth()]+","+newDate.getFullYear();
-              				var commentHtml = '<li class="todo-list"><div class="todo-img"><img class="todo-user" title="'+comment.user.fullname+'" src="'+qontextHostUrl+comment.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+comment.content+'</div></div><div class="todo-action"><a id=cdelete'+comment.pkey+' class="cmtRmvComment ctremove" href="javascript:void(0)"></a></div></li>';
-              				$('.comment-text').focus(); 				
-              				if(storyDetailScroll[story_id+"comments"]){
-    							var api = $('.comments-display').data('jsp');
-    							if(api){
-    								api.getContentPane().find('ul').append(commentHtml);
-    								api.reinitialise();
-    							}
-    						}else{
-    							$('.comments-display ul').append(commentHtml);
-    							storyDetailScroll[id+"comments"] = $('.comments-display').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-    						}
-    						
-              			},
-              			error: function(data) { },
-             			complete: function(data) { }            		
-                      	});
-                 	}                     
-                });
-         // Ends Here
-
-         // Todo Code starts here
-                  
+        	}       
          
-         $('#todo-form #tAdd').unbind('click').live("click",function(){
-             
+         $('#add_task').unbind('click').live("click",function(){
         	 var user = userLogged;
         	 var story_id = $("#current_story_id").val();	
-        	 var todoText = $(".todo-text").val();                       	  	 
-			 var milestonePeriod = $("#todo-milestones").val();		
-			 var taskUser = $("#todo-user").val();
-			 if(todoText == "" || taskUser == 0) return;   
+        	 var todoText = $("#task_content").val();                       	  	 
+			 var milestonePeriod = $("#taskMilestone").val();		
+			 var taskUser = $("#taskUser").val();
+			 if(todoText == "") return;   
 			 todoText = parsedString(todoText);
-  	       	 var todoHtml = '';
+  	       	 var taskHtml = '';
              var post_data = 'content='+ todoText+'&storyid='+story_id+'&timeInDays='+milestonePeriod+'&assigneeId='+taskUser+'&milestonePeriod='+milestonePeriod+'&user='+user;                     
              $.ajax({
       			url: 'api/v1/todo/create',
@@ -2345,22 +2174,40 @@ $(document).ready(function() {
       				todo = todo[0];
       				var count = parseInt($('#todos-count').val());
       				count = count+1;
-      				$('#todos-count').val(count);
-      				$('#todo_section').prev().find('label').html('Todos ('+count+')');
-      				$('.todo-text').val('');
-      				$('#todo-milestones').val('1');	
-      				$('#todo-user').val('0');	
-      				todoHtml = '<li id="todo'+todo.pkey+'" class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone"><label style="font-weight:none;">'+todo.milestonePeriod+' Milestone Period | </label><div class="todo-status"><label style="color:#1e9ce8;" class="todo-status-text">CREATED</label><a href="javascript:void(0);" ></a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
-      				$('.todo-text').focus(); 
-      				if(storyDetailScroll[story_id+"todos"]){
-						var api = $('.todo-display').data('jsp');
+      				$("#task_content").val("");  
+      				$('#taskMilestone').val('1');	
+      				$('#taskUser').val('0');	
+      				//todoHtml = '<li id="todo'+todo.pkey+'" class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone"><label style="font-weight:none;">'+todo.milestonePeriod+' Milestone Period | </label><div class="todo-status"><label style="color:#1e9ce8;" class="todo-status-text">CREATED</label><a href="javascript:void(0);" ></a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
+      				var imageUrl= "";
+      				var user_fullName="";
+      				var task_status = "";
+      				if(todo.user == null){
+      					imageUrl = "themes/images/notyetassigned_withoutarrow.png";
+      					user_fullName = "Not yet assigned";
+      				}else{
+      					imageUrl = qontextHostUrl+todo.user.avatarurl;
+      					user_fullName = todo.user.fullname;
+      				}
+      				if(todo.status == "IN_PROGRESS"){
+      					task_status = "IN PROGRESS";
+      				}else if(todo.status == "NOT_YET_ASSIGNED"){
+      					task_status="NOT YET ASSIGNED";
+      				}else{
+      					task_status=todo.status;
+      				}
+      				taskObj = {task:todo,imageUrl:imageUrl,mileStoneType:mileStoneType,statusColor:taskStatusColors[todo.status],fullName:user_fullName,task_status:task_status};
+      				taskHtml += new EJS({url: 'ejs/task_template.ejs'}).render(taskObj);
+      				$("#task_content").focus();  
+      			//	$('#story_task_view ul').append(taskHtml);
+      				if(storyDetailScroll[story_id+"task"]){
+						var api = $('#story_task_view').data('jsp');
 						if(api){
-							api.getContentPane().find('ul.todo-total-display').append(todoHtml);
+							api.getContentPane().find('ul.todo-total-display').append(taskHtml);
 							api.reinitialise();
 						}
 					}else{
-						$('.todo-display ul.todo-total-display').append(todoHtml);
-						storyDetailScroll[id+"todos"] = $('.todo-display').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+						$('#story_task_view ul').append(taskHtml);
+						storyDetailScroll[story_id+"task"] = $('#story_task_view').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
 					}
       			},
       			error: function(data) { },
@@ -2370,75 +2217,97 @@ $(document).ready(function() {
              	return false;
              });
 
-         function deleteStoryTodo(todoID){
+         function deleteStoryTodo(todoID,storyId){
 
      		$.ajax({
        			url: 'api/v1/todo/delete/'+todoID,
        			type: 'GET',
        			async:false,
        			success: function( result ) {
-           										                  			
+       				populateStoryTodos(storyId);							                  			
        			},
        			error: function(data) { },
       			complete: function(data) { }            		
                	 });          	
          }
-
-         $(".cmtRmvTodo").unbind('click').live('click',function(){        		
-         	var todoID = $(this).attr("id").split("tdelete")[1];
-         	deleteStoryTodo(todoID);
-         	//if edit was clicked and nothing was done.
-         	$('#todo-form').find('input.submit').attr("value","Add");
-   			$('#todo-form').find('input.submit').attr("id","tAdd").attr('data-task',todoID);
-         	populateStoryTodos();
-         	});
-
-         function populateStoryTodos(){				
-				var id = $("#current_story_id").val();		
+         
+         function populate_task_selects(){
+        	 var id = $("#current_story_id").val();		
 				//populate user assignees drop down
 				var taskUserHtml = '<option value="0">--Assign User--</option>';
 				for(var i=0;i<users.length;i++){
 					taskUserHtml +='<option value="'+users[i].username+'">'+users[i].fullname+'</option>';
 				}
-				$('#todo-user').html(taskUserHtml);
+				$('#taskUser').html(taskUserHtml);
+				//populateMilestone drop down
+				var taskMileStoneHtml="";
+				for(var i=1;i<=projectPreferences.mileStoneRange;i++){
+					if(projectPreferences.mileStoneType == 0){
+						taskMileStoneHtml +='<option value="'+i+'">'+i+' hour milestone</option>';
+					}else{
+						taskMileStoneHtml +='<option value="'+i+'">'+i+' day milestone</option>';
+					}
+				}
+				
+				$('#taskMilestone').html(taskMileStoneHtml);
 				//populate task status drop down
-    	       	var status_dropdown = '<ul class="todo-status-list">';
-    	       	for(var i in taskStatusColors){
-    	       		status_dropdown +='<li><label style="color:'+taskStatusColors[i]+'">'+i+'</label></li>';
-    	       	}
-    	       	status_dropdown +="</ul>";
-    	       	$('#todo_section').prepend(status_dropdown);
-				var todosHtml = '';								
+ 	       	var status_dropdown = '<ul class="todo-status-list">';
+ 	       	for(var i in taskStatusColors){
+ 	       		if(i !== "NOT_YET_ASSIGNED"){
+ 	       			status_dropdown +='<li><label style="color:'+taskStatusColors[i]+'">'+i+'</label></li>';
+ 	       		}
+ 	       	}
+ 	       	status_dropdown +="</ul>";
+ 	       	$('#story_task_view').prepend(status_dropdown);
+         }
+
+         function populateStoryTodos(id){		
+				var taskHtml = '';								
 				$.ajax({
 					url : 'api/v1/todo/story/'+id,
 					type : 'GET',
 					async : false,					
 					success :function(todos){
 						if (todos != null){		
-							$('#todo_section').prev().find('label').html('Todos ('+todos.length+')');	
-							$('#todos-count').val(todos.length);
 	        				if(todos.length > 0){
 		        				for (var i=0;i<todos.length;i++){
-		        					todo = todos[i];			        								        				    						        							        																						        	
-		        					todosHtml += '<li id="todo'+todo.pkey+'" class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone"><label style="font-weight:none;">'+todo.milestonePeriod+' Milestone Period | </label><div class="todo-status" ><label style="color:'+taskStatusColors[todo.status]+';" class="todo-status-text">'+todo.status+'</label><a href="javascript:void(0);" ></a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
+		        					todo = todos[i];	
+		        					var imageUrl= "";
+		              				var user_fullName="";
+		              				var task_status = "";
+		              				if(todo.user == null){
+		              					imageUrl = "themes/images/notyetassigned_withoutarrow.png";
+		              					user_fullName = "Not yet assigned";
+		              				}else{
+		              					imageUrl = qontextHostUrl+todo.user.avatarurl;
+		              					user_fullName = todo.user.fullname;
+		              				}
+		              				if(todo.status == "IN_PROGRESS"){
+		              					task_status = "IN PROGRESS";
+		              				}else if(todo.status == "NOT_YET_ASSIGNED"){
+		              					task_status="NOT YET ASSIGNED";
+		              				}else{
+		              					task_status=todo.status;
+		              				}
+		        					taskObj = {task:todo,imageUrl:imageUrl,mileStoneType:mileStoneType,statusColor:taskStatusColors[todo.status],fullName:user_fullName,task_status:task_status};
+		              				taskHtml += new EJS({url: 'ejs/task_template.ejs'}).render(taskObj);
+		        					//todosHtml += '<li id="todo'+todo.pkey+'" class="todo-list"><div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone"><label style="font-weight:none;">'+todo.milestonePeriod+' Milestone Period | </label><div class="todo-status" ><label style="color:'+taskStatusColors[todo.status]+';" class="todo-status-text">'+todo.status+'</label><a href="javascript:void(0);" ></a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div></li>';
 			        				}
 		        			}			        				        			        			
 						}else{
-								todosHtml += 'No Todos for this story';
+								taskHtml += 'No Todos for this story';
 							}
 						
-						$(".todo-display ul.todo-total-display").html(todosHtml);
-						var sectionVisible = false;
-						if($('#todo_section').is(':visible')){
-							sectionVisible = true;
-						}
-						if(!sectionVisible)$('#todo_section').show();
-						if(storyDetailScroll[id+"todos"]){
-							var api = $('.todo-display').data('jsp');
-							if(api)api.destroy();
-						}
-						storyDetailScroll[id+"todos"] = $('.todo-display').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-						if(!sectionVisible)$('#todo_section').hide();
+						$("ul.todo-total-display").html(taskHtml);
+						$('#tabs_addstory').bind('tabsshow',function(event,ui){
+				        	 if(storyDetailScroll[id+"task"]){
+									var api = $('#story_task_view').data('jsp');
+									if(api)api.destroy();
+								}
+							 storyDetailScroll[id+"task"] = $('#story_task_view').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
+				     		
+				     	});
+						
 					},
 					error : function(data){},
 					complete : function(data){}					
@@ -2471,70 +2340,9 @@ $(document).ready(function() {
         	 $('.story-popup').hide();
          }); 
          
-		 //code for story details accordion
-                
-         $('div.acc-head').unbind('click').live("click",function(){
-        	 if($(this).find('div').hasClass('open')){
-        		var current_div = $(this).find('div');
-        		$('div.down').each(function(){
-        			if($(this) != current_div){
-        				$(this).removeClass('down').addClass('open');
-        				$(this).parent().next('.acc-content').slideUp("slow");
-        			}
-        		}); 
-        		$(this).find('div').removeClass('open').addClass('down');
-        		$(this).next(".acc-content").slideDown("slow");
-        	}else{
-        		$(this).find('div').removeClass('down').addClass('open');
-        		$(this).next(".acc-content").slideUp("slow");
-        	}
-         });
+		
          
-         
-         
-         //code to toggle chart container
-         $('.toggleChart').unbind('click').live("click",function(){
-        	 $(this).parent().prev('.chart-container').slideToggle("slow",function(){
-        		 if(!($(this).is(':visible'))){
-        			 $(this).next('.toggleChartLine').find('a.toggleChart').css('background','url("images/br_down.png") no-repeat').css('margin-top','-5px');
-        			 $(this).next('.toggleChartLine').css('margin-top','5px').css('border-bottom','none').css('border-top','1px solid #7f7f7f');
-        		 }else {
-        			 $(this).next('.toggleChartLine').find('a.toggleChart').css('background','url("images/br_up.png") no-repeat').css('margin-top','0');
-        			 $(this).next('.toggleChartLine').css('margin-top','0').css('border-top','none').css('border-bottom','1px solid #7f7f7f');
-        		 }
-        	 });
-         });
-         
-         
-         //code to show stories based on priority
-         var priorityDisabledObj=[];
-         $('.priority div').bind("click",function(){
-        	 if($(this).hasClass('disabled')){
-        		 $(this).removeClass('disabled');
-        		 var index = priorityDisabledObj.indexOf($(this).attr('class'));
-        		 priorityDisabledObj.splice(index, 1);
-        		 showStoryOnPriority(priorityDisabledObj);
-        		 
-        	 }else{
-        		 priorityDisabledObj[priorityDisabledObj.length] = $(this).attr('class');
-        		 $(this).addClass('disabled');
-        		 showStoryOnPriority(priorityDisabledObj);
-        	 }
-         });
-         
-         function showStoryOnPriority(priorityDisabledObj){
-        	 $('#storyList ul.story').find('li').each(function(){
-        		 $(this).show();
-        		 for(var i=0;i<priorityDisabledObj.length;i++){
-        			 var priorityClass = $(this).attr('class').split(' ').slice(-1)[0]; //get last class since the element has multiple class
-        			 if(priorityClass == priorityDisabledObj[i]){
-        				 $(this).hide();
-        			 }
-        		 }
-            	 
-             }); 
-         }
-         
+        
          $('.custom-select').bind('click',function(){
              if($(this).find('ul.option-list').is(':visible')){
             	 $(this).find('ul.option-list').slideUp();
@@ -2550,75 +2358,6 @@ $(document).ready(function() {
              return false;
          });
          
-         $('.st_edit_story').unbind('click').live("click",function(){
-        	 $('#story-section').hide();
-        	 var storyId = $(this).attr('id');
-        	 $.ajax({
-	        		url: 'api/v1/stories/'+storyId,
-	        		type: 'GET',
-	        		async:false,
-	        		success: function( stories ) {
-	        			if(stories != null && stories.length > 0){
-							stories = stories[0];
-							$('#st-edit-title').val(stories.title);
-							$('textarea[name=st-edit-description]').val(stories.description);
-							$('#st-edit-priority option').html('<div class="color p'+stories.priority+'"></div><div class="label" data-value="'+stories.priority+'">Priority '+stories.priority+'</div></div>');
-				        	var optionsHtml = '<option value="0">Add story to Project Backlog</option>';
-				            for(var i=1;i<=totalsprints;i++){
-					             optionsHtml +='<option value="'+i+'">Sprint '+i+'</option>';
-				        	}
-				        	$('#story-edit-section #st-edit-sprint').html(optionsHtml);
-				        	if(stories.sprint_id == null){
-				        		$('#story-edit-section #st-edit-sprint').val('0');
-				        	}else{
-				        		$('#story-edit-section #st-edit-sprint').val(stories.sprint_id.id);
-				        	}
-				        	$('#story-edit-section').show();
-	        			}
-	        		}
-        	 });
-        	 
-         });
-         
-         $('.st_edit_cancel').unbind('click').live("click",function(){
-        	 $('#story-section').show();
-        	 $('#story-edit-section').hide();
-         });
-         
-         $('#st-edit-done').unbind('click').live("click",function(){
-        	var title = $('input#st-edit-title');
-     		var description = $('textarea[name=st-edit-description]');
-     		var priority = $('#st-edit-priority .option .label').attr('data-value');
-     		var sprint = $('select[name=st-edit-sprint]');
-     		if(title.val()==""){
-     			return;
-     		}
-     		var user = userLogged;
-     		var storyId = $('.st_edit_story').attr('id');
-        	 //call update story api
-        	 var post_data = 'storyId='+storyId+'&stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority + '&user=' +user + '&stSprint=' + sprint.val();
-     		$.ajax({
-     			url: 'api/v1/stories/update',
-     			type: 'POST',
-     			data: post_data,
-     			async:false,
-     			success: function( result ) {
-     				populateUnassignedStories('');
-     				if(project_view ==1){
-     					populateSprints();
-     				}else{
-	        		   	populateSprintStories(current_sprint);
-     				}
-     		   	 	title.val('');
-     			},
-     			error: function(data) { },
-     			complete: function(data) { }
-     		});
-     		populateStoryPopup(storyId);
-        	 $('#story-section').show();
-        	 $('#story-edit-section').hide();
-         });
-         
          
          $('.ctedit').unbind('click').live("click",function(){
         	 var taskId = $(this).attr('id').split("tedit")[1];
@@ -2628,12 +2367,13 @@ $(document).ready(function() {
        			async:false,
        			success: function( todo ) {
        				todo = todo[0];
-           			$('.todo-text').val(todo.content);
-           			$('#todo-milestones').val(todo.milestonePeriod);
-           			$('#todo-user').val(todo.user.username);
-           			$('#todo-form').find('input.submit').attr("value","Update");
-           			$('#todo-form').find('input.submit').css("margin-left","100px");
-           			$('#todo-form').find('input.submit').attr("id","tupdate").attr('data-task',taskId).attr('data-status',todo.status);
+           			$('#task_content').val(todo.content);
+           			$('#taskMilestone').val(todo.milestonePeriod);
+           			if(todo.user !== null){
+           				$('#taskUser').val(todo.user.username);
+           			}
+           			$('#add_task').attr("value","Update").attr("id","tupdate").attr('data-task',taskId).attr('data-status',todo.status);;
+           			$('#task_content').parent().css("width","69%");
        			},
        			error: function(data) { },
       			complete: function(data) { }            		
@@ -2642,16 +2382,17 @@ $(document).ready(function() {
          });
          
          $('#tupdate').unbind('click').live("click",function(){
+        	 var taskHtml="";
         	 var user = userLogged;
         	 var status= $(this).attr("data-status");
         	 var story_id = $("#current_story_id").val();	
-        	 var todoText = $(".todo-text").val();                       	  	 
-			 var milestonePeriod = $("#todo-milestones").val();		
-			 var taskUser = $("#todo-user").val();
-			 if(todoText == "" || taskUser == 0) return;   
+        	 var todoText = $("#task_content").val();                       	  	 
+			 var milestonePeriod = $("#taskMilestone").val();		
+			 var taskUser = $("#taskUser").val();
+			 if(todoText == "") return;   
 			 todoText = parsedString(todoText);
 			 var task_id = $(this).attr("data-task");
-             var post_data = 'id='+task_id+'&content='+ todoText+'&timeInDays='+milestonePeriod+'&assigneeId='+taskUser+'&status='+status+'&user='+user;                     
+             var post_data = 'content='+ todoText+'&timeInDays='+milestonePeriod+'&assigneeId='+taskUser+'&status='+status+'&user='+user;                     
              $.ajax({
       			url: 'api/v1/todo/update/'+task_id,
       			type: 'POST',
@@ -2659,40 +2400,66 @@ $(document).ready(function() {
       			async:false,
       			success: function( todo ) {  
       				todo = todo[0];
-      				$('.todo-text').val('');
-      				$('#todo-milestones').val('1');	
-      				$('#todo-user').val('0');	
-      				$('#todo-form').find('input.submit').attr("value","Add");
-           			$('#todo-form').find('input.submit').attr("id","tAdd").attr('data-task',task_id).attr('data-status',todo.status);
-      				var todoUpdateHtml = '<div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone"><label style="font-weight:none;">'+todo.milestonePeriod+' Milestone Period | </label><div class="todo-status"><label style="color:'+taskStatusColors[todo.status]+';" class="todo-status-text">'+todo.status+'</label><a href="javascript:void(0);" ></a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div>';
-      				$('.todo-display').find('ul.todo-total-display').find('li#todo'+task_id).html(todoUpdateHtml);
-      				$('.todo-text').focus(); 
+      				$('#task_content').val('');
+      				$('#taskMilestone').val('1');	
+      				$('#taskUser').val('0');	
+      				$('#add_task').attr("value","Add").attr("id","tAdd").attr('data-task',task_id).attr('data-status',todo.status);
+      				var imageUrl= "";
+      				var user_fullName="";
+      				var task_status = "";
+      				if(todo.user == null){
+      					imageUrl = "themes/images/notyetassigned_withoutarrow.png";
+      					user_fullName = "Not yet assigned";
+      				}else{
+      					imageUrl = qontextHostUrl+todo.user.avatarurl;
+      					user_fullName = todo.user.fullname;
+      				}
+      				if(todo.status == "IN_PROGRESS"){
+      					task_status = "IN PROGRESS";
+      				}else if(todo.status == "NOT_YET_ASSIGNED"){
+      					task_status="NOT YET ASSIGNED";
+      				}else{
+      					task_status=todo.status;
+      				}
+					taskObj = {task:todo,imageUrl:imageUrl,mileStoneType:mileStoneType,statusColor:taskStatusColors[todo.status],fullName:user_fullName,task_status:task_status};
+      				taskHtml += new EJS({url: 'ejs/task_template.ejs'}).render(taskObj);
+      				//var todoUpdateHtml = '<div class="todo-img"><img class="todo-user" title="'+todo.user.fullname+'" src="'+qontextHostUrl+todo.user.avatarurl+'"></img></div><div class="todo-content" ><div id="todoText">'+todo.content+'</div><div id="todoMilestone"><label style="font-weight:none;">'+todo.milestonePeriod+' Milestone Period | </label><div class="todo-status"><label style="color:'+taskStatusColors[todo.status]+';" class="todo-status-text">'+todo.status+'</label><a href="javascript:void(0);" ></a></div></div></div><div class="todo-action"><a id=tedit'+todo.pkey+' class="cmtEditTodo ctedit" href="javascript:void(0);"></a><a id=tdelete'+todo.pkey+' class="cmtRmvTodo ctremove" href="javascript:void(0)"></a></div>';
+      				$("#task_content").focus();  
+      				$('#story_task_view ul').find('li#task'+task_id).replaceWith(taskHtml);
       			},
       			error: function(data) { },
      			complete: function(data) { }            		
               	});
          });
          
-         $('#todo_section .todo-status a').unbind('click').live('click',function(event){
-        	 var id = $(this).closest('li.todo-list').attr('id');
-        	 $(this).closest('#todo_section').find('ul.todo-status-list').attr('id','status-'+id);
-             if($(this).closest('#todo_section').find('ul.todo-status-list').is(':visible')){
-            	 $(this).closest('#todo_section').find('ul.todo-status-list').slideUp();
+         $(".cmtRmvTodo").unbind('click').live('click',function(){        		
+          	var todoID = $(this).attr("id").split("tdelete")[1];
+          	var storyId = $('#current_story_id').val();
+          	deleteStoryTodo(todoID,storyId);
+          	//if edit was clicked and nothing was done.
+          	$('#add_task').attr("value","Add").attr("id","tAdd").attr('data-task',todoID);
+          	});
+         
+         $('#story_task_view .todo-status a').unbind('click').live('click',function(event){
+        	 var id = $(this).closest('li.todo-list').attr('id').split("task")[1];
+        	 $(this).closest('#story_task_view').find('ul.todo-status-list').attr('id','status-'+id);
+             if($(this).closest('#story_task_view').find('ul.todo-status-list').is(':visible')){
+            	 $(this).closest('#story_task_view').find('ul.todo-status-list').slideUp();
              }else{
-            	 $(this).closest('#todo_section').find('ul.todo-status-list').css('left',($(this).position().left - 50)+'px');
-            	 $(this).closest('#todo_section').find('ul.todo-status-list').css('top',($(this).position().top + 20 + $(this).closest('.jspPane').position().top)+'px');
-            	 $(this).closest('#todo_section').find('ul.todo-status-list').slideDown();
+            	 $(this).closest('#story_task_view').find('ul.todo-status-list').css('left',($(this).position().left - 50)+'px');
+            	 $(this).closest('#story_task_view').find('ul.todo-status-list').css('top',($(this).position().top + 20 + $(this).closest('.jspPane').position().top)+'px');
+            	 $(this).closest('#story_task_view').find('ul.todo-status-list').slideDown();
              }
              
 
          });
          
-         $('#todo_section ul.todo-status-list li').unbind('click').live('click',function(event){
+         $('#story_task_view ul.todo-status-list li').unbind('click').live('click',function(event){
         	 var user = userLogged;
-             var task_id = $(this).closest('ul').attr('id').split("status-todo")[1];
-             var c = $('#todo'+task_id).find('.todo-status');
+             var task_id = $(this).closest('ul').attr('id').split("status-")[1];
+             var c = $('#task'+task_id).find('.todo-status');
              var status = $(this).find('label').html();
-             var post_data = 'id='+task_id+'&status='+status+'&user='+user;
+             var post_data = '&status='+status;
              var el = $(this);
              $.ajax({
        			url: 'api/v1/todo/update/'+task_id,
@@ -2700,8 +2467,8 @@ $(document).ready(function() {
        			data: post_data,
        			async:false,
        			success: function( todo ) {  
-       				c.find('label').replaceWith($(el).html());
-                    $(el).closest('#todo_section').find('ul.todo-status-list').hide();
+       				c.find('label').html($(el).html()).addClass('todo-status-text');
+                    $(el).closest('#story_task_view').find('ul.todo-status-list').hide();
        			},
        			error: function(data) { },
       			complete: function(data) { }            		
@@ -2846,7 +2613,8 @@ $(document).ready(function() {
 			
          /*************** ADD STORY, TASK, DISCUSSION ************************/
 	  	
-		
+		populate_task_selects();
+	 	
 		$('#addStory').unbind("click").live('click',function(){
 			edit = false;
 			$("#add_story_popup").show();
@@ -2855,6 +2623,7 @@ $(document).ready(function() {
     		$('#addAnotherStory').show();
 			$('#updateStory').hide();
 			render_add_story_tab( false );
+
         	  		
 		});
 	 	
@@ -3092,13 +2861,21 @@ $(document).ready(function() {
     			edit = false;
     			var select = $('#story_details_container select[name=stSprint]');
     			select.val(jQuery('options:first', select).val());
-    			
+    			$('.add_tag_container').find('ul li').remove();
+    			//<div class="option"><div class="color" style="background-color:#7395DC"></div><div class="label" data-rank="1" data-pkey="2">Priority 2</div></div>
+    			$('section#story_details_container').find('#story_detail_custom').find('div:first').replaceWith('<div class="option"><div class="color" style="background-color:#FC5F5F"></div><div class="label" data-rank="0" data-pkey="1">Priority 1</div></div>');
+    			$('ul.todo-total-display').find('li').remove();
+    			$("#task_content").val("");  
+  				$('#taskMilestone').val('1');	
+  				$('#taskUser').val('0');	
     			//$('.story-popup .custom-select .option').html('<div class="color p1"></div><div class="label" data-value="1">Priority 1</div></div>');
+    			$("#tabs_addstory").tabs({ selected: 0 });
     		} else if ( $(this).attr('id') == "save_continue_sty" ){
     			edit = true;
     				editStory = newly_created_story;
 					render_add_story_tab( newly_created_story );
-					change_cntrl_buttons();
+					//change_cntrl_buttons(); //todo:check with paridhi
+					setStoryId(newly_created_story.pkey);
 	    			$("#tabs_addstory").tabs({ selected: 1 });
     		}else{
 	       	 	$('#add_story_popup').hide();
@@ -3139,6 +2916,7 @@ $(document).ready(function() {
     	$("#story_members, #story_edit").bind('click').live('click',function(){
     		var id = $(this).closest('li').attr("id");
     		edit_story_popup( id );
+    		
     		$("#tabs_addstory").tabs({ selected: 0 });
     	});
     	$("#story_tasks").bind('click').live('click',function(){
@@ -3158,11 +2936,12 @@ $(document).ready(function() {
 		});
 		
 		function edit_story_popup( id ){
-			debugger;
 			$("#add_story_popup").show();
 			$("#custom_overlay").fadeIn('slow');
     		id = id.replace("st","");
     		populateStoryPopup(id);	
+    		populateStoryTodos(id);
+    		setStoryId(id);
 		}
 		
     	function change_cntrl_buttons(){

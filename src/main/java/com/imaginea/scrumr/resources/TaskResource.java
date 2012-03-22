@@ -187,7 +187,7 @@ public class TaskResource {
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
     public @ResponseBody
-    List<Task> updateStatus(@RequestParam String id,
+    List<Task> updateStatus(@PathVariable("id") String id,
                                     @RequestParam(required = false) String content,
                                     @RequestParam(required = false) String status,
                                     @RequestParam(required = false) String assigneeId,
@@ -196,7 +196,6 @@ public class TaskResource {
         // TODO: maintain the history - or even if we go github way, backend needs to handle it
         
         int taskId = ResourceUtil.stringToIntegerConversion("task_id", id);
-        int time_In_Days = ResourceUtil.stringToIntegerConversion("task_time_in_days", timeInDays);
         List<Task> result = new ArrayList<Task>();
         
         try {            
@@ -210,6 +209,7 @@ public class TaskResource {
             if (assigneeId != null)
                 task.setUser(userServiceManager.readUser(assigneeId));
             if (timeInDays != null) {
+            	int time_In_Days = ResourceUtil.stringToIntegerConversion("task_time_in_days", timeInDays);
                 task.setMilestonePeriod(timeInDays);
                 task.setTimeInDays(time_In_Days);
             }            

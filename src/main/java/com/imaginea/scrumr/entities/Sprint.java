@@ -89,7 +89,6 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	}
 	@OneToMany(cascade=CascadeType.REMOVE, mappedBy="sprint_id")
     public Set<Story> getStoryList() {
-	    
 	    return storyList;
     }
     

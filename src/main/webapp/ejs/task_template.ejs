@@ -1,0 +1,22 @@
+<li class="todo-list" id="task<%=task.pkey%>">
+		<div class="todo-img">
+			<img class="todo-user" title="<%=fullName%>" src="<%=imageUrl%>"></img>
+		</div>
+		<div class="task-info">
+			<div id="todoPkey"><label style="font-weight:none;">#<%=task.pkey%>  | </label></div>
+			<div id="todoMilestone"><label style="font-weight:none;"><%=task.milestonePeriod%> <%=mileStoneType%> Milestone  | </label></div>
+			<div class="todo-status">
+				<label style="color:<%=statusColor%>;" class="todo-status-text"><%=task_status%></label>
+				<%if(task_status !== "NOT YET ASSIGNED"){%>
+				<a href="javascript:void(0);" ></a>
+				<%}%>
+			</div>
+		</div>
+		<div class="todo-content" >
+			<div id="todoText"><%=task.content%></div>
+		</div>
+		<div class="todo-action">
+			<a id=tedit<%=task.pkey%> class="cmtEditTodo ctedit" href="javascript:void(0);"></a>
+			<a id=tdelete<%=task.pkey%> class="cmtRmvTodo ctremove" href="javascript:void(0)"></a>
+		</div>
+	</li>

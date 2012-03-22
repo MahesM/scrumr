@@ -96,7 +96,7 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
     }
     
     @ManyToOne
-    @JoinColumn(name = "sprintid", nullable = false)
+    @JoinColumn(name = "sprintid", nullable = true)
     public Sprint getSprint() {
         return sprint;
     }

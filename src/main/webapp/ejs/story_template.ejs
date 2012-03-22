@@ -1,4 +1,4 @@
-<li style="border-left:6px solid <%=story.priority.color%>" data-priority ="<%=story.priority.description%>" data-size="<%=story.storyPoint%>" <%if(story.ststage !=null){%> data-stage="<%=story.ststage.pkey%>" <%}%>id="st<%= story.pkey %>">
+<li style="border-left:6px solid <%=story.priority.color%>" data-priority ="<%=story.priority.description%>" data-size="<%=story.storyPoint%>" <% if(story.ststage){%> data-stage="<%=story.ststage.pkey%>"<%}%> id="st<%= story.pkey %>">
 	<p><%= story.title %></p>
 	<div class="story_desc" style="display:none;"><%= story.description %></div>
 	<div class="meta" style="display:none;">
@@ -8,6 +8,7 @@
 			<div id="story_tasks"><a href="javascript:void(0);" class="task-story"></a><label><%=story.completedTask%>/<%=story.totalTask%></label></div>
 			<div id="story_discussions"><a href="javascript:void(0);" class="discussion-story"></a><label>0</label></div>
 			<div id="story_edit"><a href="javascript:void(0);" class="edit-story"></a></div>
+			<div class="clear-fix"></div>
 		</div>
 		<div class="story_tags">#css,#html,#box_model</div>
 	</div>

@@ -21,7 +21,7 @@
 			<div id="sty_slider-range"></div>
 			<div style="padding:10px 5px" id="sty_size_indicator" ><sup>1</sup><span class="sty_point_head" >Story Points</span><sup style="float:right">32</sup></div>
 		</div>
-		<div class="custom-select">
+		<div id="story_detail_custom" class="custom-select">
 	        <div class="option">
 	            <div class="color p1"></div>
 	            <div class="label" data-value="1">Priority 1</div>
