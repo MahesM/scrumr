@@ -29,6 +29,7 @@ import com.imaginea.scrumr.interfaces.IEntity;
         @NamedQuery(name = "tasks.fetchTasksByAssignee", query = "SELECT instance from Task instance where instance.user.id=:userid"),
         @NamedQuery(name = "tasks.fetchUserTaskBySprint", query="SELECT instance from Task instance where instance.project=:project and instance.sprint = :sprint" ),
         @NamedQuery(name = "tasks.fetchTasksByStatus", query = "SELECT instance from Task instance where instance.story.pkey=:storyid and instance.status =:status"),
+        @NamedQuery(name = "tasks.fetchAllUserTaskStory", query = "SELECT instance from Task instance where instance.story.pkey=:storyid and instance.user.pkey =:pkey"),
         @NamedQuery(name = "tasks.fetchTeamStatusSummaryBySprint", query = "SELECT instance,  count(instance) as total_tasks, sum(instance.timeInDays) as time_in_days from Task instance where instance.story.project.id=:projectId and instance.story.id in (select story.id from Story as story where story.sprint_id.id=:sprintId) group by instance.user"),
         @NamedQuery(name = "tasks.fetchTeamStatusSummaryByProject", query = "SELECT instance, count(instance) as total_tasks, sum(instance.timeInDays) as time_in_days from Task instance where instance.story.project.id=:projectId group by instance.user.id"),
         @NamedQuery(name = "tasks.fetchAssignedUserTaskBySprint", query = "SELECT instance.user.username, instance.user.displayname, count(instance) from Task instance where instance.project=:project and instance.sprint = :sprint and status = 0 group by user"),
@@ -66,13 +67,9 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
     public static final String FETCH_TEAM_STATUS_DETAILS_BY_PROJECT = "SELECT instance from Task instance where instance.story.project.id=:projectId ";
 
     public enum TaskStatus {
-        CREATED, IN_PROGRESS, COMPLETED;
+        ASSIGNED, NOT_YET_ASSIGNED, IN_PROGRESS, COMPLETED;
     }
 
-    public Task() {
-        this.status = TaskStatus.CREATED;
-    }
-    
     @JsonIgnore
     @ManyToOne()
     @JoinColumn(name = "projectid", nullable = false)
@@ -85,7 +82,7 @@ public class Task extends AbstractEntity implements IEntity, Serializable {
     }
     
     @ManyToOne
-    @JoinColumn(name = "userid", nullable = false)
+    @JoinColumn(name = "userid", nullable = true)
     public User getUser() {
         return user;
     }

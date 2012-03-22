@@ -45,13 +45,7 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	private Set<Story> storyList;
 	private int taskCount;
 	private int completedTasks;
-    private List<Integer> storyCountByStages = new ArrayList<Integer>();
-    private List<Integer> stageImageUrl =new ArrayList<Integer>();
-    private List<Integer> stageId =new ArrayList<Integer>();
     private List<StoryStageInfo> storyStageDetails = new ArrayList<StoryStageInfo>();
-    private List<Integer> completedStoriesBySize = new ArrayList<Integer>();
-    private List<Integer> totalStoriesBySize = new ArrayList<Integer>();
-    private List<String> storySizeValue = new ArrayList<String>();
     private List<StorySizeInfo> storySizeDetails = new ArrayList<StorySizeInfo>();
     private Date projectStartDate;
     private Date projectEndDate;
@@ -140,7 +134,7 @@ public class Sprint extends AbstractEntity implements IEntity, Serializable {
 	private void setCompletedTaskCount() {
 	    this.completedTasks = 0;
 	    for(Task task:taskList){
-            if(task.getStatus().equals("2")){
+            if(task.getStatus()!=null && task.getStatus().equals("2")){
                 this.completedTasks++;
             }
         }

@@ -151,15 +151,19 @@ public class TaskResource {
             task.setContent(content);
             task.setSprint(sprint);
             task.setProject(project);
+            task.setStory(story);
             if (createdBy != null)
                 task.setCreatedByUser(createdBy);
             task.setMilestonePeriod(milestonePeriod);
             task.setTimeInDays(time_In_Days);
             
-            if (assigneeId != null) {
+            if (assigneeId != null && !"".equals(assigneeId) && !"0".equals(assigneeId)) {
                 assigneeUser = userServiceManager.readUser(assigneeId);
                 task.setUser(assigneeUser);
+                task.setStatus(TaskStatus.ASSIGNED);
                 addUserToStory(assigneeUser,storyid, task);
+            }else{
+            	 task.setStatus(TaskStatus.NOT_YET_ASSIGNED);
             }
             // independent task support is ok 
             taskManager.createTask(task);
@@ -226,7 +230,11 @@ public class TaskResource {
     String deleteTask(@PathVariable("id") String id) {
 
         Task task = taskManager.readTask(Integer.parseInt(id));
-        int userPkey = task.getUser().getPkey();
+        User user = task.getUser();
+        int userPkey = 0;
+        if(user != null){
+            userPkey = user.getPkey();
+        }
         int storyId = task.getStory().getPkey();
         
         try{
