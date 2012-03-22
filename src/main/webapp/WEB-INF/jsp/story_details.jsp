@@ -42,6 +42,6 @@
 	  </div>
 	</article>
 	<div class="border_bottom_div" >
-		<a id="save_continue_sty">Save and continue to add tasks ></a>
+		<a id="save_continue_sty" >Save and continue to add tasks >></a>
 	</div>
 </section>

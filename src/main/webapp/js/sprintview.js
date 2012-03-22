@@ -8,6 +8,8 @@ $(document).ready(function() {
         	var projectLanes = new Object();
         	var projectPriorities = new Object();
         	var projectPreferences = new Object();
+        	var editStory = new Object();
+        	var edit = false;
         	var users = null;
         	var userObject = new Object();
         	var creatorObj = new Object();
@@ -449,6 +451,10 @@ $(document).ready(function() {
 			}
 			
 			function viewStoryFancyBox(){
+				
+			//	$("#add_story_popup").show();
+			//	$("#custom_overlay").fadeIn('slow');
+				
 				/* $('.viewStory').live("click",function(){
 					var storyEl=$(this).parent().parent().parent();
 					var animateTop = parseInt($(storyEl).css('top'))+20;
@@ -459,7 +465,8 @@ $(document).ready(function() {
 					},1000);
 				}); */
 				//var bgColor = "";
-				$(".viewStory, .moreStory").fancybox({
+				
+		/*	$(".viewStory, .moreStory").fancybox({
 				'overlayColor' : '#000',
 	                'overlayOpacity' : '0.6',
 	                'autoScale' : false,
@@ -468,8 +475,8 @@ $(document).ready(function() {
 	                  //  $('#story-cont').css("background-color",bgColor);
 	                       }),
 	                'onStart' : (function(el){
-	                	/* var storyEl=$(el).closest('li');
-	                	bgColor = ($(storyEl).css('backgroundColor')); */
+	                	// var storyEl=$(el).closest('li');
+	                	//bgColor = ($(storyEl).css('backgroundColor')); 
 	                        }),
 	                'onClosed' : (function() {
 	                	$("#stPeople").hide();
@@ -502,7 +509,7 @@ $(document).ready(function() {
 	                	});
 	                   })
 
-	        	}); 
+	        	}); */
 			}
 			
 			
@@ -1022,7 +1029,7 @@ $(document).ready(function() {
 				return stat;
 			}
 			
-			function populateStoryAssignees(id){
+			function populateStoryPopup(id){
 				$.ajax({
 	        		url: 'api/v1/stories/'+id,
 	        		type: 'GET',
@@ -1030,9 +1037,12 @@ $(document).ready(function() {
 	        		success: function( stories ) {
 	        			if(stories != null && stories.length > 0){
 							stories = stories[0];
-	        				$("#st-title").html(stories.title);
-	        				$("#st-description").html(stories.description);
-	        				var stpriority = "<div class='option'><div class='color p"+stories.priority+"'></div><div class=label data-value=1>Priority "+stories.priority+"</div></div>";
+							editStory = stories;
+							edit = true;
+							render_add_story_tab( stories );
+							change_cntrl_buttons();
+							
+	        				/*var stpriority = "<div class='option'><div class='color p"+stories.priority+"'></div><div class=label data-value=1>Priority "+stories.priority+"</div></div>";
 	        				$("#st-priority").html(stpriority);
 	        				var stsprint = "";
 	        				if(stories.sprint_id == null){
@@ -1048,8 +1058,8 @@ $(document).ready(function() {
 	        				var createdOn = createdDate.format("mmm dd");
 	        				createdOn +=", "+createdDate.getHours()+":"+createdDate.getMinutes();
 	        				$("#st-creator").html('<img title="'+userObj.fullname+'" src="'+qontextHostUrl+''+userObj.avatarurl+'"/>');
-	        				$("#st-createdOn").html(createdOn);
-	        				var assign = '';
+	        				$("#st-createdOn").html(createdOn);*/
+	       /* 			var assign = '';
 	        				var post_data="storyId="+id+"&stage="+stories.status;
 	        				$.ajax({
 	        					url : 'api/v1/stories/getusers',
@@ -1098,7 +1108,7 @@ $(document).ready(function() {
 	        					if(api)api.destroy();
 	        				}
 	        				storyDetailScroll[id+"detail"] = $('#story_details_section').jScrollPane({showArrows: true, scrollbarWidth : '20'}).data().jsp;
-	        			}
+	     	*/			}
 	        			
 	        		},
 	        		error: function(data) { },
@@ -1838,26 +1848,30 @@ $(document).ready(function() {
 			}
 			
 			$(".viewStory, .moreStory").unbind('click').live('click', function(){
+				
+					$("#add_story_popup").show();
+					$("#custom_overlay").fadeIn('slow');
+				
 				var id = $(this).closest('li').attr("id");
         		id = id.replace("st","");
         		var stageId = $(this).closest('ul').attr('id');
-        		populateStoryAssignees(id);
+        		populateStoryPopup(id);
         		
-        		setStoryId(id);
+        	/*	setStoryId(id);
         		populateCommentingUserDetails();
     	       	populateStoryComments();
-    	       	populateStoryTodos();
+    	       	populateStoryTodos();*/
 				$(".add-user").unbind('click').live('click', function(){
 					var eid = $(this).attr("alt");
 					var eid_arr = [eid];
 					addUserToStory(eid_arr, id,stageId);
-					populateStoryAssignees(id);	
+					populateStoryPopup(id);	
 				});
 				
 				$(".remvUser").unbind('click').live('click', function(){
 					var eid = $(this).parent().find('img').attr("alt");
 					removeUserFromStory(eid, id,stageId);
-					populateStoryAssignees(id);
+					populateStoryPopup(id);
 				});
 				viewStoryFancyBox();
 			});
@@ -2600,7 +2614,7 @@ $(document).ready(function() {
      			error: function(data) { },
      			complete: function(data) { }
      		});
-     		populateStoryAssignees(storyId);
+     		populateStoryPopup(storyId);
         	 $('#story-section').show();
         	 $('#story-edit-section').hide();
          });
@@ -2834,11 +2848,13 @@ $(document).ready(function() {
 	  	
 		
 		$('#addStory').unbind("click").live('click',function(){
-			
+			edit = false;
 			$("#add_story_popup").show();
 			$("#custom_overlay").fadeIn('slow');
-			clear_sty_popup();
-			render_add_story_tab();
+    		$('#createStory').show();
+    		$('#addAnotherStory').show();
+			$('#updateStory').hide();
+			render_add_story_tab( false );
         	  		
 		});
 	 	
@@ -2847,60 +2863,94 @@ $(document).ready(function() {
        	 	$("#custom_overlay").fadeOut('slow');
         }); 
 		
-		function clear_sty_popup(){
-			$('input#sty_title_input').val("");
- 			$('textarea#sty_desp_input').val("");	
+		function render_proj_title( editStory_details ){
+			var title, desp = "";
+			if( editStory_details ){
+				title = editStory_details.title;
+				desp = editStory_details.description;
+			}
+			$('input#sty_title_input').val(title);
+ 			$('textarea#sty_desp_input').val(desp);	
 		}
 		
-		function render_add_story_tab(){
+
+		function render_add_story_tab( editStory_detail_Json ){
+
 			
-			$("#tabs_addstory").tabs();
+			$('#tabs_addstory').tabs({
+				selected: 0 ,
+			    select: function(event, ui ) {
+			    		if( edit || ui.panel.id == "tabs_story") {
+			    			return true;
+			    		}else{
+			    			customAlert( { message: {'text':'You can not create task / discussion without creating a story.'},btnStyle: {'confirm' : 'false'}  }  );
+			    			return false;
+			    		}
+			    }
+			});
 			
-			render_proj_priority();
-			render_proj_pref();
-			render_proj_sprint();
-			render_proj_assignees();
-			render_proj_tags();
+    		$('#createStory').show();
+    		$('#addAnotherStory').show();
+			$('#updateStory').hide();
+			render_proj_title( editStory_detail_Json );
+			render_proj_priority( editStory_detail_Json );
+			render_proj_pref( editStory_detail_Json );
+			render_proj_sprint( editStory_detail_Json );
+			render_proj_assignees( editStory_detail_Json );
+			render_proj_tags( editStory_detail_Json );
 		}
 		
-		function render_proj_priority(){
+		function render_proj_priority( editStory_details ){
+			
 			var optionsHtml = "";
 			for(priority in projectPriorities){
 				var curPriority = projectPriorities[priority];
 				optionsHtml += '<li><div class="option"><div class="color" style="background-color:'+curPriority.color+'" ></div><div class="label" data-rank="'+curPriority.rank+'" data-pkey="'+curPriority.pkey+'" >'+curPriority.description+'</div></div></li>';
 			}
 			$('#story_details_container .option-list').html(optionsHtml);
-	         
+	        
 			var c = $('#story_details_container .option-list :first-child').parents('.custom-select');
-	        c.find('>.option').replaceWith($("#story_details_container .option-list :first-child").html());
-	        c.find('>ul.option-list').slideUp();
+	        c.find('>.option').replaceWith($("#story_details_container .option-list :first-child").html());	       
+	        
+			if( editStory_details ) {
+				c.find('>.option').replaceWith(  $('div[data-pkey="'+editStory_details.priority.pkey+'"]').parent().parent().html() );
+			} 
+			 c.find('>ul.option-list').slideUp();
 		}
 		
-		function render_proj_pref(){			
-			createSlider_sty_size();
+		function render_proj_pref( editStory_details ){			
+			createSlider_sty_size( editStory_details );
 		}
 		
-		function render_proj_sprint(){  //populate story popup sprint select box
+		function render_proj_sprint( editStory_details ){  //populate story popup sprint select box
 						
 			var optionsHtml = '<option selected="selected" value="0">Add story to Project Backlog</option>';
         	 for(var cnt=1; cnt <= totalsprints; cnt++){
         		 optionsHtml +='<option value="'+cnt+'" class="sprint_options" >Sprint '+cnt+'</option>';
         	 }
         	 $('#story_details_container #storySprint').html(optionsHtml);
+        	 
+        	 if( editStory_details ){
+        		 $('#story_details_container #storySprint').val( editStory_details.sprintNo );
+        	 }
 		}
 		
-		function render_proj_assignees(){
-			
-			/*var assignee = "<ul>";
-			for(var cnt = 0; cnt < users.length ; cnt++) {
-				
-				assignee += "<li class='padding3' >'"+users[cnt].fullname+"'</li>";
+		function render_proj_assignees( editStory_details ){
+			$('#mem_list_holder').html("");
+			if( editStory_details && editStory_details.assignees ){
+				var assignee = "<ul>";
+				for(var cnt = 0; cnt < editStory_details.assignees.length ; cnt++) {
+					
+					assignee += "<li class='padding3' >'"+ editStory_details.assignees[cnt].fullname+"'</li>";
+				}
+				assignee += "</ul>"
+				$('#mem_list_holder').html(assignee);
 			}
-			assignee += "</ul>"
-			$('#mem_list_holder').html(assignee);*/
+
 		}
 		
-	  	function createSlider_sty_size(){
+	  	function createSlider_sty_size( editStory_details ){
+	  		
 	  		var sizes, lowEnd , highEnd , new_Size_Array = [];
 	  		var value = projectPreferences.storyPointType;
 	  		if( value == 0 ){
@@ -2924,9 +2974,7 @@ $(document).ready(function() {
   			 }
   			 $($("#sty_size_indicator").find('sup')[0]).html( lowEnd );
 	  			 $($("#sty_size_indicator").find('sup')[1]).html( highEnd );
-	  			 
-	  		 $("#sty_amount_slider").val("");
-	  		 
+	  			   		 
 	  		$( "#sty_slider-range" ).slider({
 			  		  min: 0,
 			  		  max: new_Size_Array.length - 1,
@@ -2937,19 +2985,28 @@ $(document).ready(function() {
 			  		    $("#sty_amount_slider").val(new_Size_Array[ui.value]);
 			  		  }
 			  });
+	  		
+	  		if( editStory_details ) {
+	  			 $("#sty_amount_slider").val( editStory_details.storyPoint );
+	  		} else {
+	  			 $("#sty_amount_slider").val(new_Size_Array[new_Size_Array.length - 1]);
+	  		}
 	  	}
 	  	
-	  	function render_proj_tags(){
-	  		$("#tag_list_holder ul").html("");
-	  		/*if ( story_JSON.story[0].storyTags.length <= 0 ) {
-	  			$("#tag_list_holder ul").html("");
+	  	function render_proj_tags( editStory_details ){
+	  		if( editStory_details ){
+		  		if ( editStory_details.storyTag.length < 1  || editStory_details.storyTag[0] == "" ) {
+		  			$("#tag_list_holder ul").html("");
+		  		} else {
+		  			$("#tag_list_holder ul").html("");
+		  			for ( var cnt = 0; cnt < editStory_details.storyTag.length ; cnt++ ) {
+		  				var str = "<li class='newTags_li' data-tagValue = '"+editStory_details.storyTag[ cnt ]+"'  ><p>"+editStory_details.storyTag[ cnt ]+"</p><a href='javascript:void(0);'class='tag_remove' /></li>";
+		  				$("#tag_list_holder ul").append(str);
+	  				}
+		  		}
 	  		} else {
 	  			$("#tag_list_holder ul").html("");
-	  			for ( tag in story_JSON.story[0].storyTags) {
-	  				var str = "<li class='newTags_li' data-tagValue = '"+story_JSON.story[0].storyTags[ tag ].tagName+"'  ><p>"+story_JSON.story[0].storyTags[ tag ].tagName+"</p><a href='javascript:void(0);'class='tag_remove' /></li>";
-			  		$("#tag_list_holder ul").append(str);
-	  			}
-	  		}*/
+	  		}
 	  	}
 	  	
 	  	$('#add_tags').keyup(function(e) {	  	
@@ -2973,7 +3030,8 @@ $(document).ready(function() {
 		});
 	  	
 	  	
-    	$('#addAnotherStory,#createStory,#save_continue_sty').unbind('click').live("click",function(){
+    	$('#addAnotherStory,#createStory,#save_continue_sty,#updateStory').unbind('click').live("click",function(){
+    		
     		var title = $('input#sty_title_input');
     		var description = $('textarea#sty_desp_input');
     		if(!storyFormValid)
@@ -2982,39 +3040,66 @@ $(document).ready(function() {
     		if(title.val()==""){
     			return;
     		}
+    		
+    		var newly_created_story;
 
-    		//var post_data = 'stTitle=' +title.val() + '&projectId='+projectId+'&stDescription=' + description.val() + '&stPriority=' + priority + '&user=' +user + '&stSprint=' + sprint.val()+'&storyTags={tags:[1,2,3]}';
-    		var new_story_Json = story_JSON;
+    		//var newObject = jQuery.extend(true, {}, oldObject); /**  Deep copy  **/
+    		var new_story_Json = jQuery.extend(true, {}, story_JSON);  
     		update_story_details( new_story_Json );
     		var post_data = "story="+JSON.stringify(new_story_Json);
     		
-    		$.ajax({
-    			url: 'api/v1/stories/create',
-    			type: 'POST',
-    			data: post_data,
-    			async:false,
-    			success: function( result ) {
-    				populateUnassignedStories('');
-    				if(project_view ==1){
-    					populateSprints();
-    				}else{
-        		   	 	populateSprintStories(current_sprint);
-    				}
-    		   	 	title.val('');
-    	       	 	$('#add_story_popup').hide();
-    	       	 	$("#custom_overlay").fadeOut('slow');
-    			},
-    			error: function(data) { },
-    			complete: function(data) { }
-    		});
-    		
+    		if( $(this).attr('id') == "updateStory" ){
+	    		$.ajax({
+	    			url: 'api/v1/stories/update',
+	    			type: 'POST',
+	    			data: post_data,
+	    			async:false,
+	    			success: function( result ) {
+	    				populateUnassignedStories('');
+	    				if(project_view ==1){
+	    					populateSprints();
+	    				}else{
+	        		   	 	populateSprintStories(current_sprint);
+	    				}
+	    		   	 	title.val('');
+	    			},
+	    			error: function(data) { },
+	    			complete: function(data) { }
+	    		});
+    		}else {
+	    		$.ajax({
+	    			url: 'api/v1/stories/create',
+	    			type: 'POST',
+	    			data: post_data,
+	    			async:false,
+	    			success: function( result ) {
+	    				newly_created_story = result[0];
+	    				populateUnassignedStories('');
+	    				if(project_view ==1){
+	    					populateSprints();
+	    				}else{
+	        		   	 	populateSprintStories(current_sprint);
+	    				}
+	    		   	 	title.val('');
+	    			},
+	    			error: function(data) { },
+	    			complete: function(data) { }
+	    		});
+    		}
     		if($(this).attr('id') == "addAnotherStory"){
     			title.val("");
     			description.val("");
+    			edit = false;
     			var select = $('#story_details_container select[name=stSprint]');
     			select.val(jQuery('options:first', select).val());
     			
     			//$('.story-popup .custom-select .option').html('<div class="color p1"></div><div class="label" data-value="1">Priority 1</div></div>');
+    		} else if ( $(this).attr('id') == "save_continue_sty" ){
+    			edit = true;
+    				editStory = newly_created_story;
+					render_add_story_tab( newly_created_story );
+					change_cntrl_buttons();
+	    			$("#tabs_addstory").tabs({ selected: 1 });
     		}else{
 	       	 	$('#add_story_popup').hide();
 	       	 	$("#custom_overlay").fadeOut('slow');
@@ -3022,6 +3107,7 @@ $(document).ready(function() {
     		
     	});
     	
+
     	function update_story_details(new_sty_json){
     		
     		new_sty_json.story[0].stTitle = $('input#sty_title_input').val();
@@ -3032,18 +3118,35 @@ $(document).ready(function() {
     		new_sty_json.story[0].stPriority = $('#story_details_container .custom-select .option .label').attr('data-pkey');
     		new_sty_json.story[0].projectId = projectId;
     		new_sty_json.story[0].stSprint = $('#story_details_container select[name=stSprint]').val();
+    		new_sty_json.story[0].storyId =  ( editStory )? editStory.pkey : 0;
     	}
     	
     	function get_sty_tags( new_sty_json ){
     		
     		var pjt_tags_list =  $("#tag_list_holder ul li");
     		
+    		if( pjt_tags_list.length == 0) {
+    			new_sty_json.story[0].storyTags = [];
+    		} 
     		for(var cnt=0 ; cnt < pjt_tags_list.length; cnt++ ){
     			
     			var tagObj = {"tagName": $( pjt_tags_list[cnt] ).attr("data-tagValue") };
     			new_sty_json.story[0].storyTags.push( tagObj );
     		} 
     		
+    	}
+    	
+    	$("#story_members, #story_edit").bind('click').live('click',function(){
+    		
+    	});
+    	$("#story_tasks, #story_discussions").bind('click').live('click',function(){
+    		
+    	});
+    	
+    	function change_cntrl_buttons(){
+    		$('#createStory').hide();
+    		$('#addAnotherStory').hide();
+    		$('#updateStory').show();
     	}
     	
 		var story_JSON = {'story':[{
@@ -3054,7 +3157,8 @@ $(document).ready(function() {
 							'storyPointSize':'',
 							'stPriority':0,
 							'projectId':0,
-							'stSprint':0
+							'stSprint':0,
+							'storyId' : 0 
 							}]
 						 };
 	  	

@@ -640,7 +640,7 @@ $(document).ready(function(){
 		});
 		
 	  	$("#delete_pro_fromALL").unbind('click').live('click',function(){
-	  		customAlert( { message: {'text':'Do you want to remove this Project?'} }, callbackForDeleteProject, $(this) );
+	  		customAlert( { message: {'text':'Do you want to remove this Project?'}}, callbackForDeleteProject, $(this) );
 	  	});
 	  	
 		

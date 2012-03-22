@@ -3928,6 +3928,7 @@ div > #add_story_popup {
 	padding:15px 50px;
 	font-size : 12px;
 	color:#0196E3;
+	cursor:pointer;
 }
 
 .user_image{
@@ -4018,6 +4019,11 @@ div > #add_story_popup {
 }
 #storySprint{
 	width : 100%;
+}
+#popup_story_cancel_btn{
+	cursor: pointer;
+	padding:10px;
+	text-decoration : none;
 }
 /********************TAB STYLES - LANDING PAGE*******************************************************/
 	.tabPointer{

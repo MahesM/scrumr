@@ -7,8 +7,8 @@
 		<textarea type="text" class="sty_desp_input" placeholder="Story Description..." style="height: 60px;" ></textarea>
 	</div>
 	<div style="float:right" >
-		<select name="stSprint" id="storySprint"></select>
-		<div><select name="stSprint" id="storySprint"></select><input id="add_task" type="button" class="submit" value="Add" style="margin: 0 5px;" /></div>
+		<select name="stSprint" ></select>
+		<div><select name="stSprint" ></select><input id="add_task" type="button" class="submit" value="Add" style="margin: 0 5px;" /></div>
 	</div>
 	<div style="clear:both;padding:10px;">
 		<div class="user_img_cont" >

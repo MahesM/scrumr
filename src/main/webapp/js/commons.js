@@ -37,6 +37,10 @@ var customAlert=  function(options,callback,curObj) {
 		
 	$("body").append(alertMsgStr);
 	
+	$('#ok').show();
+	$('#cancel').show();
+	$('#confirmheader').html("Confirm Box");
+	
 	$("#alertMsgDiv").slideDown('slow');
 	$("#customAlert_overlay").fadeIn('slow');
 	
@@ -58,6 +62,11 @@ var customAlert=  function(options,callback,curObj) {
 	//Button Style 
 	{
 		for(cssprop in options.btnStyle) {
+			if( cssprop == "confirm" && options.btnStyle[cssprop] == "false") {
+				$('#cancel').hide();
+				$('#confirmheader').html("Notification");
+			}
+			
 			$('#round').css( cssprop , options.btnStyle[cssprop] );
 		}
 	}
@@ -68,7 +77,8 @@ var customAlert=  function(options,callback,curObj) {
 			$('#confirmheader').css( cssprop , options.headerStyle[cssprop] );			
 		}
 	}
-
+	
+	
 	$("#cancel").unbind('click').bind('click',function(){
 		returnCallback(false);
 		hidepopupboxes();

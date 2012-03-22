@@ -233,6 +233,7 @@
 							<div class="actions-cont" style="float:right" >
 			                 	<a id="popup_story_cancel_btn">Later</a>
 			                 	<input id="createStory" type="button" class="submit" value="Done"/>
+			                 	<input id="updateStory" type="button" class="submit" value="Done" />
 								<input id="addAnotherStory" type="button" class="submit" value="Add another story"/>
 			                </div>
 			                <div id="add_story_user_close" class="addStory_user_close"></div>
