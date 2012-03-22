@@ -1847,20 +1847,20 @@ $(document).ready(function() {
 				// Ends Here
 			}
 			
-			$(".viewStory, .moreStory").unbind('click').live('click', function(){
+			/*$(".viewStory, .moreStory").unbind('click').live('click', function(){
 				
-					$("#add_story_popup").show();
-					$("#custom_overlay").fadeIn('slow');
+				$("#add_story_popup").show();
+				$("#custom_overlay").fadeIn('slow');
 				
 				var id = $(this).closest('li').attr("id");
         		id = id.replace("st","");
         		var stageId = $(this).closest('ul').attr('id');
         		populateStoryPopup(id);
-        		
-        	/*	setStoryId(id);
+			
+        		setStoryId(id);
         		populateCommentingUserDetails();
     	       	populateStoryComments();
-    	       	populateStoryTodos();*/
+    	       	populateStoryTodos();
 				$(".add-user").unbind('click').live('click', function(){
 					var eid = $(this).attr("alt");
 					var eid_arr = [eid];
@@ -1874,7 +1874,7 @@ $(document).ready(function() {
 					populateStoryPopup(id);
 				});
 				viewStoryFancyBox();
-			});
+			}); */
 			
 			$('.detailview').unbind('click').live('click',function(){
 				var ulHeight=$(this).closest('ul').height();
@@ -3137,12 +3137,34 @@ $(document).ready(function() {
     	}
     	
     	$("#story_members, #story_edit").bind('click').live('click',function(){
-    		
+    		var id = $(this).closest('li').attr("id");
+    		edit_story_popup( id );
+    		$("#tabs_addstory").tabs({ selected: 0 });
     	});
-    	$("#story_tasks, #story_discussions").bind('click').live('click',function(){
-    		
+    	$("#story_tasks").bind('click').live('click',function(){
+    		var id = $(this).closest('li').attr("id");
+    		edit_story_popup( id );
+    		$("#tabs_addstory").tabs({ selected: 1 });
+    	});
+    	$("#story_discussions").bind('click').live('click',function(){
+    		var id = $(this).closest('li').attr("id");
+    		edit_story_popup( id );
+    		$("#tabs_addstory").tabs({ selected: 2 });
     	});
     	
+		$(".viewStory, .moreStory").unbind('click').live('click', function(){			
+			var id = $(this).closest('li').attr("id");
+			edit_story_popup( id );
+		});
+		
+		function edit_story_popup( id ){
+			debugger;
+			$("#add_story_popup").show();
+			$("#custom_overlay").fadeIn('slow');
+    		id = id.replace("st","");
+    		populateStoryPopup(id);	
+		}
+		
     	function change_cntrl_buttons(){
     		$('#createStory').hide();
     		$('#addAnotherStory').hide();
