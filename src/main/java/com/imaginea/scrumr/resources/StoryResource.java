@@ -308,7 +308,8 @@ public class StoryResource {
                 if(searchTags != null){
                     String[] storyTags = searchTags.split(",");
                     for(String storyTag:storyTags){
-                        searchStoryParameters.add(createStoryParameter("story_tag",storyTag));
+                        if(!"".equals(storyTag))
+                            searchStoryParameters.add(createStoryParameter("story_tag",storyTag));
                     } 
                 }
             }
