@@ -41,7 +41,7 @@ $('tbody.content .todo-status a').live('click',function(event){
 
 });
 
-$('ul.todo-status-list li').live('click',function(event){
+/*$('ul.todo-status-list li').live('click',function(event){
 	var user = userLogged;
     var task_id = $(this).closest('ul').attr('id').split("status-")[1];
     var c = $('tr#todoReport-'+task_id).find('.todo-status');
@@ -63,7 +63,7 @@ $('ul.todo-status-list li').live('click',function(event){
       	});
     
     return false;
-});
+});*/
 
 $('.task_sort a').live("click",function(){
 	if($(this).parent().find('ul#sort-list').is(':visible')){

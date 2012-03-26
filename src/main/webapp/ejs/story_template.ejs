@@ -1,4 +1,4 @@
-<li style="border-left:6px solid <%=story.priority.color%>" data-priority ="<%=story.priority.description%>" data-size="<%=story.storyPoint%>" <% if(story.ststage){%> data-stage="<%=story.ststage.pkey%>"<%}%> id="st<%= story.pkey %>">
+<li style="border-left:6px solid <%=story.priority.color%>" data-tag = "<%=story.storyTag%>" data-priority ="<%=story.priority.description%>" data-size="<%=story.storyPoint%>" <% if(story.ststage){%> data-stage="<%=story.ststage.pkey%>"<%}%> id="st<%= story.pkey %>">
 	<p><%= story.title %></p>
 	<div class="story_desc" style="display:none;"><%= story.description %></div>
 	<div class="meta" style="display:none;">

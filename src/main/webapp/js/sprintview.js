@@ -1597,6 +1597,7 @@ $(document).ready(function() {
         				backlogSearchSource.push(current_entry);
         				backlogentry = true;
         			}
+        			console.log(backlogSearchSource);
         			$( "#backlog_seach_input" ).autocomplete( "option", "source",backlogSearchSource );
         			$( "#backlog_seach_input" ).bind( "autocompleteselect", function(event, ui) {
         				  var query=ui.item.value;
@@ -1629,8 +1630,24 @@ $(document).ready(function() {
     	        								.hide() : $(this).show();
     	        			 });
         					  
-        				  }else if(ui.item.type == "tag"){
-        					  //todo:
+        				  }else if(ui.item.type == "Tag"){
+        					  $("#backlog_seach_input").val(ui.item.value+":"+ui.item.type);
+        					  el.next().addClass('close-BacklogSearch').attr('src',"themes/images/close.png");
+        					  $(selector).find('li').each(
+    	        					function() {
+    	        						var tagPresent = true;
+    	        						var tags = $(this).attr('data-tag').split(',');
+    	        						for(var i=0;i<tags.length;i++){
+    	        							if(tags[i].search(new RegExp(query, "i")) < 0) {
+    	        								tagPresent = false;
+    	        							}else{
+    	        								tagPresent = true;
+    	        								return;
+    	        							}
+    	        						}
+    	        						tagPresent?$(this).show():$(this).hide();
+    	        						
+    	        			 });
         				  }
         			});
     			},1);
@@ -2454,12 +2471,12 @@ $(document).ready(function() {
 
          });
          
-         $('#story_task_view ul.todo-status-list li').unbind('click').live('click',function(event){
+         $('#story_task_view ul.todo-status-list li').live('click',function(event){
         	 var user = userLogged;
              var task_id = $(this).closest('ul').attr('id').split("status-")[1];
              var c = $('#task'+task_id).find('.todo-status');
              var status = $(this).find('label').html();
-             var post_data = '&status='+status;
+             var post_data = 'status='+status;
              var el = $(this);
              $.ajax({
        			url: 'api/v1/todo/update/'+task_id,

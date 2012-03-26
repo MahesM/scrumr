@@ -308,8 +308,8 @@ public class StoryResource {
                 if(searchTags != null){
                     String[] storyTags = searchTags.split(",");
                     for(String storyTag:storyTags){
-                        if(!"".equals(storyTag))
-                            searchStoryParameters.add(createStoryParameter("story_tag",storyTag));
+                    	if(!"".equals(storyTag))
+                    		searchStoryParameters.add(createStoryParameter("Tag",storyTag));
                     } 
                 }
             }
@@ -323,7 +323,7 @@ public class StoryResource {
         int storyType = projectPreference.getStoryPointType();
         
         for(int index =lowRangeIndex; index <= highRangeIndex;index++ ){
-            searchStoryParameters.add(createStoryParameter("story_size",ProjectPreferences.defaultStoryTypes[storyType][index]));
+            searchStoryParameters.add(createStoryParameter("Size",ProjectPreferences.defaultStoryTypes[storyType][index]));
         }    
     }
 
@@ -331,7 +331,7 @@ public class StoryResource {
         List<ProjectPriority> projectPrioritiesList = projectPriorityManager.fetchAllProjectPrioritiesByProject(projectId);
         if(ResourceUtil.isNotEmpty(projectPrioritiesList)){
             for(ProjectPriority projectPriority:projectPrioritiesList){                
-                searchStoryParameters.add(createStoryParameter("story_priority",projectPriority.getDescription()));            }
+                searchStoryParameters.add(createStoryParameter("Priority",projectPriority.getDescription()));            }
         }
     }
 
